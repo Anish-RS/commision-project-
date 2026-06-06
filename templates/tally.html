@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Daily / Range Tally</h2>
+
+<form method="POST" style="margin-bottom:20px;">
+    <label><b>From Date:</b></label>
+    <input type="date" name="from_date" value="{{ from_date }}" required>
+
+    <label style="margin-left:20px;"><b>To Date:</b></label>
+    <input type="date" name="to_date" value="{{ to_date }}" required>
+
+    <button type="submit" style="margin-left:20px; padding:5px 15px;">Get Tally</button>
+</form>
+
+{% if supplierData %}
+<div style="display:flex; gap:50px; flex-wrap:wrap;">
+
+    <!-- Supplier Table -->
+    <div>
+        <h3>Supplier Bills</h3>
+        <table border="1" cellpadding="5">
+            <tr><th>Supplier ID</th><th>Amount</th></tr>
+            {% for row in supplierData %}
+            <tr>
+                <td>{{ row.supplier_id }}</td>
+                <td>₹ {{ "%.2f"|format(row.amount) }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <!-- Customer Table -->
+    <div>
+        <h3>Customer Bills</h3>
+        <table border="1" cellpadding="5">
+            <tr><th>Customer ID</th><th>Amount</th></tr>
+            {% for row in customerData %}
+            <tr>
+                <td>{{ row.customer_id }}</td>
+                <td>₹ {{ "%.2f"|format(row.amount) }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+</div>
+
+<hr style="margin-top:20px;">
+
+<h3>Totals</h3>
+<p><b>Total Supplier Amount:</b> ₹ {{ "%.2f"|format(totalSupplier) }}</p>
+<p><b>Total Customer Amount:</b> ₹ {{ "%.2f"|format(totalCustomer) }}</p>
+
+<h3>Difference</h3>
+<p><b>Customer - Supplier =</b> ₹ {{ "%.2f"|format(difference) }}</p>
+
+{% if difference == 0 %}
+    <p style="color:green; font-weight:bold;">✔ Tally Matched</p>
+{% else %}
+    <p style="color:red; font-weight:bold;">✘ Tally Mismatched</p>
+{% endif %}
+
+{% endif %}
+
+{% endblock %}

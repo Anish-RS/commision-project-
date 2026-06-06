@@ -1,0 +1,156 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Customer Statement — {{ customer_name }}</title>
+  <style>
+    body { 
+      font-family: Arial, Helvetica, sans-serif; 
+      margin: 12px; 
+      color: #000;
+    }
+    h1 { margin:0 0 8px 0; }
+
+    .meta { margin-bottom: 12px; }
+
+    table { 
+      width:100%; 
+      border-collapse:collapse; 
+      margin-top:8px; 
+      font-size: 14px;
+    }
+
+    th, td { 
+      border:1px solid #333; 
+      padding:8px; 
+      text-align:left; 
+    }
+
+    th { background:#f2f2f2; }
+
+    .right { text-align:right; }
+
+    .summary { 
+      margin-top:12px; 
+      width:420px; 
+      float:right; 
+      border-top:1px dashed #444; 
+      padding-top:8px;
+      font-size:14px;
+    }
+
+    .footer { 
+      clear:both; 
+      margin-top:18px; 
+      border-top:1px dashed #666; 
+      padding-top:8px; 
+      font-size: 13px;
+    }
+
+    button.print-btn { 
+      margin-bottom:8px; 
+      padding:6px 10px; 
+      font-size:14px;
+    }
+
+    @media print {
+      button.print-btn { display:none; }
+    }
+  </style>
+</head>
+<body>
+
+  <button class="print-btn" onclick="window.print()">Print</button>
+
+  <h1>Customer Statement — {{ customer_name }}</h1>
+
+  <div class="meta">
+    <div><strong>Customer ID:</strong> {{ customer_id }}</div>
+
+    <div><strong>Period:</strong>
+      {% if from_date == to_date %}
+        {{ from_date }}
+      {% else %}
+        {{ from_date }} — {{ to_date }}
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- PURCHASE TABLE -->
+  <table>
+    <thead>
+      <tr>
+        <th>Sr</th>
+        <th>Bill ID</th>
+        <th>Supplier Ref</th>
+        <th>Date</th>
+        <th class="right">Rate</th>
+        <th class="right">Qty</th>
+        <th class="right">Amount (₹)</th>
+
+      </tr>
+    </thead>
+
+    <tbody>
+      {% if purchases|length == 0 %}
+        <tr><td colspan="7">No purchases found for this period.</td></tr>
+      {% else %}
+        {% for p in purchases %}
+        <tr>
+          <td>{{ loop.index }}</td>
+          <td>{{ p.bill_id }}</td>
+          <td>{{ p.supplier_bill_id or "-" }}</td>
+          <td>{{ p.bill_date }}</td>
+          <td class="right">{{ "%.2f"|format(p.rate or 0) }}</td>
+          <td class="right">{{ "%.2f"|format(p.quantity or 0) }}</td>
+          <td class="right">{{ "%.2f"|format(p.amount or 0) }}</td>
+
+        </tr>
+        {% endfor %}
+      {% endif %}
+    </tbody>
+  </table>
+
+  <!-- SUMMARY BLOCK -->
+  <div class="summary" role="note" aria-label="Summary">
+
+    <div style="display:flex;justify-content:space-between;">
+      <div>Total Purchases</div>
+      <div class="right">₹{{ "%.2f"|format(net or 0) }}</div>
+    </div>
+
+    <div style="display:flex;justify-content:space-between;">
+      <div>Total Receipts (this period)</div>
+      <div class="right">₹{{ "%.2f"|format(sum_receipts or 0) }}</div>
+    </div>
+
+    <div style="display:flex;justify-content:space-between;">
+      <div>Opening (before period)</div>
+      <div class="right">₹{{ "%.2f"|format(opening or 0) }}</div>
+    </div>
+
+    <div style="display:flex;justify-content:space-between; border-top:1px dashed #999; padding-top:6px;">
+      <div>Net Change</div>
+      <div class="right">₹{{ "%.2f"|format((net - sum_receipts) or 0) }}</div>
+    </div>
+
+    <div style="display:flex;justify-content:space-between; font-weight:bold;margin-top:6px;">
+      <div>Current Balance</div>
+      <div class="right">₹{{ "%.2f"|format(current_balance or 0) }}</div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div>
+      <strong>Note:</strong> 
+      Opening = Balance before period.  
+      Net Change = Purchases − Receipts.
+    </div>
+
+    <div style="margin-top:6px">
+      Printed on: {{ printed_on }}
+    </div>
+  </div>
+
+</body>
+</html>

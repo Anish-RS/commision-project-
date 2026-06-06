@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+{% block title %}Account Summary{% endblock %}
+{% block content %}
+<style>
+  /* (same CSS as you provided) */
+  .acct-wrap { max-width:1100px; margin:20px auto; }
+  .card { background: #ffffff; border-radius:12px; padding:18px; box-shadow:0 8px 30px rgba(18,38,63,0.06); }
+  .controls { display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+  .control-field { display:flex; flex-direction:column; gap:6px; }
+  label.small { font-size:13px; color:#556; font-weight:600; }
+  select.input, input.input { min-width:180px; padding:10px 12px; border-radius:10px; border:1px solid #e6eefb; background:#fbfeff; font-size:14px; }
+  .actions { margin-left:auto; display:flex; gap:8px; }
+  .btn { background:linear-gradient(90deg,#42a5f5,#1976d2); color:#fff; padding:10px 14px; border-radius:10px; border:none; cursor:pointer; font-weight:700; }
+  .btn.ghost { background:transparent; color:#1976d2; border:1px solid #dbeafc; }
+  .grid { display:grid; grid-template-columns: 1fr 420px; gap:18px; margin-top:16px; }
+  @media (max-width:980px) { .grid { grid-template-columns: 1fr; } }
+
+  .list-box { background:#fbfdff; border:1px solid #f0f4fb; border-radius:10px; overflow:auto; max-height:420px; }
+  table.summary { width:100%; border-collapse:collapse; font-size:13px; }
+  table.summary thead th { text-align:left; padding:12px 16px; color:#223; font-weight:700; border-bottom:1px solid #eef4fb; }
+  table.summary tbody td { padding:10px 16px; border-bottom:1px solid #f6f9fc; }
+  .muted { color:#667; font-size:13px }
+  .right { text-align:right }
+
+  .totals-stack { display:flex; flex-direction:column; gap:12px; }
+  .total-card { padding:14px; border-radius:10px; background:linear-gradient(180deg,#fff,#fbfdff); border:1px solid #eef4fb; }
+  .total-label { font-size:13px; color:#556; }
+  .total-value { font-size:20px; font-weight:800; margin-top:6px; }
+  .positive { color:#1b9e5b }
+  .negative { color:#d9534f }
+
+  .net-box { margin-top:18px; padding:18px; border-radius:12px; background:linear-gradient(90deg,#eef9f3,#fff); border:1px solid #e6f3ea; text-align:center; }
+  .net-title { font-weight:800; color:#263238 }
+  .net-amount { font-size:28px; margin-top:8px }
+
+  .small-note { color:#6b7280; font-size:13px; margin-top:10px }
+</style>
+
+<div class="acct-wrap">
+  <div class="card">
+    <h2 style="margin:0 0 8px 0">Account Summary</h2>
+    <p class="muted" style="margin:0 0 14px 0">Choose a customer and a date range (or select a date only) then click <strong>Show</strong>.</p>
+
+    <!-- form: we submit a hidden 'customer_id' field that JS sets from either the dropdown or manual input -->
+    <form method="GET" action="{{ url_for('account_summary') }}" id="acct-form">
+      <div class="controls">
+        <div class="control-field">
+          <label class="small" for="customer-select">Customer</label>
+          <select id="customer-select" class="input" aria-label="Customer selector">
+            <option value="">— All customers —</option>
+            {% for c in customers %}
+              <option value="{{ c.id }}" {% if selected_customer and (selected_customer|int) == (c.id|int) %}selected{% endif %}>
+                {{ c.name }} (ID: {{ c.id }})
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="control-field" style="min-width:220px;">
+          <label class="small" for="customer-manual">Or enter ID or Name</label>
+          <input id="customer-manual" name="customer_manual" class="input" placeholder="Type numeric ID (eg. 1) or name" />
+        </div>
+
+        <div class="control-field">
+          <label class="small">From</label>
+          <input type="date" name="from_date" value="{{ from_date }}" class="input">
+        </div>
+
+        <div class="control-field">
+          <label class="small">To</label>
+          <input type="date" name="to_date" value="{{ to_date }}" class="input">
+        </div>
+
+        <!-- hidden canonical customer_id will be populated by JS before submit -->
+        <input type="hidden" name="customer_id" id="customer_id_hidden" value="{{ selected_customer or '' }}">
+
+        <div class="actions">
+          <button class="btn" type="submit">Show</button>
+          <a href="{{ url_for('account_summary') }}" class="btn ghost" role="button">Reset</a>
+        </div>
+      </div>
+    </form>
+
+    {% if selected_customer %}
+      <div class="small-note">Showing results for <strong>{{ selected_customer }}</strong> from <strong>{{ from_date }}</strong> to <strong>{{ to_date }}</strong></div>
+
+      <div class="grid">
+        <!-- Left: Purchases + Receipts -->
+        <div>
+          <div style="display:flex; gap:12px; margin-top:12px;">
+            <div style="flex:1">
+              <div class="muted" style="margin-bottom:8px; font-weight:700">Purchases</div>
+              <div class="list-box" role="region" aria-label="Purchases list">
+                <table class="summary" role="table" aria-label="Purchases table">
+                  <thead>
+                    <tr><th style="width:120px">Date</th><th>Reference</th><th class="right" style="width:120px">Amount</th></tr>
+                  </thead>
+                  <tbody>
+                    {% if purchases %}
+                      {% for p in purchases %}
+                        <tr>
+                          <td>{{ p.date }}</td>
+                          <td>Bill #{{ p.bill_id }} {% if p.supplier_bill_id %} — SB#{{ p.supplier_bill_id }}{% endif %}</td>
+                          <td class="right">₹ {{ '%.2f'|format(p.amount) }}</td>
+                        </tr>
+                      {% endfor %}
+                    {% else %}
+                      <tr><td colspan="3" class="muted">No purchases in this range.</td></tr>
+                    {% endif %}
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Purchases total directly below purchases list -->
+              <div style="margin-top:12px;">
+                <div class="total-card" role="status" aria-live="polite">
+                  <div class="total-label">Purchases total</div>
+                  <div class="total-value negative">₹ {{ '%.2f'|format(sum_purchases) }}</div>
+                </div>
+              </div>
+            </div>
+
+            <div style="width:260px">
+              <div class="muted" style="margin-bottom:8px; font-weight:700">Receipts</div>
+              <div class="list-box" role="region" aria-label="Receipts list">
+                <table class="summary" role="table" aria-label="Receipts table">
+                  <thead>
+                    <tr><th style="width:110px">Date</th><th>Note</th><th class="right" style="width:110px">Amount</th></tr>
+                  </thead>
+                  <tbody>
+                    {% if receipts %}
+                      {% for r in receipts %}
+                        <tr><td>{{ r.date }}</td><td>{{ r.note or '-' }}</td><td class="right">₹ {{ '%.2f'|format(r.amount) }}</td></tr>
+                      {% endfor %}
+                    {% else %}
+                      <tr><td colspan="3" class="muted">No receipts in this range.</td></tr>
+                    {% endif %}
+                  </tbody>
+                </table>
+              </div>
+
+              <div style="margin-top:12px;">
+                <div class="total-card">
+                  <div class="total-label">Receipts total</div>
+                  <div class="total-value positive">₹ {{ '%.2f'|format(sum_receipts) }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right column: NET above current balance -->
+        <aside class="totals-stack" role="complementary" aria-label="Summary totals">
+          <div class="net-box" role="note" aria-live="polite">
+            <div class="net-title">Net (Receipts − Purchases)</div>
+            {% if net >= 0 %}
+              <div class="net-amount positive">₹ {{ '%.2f'|format(net) }}</div>
+            {% else %}
+              <div class="net-amount negative">-₹ {{ '%.2f'|format(-net) }}</div>
+            {% endif %}
+          </div>
+
+          <div class="total-card">
+            <div class="total-label">Current stored balance</div>
+            <div class="total-value">
+              {% if current_balance is not none %}
+                {% if current_balance < 0 %}
+                  <span class="negative">₹ {{ '%.2f'|format(current_balance) }} (we owe)</span>
+                {% elif current_balance > 0 %}
+                  <span class="positive">₹ {{ '%.2f'|format(current_balance) }} (credit)</span>
+                {% else %}
+                  <span>₹ 0.00</span>
+                {% endif %}
+              {% else %}
+                n/a
+              {% endif %}
+            </div>
+          </div>
+        </aside>
+      </div>
+
+    {% else %}
+      <div class="muted" style="margin-top:12px">Select a customer and date range and click <strong>Show</strong> to view the account summary.</div>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+  // Populate the hidden customer_id before submitting the form.
+  // Priority: manual input (if present) -> dropdown value -> empty (means all customers).
+  (function(){
+    var form = document.getElementById('acct-form');
+    var hidden = document.getElementById('customer_id_hidden');
+    var select = document.getElementById('customer-select');
+    var manual = document.getElementById('customer-manual');
+
+    form.addEventListener('submit', function(e){
+      var m = manual.value && manual.value.trim();
+      if (m) {
+        hidden.value = m;
+      } else {
+        // use selected option value (may be empty string)
+        hidden.value = select.value || '';
+      }
+      // allow form to submit normally
+    });
+  })();
+</script>
+
+{% endblock %}

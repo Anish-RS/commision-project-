@@ -1,0 +1,136 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Supplier Bill #{{ bill.get('bill_id') }}</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    /* --- Page sizing for 3" (76.2mm) thermal paper --- */
+    @page {
+      size: 76.2mm auto;         /* width x auto height */
+      margin: 2mm;              /* printer margin; adjust 0-3mm if needed */
+    }
+
+    /* General */
+    html, body {
+      width: 76.2mm;            /* ensure layout width matches paper */
+      margin: 0;
+      padding: 4mm 3mm;         /* small padding to avoid printer clipping */
+      font-family: Arial, Helvetica, sans-serif;
+      color: #000;
+      font-size: 11px;          /* base font size — adjust to taste (10-12px) */
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+
+      box-sizing: border-box;
+    }
+
+    /* Header */
+    header { text-align: left; margin-bottom:6px; }
+    h1 { font-size: 16px; margin:0 0 4px 0; }
+    .meta { font-size: 10px; margin-bottom:6px; line-height:1.2; }
+
+    /* Table (compact) */
+    table { width:100%; border-collapse: collapse; font-size: 10.5px; }
+    th, td {
+      padding: 4px 4px;
+      text-align: left;
+      vertical-align: top;
+      border-bottom: 1px dashed #222; /* dashed keeps it readable on thermal */
+    }
+    thead th { border-bottom: 1px solid #222; font-weight:700; font-size:10.5px; }
+    td.right, th.right { text-align: right; }
+
+    /* Make description column smaller and avoid wrapping too early */
+    th.desc, td.desc { width: 48%; word-break: break-word; }
+
+    /* Summary stacked below items (avoids float issues on small paper) */
+    .summary { margin-top:8px; font-size:10.5px; }
+    .summary .row { display:flex; justify-content:space-between; padding:2px 0; }
+    .summary .bold { font-weight:700; }
+
+    /* Footer */
+    .footer { margin-top:8px; font-size:9.5px; border-top:1px dashed #666; padding-top:6px; color:#111; }
+
+    /* Print button (visible on-screen, hidden on print) */
+    button.print-btn { display:inline-block; margin-bottom:6px; padding:6px 10px; font-size:12px; cursor:pointer; }
+    @media print {
+      button.print-btn { display:none; }
+      html, body { padding: 0; margin: 0; }
+    }
+
+    /* Avoid breaking an item row across pages */
+    tbody tr { page-break-inside: avoid; break-inside: avoid; }
+
+    /* Reduce table density if many rows — adjust if printer chops text */
+    .no-items { padding:6px 4px; color:#555; }
+
+  </style>
+</head>
+<body>
+  <button class="print-btn" onclick="window.print()">Print</button>
+
+  <header>
+    <h1 style="font-size:16px;">Supplier Bill #{{ bill.get('bill_id') }}</h1>
+    <div class="meta">
+      <div><strong>Supplier:</strong> {{ bill.get('supplier_name') or ("ID " ~ bill.get('supplier_id')) }}</div>
+      <div><strong>Date:</strong> {{ bill.get('bill_date') }}</div>
+      <div><strong>Total:</strong> ₹{{ "%.2f"|format(bill.get('total_amount', 0) if bill.get('total_amount') is not none else 0) }}</div>
+    </div>
+  </header>
+
+  <table aria-label="Bill items">
+    <thead>
+      <tr>
+        <th style="width:6%;">#</th>
+        <th class="desc">Description / Customer</th>
+        <th style="width:12%" class="right">Rate</th>
+        <th style="width:12%" class="right">Qty</th>
+
+        <th style="width:16%" class="right">Amount</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% if items and items|length > 0 %}
+        {% for it in items %}
+        <tr>
+          <td>{{ loop.index }}</td>
+          <td class="desc">
+            {{ it.get('customer_name') or it.get('description') or ("Customer ID: " ~ (it.get('customer_id') or '')) }}
+            {% if it.get('note') %}<div style="font-size:9px; color:#444;">({{ it.get('note') }})</div>{% endif %}
+          </td>
+          <td class="right">{{ "%.2f"|format(it.get('rate') or 0) }}</td>
+          <td class="right">{{ "%.2f"|format(it.get('quantity') or 0) }}</td>
+
+          <td class="right">₹{{ "%.2f"|format(it.get('amount') or 0) }}</td>
+        </tr>
+        {% endfor %}
+      {% else %}
+        <tr><td colspan="5" class="no-items">No items found for this bill.</td></tr>
+      {% endif %}
+    </tbody>
+  </table>
+
+  <div class="summary" role="note" aria-label="Bill summary">
+    <div class="row"><div>Subtotal</div><div>₹{{ "%.2f"|format(bill.get('total_amount', 0) or 0) }}</div></div>
+    <div class="row"><div>Commission</div><div>₹{{ "%.2f"|format(bill.get('commission', 0) or 0) }}</div></div>
+    <div class="row"><div>Labour</div><div>₹{{ "%.2f"|format(bill.get('labour', 0) or 0) }}</div></div>
+    <div class="row"><div>Transport</div><div>₹{{ "%.2f"|format(bill.get('transport', 0) or 0) }}</div></div>
+    <div class="row"><div>Paid / Cash</div><div>₹{{ "%.2f"|format(bill.get('paid', 0) or 0) }}</div></div>
+
+    <div class="row bold" style="border-top:1px dashed #999; padding-top:6px;">
+      <div>Bill Balance (net)</div>
+      <div>₹{{ "%.2f"|format(bill.get('balance') if bill.get('balance') is not none else ((bill.get('total_amount') or 0) - (bill.get('commission') or 0) - (bill.get('labour') or 0) - (bill.get('transport') or 0) - (bill.get('paid') or 0))) }}</div>
+    </div>
+
+    <div class="row"><div>Opening</div><div>₹{{ "%.2f"|format(bill.get('old_balance', 0) or 0) }}</div></div>
+    <div class="row"><div>Final</div><div>₹{{ "%.2f"|format(bill.get('final_balance') if bill.get('final_balance') is not none else bill.get('old_balance', 0)) }}</div></div>
+
+    <div class="row" style="border-top:1px dashed #ccc; padding-top:6px;"><div><strong>Stored Balance</strong></div><div><strong>₹{{ "%.2f"|format(current_balance or 0) }}</strong></div></div>
+  </div>
+
+  <div class="footer">
+    <div class="muted" style="font-size:9px; color:#444;">Printed on: {{ now().strftime("%Y-%m-%d %H:%M:%S") }}</div>
+  </div>
+</body>
+</html>

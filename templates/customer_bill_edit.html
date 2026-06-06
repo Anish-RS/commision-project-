@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Edit Customer Bill #{{ bill.bill_id }}</h2>
+
+<form method="POST" oninput="recalcAmount()">
+  <div>
+    <label>Bill ID:</label>
+    <input type="text" value="{{ bill.bill_id }}" readonly>
+  </div>
+
+  <div>
+    <label>Customer ID:</label>
+    <input type="number" name="customer_id" value="{{ bill.customer_id }}" readonly>
+  </div>
+
+  <div>
+    <label>Customer Name:</label>
+    <input type="text" value="{{ customer_name or '' }}" readonly>
+  </div>
+
+  <div>
+    <label>Bill Date:</label>
+    <input type="date" name="bill_date" value="{{ bill.bill_date }}" required>
+  </div>
+
+  <div>
+    <label>Rate:</label>
+    <input type="number" step="0.01" name="rate" id="rate" value="{{ bill.rate }}">
+  </div>
+
+  <div>
+    <label>Quantity:</label>
+    <input type="number" step="0.01" name="quantity" id="quantity" value="{{ bill.quantity }}">
+  </div>
+
+
+  <div>
+    <label>Amount:</label>
+    <input type="number" step="0.01" name="amount" id="amount" value="{{ bill.amount }}" readonly>
+  </div>
+
+  <div>
+    <label>Commission:</label>
+    <input type="number" step="0.01" name="commission" id="commission" value="{{ bill.commission or 0 }}">
+  </div>
+
+  <div>
+    <label>Net Amount:</label>
+    <input type="number" step="0.01" name="net_amount" id="net_amount" value="{{ bill.net_amount or bill.amount }}" readonly>
+  </div>
+
+  <div style="margin-top:12px;">
+    <label>Old Balance (stored):</label>
+    <input type="number" readonly value="{{ bill.old_balance }}">
+  </div>
+
+  <div>
+    <label>Final Balance (stored):</label>
+    <input type="number" readonly value="{{ bill.final_balance }}">
+  </div>
+
+  <!-- Hidden for backend if needed -->
+  <input type="hidden" name="bill_id" value="{{ bill.bill_id }}">
+
+  <div style="margin-top:14px;">
+    <button type="submit">Save Changes</button>
+    <a href="{{ url_for('customer_bill_search') }}" style="margin-left:10px;">Back to Search</a>
+  </div>
+</form>
+
+<script>
+function recalcAmount() {
+  const q = parseFloat(document.getElementById('quantity').value) || 0;
+  const r = parseFloat(document.getElementById('rate').value) || 0;
+  const amount = q * r;
+  document.getElementById('amount').value = amount.toFixed(2);
+
+  // update net_amount (if you treat net = amount - commission)
+  const commission = parseFloat(document.getElementById('commission').value) || 0;
+  const net = amount - commission;
+  document.getElementById('net_amount').value = net.toFixed(2);
+}
+
+// run once to ensure fields are in sync
+recalcAmount();
+</script>
+
+{% endblock %}

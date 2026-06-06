@@ -1,0 +1,252 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+  /* Reset useful defaults for the form */
+  * { box-sizing: border-box; }
+
+  /* Pastel background (kept) */
+  body {
+    background: linear-gradient(135deg, #ffeaf0, #fff0f1);
+    background-attachment: fixed;
+  }
+
+  .page-title {
+    color: #6C63FF;
+    font-size: 26px;
+    font-weight: 700;
+    margin: 18px 0;
+    text-align: center;
+  }
+
+  /* Card container */
+  .card {
+    background: #ffffffef;
+    padding: 22px;
+    border-radius: 14px;
+    max-width: 860px;            /* slightly wider for alignment */
+    margin: 18px auto;
+    box-shadow: 0 10px 30px rgba(28,37,70,0.06);
+    border-left: 6px solid #90CAF9;
+  }
+
+  /* Common label style */
+  label {
+    display: block;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+  }
+
+  /* Unified input/select style */
+  .input-field, select.input-field {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 2px solid #dbefff;
+    background: #eaf6ff;
+    outline: none;
+    transition: 0.16s ease;
+    font-size: 15px;
+    height: 44px;               /* FIXED HEIGHT to align everything */
+    line-height: 20px;
+  }
+
+  /* Ensure selects visually match inputs across browsers */
+  select.input-field {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: linear-gradient(45deg, transparent 50%, rgba(0,0,0,0.25) 50%),
+                      linear-gradient(135deg, rgba(0,0,0,0.25) 50%, transparent 50%);
+    background-position: calc(100% - 18px) calc(1em + 2px), calc(100% - 13px) calc(1em + 2px);
+    background-size: 6px 6px, 6px 6px;
+    background-repeat: no-repeat;
+    padding-right: 36px;
+  }
+
+  .input-field:focus, select.input-field:focus {
+    border-color: #64b5f6;
+    background: #fff;
+    box-shadow: 0 4px 12px rgba(100,181,246,0.12);
+  }
+
+  /* Layout rows */
+  .form-row { display: flex; gap: 12px; align-items: flex-start; flex-wrap: wrap; }
+
+  /* fixed column widths for alignment */
+  .col-full { width: 100%; min-width: 0; }
+  .col-1 { flex: 1 1 220px; min-width: 180px; }  /* narrow column */
+  .col-2 { flex: 2 1 420px; min-width: 220px; }  /* wider column */
+
+  /* amount/note grid ensures label line up and equal heights */
+  .grid-amount-note {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 12px;
+    align-items: start;
+  }
+
+  /* keep small helper text */
+  .small-note { font-size: 13px; color: #666; margin-top: 8px; }
+
+  /* button row aligned right */
+  .actions { display:flex; justify-content:flex-end; margin-top: 14px; }
+
+  .btn {
+    padding: 10px 16px;
+    border-radius: 10px;
+    border: none;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .btn-primary {
+    background: linear-gradient(90deg,#ff9a9a,#ff6b6b);
+    color: white;
+    box-shadow: 0 6px 18px rgba(255,107,107,0.18);
+  }
+
+  /* responsive: stack on small screens */
+  @media (max-width: 720px) {
+    .grid-amount-note { grid-template-columns: 1fr; }
+    .col-1, .col-2 { flex: 1 1 100%; }
+  }
+</style>
+
+<h2 class="page-title">Add Old Balance (Supplier / Customer)</h2>
+
+<div class="card">
+  <form method="POST" id="adjust-form" novalidate>
+
+    <!-- Entity type -->
+    <div class="form-row" style="margin-bottom:14px;">
+      <div class="col-full">
+        <label for="entity_type">Entity Type</label>
+        <select id="entity_type" name="entity_type" class="input-field" onchange="onModeChange()" required>
+          <option value="supplier">Supplier</option>
+          <option value="customer">Customer</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Search -->
+    <div class="form-row" style="margin-bottom:14px;">
+      <div class="col-full">
+        <label for="searchBox">Search Supplier / Customer</label>
+        <input id="searchBox" type="text" class="input-field" placeholder="Type name or ID..." oninput="filterDropdown()">
+        <select id="entity_select" name="entity_id" class="input-field" style="margin-top:10px;" required>
+          <!-- JS will populate -->
+        </select>
+        <div class="small-note">Type to filter; select the item to set ID. Balances are shown for convenience.</div>
+      </div>
+    </div>
+
+    <!-- Amount and Note aligned -->
+    <div class="grid-amount-note" style="margin-top:10px;">
+      <div>
+        <label for="amount">Amount (₹)</label>
+        <input id="amount" name="amount" type="number" min="0" step="0.01" class="input-field" required>
+      </div>
+
+      <div>
+        <label for="note">Note (optional)</label>
+        <input id="note" name="note" type="text" class="input-field" placeholder="Reason / remark">
+      </div>
+    </div>
+
+    <div class="actions">
+      <button type="submit" id="submitBtn" class="btn btn-primary">Apply Adjustment</button>
+    </div>
+
+  </form>
+</div>
+
+<script>
+  const supplierListData = JSON.parse('{{ suppliers | tojson | safe }}');
+  const customerListData = JSON.parse('{{ customers | tojson | safe }}');
+
+  function populateDropdown(mode) {
+    const sel = document.getElementById("entity_select");
+    sel.innerHTML = "";
+    const arr = (mode === "supplier") ? supplierListData : customerListData;
+
+    arr.forEach(it => {
+      const opt = document.createElement("option");
+      opt.value = it.id;
+      // keep text short to avoid wrapping; full balance shown in tooltip
+      opt.textContent = `${it.name} (ID: ${it.id})`;
+      opt.title = `Balance: ₹${parseFloat(it.balance || 0).toFixed(2)}`;
+      sel.appendChild(opt);
+    });
+
+    if (!sel.value && sel.options.length === 0) {
+      const placeholder = document.createElement("option");
+      placeholder.value = "";
+      placeholder.textContent = "(no items)";
+      sel.appendChild(placeholder);
+    }
+  }
+
+  function filterDropdown() {
+    const query = document.getElementById("searchBox").value.toLowerCase().trim();
+    const mode = document.getElementById("entity_type").value;
+    const arr = (mode === "supplier") ? supplierListData : customerListData;
+    const sel = document.getElementById("entity_select");
+    sel.innerHTML = "";
+
+    arr.forEach(it => {
+      const name = (it.name || "").toLowerCase();
+      const idstr = String(it.id);
+      if (!query || name.includes(query) || idstr.includes(query)) {
+        const opt = document.createElement("option");
+        opt.value = it.id;
+        opt.textContent = `${it.name} (ID: ${it.id})`;
+        opt.title = `Balance: ₹${parseFloat(it.balance || 0).toFixed(2)}`;
+        sel.appendChild(opt);
+      }
+    });
+
+    if (sel.options.length === 0) {
+      const placeholder = document.createElement("option");
+      placeholder.value = "";
+      placeholder.textContent = "(no matches)";
+      sel.appendChild(placeholder);
+    }
+  }
+
+  function onModeChange() {
+    document.getElementById("searchBox").value = "";
+    populateDropdown(document.getElementById("entity_type").value);
+  }
+
+  // Enter key navigation: only submit when focused on submit button
+  document.addEventListener("keydown", function (e) {
+    if (e.key !== "Enter") return;
+    const active = document.activeElement;
+    if (active.tagName === "BUTTON" && active.type === "submit") return;
+    e.preventDefault();
+    const focusable = Array.from(document.querySelectorAll("input:not([type=hidden]), select, textarea, button"))
+                           .filter(el => !el.disabled && el.offsetParent !== null);
+    const idx = focusable.indexOf(active);
+    if (idx > -1 && idx < focusable.length - 1) focusable[idx + 1].focus();
+  });
+
+  // Prevent submission without selection
+  document.getElementById("adjust-form").addEventListener("submit", function(e) {
+    const sel = document.getElementById("entity_select");
+    if (!sel.value) {
+      e.preventDefault();
+      alert("Please select a supplier or customer from the list before submitting.");
+      document.getElementById("searchBox").focus();
+      return false;
+    }
+    return true;
+  });
+
+  document.addEventListener("DOMContentLoaded", function() {
+    onModeChange();
+  });
+</script>
+
+{% endblock %}

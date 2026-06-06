@@ -1,0 +1,93 @@
+/* ---------- GLOBAL PASTEL BACKGROUND ---------- */
+body {
+    background: linear-gradient(135deg, #e3f2fd, #fce4ec); /* pastel blue → pastel pink */
+    background-attachment: fixed;
+    font-family: "Poppins", sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* ---------- PAGE TITLE ---------- */
+.page-title {
+    color: #6C63FF; /* pastel indigo */
+    font-size: 30px;
+    font-weight: 700;
+    margin: 25px 0;
+    text-align: center;
+}
+
+/* ---------- CARD CONTAINER ---------- */
+.card {
+    background: #ffffffcc; /* translucent soft white */
+    backdrop-filter: blur(6px);
+    padding: 25px;
+    border-radius: 18px;
+    max-width: 520px;
+    margin: auto;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+    border-left: 8px solid #90CAF9; /* pastel blue accent */
+    animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------- FORM GROUP ---------- */
+.form-group {
+    margin-bottom: 18px;
+}
+
+label {
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #444;
+    display: block;
+}
+
+/* ---------- INPUT FIELD ---------- */
+.input-field {
+    width: 100%;
+    padding: 12px;
+    border-radius: 12px;
+    border: 2px solid #bbdefb;
+    background: #e3f2fd; /* pastel blue */
+    outline: none;
+    transition: 0.25s ease;
+    font-size: 15px;
+}
+
+.input-field:focus {
+    border-color: #64b5f6;
+    background: #ffffff;
+    box-shadow: 0 0 5px rgba(100,181,246,0.45);
+}
+
+/* ---------- SUBMIT BUTTON ---------- */
+.btn-submit {
+    background: #ff8a80; /* pastel red */
+    padding: 12px 18px;
+    border: none;
+    color: white;
+    font-size: 17px;
+    border-radius: 12px;
+    width: 100%;
+    cursor: pointer;
+    transition: 0.25s ease;
+    font-weight: 600;
+}
+
+.btn-submit:hover {
+    background: #ff5252; 
+    transform: translateY(-2px);
+    box-shadow: 0 5px 14px rgba(255,82,82,0.35);
+}
+
+/* ---------- SUCCESS MESSAGE ---------- */
+.success {
+    color: #81C784; /* pastel green */
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 15px;
+}

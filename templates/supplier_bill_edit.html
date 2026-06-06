@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Edit Supplier Bill #{{ bill.bill_id }} (Bill 4 Style)</h2>
+
+<form method="POST" oninput="recalcTotals()">
+
+    <label>Supplier ID:</label>
+    <input type="number" name="supplier_id" value="{{ bill.supplier_id }}" readonly>
+    <br><br>
+
+    <label>Bill Date:</label>
+    <input type="date" name="bill_date" value="{{ bill.bill_date }}" required>
+    <br><br>
+
+    <h4>Line Items</h4>
+    <table id="lines-table" border="1" cellpadding="5" cellspacing="0">
+        <thead>
+            <tr>
+                <th>Customer ID</th>
+                <th>Rate</th>
+                <th>Quantity</th>
+                <th>Amount</th>
+
+                <th></th>
+            </tr>
+        </thead>
+
+        <tbody id="lines-body">
+
+            {% for it in items %}
+            <tr>
+                <td>
+                    <input type="number" name="customer_id[]" value="{{ it.customer_id }}" required>
+                </td>
+                <td>
+                    <input type="number" step="0.01" name="rate[]" class="rate"
+                        value="{{ it.rate }}" oninput="recalcTotals()">
+                </td>
+                <td>
+                    <input type="number" step="0.01" name="quantity[]" class="qty"
+                        value="{{ it.quantity }}" oninput="recalcTotals()">
+
+                </td>
+               
+                <td>
+                    <input type="number" step="0.01" name="amount[]" class="amount" value="{{ it.amount }}" readonly>
+                </td>
+                <td>
+                    <button type="button" onclick="removeLine(this)">X</button>
+                </td>
+            </tr>
+            {% endfor %}
+
+        </tbody>
+    </table>
+
+    <button type="button" onclick="addLine()" style="margin-top:10px;">+ Add Line</button>
+
+    <br><br>
+
+    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <input type="number" step="0.01" name="commission" id="commission"
+               placeholder="Commission" value="{{ bill.commission }}">
+        <input type="number" step="0.01" name="labour" id="labour"
+               placeholder="Labour" value="{{ bill.labour }}">
+        <input type="number" step="0.01" name="transport" id="transport"
+               placeholder="Transport" value="{{ bill.transport }}">
+        <input type="number" step="0.01" name="paid" id="paid"
+               placeholder="Paid" value="{{ bill.paid }}">
+    </div>
+
+    <div style="margin-top:20px;">
+
+        <!-- bill.old_balance is SIGNED. Convert to ABS for UI display -->
+        {% set disp_old = bill.old_balance * -1 if bill.old_balance < 0 else bill.old_balance %}
+
+        <label><b>Old Supplier Balance:</b></label>
+        <input type="number" id="old_balance" readonly value="{{ disp_old|float }}">
+        <br><br>
+
+        <label><b>New Total (Resulting Supplier Balance stored):</b></label>
+        <input type="number" id="new_total" name="new_total" readonly style="background:#eee">
+
+    </div>
+
+    <!-- hidden fields for backend -->
+    <input type="hidden" id="total_amount" name="total_amount">
+    <input type="hidden" id="balance" name="balance">
+
+    <br>
+    <button type="submit">Save Changes</button>
+</form>
+
+<script>
+function addLine() {
+    const body = document.getElementById('lines-body');
+    const tr = document.createElement('tr');
+
+    tr.innerHTML = `
+        <td><input type="number" name="customer_id[]" required></td>
+        <td><input type="number" step="0.01" name="rate[]" class="rate" oninput="recalcTotals()"></td>
+        <td><input type="number" step="0.01" name="quantity[]" class="qty" oninput="recalcTotals()"></td>
+        <td><input type="number" step="0.01" name="amount[]" class="amount" readonly></td>
+        <td><button type="button" onclick="removeLine(this)">X</button></td>
+    `;
+
+    body.appendChild(tr);
+}
+
+function removeLine(btn) {
+    const body = document.getElementById('lines-body');
+    if (body.rows.length > 1) {
+        body.removeChild(btn.closest('tr'));
+        recalcTotals();
+    }
+}
+
+function recalcTotals() {
+    const rows = document.querySelectorAll('#lines-body tr');
+    let total = 0;
+
+    rows.forEach(row => {
+        const qty = parseFloat(row.querySelector('.qty')?.value) || 0;
+        const rate = parseFloat(row.querySelector('.rate')?.value) || 0;
+        const amount = qty * rate;
+
+        row.querySelector('.amount').value = amount.toFixed(2);
+        total += amount;
+    });
+
+    const commission = parseFloat(document.getElementById('commission').value) || 0;
+    const labour = parseFloat(document.getElementById('labour').value) || 0;
+    const transport = parseFloat(document.getElementById('transport').value) || 0;
+    const paid = parseFloat(document.getElementById('paid').value) || 0;
+
+    const bill_balance = total - commission - labour - transport - paid;
+
+    document.getElementById('total_amount').value = total.toFixed(2);
+
+    const old_abs = parseFloat(document.getElementById("old_balance").value) || 0;
+    const old_signed = -old_abs;
+
+    const new_total_positive = Math.abs(old_signed) + bill_balance;
+    const new_signed_balance = -new_total_positive;
+
+    document.getElementById("new_total").value = new_signed_balance.toFixed(2);
+    document.getElementById("balance").value = new_signed_balance.toFixed(2);
+}
+
+recalcTotals();
+</script>
+
+{% endblock %}

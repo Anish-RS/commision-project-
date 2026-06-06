@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Customer Bills — Print</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    :root { --gap:8px; --border:#222; font-family: Arial, Helvetica, sans-serif; color:#000; }
+    body { margin: 10px; font-size:13px; }
+    .controls { margin-bottom:10px; }
+    button.print-all { padding:6px 10px; cursor:pointer; }
+    .bill { page-break-after: always; padding:10px 0; border-bottom:1px solid #ddd; }
+    h2 { margin:0 0 6px 0; font-size:16px; }
+    table { width:100%; border-collapse:collapse; margin-top:6px; }
+    th, td { border:1px solid var(--border); padding:6px; text-align:left; font-size:13px; }
+    .right { text-align:right; }
+    .meta { color:#555; margin-top:4px; }
+    .footer { margin-top:8px; border-top:1px dashed var(--border); padding-top:6px; color:#444; font-size:13px; }
+    @media print { .controls { display:none } }
+  </style>
+</head>
+<body>
+  <div class="controls">
+    <button class="print-all" onclick="window.print()">Print All</button>
+  </div>
+
+  {% if printable|length == 0 %}
+    <div>No bills to print.</div>
+  {% endif %}
+
+  {% for p in printable %}
+  <div class="bill">
+    <h2>Customer Bill #{{ p.bill.bill_id }} — {{ p.bill.customer_name or ('ID ' ~ p.bill.customer_id) }}</h2>
+    <div class="meta">
+      <div><strong>Date:</strong> {{ p.bill.bill_date }}</div>
+      <div><strong>Supplier Ref:</strong> {{ p.bill.supplier_bill_id or '-' }}</div>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th style="width:60%">Description</th>
+          <th style="width:15%" class="right">Rate</th>
+          <th style="width:10%">Qty</th>
+
+          <th style="width:15%" class="right">Amount (₹)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Goods / Services</td>
+          <td class="right">{{ "%.2f"|format(p.bill.rate or 0) }}</td>
+          <td>{{ p.bill.quantity }}</td>
+
+          <td class="right">{{ "%.2f"|format(p.bill.amount or 0) }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div style="display:flex;justify-content:flex-end;margin-top:8px">
+      <div style="width:300px;border-top:1px dashed var(--border);padding-top:8px">
+        <div style="display:flex;justify-content:space-between">
+          <div>Bill Total</div>
+          <div class="right">₹{{ "%.2f"|format(p.bill.amount or 0) }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div><strong>Current Account Balance (Customer):</strong> ₹{{ "%.2f"|format(p.current_balance or 0) }}</div>
+      <div style="margin-top:6px">Printed on: <span class="ts">--</span></div>
+    </div>
+  </div>
+  {% endfor %}
+
+  <script>
+    // populate printed timestamps
+    var now = new Date().toLocaleString();
+    document.querySelectorAll('.ts').forEach(function(el){ el.textContent = now; });
+
+    // auto-print and attempt to close after printing
+    window.onload = function(){
+      setTimeout(function(){ try{ window.print(); }catch(e){} }, 250);
+    };
+    window.onafterprint = function(){ try{ window.close(); }catch(e){} };
+  </script>
+</body>
+</html>

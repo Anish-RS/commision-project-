@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+
+<style>
+    /* ---------- PASTEL BACKGROUND ---------- */
+    body {
+        background: linear-gradient(135deg, #e3f2fd, #fce4ec); /* pastel blue → pastel pink */
+        background-attachment: fixed;
+    }
+
+    /* ---------- TITLE ---------- */
+    .page-title {
+        color: #6C63FF; /* pastel indigo */
+        font-size: 30px;
+        font-weight: 700;
+        margin-bottom: 25px;
+        text-align: center;
+    }
+
+    /* ---------- CARD ---------- */
+    .customer-card {
+        background: #ffffffcc; /* translucent white */
+        backdrop-filter: blur(6px);
+        padding: 25px;
+        border-radius: 18px;
+        max-width: 520px;
+        margin: auto;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+        border-left: 8px solid #90CAF9; /* pastel blue */
+        animation: fadeIn 0.4s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ---------- FORM GROUPS ---------- */
+    .form-group {
+        margin-bottom: 18px;
+    }
+
+    label {
+        font-weight: 600;
+        margin-bottom: 6px;
+        color: #444;
+        display: block;
+    }
+
+    /* ---------- INPUT FIELD ---------- */
+    .input-field {
+        width: 100%;
+        padding: 12px;
+        border-radius: 12px;
+        border: 2px solid #bbdefb; 
+        background: #e3f2fd; /* pastel blue */
+        outline: none;
+        transition: 0.25s ease;
+        font-size: 15px;
+    }
+
+    .input-field:focus {
+        border-color: #64b5f6;
+        background: #ffffff;
+        box-shadow: 0 0 5px rgba(100,181,246,0.5);
+    }
+
+    /* ---------- BUTTON ---------- */
+    .btn-submit {
+        background: #ff8a80; /* pastel red */
+        padding: 12px 18px;
+        border: none;
+        color: white;
+        font-size: 17px;
+        border-radius: 12px;
+        width: 100%;
+        cursor: pointer;
+        transition: 0.25s ease;
+        font-weight: 600;
+    }
+
+    .btn-submit:hover {
+        background: #ff5252; 
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(255,82,82,0.4);
+    }
+
+    /* ---------- SUCCESS MSG ---------- */
+    .success {
+        color: #81C784; /* pastel green */
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 15px;
+    }
+</style>
+
+<h2 class="page-title">➕ Add New Customer</h2>
+
+<div class="customer-card">
+
+    <form method="POST">
+
+        <div class="form-group">
+            <label>Name:</label>
+            <input type="text" name="name" class="input-field" placeholder="Customer Name" required>
+        </div>
+
+        <div class="form-group">
+            <label>Phone:</label>
+            <input type="text" name="phone" class="input-field" placeholder="Phone Number">
+        </div>
+
+        <div class="form-group">
+            <label>Address:</label>
+            <input type="text" name="address" class="input-field" placeholder="Address">
+        </div>
+
+        <div class="form-group">
+            <label>Opening Balance:</label>
+            <input type="number" step="0.01" name="opening_balance" value="0" class="input-field">
+        </div>
+
+        <button type="submit" class="btn-submit">💾 Save Customer</button>
+
+    </form>
+
+</div>
+<script>
+document.addEventListener("keydown", function (e) {
+    if (e.key !== "Enter") return;
+
+    const active = document.activeElement;
+
+    // Allow submit only if Enter pressed on the submit button
+    if (active.tagName === "BUTTON" && active.type === "submit") {
+        return; // allow the form to submit
+    }
+
+    // Prevent accidental submit on other fields
+    e.preventDefault();
+
+    // Find all focusable elements in order
+    const focusable = Array.from(
+        document.querySelectorAll(
+            "input:not([type=hidden]), select, textarea, button"
+        )
+    ).filter(el => !el.disabled && el.offsetParent !== null);
+
+    const index = focusable.indexOf(active);
+
+    // Move focus to the next field
+    if (index > -1 && index < focusable.length - 1) {
+        focusable[index + 1].focus();
+    }
+});
+</script>
+
+{% endblock %}
+

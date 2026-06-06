@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% block title %}Customer Bill Search / Print{% endblock %}
+{% block header %}
+  <h2>Customer Bill Search & Print</h2>
+  <p>Enter Bill No OR Name (customer) + optional date OR Date only to get consolidated reports for all customers on that date.</p>
+{% endblock %}
+
+{% block content %}
+<div style="max-width:1100px; margin:0 auto;">
+
+  <form id="search-form" method="POST" action="{{ url_for('customer_bill_print_search') }}" style="display:flex; gap:12px; flex-wrap:wrap; align-items:end; margin-bottom:16px;">
+    <div style="min-width:180px;">
+      <label for="bill_no"><strong>Bill No</strong></label><br>
+      <input id="bill_no" name="bill_no" class="input-field" placeholder="e.g. 1234" />
+    </div>
+
+    <div style="min-width:260px;">
+      <label for="name"><strong>Customer Name / ID</strong></label><br>
+      <input id="name" name="name" class="input-field" placeholder="Type name (Govisha) or ID (12)" />
+    </div>
+
+    <div style="min-width:180px;">
+      <label for="bill_date"><strong>Date</strong></label><br>
+      <input id="bill_date" name="bill_date" class="input-field" type="date" />
+    </div>
+
+    <div>
+      <button type="submit" class="btn btn-primary" style="height:44px;">Search / Print</button>
+    </div>
+
+    <div>
+      <button type="button" id="clear-btn" class="btn" style="height:44px;">Clear</button>
+    </div>
+  </form>
+
+  <hr style="margin:12px 0;">
+
+  <!-- Results area (server renders `results` if you pass them from search handler) -->
+  <div id="results-area">
+    {% if results is defined and results %}
+      <h3>Search Results</h3>
+      <table class="table" style="width:100%; border-collapse:collapse; margin-top:8px;">
+        <thead>
+          <tr>
+            <th>Bill ID</th>
+            <th>Customer</th>
+            <th>Date</th>
+            <th class="right">Amount</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in results %}
+          <tr>
+            <td>{{ r.bill_id }}</td>
+            <td>{{ r.customer_name or r.customer_id }}</td>
+            <td>{{ r.bill_date }}</td>
+            <td class="right">₹{{ '%.2f'|format(r.amount or 0) }}</td>
+            <td>
+              <!-- direct print (single bill) -->
+              <a class="btn btn-small" target="_blank" rel="noopener"
+                 href="{{ url_for('customer_bill_print', bill_id=r.bill_id) }}">Print</a>
+
+              <!-- open consolidated for that customer on that date -->
+              <a class="btn btn-small"
+                 href="{{ url_for('customer_bill_print_search') }}?name={{ r.customer_id }}&bill_date={{ r.bill_date|urlencode }}">Consolidated</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div class="muted">No immediate results. Use the form above and click <strong>Search / Print</strong>.</div>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+  (function(){
+    const form = document.getElementById('search-form');
+    const clearBtn = document.getElementById('clear-btn');
+    const billNo = document.getElementById('bill_no');
+    const name = document.getElementById('name');
+    const dateInput = document.getElementById('bill_date');
+
+    // Clear fields
+    clearBtn.addEventListener('click', () => {
+      billNo.value = '';
+      name.value = '';
+      dateInput.value = '';
+      billNo.focus();
+    });
+
+    // If user types a bill number and presses Enter, submit immediately
+    billNo.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        if (billNo.value.trim()) form.submit();
+      }
+    });
+
+    // Prevent submitting completely empty form
+    form.addEventListener('submit', (e) => {
+      if (!billNo.value.trim() && !name.value.trim() && !dateInput.value) {
+        e.preventDefault();
+        alert('Please enter Bill No, or Customer Name/ID, or Date.');
+      }
+    });
+
+    // Optional: quick today button when date is empty and user wants today's consolidated
+    // (uncomment if you add a button to set today's date)
+  })();
+</script>
+{% endblock %}

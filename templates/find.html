@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Find Supplier / Customer</h2>
+
+<form method="GET" action="/find" style="margin-bottom:15px;">
+
+    <!-- Mode Selector -->
+    <label><b>Choose:</b></label>
+    <select name="mode" onchange="this.form.submit()">
+        <option value="supplier" {% if mode=='supplier' %}selected{% endif %}>Suppliers</option>
+        <option value="customer" {% if mode=='customer' %}selected{% endif %}>Customers</option>
+    </select>
+
+    &nbsp;&nbsp;
+
+    <!-- Search Box -->
+    <input type="text" name="q" placeholder="Search name..." value="{{ q }}">
+    <button type="submit">Search</button>
+
+</form>
+
+{% if results %}
+<table border="1" cellpadding="6" cellspacing="0" width="50%">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>ID</th>
+            <th>Balance</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for r in results %}
+        <tr>
+            <td>{{ r.name }}</td>
+            <td>{{ r.id }}</td>
+            <td>
+                {% if r.balance < 0 %}
+                    <span style="color:red;">{{ "%.2f"|format(r.balance) }}</span>
+                {% else %}
+                    <span style="color:green;">{{ "%.2f"|format(r.balance) }}</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p><i>No results found.</i></p>
+{% endif %}
+
+{% endblock %}

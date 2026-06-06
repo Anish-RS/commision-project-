@@ -1,0 +1,84 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Customer Consolidated Statements - {{ printable[0].date if printable else '' }}</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    body { font-family: Arial, Helvetica, sans-serif; margin:12px; color:#000; font-size:12px; }
+    .print-btn { margin-bottom:8px; padding:6px 10px; font-size:13px; cursor:pointer; }
+    @media print { .print-btn { display:none; } }
+
+    .cust { border-top:1px dashed #666; padding-top:10px; margin-top:10px; page-break-inside: avoid; }
+    h2.cname { margin:0 0 6px 0; font-size:14px; }
+    .meta { font-size:12px; margin-bottom:6px; }
+    table { width:100%; border-collapse: collapse; margin-top:6px; font-size:12px; }
+    th, td { border: 1px solid #333; padding:6px; text-align:left; }
+    th { background:#f9f9f9; font-weight:700; }
+    td.right { text-align:right; }
+    .summary { margin-top:8px; width:100%; font-size:12px; }
+    .row { display:flex; justify-content:space-between; padding:2px 0; }
+    .muted { color:#444; font-size:11px; }
+  </style>
+</head>
+<body>
+  <button class="print-btn" onclick="window.print()">Print All</button>
+
+  <header>
+    <h1>Customer Consolidated Statements</h1>
+    <div class="muted">Date: {{ printable[0].date.strftime("%Y-%m-%d") if printable else '' }}</div>
+  </header>
+
+  {% for block in printable %}
+  <section class="cust" aria-label="Customer {{ block.customer_name }}">
+    <h2 class="cname">{{ block.customer_name }} (ID: {{ block.customer_id }})</h2>
+    <div class="meta">
+      <div>Opening: ₹{{ "%.2f"|format(block.opening) }}</div>
+      <div>Net Purchases: ₹{{ "%.2f"|format(block.net) }} &nbsp; — &nbsp; Receipts: ₹{{ "%.2f"|format(block.sum_receipts) }}</div>
+      <div>Current Stored Balance: ₹{{ "%.2f"|format(block.current_balance) }}</div>
+    </div>
+
+    <table aria-label="Purchases for {{ block.customer_name }}">
+      <thead>
+        <tr>
+          <th style="width:6%;">#</th>
+          <th>Description</th>
+          <th style="width:12%;" class="right">Rate</th>
+          <th style="width:12%;" class="right">Qty</th>
+          <th style="width:14%;" class="right">Amount</th>
+
+        </tr>
+      </thead>
+      <tbody>
+        {% if block.purchases and block.purchases|length > 0 %}
+          {% for p in block.purchases %}
+          <tr>
+            <td>{{ loop.index }}</td>
+            <td>
+              Bill #{{ p.bill_id }}
+              {% if p.get('supplier_bill_id') %} — SupBill: {{ p.supplier_bill_id }}{% endif %}
+            </td>
+            <td class="right">{{ "%.2f"|format(p.get('rate') or 0) }}</td>
+            <td class="right">{{ "%.2f"|format(p.get('quantity') or 0) }}</td>
+            <td class="right">₹{{ "%.2f"|format(p.get('amount') or 0) }}</td>
+
+          </tr>
+          {% endfor %}
+        {% else %}
+          <tr><td colspan="5">No purchases recorded.</td></tr>
+        {% endif %}
+      </tbody>
+    </table>
+
+    <div class="summary" role="note" aria-label="Summary">
+      <div class="row"><div>Opening</div><div>₹{{ "%.2f"|format(block.opening) }}</div></div>
+      <div class="row"><div>Purchases</div><div>₹{{ "%.2f"|format(block.net) }}</div></div>
+      <div class="row"><div>Receipts</div><div>₹{{ "%.2f"|format(block.sum_receipts) }}</div></div>
+      <div class="row" style="font-weight:bold; border-top:1px dashed #999; padding-top:6px;"><div>Final / Stored Balance</div><div>₹{{ "%.2f"|format(block.current_balance) }}</div></div>
+    </div>
+  </section>
+  {% endfor %}
+
+  <footer style="margin-top:16px; font-size:11px; color:#444;">Printed on: {{ now().strftime("%Y-%m-%d %H:%M:%S") }}</footer>
+</body>
+</html>

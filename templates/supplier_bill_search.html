@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Search Supplier Bill</h2>
+
+<form method="POST" id="supplier-search-form" style="margin-bottom:12px;">
+  Bill No: <input name="bill_no" value="{{ request.form.bill_no if request.method=='POST' else '' }}" /> &nbsp;
+  Name: <input name="name" value="{{ request.form.name if request.method=='POST' else '' }}" /> &nbsp;
+  Date: <input type="date" name="bill_date" value="{{ request.form.bill_date if request.method=='POST' else '' }}" />
+  <button type="submit">Search</button>
+
+  <!-- Print All button -->
+  
+</form>
+
+{% if results %}
+  <h3>Results ({{ results|length }})</h3>
+
+  <ul style="list-style:none; padding-left:0;">
+  {% for r in results %}
+    <li style="padding:8px 0; border-bottom:1px solid #eee;">
+      <strong>Bill #{{ r.bill_id }}</strong>
+      &nbsp; — &nbsp; Supplier ID: {{ r.supplier_id }}
+      {% if r.name %} &nbsp; — &nbsp; {{ r.name }}{% endif %}
+      &nbsp; — &nbsp; Date: {{ r.bill_date }}
+      &nbsp; — &nbsp; Amount: ₹ {{ '%.2f'|format(r.total_amount or 0) }}
+
+      &nbsp; | &nbsp;
+
+      <a href="{{ url_for('supplier_bill_edit', bill_id=r.bill_id) }}">Edit</a>
+
+      &nbsp; | &nbsp;
+
+      <form method="POST"
+            action="{{ url_for('supplier_bill_delete', bill_id=r.bill_id) }}"
+            onsubmit="return confirm('Delete supplier bill #{{ r.bill_id }}? This will adjust balances and cash-in-hand. Proceed?');"
+            style="display:inline;">
+          <button type="submit" style="color:red;">Delete</button>
+      </form>
+
+      &nbsp; | &nbsp;
+
+      <!-- Print single -->
+      <button type="button" class="print-single-supplier" data-bill="{{ r.bill_id }}">Print</button>
+    </li>
+  {% endfor %}
+  </ul>
+{% else %}
+  <p>No results (or no search performed yet).</p>
+{% endif %}
+
+<script>
+  // Print single supplier bill: open printable page in a new tab/window
+  document.querySelectorAll('.print-single-supplier').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var billId = this.dataset.bill;
+      var w = window.open('/bills/supplier/print/' + billId, '_blank');
+      if (!w) {
+        alert('Popup blocked. Allow popups for this site or use the Print All button.');
+      }
+    });
+  });
+
+  // Print All: submit current search form values to /bills/supplier/print_search in a NEW window
+  document.getElementById('print-all-supplier').addEventListener('click', function(){
+    var form = document.getElementById('supplier-search-form');
+    var data = new FormData(form);
+
+    // open new blank window
+    var w = window.open('', '_blank');
+    if (!w) {
+      alert('Popup blocked. Allow popups for this site or use the single Print buttons.');
+      return;
+    }
+
+    // build a temporary form that posts to the print_search route and targets the new window
+    var f = document.createElement('form');
+    f.method = 'POST';
+    f.action = '/bills/supplier/print_search';
+    f.target = w.name;
+
+    // copy fields into hidden inputs
+    for (var pair of data.entries()) {
+      var inp = document.createElement('input');
+      inp.type = 'hidden';
+      inp.name = pair[0];
+      inp.value = pair[1];
+      f.appendChild(inp);
+    }
+
+    // If your app uses CSRF tokens, also copy it here:
+    // var csrf = document.querySelector('input[name="csrf_token"]');
+    // if (csrf) { var ci = document.createElement('input'); ci.type='hidden'; ci.name='csrf_token'; ci.value=csrf.value; f.appendChild(ci); }
+
+    document.body.appendChild(f);
+    f.submit();
+    document.body.removeChild(f);
+  });
+</script>
+
+{% endblock %}

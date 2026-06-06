@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Cash In Hand - Today</h2>
+
+<style>
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border: 1px solid #ddd; padding: 8px; }
+    th { background: #f2f2f2; }
+    .col { width: 50%; vertical-align: top; }
+</style>
+
+<table>
+    <tr>
+        <th class="col">Receipt (Money IN)</th>
+        <th class="col">Payment (Money OUT)</th>
+    </tr>
+    <tr>
+        <td>
+            {% if receipts %}
+                <ul style="list-style: none; padding-left: 0;">
+                {% for r in receipts %}
+                    {% if loop.first %}
+                    <li style="font-weight:bold; margin-bottom:8px;">OPENING CASH — ₹{{ '%.2f'|format(r.amount) }}</li>
+                    <hr>
+                    {% elif loop.last %}
+                    <hr>
+                    <li style="font-weight:bold; margin-top:8px;">CLOSING CASH — ₹{{ '%.2f'|format(r.amount) }}</li>
+                    {% else %}
+                    <li>{{ r.name }} — ₹{{ '%.2f'|format(r.amount) }}</li>
+                    {% endif %}
+                {% endfor %}
+                </ul>
+            {% else %}
+                <p>No receipts today.</p>
+            {% endif %}
+        </td>
+
+
+
+        <td>
+            {% if payments %}
+                <ul>
+                {% for p in payments %}
+                    <li>{{ p.name }} — ₹{{ '%.2f'|format(p.amount) }}</li>
+                {% endfor %}
+                </ul>
+            {% else %}
+                <p>No payments today.</p>
+            {% endif %}
+        </td>
+    </tr>
+</table>
+
+{% endblock %}

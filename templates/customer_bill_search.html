@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% block title %}Search Customer Bill{% endblock %}
+{% block content %}
+<style>
+  .search-row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:12px; }
+  .search-row input[type=text], .search-row input[type=date] {
+    padding:8px 10px; border-radius:6px; border:1px solid #dbeafc;
+  }
+  .btn { padding:8px 10px; border-radius:8px; background:linear-gradient(90deg,#64b5f6,#42a5f5);
+         color:#fff; border:0; cursor:pointer; font-weight:700; }
+  .btn.secondary { background:transparent; color:#1976d2; border:1px solid #dbeafc; padding:7px 10px; }
+  ul.results { list-style:none; padding:0; margin-top:14px; }
+  ul.results li { padding:10px 12px; border-bottom:1px solid #f0f4fb; display:flex; gap:8px; align-items:center; }
+  .muted { color:#667; }
+</style>
+
+<h2>Search Customer Bill</h2>
+
+<form method="POST" id="customer-search-form" action="{{ url_for('customer_bill_search') }}">
+  <input type="text" name="bill_no" placeholder="Bill #">
+  <input type="text" name="name" placeholder="Customer name / ID">
+  <input type="date" name="bill_date">
+
+  <button type="submit" class="btn">Search</button>
+
+  <button type="button" id="print-all-by-date" class="btn secondary">Print All (By Date)</button>
+
+  <input type="hidden" id="print_search_url" value="{{ url_for('customer_bill_print_search') }}">
+</form>
+
+{% if results %}
+  <ul>
+    {% for r in results %}
+      <li>
+        Bill #{{ r.bill_id }} — {{ r.customer_name }} — {{ r.bill_date }}
+
+        <a href="{{ url_for('customer_bill_edit', bill_id=r.bill_id) }}">Edit</a>
+
+        <form method="POST" action="{{ url_for('customer_bill_print_search') }}" target="_blank" style="display:inline;">
+            <input type="hidden" name="bill_no" value="{{ r.bill_id }}">
+            <button type="submit">Print</button>
+        </form>
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>No results.</p>
+{% endif %}
+
+<script>
+(() => {
+  const printBtn = document.getElementById("print-all-by-date");
+  const form = document.getElementById("customer-search-form");
+  const urlInput = document.getElementById("print_search_url");
+
+  if (!printBtn || !form || !urlInput) return;
+
+  const printSearchUrl = urlInput.value;
+
+  printBtn.addEventListener("click", () => {
+    const nameField = form.querySelector('input[name="name"]');
+    const dateField = form.querySelector('input[name="bill_date"]');
+
+    let name = nameField.value.trim();
+    let bill_date = dateField.value.trim();
+
+    // If both empty → ask user and auto-fill today
+    if (!name && !bill_date) {
+      const ok = confirm(
+        "You did not enter Name or Date.\nPrint All requires at least a Date.\n\nClick OK to print for TODAY."
+      );
+      if (!ok) return;
+
+      const d = new Date();
+      const pad = s => String(s).padStart(2, "0");
+      bill_date = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+    }
+
+    // Popup-safe
+    const w = window.open("", "_blank");
+    if (!w) {
+      alert("Popup blocked. Enable popups for this site.");
+      return;
+    }
+
+    // Build dynamic POST form for print_search
+    const f = document.createElement("form");
+    f.method = "POST";
+    f.action = printSearchUrl;
+    f.target = w.name;
+
+    const add = (name, value) => {
+      const i = document.createElement("input");
+      i.type = "hidden";
+      i.name = name;
+      i.value = value;
+      f.appendChild(i);
+    };
+
+    // Force bill_no = "" so backend does NOT trigger single-bill mode
+    add("bill_no", "");
+    add("name", name);
+    add("bill_date", bill_date);
+
+    // CSRF token support
+    const csrf = document.querySelector('input[name="csrf_token"]');
+    if (csrf) add("csrf_token", csrf.value);
+
+    document.body.appendChild(f);
+    f.submit();
+    document.body.removeChild(f);
+  });
+})();
+</script>
+
+{% endblock %}

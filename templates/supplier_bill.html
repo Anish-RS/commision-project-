@@ -1,0 +1,701 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+/* Simple pastel theme + consistent inputs for perfect alignment */
+* { box-sizing: border-box; }
+body { background: linear-gradient(135deg,#eaf6ff,#fff0f4); }
+
+.page-title { color:#6C63FF; font-size:28px; font-weight:700; text-align:center; margin:18px 0; }
+
+/* Clean pastel dropdown list */
+.dropdown-list {
+    display: none;
+    background: #eaf6ff;
+    border: 2px solid #d0e7ff;
+    border-radius: 12px;
+    margin-top: 6px;
+    max-height: 180px;
+    overflow-y: auto;
+    box-shadow: 0 4px 12px rgba(28,37,70,0.12);
+    padding: 6px 0;
+    z-index: 60;
+}
+.dropdown-item.active {
+  background: #90caf9;
+  color: #000;
+}
+
+.dropdown-list::-webkit-scrollbar { width: 6px; }
+.dropdown-list::-webkit-scrollbar-thumb { background: #90caf9; border-radius: 10px; }
+.dropdown-list::-webkit-scrollbar-track { background: transparent; }
+
+.dropdown-item {
+    padding: 10px 14px;
+    cursor: pointer;
+    transition: 0.12s ease;
+    font-size: 15px;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+.dropdown-item:last-child { border-bottom: none; }
+.dropdown-item:hover { background: #d7ecff; }
+
+.card {
+  max-width:1100px;
+  margin:18px auto;
+  background:rgba(255,255,255,0.96);
+  padding:22px;
+  border-radius:14px;
+  border-left:6px solid #90CAF9;
+  box-shadow:0 10px 30px rgba(28,37,70,0.06);
+}
+
+.label { display:block; font-weight:600; margin-bottom:6px; color:#333; }
+
+.input-field {
+  width:100%;
+  padding:12px 14px;
+  border-radius:12px;
+  border:2px solid #dbefff;
+  background:#eaf6ff;
+  outline:none;
+  transition:0.16s;
+  font-size:15px;
+  height:44px; /* fixed height to align all controls */
+}
+
+.input-field:focus { border-color:#64b5f6; background:#fff; box-shadow:0 4px 12px rgba(100,181,246,0.12); }
+
+.table {
+  width:100%;
+  border-collapse:collapse;
+  margin-top:10px;
+  margin-bottom:10px;
+}
+
+.table th, .table td {
+  border:1px solid rgba(0,0,0,0.12);
+  padding:8px;
+  text-align:left;
+  vertical-align:middle;
+}
+
+.table th { background:rgba(255,240,245,0.5); font-weight:700; }
+
+.small-note { font-size:13px; color:#666; margin-top:6px; }
+
+.controls-row { display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-top:12px; }
+
+.col-1 { flex:1 1 220px; min-width:160px; }
+.col-2 { flex:2 1 420px; min-width:220px; }
+
+.btn { padding:10px 14px; border-radius:10px; border:none; cursor:pointer; font-weight:700; }
+.btn-primary { background:linear-gradient(90deg,#ff9a9a,#ff6b6b); color:white; box-shadow:0 6px 18px rgba(255,107,107,0.18); }
+.btn-small { padding:6px 8px; border-radius:8px; background:#eee; }
+
+.grid-amount-note { display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-top:12px; align-items:start; }
+@media (max-width:760px) { .grid-amount-note { grid-template-columns: 1fr; } .col-1,.col-2{flex:1 1 100%} .card{padding:14px} }
+
+.right { text-align:right; }
+
+/* position for customer box dropdown inside table cell */
+.customer-box { position: relative; }
+/* ensure dropdown fills width of the cell */
+.customer-box .dropdown-list { position: absolute; left: 0; right: 0; z-index:70; }
+
+.date-edit-btn {
+  display: inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:6px 8px;
+  border-radius:8px;
+  background:#fff;
+  border:1px solid #dbefff;
+  cursor:pointer;
+  height:40px;
+}
+
+.date-edit-btn:hover { box-shadow:0 6px 18px rgba(100,181,246,0.08); transform:translateY(-1px); }
+
+/* ---------- Balance color classes ---------- */
+.balance-pos {
+  color: #0dfd1d; /* green (darker) */
+  background: rgba(129,199,132,0.08);
+  border-color: rgba(129,199,132,0.25);
+  font-weight:700;
+}
+
+.balance-neg {
+  color: #ef0505; /* red (darker) */
+  background: rgba(255,138,128,0.06);
+  border-color: rgba(244,67,54,0.12);
+  font-weight:700;
+}
+
+/* neutral (zero) */
+.balance-zero {
+  color: #444;
+  background: rgba(255,255,255,0.0);
+  border-color: #dbefff;
+  font-weight:600;
+}
+</style>
+
+<h2 class="page-title">Create Supplier Bill (Bill 4 Style)</h2>
+
+<div class="card">
+  <form method="POST" id="bill-form" oninput="recalcTotals()">
+    <!-- SUPPLIER SEARCH -->
+    <div style="margin-bottom:12px;">
+      <label class="label">Supplier (ID / Name)</label>
+      <input id="supplier_search" type="text" class="input-field"
+             placeholder="Type supplier ID or name..."
+             oninput="filterSupplierList()" autocomplete="off">
+
+      <div id="supplier_list" class="dropdown-list" role="listbox" aria-hidden="true"></div>
+
+      <input type="hidden" name="supplier_id" id="supplier_id" required>
+      <div class="small-note">Type to search and choose supplier. Old balance loads automatically.</div>
+    </div>
+    <!-- BILL DATE: default to today, disabled until Edit clicked -->
+    <div style="margin-bottom:12px;">
+      <label class="label" for="bill_date">Bill Date <span style="color:#b00">*</span></label>
+
+      <div style="display:flex; gap:8px; align-items:center; max-width:360px;">
+        <!-- VISIBLE date (disabled to prevent accidental edit). Name changed so it does NOT submit. -->
+        <input type="date" id="bill_date" name="bill_date_visible"
+               class="input-field"
+               required
+               disabled
+               value="{{ today if today is defined else '' }}" />
+
+        <!-- Hidden field that will actually be submitted as bill_date -->
+        <input type="hidden" id="bill_date_hidden" name="bill_date" value="{{ today if today is defined else '' }}">
+
+        <!-- edit button (text or icon) -->
+        <button type="button" id="dateEditBtn" class="date-edit-btn" aria-label="Edit date" title="Click to change date">📅</button>
+      </div>
+
+      <div class="small-note">Date defaults to today and is protected. Click the calendar icon to change it when needed.</div>
+    </div>
+
+
+    <!-- Line items -->
+    <h4 style="margin-top:8px;">Line Items</h4>
+    <table class="table" id="lines-table">
+      <thead>
+        <tr>
+          <th style="width:40%">Customer</th>
+          <th style="width:18%">Rate</th>
+          <th style="width:18%">Quantity</th>
+
+          <th style="width:18%">Amount</th>
+          <th style="width:6%"></th>
+        </tr>
+      </thead>
+      <tbody id="lines-body">
+        <tr>
+          <td>
+            <div class="customer-box">
+              <input type="text" class="input-field customer_search" placeholder="Customer ID / Name" oninput="filterCustomerList(this)" autocomplete="off">
+              <div class="customer_list dropdown-list" role="listbox" aria-hidden="true"></div>
+              <input type="hidden" name="customer_id[]" class="customer_id" required>
+            </div>
+            
+          </td>
+          <td>
+            <!-- RATE -->
+            <input type="number" step="0.01"
+                  name="rate[]"
+                  class="input-field rate"
+                  oninput="recalcTotals()">
+          </td>
+
+          <td>
+            <!-- QUANTITY -->
+            <input type="number" step="0.01"
+                  name="quantity[]"
+                  class="input-field qty"
+                  oninput="recalcTotals()">
+          </td>
+
+          <td><input type="number" step="0.01" name="amount[]" class="input-field amount" readonly></td>
+          <td class="right"><button type="button" class="btn btn-small" onclick="removeLine(this)">X</button></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div style="margin-bottom:12px;">
+      <button type="button" class="btn btn-small" onclick="addLine()">+ Add Line</button>
+    </div>
+
+    <div class="controls-row">
+      <div class="col-1">
+        <label class="label">Commission</label>
+        <input type="number" step="0.01" id="commission" name="commission" class="input-field" placeholder="Commission">
+      </div>
+      <div class="col-1">
+        <label class="label">Labour</label>
+        <input type="number" step="0.01" id="labour" name="labour" class="input-field" placeholder="Labour">
+      </div>
+      <div class="col-1">
+        <label class="label">Transport</label>
+        <input type="number" step="0.01" id="transport" name="transport" class="input-field" placeholder="Transport">
+      </div>
+      <div class="col-1">
+        <label class="label">Paid</label>
+        <input type="number" step="0.01" id="paid" name="paid" class="input-field" placeholder="Paid">
+      </div>
+    </div>
+
+    <div style="margin-top:18px;">
+      <label class="label">Old Supplier Balance (stored):</label>
+      <input type="text" id="old_balance_display" class="input-field balance-zero" readonly style="background:#fff;">
+    </div>
+
+    <div style="margin-top:12px;">
+      <label class="label">New Total (Resulting Supplier Balance stored):</label>
+      <input type="text" id="new_total_display" class="input-field balance-zero" readonly style="background:#fff;">
+    </div>
+
+    <!-- hidden fields -->
+    <input type="hidden" id="total_amount" name="total_amount" value="0">
+    <input type="hidden" id="balance" name="balance" value="0">
+
+    <div style="display:flex; justify-content:flex-end; margin-top:18px;">
+      <button type="submit" class="btn btn-primary" id="createBtn">Create Bill</button>
+    </div>
+  </form>
+</div>
+
+<script>
+/* Server-provided lists */
+const suppliers = JSON.parse('{{ suppliers | tojson | safe }}');
+const customers = JSON.parse('{{ customers | tojson | safe }}');
+
+
+function filterSupplierList() {
+    const input = document.getElementById("supplier_search");
+    const q = input.value.trim().toLowerCase();
+    const box = document.getElementById("supplier_list");
+
+    box.innerHTML = "";
+    input._activeIndex ??= -1;
+
+    if (!q) {
+        box.style.display = "none";
+        box.setAttribute("aria-hidden", "true");
+        input._activeIndex = -1;
+        return;
+    }
+
+    suppliers.forEach(s => {
+        if (
+            String(s.id).includes(q) ||
+            (s.name || "").toLowerCase().includes(q)
+        ) {
+            const div = document.createElement("div");
+            div.className = "dropdown-item";
+            div.textContent = `${s.name} (ID: ${s.id}) — ₹${parseFloat(s.balance || 0).toFixed(2)}`;
+
+            div.onclick = () => {
+                chooseSupplier(s);
+                input._activeIndex = -1;
+            };
+
+            box.appendChild(div);
+        }
+    });
+
+    const items = box.querySelectorAll(".dropdown-item");
+    box.style.display = items.length ? "block" : "none";
+    box.setAttribute("aria-hidden", items.length ? "false" : "true");
+
+    input.onkeydown = function (e) {
+        if (!items.length) return;
+
+        if (e.key === "ArrowDown") {
+            e.preventDefault();
+            input._activeIndex = (input._activeIndex + 1) % items.length;
+        } 
+        else if (e.key === "ArrowUp") {
+            e.preventDefault();
+            input._activeIndex = (input._activeIndex - 1 + items.length) % items.length;
+        } 
+        else if (e.key === "Enter") {
+            if (input._activeIndex >= 0) {
+                e.preventDefault();
+                items[input._activeIndex].click();
+                input._activeIndex = -1;
+            }
+            return;
+        } 
+        else if (e.key === "Escape") {
+            box.style.display = "none";
+            box.setAttribute("aria-hidden", "true");
+            input._activeIndex = -1;
+            return;
+        }
+
+        items.forEach(i => i.classList.remove("active"));
+        items[input._activeIndex].classList.add("active");
+        items[input._activeIndex].scrollIntoView({ block: "nearest" });
+    };
+}
+
+function chooseSupplier(s) {
+    document.getElementById("supplier_id").value = s.id;
+    document.getElementById("supplier_search").value = `${s.name} (ID: ${s.id})`;
+    document.getElementById("old_balance_display").value =
+        (parseFloat(s.balance) || 0).toFixed(2);
+
+    document.getElementById("supplier_list").style.display = "none";
+    updateBalanceColors();
+    recalcTotals();
+
+    setTimeout(() => {
+        const firstCustomer = document.querySelector(".customer_search");
+        if (firstCustomer) firstCustomer.focus();
+    }, 0);
+}
+
+function filterCustomerList(inputEl) {
+    const q = inputEl.value.trim().toLowerCase();
+    const box = inputEl.parentNode.querySelector(".customer_list");
+
+    box.innerHTML = "";
+    inputEl._activeIndex ??= -1;
+
+    if (!q) {
+        box.style.display = "none";
+        inputEl._activeIndex = -1;
+        return;
+    }
+
+    customers.forEach(c => {
+        if (
+            String(c.id).includes(q) ||
+            (c.name || "").toLowerCase().includes(q)
+        ) {
+            const div = document.createElement("div");
+            div.className = "dropdown-item";
+            div.textContent = `${c.name} (ID: ${c.id})`;
+
+            div.onclick = () => {
+                chooseCustomer(c, inputEl);
+                inputEl._activeIndex = -1;
+            };
+
+            box.appendChild(div);
+        }
+    });
+
+    const items = box.querySelectorAll(".dropdown-item");
+    box.style.display = items.length ? "block" : "none";
+
+    inputEl.onkeydown = function (e) {
+        if (!items.length) return;
+
+        if (e.key === "ArrowDown") {
+            e.preventDefault();
+            inputEl._activeIndex = (inputEl._activeIndex + 1) % items.length;
+        } 
+        else if (e.key === "ArrowUp") {
+            e.preventDefault();
+            inputEl._activeIndex = (inputEl._activeIndex - 1 + items.length) % items.length;
+        } 
+        else if (e.key === "Enter") {
+          if (inputEl._activeIndex >= 0) {
+              e.preventDefault();
+              e.stopImmediatePropagation();   // 🔴 THIS IS THE FIX
+              items[inputEl._activeIndex].click();
+              inputEl._activeIndex = -1;
+          }
+          return;
+        }
+
+
+        items.forEach(i => i.classList.remove("active"));
+        items[inputEl._activeIndex].classList.add("active");
+        items[inputEl._activeIndex].scrollIntoView({ block: "nearest" });
+    };
+}
+
+function chooseCustomer(customer, inputEl) {
+    const box = inputEl.parentNode;
+    box.querySelector(".customer_id").value = customer.id;
+    inputEl.value = `${customer.name} (ID: ${customer.id})`;
+    box.querySelector(".customer_list").style.display = "none";
+    recalcTotals();
+
+    const rate = inputEl.closest("tr").querySelector(".rate");
+    if (rate) rate.focus();
+}
+
+/* Add / remove lines */
+function addLine() {
+    const tbody = document.getElementById('lines-body');
+    const tr = document.createElement('tr');
+
+    tr.innerHTML = `
+    <td>
+      <div class="customer-box">
+        <input type="text" class="input-field customer_search" 
+               placeholder="Customer ID / Name" 
+               oninput="filterCustomerList(this)" autocomplete="off">
+        <div class="customer_list dropdown-list" role="listbox" aria-hidden="true"></div>
+        <input type="hidden" name="customer_id[]" class="customer_id" required>
+      </div>
+    </td>
+    <td><input type="number" step="0.01" name="rate[]" class="input-field rate" oninput="recalcTotals()"></td>
+    <td><input type="number" step="0.01" name="quantity[]" class="input-field qty" oninput="recalcTotals()"></td>
+
+    <td><input type="number" step="0.01" name="amount[]" class="input-field amount" readonly></td>
+    <td><button type="button" class="btn btn-small" onclick="removeLine(this)">X</button></td>
+    `;
+
+    tbody.appendChild(tr);
+}
+
+/* remove line */
+function removeLine(btn) {
+  const tbody = document.getElementById('lines-body');
+  if (tbody.rows.length > 1) {
+    btn.closest('tr').remove();
+    recalcTotals();
+  }
+}
+
+/* Recalculate totals and new supplier balance */
+function recalcTotals() {
+  const rows = document.querySelectorAll('#lines-body tr');
+  let total = 0;
+  rows.forEach(row => {
+    const qty = parseFloat(row.querySelector('.qty')?.value) || 0;
+    const rate = parseFloat(row.querySelector('.rate')?.value) || 0;
+    const amount = qty * rate;
+    const amtEl = row.querySelector('.amount');
+    if (amtEl) amtEl.value = amount.toFixed(2);
+    total += amount;
+  });
+
+  const commission = parseFloat(document.getElementById('commission')?.value) || 0;
+  const labour = parseFloat(document.getElementById('labour')?.value) || 0;
+  const transport = parseFloat(document.getElementById('transport')?.value) || 0;
+  const paid = parseFloat(document.getElementById('paid')?.value) || 0;
+
+  const bill_balance = total - commission - labour - transport - paid;
+  document.getElementById('total_amount').value = total.toFixed(2);
+
+  // get old_signed from displayed old_balance (which we set when supplier chosen)
+  let old_signed = parseFloat(document.getElementById('old_balance_display').value);
+  if (isNaN(old_signed)) old_signed = 0.0;
+
+  // apply your formula: new = old - bill_balance
+  const new_signed = old_signed - bill_balance;
+
+  // show in UI
+  document.getElementById('new_total_display').value = new_signed.toFixed(2);
+  document.getElementById('balance').value = new_signed.toFixed(2);
+
+  // update balance colors (old and new)
+  updateBalanceColors();
+
+  // hidden bill_balance
+  let hb = document.getElementById('bill_balance_hidden');
+  if (!hb) {
+    hb = document.createElement('input'); hb.type='hidden'; hb.id='bill_balance_hidden'; hb.name='bill_balance';
+    document.getElementById('bill-form').appendChild(hb);
+  }
+  hb.value = bill_balance.toFixed(2);
+}
+
+/* Update color classes for old and new balance fields */
+function updateBalanceColors() {
+  const oldEl = document.getElementById('old_balance_display');
+  const newEl = document.getElementById('new_total_display');
+
+  // helper to apply classes
+  function applyClass(el, value) {
+    el.classList.remove('balance-pos', 'balance-neg', 'balance-zero');
+    if (value > 0) el.classList.add('balance-pos');
+    else if (value < 0) el.classList.add('balance-neg');
+    else el.classList.add('balance-zero');
+  }
+
+  let oldVal = parseFloat(oldEl.value);
+  if (isNaN(oldVal)) oldVal = 0;
+  let newVal = parseFloat(newEl.value);
+  if (isNaN(newVal)) newVal = 0;
+
+  applyClass(oldEl, oldVal);
+  applyClass(newEl, newVal);
+}
+function focusNextRate(inputEl) {
+    const row = inputEl.closest('tr');
+    if (!row) return;
+
+    const rate = row.querySelector('.rate');
+    if (rate) {
+        setTimeout(() => rate.focus(), 0);
+    }
+}
+function moveToFirstCustomer() {
+    setTimeout(() => {
+        const firstCustomer = document.querySelector('.customer_search');
+        if (firstCustomer) firstCustomer.focus();
+    }, 0);
+}
+
+
+
+/* prevent form submit if supplier not chosen or no items */
+document.getElementById('bill-form').addEventListener('submit', function(e){
+  const sid = document.getElementById('supplier_id').value;
+  if (!sid) {
+    e.preventDefault();
+    alert('Please select a supplier from the dropdown before creating the bill.');
+    document.getElementById('supplier_search').focus();
+    return false;
+  }
+  // ensure at least one item with customer id
+  const anyCust = Array.from(document.querySelectorAll('.customer_id')).some(h=>h.value);
+  if (!anyCust) {
+    e.preventDefault();
+    alert('Please add at least one line item with a customer selected.');
+    return false;
+  }
+  return true;
+});
+
+/* On page load: setup date control + minimal setup */
+document.addEventListener('DOMContentLoaded', function(){
+  // --- Bill date: ensure a value and keep disabled until Edit clicked ---
+  const dateInput = document.getElementById('bill_date');         // visible (disabled) input
+  const hiddenDate = document.getElementById('bill_date_hidden'); // hidden input that will be submitted
+  const editBtn = document.getElementById('dateEditBtn');
+
+  if (dateInput && hiddenDate) {
+    // if server didn't supply a date, set today
+    if (!dateInput.value) {
+      dateInput.value = new Date().toISOString().split('T')[0];
+    }
+    // ensure hidden holds same value initially
+    hiddenDate.value = dateInput.value;
+
+    // attach edit behavior
+    if (editBtn) {
+      editBtn.addEventListener('click', function(){
+        // enable input temporarily and focus
+        dateInput.disabled = false;
+        dateInput.focus();
+        // try to open native picker if supported
+        if (typeof dateInput.showPicker === 'function') {
+          try { dateInput.showPicker(); } catch(e){ /* ignore */ }
+        }
+      });
+    }
+
+    // sync hidden when user changes date, and re-disable visible input after
+    dateInput.addEventListener('change', function(){
+      hiddenDate.value = dateInput.value;
+      setTimeout(()=> dateInput.disabled = true, 100);
+    });
+    // also sync on blur
+    dateInput.addEventListener('blur', function(){
+      hiddenDate.value = dateInput.value;
+      setTimeout(()=> dateInput.disabled = true, 100);
+    });
+
+    // ensure hidden value is up-to-date right before submit
+    document.getElementById('bill-form').addEventListener('submit', function(){
+      hiddenDate.value = dateInput.value;
+    });
+
+    // extra guard: prevent typing when disabled
+    dateInput.addEventListener('keydown', function(e){
+      if (dateInput.disabled) e.preventDefault();
+    });
+  }
+
+  // other initializations
+  recalcTotals();
+  updateBalanceColors();
+});
+document.addEventListener("keydown", function (e) {
+    // 🔹 Let dropdowns handle arrows
+    if (e.key === "ArrowDown" || e.key === "ArrowUp") return;
+
+    if (e.key !== "Enter") return;
+
+    // ⛔ Do not interfere if dropdown is open
+    if (document.querySelector('.dropdown-list[style*="block"]')) return;
+
+    const active = document.activeElement;
+
+    /* ========= EXPLICIT FLOW RULES ========= */
+
+    // Customer → Rate
+    if (active.classList.contains("customer_search")) {
+        e.preventDefault();
+        const row = active.closest("tr");
+        row?.querySelector(".rate")?.focus();
+        return;
+    }
+
+    // Rate → Quantity
+    if (active.classList.contains("rate")) {
+        e.preventDefault();
+        active.closest("tr")?.querySelector(".qty")?.focus();
+        return;
+    }
+
+    // Quantity → Commission
+    if (active.classList.contains("qty")) {
+        e.preventDefault();
+        document.getElementById("commission")?.focus();
+        return;
+    }
+
+    // Commission → Labour
+    if (active.id === "commission") {
+        e.preventDefault();
+        document.getElementById("labour")?.focus();
+        return;
+    }
+
+    // Labour → Transport
+    if (active.id === "labour") {
+        e.preventDefault();
+        document.getElementById("transport")?.focus();
+        return;
+    }
+
+    // Transport → Paid
+    if (active.id === "transport") {
+        e.preventDefault();
+        document.getElementById("paid")?.focus();
+        return;
+    }
+
+    // Paid → Submit
+    if (active.id === "paid") {
+        e.preventDefault();
+        document.getElementById("createBtn")?.focus();
+        return;
+    }
+
+    /* ========= FALLBACK (safe) ========= */
+
+    // Ignore buttons & supplier field
+    if (
+        active.tagName === "BUTTON" ||
+        active.id === "supplier_search"
+    ) return;
+
+    e.preventDefault();
+});
+
+</script>
+
+{% endblock %}

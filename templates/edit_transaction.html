@@ -1,0 +1,272 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Edit Receipts / Payments</h2>
+
+<div style="max-width:1000px; margin:6px 0 18px 0;">
+  <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
+    <div>
+      <label><strong>Transaction Type</strong></label><br>
+      <select id="tx-type" class="input-field" style="width:160px;">
+        <option value="receipt">Receipt (money received)</option>
+        <option value="payment">Payment (money paid)</option>
+      </select>
+    </div>
+
+    <div>
+      <label><strong>Entity</strong></label><br>
+      <select id="entity-type" class="input-field" style="width:160px;">
+        <option value="customer">Customer</option>
+        <option value="supplier">Supplier</option>
+      </select>
+    </div>
+
+    <div>
+      <label><strong>Person</strong></label><br>
+      <select id="entity-id" class="input-field" style="min-width:300px;">
+        <option value="">-- choose --</option>
+        {% for c in customers %}
+          <option data-name="{{ c.name }}" value="{{ c.id }}">{{ c.name }} (ID: {{ c.id }})</option>
+        {% endfor %}
+        {% for s in suppliers %}
+          {# suppliers also exist but we only display the relevant list based on entity-type via JS #}
+        {% endfor %}
+      </select>
+    </div>
+
+    <div>
+      <button id="load-transactions" class="btn btn-primary" style="height:44px; margin-top:18px;">Load</button>
+    </div>
+  </div>
+
+  <p class="small-note">Choose the type (receipt/payment), choose customer or supplier, then select person and click Load to show transactions for editing.</p>
+</div>
+
+<hr>
+
+<div id="tx-list-wrap">
+  <h3>Transactions</h3>
+  <div id="tx-list">No transactions loaded.</div>
+</div>
+
+<!-- Edit panel (hidden until editing) -->
+<div id="edit-panel" style="display:none; margin-top:18px; max-width:700px; border:1px solid #ddd; padding:12px; border-radius:8px;">
+  <h4>Edit Transaction <span id="edit-tx-id"></span></h4>
+
+  <form id="edit-form">
+    <input type="hidden" name="tx_id" id="edit-tx-id-input">
+
+    <div style="display:flex; gap:12px; flex-wrap:wrap;">
+      <div style="flex:1">
+        <label>Amount</label><br>
+        <input name="amount" id="edit-amount" type="number" step="0.01" class="input-field" required>
+      </div>
+
+      <div style="flex:1">
+        <label>Date</label><br>
+        <input name="tx_date" id="edit-date" type="datetime-local" class="input-field">
+      </div>
+
+      <div style="flex:1 1 100%">
+        <label>Note</label><br>
+        <input name="note" id="edit-note" type="text" class="input-field">
+      </div>
+    </div>
+
+    <div style="margin-top:10px;">
+      <button type="button" id="save-edit" class="btn btn-primary">Save</button>
+      <button type="button" id="cancel-edit" class="btn btn-small">Cancel</button>
+    </div>
+
+    <div id="edit-result" style="margin-top:10px;"></div>
+  </form>
+</div>
+
+<script>
+  // helpers
+  function by(id){ return document.getElementById(id); }
+
+  // Populate suppliers into the person dropdown when entity_type changes
+  const allCustomers = JSON.parse('{{ customers|tojson|safe }}');
+  const allSuppliers = JSON.parse('{{ suppliers|tojson|safe }}');
+
+  function rebuildPersonList(entityType) {
+    const sel = by('entity-id');
+    // remember selection
+    const prev = sel.value;
+    sel.innerHTML = '<option value="">-- choose --</option>';
+
+    if (entityType === 'customer') {
+      allCustomers.forEach(c=>{
+        const opt = document.createElement('option');
+        opt.value = c.id;
+        opt.text = `${c.name} (ID: ${c.id})`;
+        opt.setAttribute('data-name', c.name);
+        sel.appendChild(opt);
+      });
+    } else { // supplier
+      allSuppliers.forEach(s=>{
+        const opt = document.createElement('option');
+        opt.value = s.id;
+        opt.text = `${s.name} (ID: ${s.id})`;
+        opt.setAttribute('data-name', s.name);
+        sel.appendChild(opt);
+      });
+    }
+
+    // try restore
+    if (prev) sel.value = prev;
+  }
+
+  // init supplier list from server-side suppliers (we only rendered customers earlier)
+  (function initSuppliers(){
+    const sel = by('entity-id');
+    if (!sel) return;
+    // load suppliers after page load
+    // server provided suppliers array in template? We passed suppliers variable.
+    // but to avoid duplication we used tojson: below we reconstruct supplier dropdown when needed.
+  })();
+
+  // When entity-type changes -> rebuild person list
+  by('entity-type').addEventListener('change', function(){
+    rebuildPersonList(this.value);
+  });
+
+  // initial build (default customer)
+  rebuildPersonList(by('entity-type').value);
+
+  // When Load clicked -> fetch transactions via /transactions/list
+  by('load-transactions').addEventListener('click', function(){
+    const txType = by('tx-type').value;
+    const entityType = by('entity-type').value;
+    const entityId = by('entity-id').value;
+    if (!entityId) {
+      alert('Choose a person first');
+      return;
+    }
+
+    const wrap = by('tx-list');
+    wrap.innerHTML = 'Loading...';
+
+    const params = new URLSearchParams({
+      tx_type: txType,
+      entity_type: entityType,
+      entity_id: entityId
+    });
+
+    fetch('/transactions/list?' + params.toString())
+      .then(r => r.json())
+      .then(data => {
+        if (data.error) { wrap.innerText = 'Error: ' + data.error; return; }
+        const txs = data.transactions || [];
+        if (txs.length === 0) {
+          wrap.innerHTML = '<div>No transactions found for this person and type.</div>';
+          return;
+        }
+
+        // build table
+        const tbl = document.createElement('table');
+        tbl.className = 'table';
+        tbl.style.width = '100%';
+        tbl.innerHTML = `<thead><tr>
+          <th>ID</th><th>Date</th><th>Amount</th><th>Note</th><th>Action</th>
+        </tr></thead>`;
+        const tb = document.createElement('tbody');
+        txs.forEach(t => {
+          const tr = document.createElement('tr');
+          const date = t.tx_date ? new Date(t.tx_date).toLocaleString() : '';
+          tr.innerHTML = `<td>${t.tx_id}</td>
+                          <td>${date}</td>
+                          <td>₹${(t.amount||0).toFixed(2)}</td>
+                          <td>${t.note || ''}</td>
+                          <td><button data-tx="${t.tx_id}" class="btn btn-small edit-tx-btn">Edit</button></td>`;
+          tb.appendChild(tr);
+        });
+        tbl.appendChild(tb);
+        wrap.innerHTML = '';
+        wrap.appendChild(tbl);
+
+        // attach edit handlers
+        document.querySelectorAll('.edit-tx-btn').forEach(btn=>{
+          btn.addEventListener('click', function(){
+            const txid = this.dataset.tx;
+            openEditForm(txid);
+          });
+        });
+      })
+      .catch(err=>{
+        wrap.innerText = 'Request failed: ' + err;
+      });
+  });
+
+  // open edit form for a tx id: fetch tx row and populate form
+  function openEditForm(txid) {
+    fetch('/transactions/edit/' + txid)
+      .then(r => r.json())
+      .then(data => {
+        if (data.error) { alert('Error: '+data.error); return; }
+        const tx = data.tx;
+        by('edit-panel').style.display = 'block';
+        by('edit-tx-id').innerText = '#' + tx.tx_id;
+        by('edit-tx-id-input').value = tx.tx_id;
+        by('edit-amount').value = (tx.amount || 0).toFixed(2);
+
+        // parse ISO date to datetime-local format for input if present
+        if (tx.tx_date) {
+          const d = new Date(tx.tx_date);
+          // format to yyyy-MM-ddTHH:mm (seconds optional)
+          const pad = n => (n<10?'0':'')+n;
+          const isoLocal = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+          by('edit-date').value = isoLocal;
+        } else {
+          by('edit-date').value = '';
+        }
+
+        by('edit-note').value = tx.note || '';
+        by('edit-result').innerText = '';
+        window.scrollTo({ top: by('edit-panel').offsetTop - 20, behavior: 'smooth' });
+      })
+      .catch(err => { alert('Failed to load tx: '+err); });
+  }
+
+  // Cancel edit
+  by('cancel-edit').addEventListener('click', function(){
+    by('edit-panel').style.display = 'none';
+  });
+
+  // Save edit -> call POST JSON
+  by('save-edit').addEventListener('click', function(){
+    const txid = by('edit-tx-id-input').value;
+    const amount = parseFloat(by('edit-amount').value || 0);
+    const note = by('edit-note').value || '';
+    const dateVal = by('edit-date').value; // in datetime-local format -> 'yyyy-MM-ddTHH:mm'
+    // convert to ISO if present
+    const tx_date = dateVal ? new Date(dateVal).toISOString() : null;
+
+    const payload = { amount: amount, note: note, tx_date: tx_date };
+
+    fetch('/transactions/edit/' + txid, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    })
+    .then(r => r.json())
+    .then(j => {
+      if (j.error) {
+        by('edit-result').innerText = 'Error: ' + j.message || j.error;
+        by('edit-result').style.color = 'red';
+      } else {
+        by('edit-result').innerText = 'Saved successfully.';
+        by('edit-result').style.color = 'green';
+        // reload transaction list for the same person to reflect changes
+        setTimeout(()=> by('load-transactions').click(), 400);
+      }
+    })
+    .catch(err=>{
+      by('edit-result').innerText = 'Save failed: ' + err;
+      by('edit-result').style.color = 'red';
+    });
+  });
+
+</script>
+
+{% endblock %}

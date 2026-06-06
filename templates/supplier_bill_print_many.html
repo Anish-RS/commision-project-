@@ -1,0 +1,94 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Supplier Bill #{{ bill['bill_id'] }}</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    body { font-family: Arial, Helvetica, sans-serif; color: #000; margin: 12px; }
+    header { margin-bottom: 8px; }
+    h1 { margin:0 0 6px 0; font-size: 28px; }
+    .meta { font-size: 14px; margin-bottom: 12px; }
+    table { width:100%; border-collapse: collapse; margin-top:8px; }
+    th, td { border: 1px solid #333; padding:8px; text-align:left; font-size:14px; }
+    th { background:#f2f2f2; }
+    .right { text-align:right; }
+    .summary { margin-top: 12px; width:480px; float: right; border-top:1px dashed #444; padding-top:8px; font-size:14px; }
+    .summary .row { display:flex; justify-content:space-between; margin:6px 0; }
+    .footer { clear: both; margin-top: 18px; font-size:14px; border-top:1px dashed #666; padding-top:8px; color:#111; }
+    button.print-btn { margin-bottom:8px; padding:6px 10px; font-size:13px; cursor:pointer; }
+    @media print { button.print-btn { display:none } }
+    .muted { color:#444; font-size:13px; }
+  </style>
+</head>
+<body>
+  <button class="print-btn" onclick="window.print()">Print</button>
+
+  <header>
+    <h1>Supplier Bill #{{ bill['bill_id'] }}</h1>
+    <div class="meta">
+      <div><strong>Supplier:</strong> {{ bill['supplier_name'] or ('ID ' ~ bill['supplier_id']) }}</div>
+      <div><strong>Bill Date:</strong> {{ bill['bill_date'] }}</div>
+      <div><strong>Total Amount:</strong> ₹{{ "%.2f"|format(bill.get('total_amount', 0)) }}</div>
+    </div>
+  </header>
+
+  <!-- Items table: Sr, Description/Customer, Qty, Rate, Amount -->
+  <table>
+    <thead>
+      <tr>
+        <th style="width:6%">Sr</th>
+        <th style="width:54%">Description / Customer</th>
+        <th style="width:14%" class="right">Rate</th>
+        <th style="width:12%" class="right">Qty</th>
+
+        <th style="width:14%" class="right">Rate</th>
+        <th style="width:14%" class="right">Amount</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% if items and items|length > 0 %}
+        {% for it in items %}
+        <tr>
+          <td>{{ loop.index }}</td>
+          <td>
+            {# Prefer an explicit customer name if available in the item row #}
+            {{ it.get('customer_name') or it.get('description') or ("Customer ID: " ~ (it.get('customer_id') or '')) }}
+          </td>
+          <td class="right">{{ "%.2f"|format(it.get('rate') or 0) }}</td>
+          <td class="right">{{ "%.2f"|format(it.get('quantity') or 0) }}</td>
+
+          <td class="right">{{ "%.2f"|format(it.get('amount') or 0) }}</td>
+        </tr>
+        {% endfor %}
+      {% else %}
+        <tr><td colspan="5">No items found for this bill.</td></tr>
+      {% endif %}
+    </tbody>
+  </table>
+
+  <!-- Summary (commission, labour, transport, paid, balances) -->
+  <div class="summary" role="note" aria-label="Bill summary">
+    <div class="row"><div>Subtotal</div><div class="right">₹{{ "%.2f"|format(bill.get('total_amount', 0)) }}</div></div>
+
+    <div class="row"><div>Commission</div><div class="right">₹{{ "%.2f"|format(bill.get('commission', 0)) }}</div></div>
+    <div class="row"><div>Labour</div><div class="right">₹{{ "%.2f"|format(bill.get('labour', 0)) }}</div></div>
+    <div class="row"><div>Transport</div><div class="right">₹{{ "%.2f"|format(bill.get('transport', 0)) }}</div></div>
+    <div class="row"><div>Paid / Cash</div><div class="right">₹{{ "%.2f"|format(bill.get('paid', 0)) }}</div></div>
+
+    <div class="row" style="font-weight:bold; border-top:1px dashed #999; padding-top:6px;">
+      <div>Bill Balance (net)</div>
+      <div class="right">₹{{ "%.2f"|format(bill.get('balance', bill.get('total_amount', 0) - bill.get('commission',0) - bill.get('labour',0) - bill.get('transport',0) - bill.get('paid',0))) }}</div>
+    </div>
+
+    <div class="row"><div>Old Balance (before this bill)</div><div class="right">₹{{ "%.2f"|format(bill.get('old_balance', 0)) }}</div></div>
+    <div class="row"><div>Final Balance (after this bill)</div><div class="right">₹{{ "%.2f"|format(bill.get('final_balance', bill.get('old_balance', 0) + (bill.get('balance',0) * -1 if bill.get('final_balance', None) is None else bill.get('final_balance')))) }}</div></div>
+    <div class="row" style="border-top:1px dashed #ccc; padding-top:6px;"><div><strong>Current Stored Balance</strong></div><div class="right"><strong>₹{{ "%.2f"|format(current_balance or 0) }}</strong></div></div>
+  </div>
+
+  <div class="footer">
+    <div class="muted">Printed on: {{ now().strftime("%Y-%m-%d %H:%M:%S") }}</div>
+  </div>
+
+</body>
+</html>

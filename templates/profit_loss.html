@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+  .pl-container {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    justify-content: center;
+    margin-top: 18px;
+  }
+  .pl-box {
+    border: 1px solid #bbb;
+    border-radius: 6px;
+    padding: 12px 18px;
+    width: 300px;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .pl-box h3 { margin: 0 0 8px 0; font-size: 18px; text-align: center; }
+  .pl-list { list-style: none; padding: 0; margin: 0; }
+  .pl-list li { padding: 8px 6px; border-bottom: 1px dashed #eee; display:flex; justify-content:space-between; }
+  .pl-list li:last-child { border-bottom: none; font-weight:600; }
+  .net-box {
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width: 220px;
+    height: 120px;
+    border-radius: 8px;
+    font-size: 20px;
+    font-weight:700;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  }
+  .net-positive { background:#e6f7ea; color:#0a8a22; border:1px solid #c7ecd1; }
+  .net-negative { background:#fdecea; color:#b92020; border:1px solid #f5c6c6; }
+  .pl-foot { text-align:center; margin-top:12px; color:#555; font-size:14px; }
+  .pl-controls { margin-top:18px; text-align:center; }
+  .pl-controls input[type="date"] { padding:4px 6px; }
+  .currency { white-space:nowrap; }
+</style>
+
+<h2>
+  Profit &amp; Loss
+  <small style="font-size:16px; color:#666;">
+    ({{ from_date }} to {{ to_date }})
+  </small>
+</h2>
+
+<div class="pl-container">
+  <!-- Profit column -->
+  <div class="pl-box">
+    <h3>Profit (Cumulative)</h3>
+    <ul class="pl-list">
+      <li>
+        <span>Total Commission</span>
+        <span class="currency">₹ {{ '%.2f'|format(total_commission) }}</span>
+      </li>
+      <li>
+        <span>Supplier Bill Labour</span>
+        <span class="currency">₹ {{ '%.2f'|format(supplier_labour) }}</span>
+      </li>
+      <li style="border-top:1px solid #ddd; margin-top:6px;">
+        <span>Profit Total</span>
+        <span class="currency">₹ {{ '%.2f'|format(profit) }}</span>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Net box centered -->
+  <div>
+    {% set net_val = net %}
+    <div class="net-box {% if net_val >= 0 %}net-positive{% else %}net-negative{% endif %}">
+      <div style="text-align:center;">
+        <div style="font-size:14px; font-weight:600;">Net (Profit - Loss)</div>
+        <div style="font-size:22px; margin-top:6px;">
+          ₹ {{ '%.2f'|format(net_val) }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loss column -->
+  <div class="pl-box">
+    <h3>Loss (Cumulative)</h3>
+    <ul class="pl-list">
+      <li>
+        <span>Total Salary</span>
+        <span class="currency">₹ {{ '%.2f'|format(total_labour) }}</span>
+      </li>
+      <li style="border-top:1px solid #ddd; margin-top:6px;">
+        <span>Loss Total</span>
+        <span class="currency">₹ {{ '%.2f'|format(total_labour) }}</span>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="pl-controls">
+  <form method="GET" action="/profit-loss" style="display:inline-block;">
+    <label>From:</label>
+    <input type="date" name="from_date" value="{{ from_date }}">
+    &nbsp;&nbsp;
+    <label>To:</label>
+    <input type="date" name="to_date" value="{{ to_date }}">
+    <button type="submit">Go</button>
+  </form>
+</div>
+
+<div class="pl-foot">
+  <small>
+    Net is <span style="color:#0a8a22;">positive</span> when overall profit,
+    and <span style="color:#b92020;">negative</span> when overall loss for the selected period.
+  </small>
+</div>
+
+{% endblock %}
