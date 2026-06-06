@@ -626,7 +626,7 @@ if __name__ == "__main__":
 @app.route("/bills/supplier/edit/<int:bill_id>", methods=["GET","POST"])
 def supplier_bill_edit(bill_id):
     conn = get_connection()
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     # fetch bill header, items, supplier old/final balances
     cursor.execute("SELECT * FROM supplier_bills WHERE bill_id = %s", (bill_id,))
@@ -775,7 +775,7 @@ def supplier_bill_edit(bill_id):
 
 @app.route("/bills/customer/edit/<int:bill_id>", methods=["GET","POST"])
 def customer_bill_edit(bill_id):
-    conn = get_connection(); cursor = conn.cursor(dictionary=True)
+    conn = get_connection(); cursor = conn.cursor(cursor_factory=RealDictCursor)
     cursor.execute("SELECT * FROM customer_bills WHERE bill_id = %s", (bill_id,))
     bill = cursor.fetchone()
     if not bill:
@@ -885,7 +885,7 @@ def profit_loss():
         from_date, to_date = to_date, from_date
 
     conn = get_connection()
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     # 1) total commission from supplier_bills for that period -> profit
     cursor.execute("""
@@ -938,7 +938,7 @@ def profit_loss():
 @app.route("/bills/supplier/delete/<int:bill_id>", methods=["POST"])
 def supplier_bill_delete(bill_id):
     conn = get_connection()
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
     try:
         # start transaction if not already in one
         if not getattr(conn, "in_transaction", False):
@@ -1020,7 +1020,7 @@ def supplier_bill_delete(bill_id):
 @app.route("/bills/customer/delete/<int:bill_id>", methods=["POST"])
 def customer_bill_delete(bill_id):
     conn = get_connection()
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     try:
         if not getattr(conn, "in_transaction", False):
@@ -1125,7 +1125,7 @@ def customer_bill_delete(bill_id):
 @app.route("/accounts/adjust", methods=["GET", "POST"])
 def adjust_account():
     conn = get_connection()
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     if request.method == "POST":
         entity_type = request.form.get("entity_type")
@@ -1198,7 +1198,7 @@ def adjust_account():
 def account_summary():
     # get customers for dropdown
     conn = get_connection()
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
     cursor.execute("SELECT customer_id AS id, name FROM customers ORDER BY name ASC")
     customers = cursor.fetchall()
 
@@ -1343,7 +1343,7 @@ def account_summary():
 @app.route("/bills/supplier/print/<int:bill_id>")
 def supplier_bill_print(bill_id):
     conn = get_connection()
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     # 1) Fetch full bill + supplier name
     cursor.execute("""
@@ -1412,7 +1412,7 @@ def supplier_bill_print_search():
     bill_date = request.form.get("bill_date")
 
     conn = get_connection()
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     # 1) Fetch matching bills
     results = []
@@ -1490,7 +1490,7 @@ def supplier_bill_print_search():
 '''@app.route("/bills/customer/print/<int:bill_id>")
 def customer_bill_print(bill_id):
     conn = get_connection()
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     cursor.execute("""SELECT cb.*, c.name AS customer_name FROM customer_bills cb
                       JOIN customers c ON cb.customer_id = c.customer_id
@@ -1506,7 +1506,7 @@ def customer_bill_print(bill_id):
 
     # get current customer balance
     conn = get_connection()
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
     cursor.execute("SELECT balance FROM customers WHERE customer_id = %s", (bill["customer_id"],))
     cb = cursor.fetchone()
     current_balance = float(cb["balance"]) if cb and cb.get("balance") is not None else 0.0
@@ -1522,7 +1522,7 @@ def customer_bill_print(bill_id):
 @app.route("/bills/customer/print/<int:bill_id>")
 def customer_bill_print(bill_id):
     conn = get_connection()
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     cursor.execute("""SELECT cb.*, c.name AS customer_name FROM customer_bills cb
                       JOIN customers c ON cb.customer_id = c.customer_id
@@ -1538,7 +1538,7 @@ def customer_bill_print(bill_id):
 
     # get current customer balance
     conn = get_connection()
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
     cursor.execute("SELECT balance FROM customers WHERE customer_id = %s", (bill["customer_id"],))
     cb = cursor.fetchone()
     current_balance = float(cb["balance"]) if cb and cb.get("balance") is not None else 0.0
@@ -1558,7 +1558,7 @@ def customer_bill_print_search():
     bill_date = request.form.get("bill_date")  # expecting YYYY-MM-DD
 
     conn = get_connection()
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     # 1) If bill_no provided -> reuse single-bill printer (optional)
     if bill_no:
@@ -1682,7 +1682,7 @@ from flask import request, flash, redirect, url_for, render_template
 @app.route("/transactions/edit", methods=["GET"])
 def transactions_edit_page():
     conn = get_connection()
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     # fetch customers & suppliers for the datalist/dropdown
     cursor.execute("SELECT customer_id AS id, name FROM customers ORDER BY name")
@@ -1746,7 +1746,7 @@ def transactions_list():
         end_sql   = end_utc.replace(tzinfo=None).strftime("%Y-%m-%d %H:%M:%S")
 
         conn = get_connection()
-        cursor = conn.cursor(dictionary=True)
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
 
         # Use BETWEEN with formatted strings to avoid tz-aware datetime issues
         cursor.execute("""
@@ -1790,7 +1790,7 @@ def transactions_list():
 @app.route("/transactions/edit/<int:tx_id>", methods=["GET","POST"])
 def transactions_edit_one(tx_id):
     conn = get_connection()
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     cursor.execute("SELECT * FROM transactions WHERE tx_id = %s", (tx_id,))
     tx = cursor.fetchone()
@@ -1909,5 +1909,3 @@ def transactions_edit_one(tx_id):
         return jsonify({"error":"exception","message": str(e)}), 500
 if __name__ == "__main__":
     app.run(debug=True, use_reloader=False)
-
-
