@@ -614,10 +614,11 @@ def supplier_bill_search():
     cursor.close(); conn.close()
     return render_template("supplier_bill_search.html", results=results)
 
-@app.route("/bills/customer/search")
+@app.route("/bills/customer/search", methods=["GET", "POST"])
 def customer_bill_search():
-     if request.method == "POST":
-        # your search logic
+
+    if request.method == "POST":
+        # Your existing search code should be here
         pass
     return render_template("customer_bill_search.html")
 
