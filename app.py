@@ -616,6 +616,9 @@ def supplier_bill_search():
 
 @app.route("/bills/customer/search")
 def customer_bill_search():
+     if request.method == "POST":
+        # your search logic
+        pass
     return render_template("customer_bill_search.html")
 
 if __name__ == "__main__":
