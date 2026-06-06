@@ -603,7 +603,7 @@ def supplier_bill_search():
         results = cursor.fetchall()
 
     for r in results:
-        # Changed CAST(... AS CHAR) to Postgres-supported CAST(... AS VARCHAR)
+        # Changed CAST(... AS VARCHAR) to Postgres-supported CAST(... AS VARCHAR)
         cursor.execute("""
             SELECT it.*, c.name AS customer_name FROM supplier_bill_items it
             LEFT JOIN customers c ON it.customer_id = c.customer_id
@@ -646,8 +646,7 @@ def supplier_bill_edit(bill_id):
     if request.method == "POST":
         try:
             # start transaction only if not already started
-            if not getattr(conn, "in_transaction", False):
-                conn.start_transaction()
+           
 
             # --- collect new header values ---
             commission = to_decimal(request.form.get("commission") or 0)
@@ -786,8 +785,7 @@ def customer_bill_edit(bill_id):
     if request.method == "POST":
         try:
             # start transaction only if not already started
-            if not getattr(conn, "in_transaction", False):
-                conn.start_transaction()
+            
 
             qty = to_decimal(request.form.get("quantity") or 0)
             rate = to_decimal(request.form.get("rate") or 0)
@@ -941,8 +939,7 @@ def supplier_bill_delete(bill_id):
     cursor = conn.cursor(cursor_factory=RealDictCursor)
     try:
         # start transaction if not already in one
-        if not getattr(conn, "in_transaction", False):
-            conn.start_transaction()
+        
 
         # fetch header
         cursor.execute("SELECT * FROM supplier_bills WHERE bill_id = %s", (bill_id,))
@@ -1023,8 +1020,7 @@ def customer_bill_delete(bill_id):
     cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     try:
-        if not getattr(conn, "in_transaction", False):
-            conn.start_transaction()
+        
 
         # fetch customer bill
         cursor.execute("SELECT * FROM customer_bills WHERE bill_id = %s", (bill_id,))
@@ -1378,7 +1374,7 @@ def supplier_bill_print(bill_id):
         FROM supplier_bill_items it
         LEFT JOIN customers c ON it.customer_id = c.customer_id
         WHERE it.bill_id = %s
-        ORDER BY COALESCE(c.name, CAST(it.customer_id AS CHAR))
+        ORDER BY COALESCE(c.name, CAST(it.customer_id AS VARCHAR))
     """, (bill_id,))
     items = cursor.fetchall() or []
 
@@ -1456,7 +1452,7 @@ def supplier_bill_print_search():
             FROM supplier_bill_items it
             LEFT JOIN customers c ON it.customer_id = c.customer_id
             WHERE it.bill_id = %s
-            ORDER BY COALESCE(c.name, CAST(it.customer_id AS CHAR))
+            ORDER BY COALESCE(c.name, CAST(it.customer_id AS VARCHAR))
         """, (r["bill_id"],))
         items = cursor.fetchall() or []
 
