@@ -1678,6 +1678,8 @@ def customer_bill_print_search():
 from datetime import datetime, date
 from flask import request, flash, redirect, url_for, render_template
 
+
+
 @app.route("/transactions/edit", methods=["GET"])
 def transactions_edit_page():
     conn = get_connection()
@@ -1906,5 +1908,10 @@ def transactions_edit_one(tx_id):
         print("ERROR in transactions_edit_one:", tb, flush=True)
         cursor.close(); conn.close()
         return jsonify({"error":"exception","message": str(e)}), 500
+
+@app.route("/debug-routes")
+def debug_routes():
+    return "<br>".join(sorted([r.endpoint for r in app.url_map.iter_rules()]))
+    
 if __name__ == "__main__":
     app.run(debug=True, use_reloader=False)
