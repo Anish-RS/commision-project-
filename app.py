@@ -620,3 +620,9 @@ def customer_bill_search():
 
 if __name__ == "__main__":
     app.run(debug=True)
+@app.route("/routes")
+def routes():
+    return {
+        str(rule): rule.endpoint
+        for rule in app.url_map.iter_rules()
+    }
