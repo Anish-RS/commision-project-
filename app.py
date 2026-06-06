@@ -622,8 +622,7 @@ def customer_bill_search():
         pass
     return render_template("customer_bill_search.html")
 
-if __name__ == "__main__":
-    app.run(debug=True)
+
 
 # ==== ROUTES MERGED FROM OLD APP ====
 
