@@ -614,6 +614,7 @@ def supplier_bill_search():
     cursor.close(); conn.close()
     return render_template("supplier_bill_search.html", results=results)
     
+@app.route("/bills/customer/search")
 def customer_bill_search():
     return render_template("customer_bill_search.html")
 
