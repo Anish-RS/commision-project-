@@ -742,11 +742,18 @@ def customer_bill_search():
     bill_date = ""
     bill_no   = ""
 
+    # Accept params from both form POST and query-string GET
     if request.method == "POST":
         bill_no   = request.form.get("bill_no",   "").strip()
         name      = request.form.get("name",      "").strip()
         bill_date = request.form.get("bill_date", "").strip()
+    else:
+        bill_no   = request.args.get("bill_no",   "").strip()
+        name      = request.args.get("name",      "").strip()
+        bill_date = request.args.get("bill_date", "").strip()
 
+    # Run query whenever any filter is provided (GET or POST)
+    if bill_no or name or bill_date:
         conn   = get_connection()
         cursor = conn.cursor(cursor_factory=RealDictCursor)
 
@@ -772,7 +779,7 @@ def customer_bill_search():
             if bill_date:
                 sql    += " AND cb.bill_date = %s"
                 params.append(bill_date)
-            sql += " ORDER BY cb.bill_date DESC, cb.bill_id DESC"
+            sql += " ORDER BY cb.bill_date DESC, cb.bill_id DESC LIMIT 200"
             cursor.execute(sql, params)
             results = cursor.fetchall()
 
