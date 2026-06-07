@@ -1,9 +1,28 @@
+:root{
+  --primary:#4f46e5;
+  --bg:#f5f7fb;
+  --surface:#ffffff;
+  --text:#111827;
+}
+
 body{
-    background:#f5f7fb;
+    background:#f5f7fb !important;
     color:#111827;
     font-family:'Poppins',sans-serif;
 }
-main,
+
 .container{
-    padding-top:30px;
+    padding-top:25px;
+}
+
+nav.main-nav{
+    padding:10px 16px !important;
+}
+
+nav.main-nav a{
+    font-size:14px;
+}
+
+form{
+    background:white !important;
 }
