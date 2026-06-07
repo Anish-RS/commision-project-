@@ -1608,14 +1608,14 @@ def account_summary():
 
     if customer_id:
         cursor.execute(
-            "SELECT bill_id, bill_date, quantity, rate, amount, supplier_bill_id FROM customer_bills "
+            "SELECT cbill_id, bill_date, quantity, rate, amount, supplier_bill_id FROM customer_bills "
             "WHERE customer_id = %s AND bill_date BETWEEN %s AND %s ORDER BY bill_date ASC",
             (customer_id, from_date, to_date)
         )
         for r in cursor.fetchall():
             amt = float(r.get("amount") or 0.0)
             purchases.append({
-                "bill_id":         r.get("bill_id"),
+                "bill_id":         r.get("cbill_id"),
                 "date":            r.get("bill_date"),
                 "quantity":        r.get("quantity"),
                 "rate":            r.get("rate"),
