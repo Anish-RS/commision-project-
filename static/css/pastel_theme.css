@@ -1,25 +1,3 @@
-/* ====================================
-   BANANA ERP THEME
-==================================== */
-
-:root{
-  --primary:#4f46e5;
-  --primary-dark:#3730a3;
-
-  --success:#10b981;
-  --danger:#ef4444;
-  --warning:#f59e0b;
-
-  --bg:#f5f7fb;
-  --surface:#ffffff;
-
-  --text:#111827;
-  --muted:#6b7280;
-
-  --border:#e5e7eb;
-
-  --shadow:0 10px 30px rgba(0,0,0,.06);
-}
 /* ---------- GLOBAL PASTEL BACKGROUND ---------- */
 body {
     background: linear-gradient(135deg, #e3f2fd, #fce4ec); /* pastel blue → pastel pink */
