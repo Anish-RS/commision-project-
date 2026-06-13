@@ -32,12 +32,12 @@
   <ul>
     {% for r in results %}
       <li>
-        Bill #{{ r.bill_id }} — {{ r.customer_name }} — {{ r.bill_date }}
+        Bill #{{ r.cbill_id }} — {{ r.customer_name }} — {{ r.bill_date }}
 
-        <a href="{{ url_for('customer_bill_edit', bill_id=r.bill_id) }}">Edit</a>
+        <a href="{{ url_for('customer_bill_edit', cbill_id=r.cbill_id) }}">Edit</a>
 
         <form method="POST" action="{{ url_for('customer_bill_print_search') }}" target="_blank" style="display:inline;">
-            <input type="hidden" name="bill_no" value="{{ r.bill_id }}">
+            <input type="hidden" name="bill_no" value="{{ r.cbill_id }}">
             <button type="submit">Print</button>
         </form>
       </li>
