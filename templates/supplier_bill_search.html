@@ -18,7 +18,7 @@
   <ul style="list-style:none; padding-left:0;">
   {% for r in results %}
     <li style="padding:8px 0; border-bottom:1px solid #eee;">
-      <strong>Bill #{{ r.cbill_id }}</strong>
+      <strong>Bill #{{ r.bill_id }}</strong>
       &nbsp; — &nbsp; Supplier ID: {{ r.supplier_id }}
       {% if r.name %} &nbsp; — &nbsp; {{ r.name }}{% endif %}
       &nbsp; — &nbsp; Date: {{ r.bill_date }}
@@ -26,13 +26,13 @@
 
       &nbsp; | &nbsp;
 
-      <a href="{{ url_for('supplier_bill_edit', cbill_id=r.cbill_id) }}">Edit</a>
+      <a href="{{ url_for('supplier_bill_edit', cbill_id=r.bill_id) }}">Edit</a>
 
       &nbsp; | &nbsp;
 
       <form method="POST"
-            action="{{ url_for('supplier_bill_delete', cbill_id=r.cbill_id) }}"
-            onsubmit="return confirm('Delete supplier bill #{{ r.cbill_id }}? This will adjust balances and cash-in-hand. Proceed?');"
+            action="{{ url_for('supplier_bill_delete', cbill_id=r.bill_id) }}"
+            onsubmit="return confirm('Delete supplier bill #{{ r.bill_id }}? This will adjust balances and cash-in-hand. Proceed?');"
             style="display:inline;">
           <button type="submit" style="color:red;">Delete</button>
       </form>
@@ -40,7 +40,7 @@
       &nbsp; | &nbsp;
 
       <!-- Print single -->
-      <button type="button" class="print-single-supplier" data-bill="{{ r.cbill_id }}">Print</button>
+      <button type="button" class="print-single-supplier" data-bill="{{ r.bill_id }}">Print</button>
     </li>
   {% endfor %}
   </ul>
