@@ -1243,7 +1243,7 @@ def receipt_page():
                 datetime.strptime(tx_date, "%Y-%m-%d").date()
             )
         
-            flash(
+           flash(
                 f"Receipt saved. Old balance: {data['old_balance']:.2f}, New balance: {data['new_balance']:.2f}",
                 "success"
             )
@@ -1289,7 +1289,7 @@ def payment_page():
                 datetime.strptime(tx_date, "%Y-%m-%d").date()
             )
         
-            flash(
+           flash(
                 f"Receipt saved. Old balance: {data['old_balance']:.2f}, New balance: {data['new_balance']:.2f}",
                 "success"
             )
