@@ -800,7 +800,7 @@ def customer_bill_search():
             if bill_date:
                 sql    += " AND cb.bill_date = %s"
                 params.append(bill_date)
-            sql += " ORDER BY cb.bill_date DESC, cb.bill_id DESC LIMIT 200"
+            sql += " ORDER BY cb.bill_date DESC, cb.cbill_id DESC LIMIT 200"
             cursor.execute(sql, params)
             results = cursor.fetchall()
 
