@@ -130,7 +130,13 @@ def recompute_cash_in_hand_for_date(target_date):
     print("RECOMPUTE CALLED FOR:", target_date)
     return {"opening": opening, "receipts": total_receipts,
             "payments": total_payments, "closing": closing}
-    
+
+def recompute_cash_in_hand_from_date(start_date):
+    current = start_date
+
+    while current <= date.today():
+        recompute_cash_in_hand_for_date(current)
+        current += timedelta(days=1)
 
 
 # ---------------------------------------------------------------------------
@@ -1233,7 +1239,7 @@ def receipt_page():
         if not ok:
             flash(f"Error: {msg}", "danger")
         else:
-            recompute_cash_in_hand_for_date(
+           recompute_cash_in_hand_from_date(
                 datetime.strptime(tx_date, "%Y-%m-%d").date()
             )
         
@@ -1279,7 +1285,7 @@ def payment_page():
         if not ok:
             flash(f"Error: {msg}", "danger")
         else:
-            recompute_cash_in_hand_for_date(
+           recompute_cash_in_hand_from_date(
                 datetime.strptime(tx_date, "%Y-%m-%d").date()
             )
         
