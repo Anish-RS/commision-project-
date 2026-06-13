@@ -16,38 +16,39 @@
         <th class="col">Payment (Money OUT)</th>
     </tr>
     <tr>
-        <td>
+            <td>
+            <div><strong>Opening Cash:</strong> ₹{{ "%.2f"|format(opening) }}</div>
+            <hr>
+        
             {% if todays_receipts %}
-                <ul style="list-style: none; padding-left: 0;">
+                <ul style="list-style:none; padding-left:0;">
                 {% for r in todays_receipts %}
-                    {% if loop.first %}
-                    <li style="font-weight:bold; margin-bottom:8px;">OPENING CASH — ₹{{ '%.2f'|format(r.amount) }}</li>
-                    <hr>
-                    {% elif loop.last %}
-                    <hr>
-                    <li style="font-weight:bold; margin-top:8px;">CLOSING CASH — ₹{{ '%.2f'|format(r.amount) }}</li>
-                    {% else %}
-                    <li>{{ r.name }} — ₹{{ '%.2f'|format(r.amount) }}</li>
-                    {% endif %}
+                    <li>{{ r.name }} — ₹{{ "%.2f"|format(r.amount) }}</li>
                 {% endfor %}
                 </ul>
             {% else %}
                 <p>No receipts today.</p>
             {% endif %}
+        
+            <hr>
+            <div><strong>Total Receipts:</strong> ₹{{ "%.2f"|format(total_receipts) }}</div>
+            <div><strong>Closing Cash:</strong> ₹{{ "%.2f"|format(closing) }}</div>
         </td>
-
 
 
         <td>
             {% if all_payments %}
-                <ul>
+                <ul style="list-style:none; padding-left:0;">
                 {% for p in all_payments %}
-                    <li>{{ p.name }} — ₹{{ '%.2f'|format(p.amount) }}</li>
+                    <li>{{ p.name }} — ₹{{ "%.2f"|format(p.amount) }}</li>
                 {% endfor %}
                 </ul>
             {% else %}
                 <p>No payments today.</p>
             {% endif %}
+        
+            <hr>
+            <div><strong>Total Payments:</strong> ₹{{ "%.2f"|format(total_payments) }}</div>
         </td>
     </tr>
 </table>
