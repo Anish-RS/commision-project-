@@ -315,7 +315,7 @@ def add_supplier_bill():
                 cursor.execute(
                     """
                     INSERT INTO customer_bills
-                        (customer_id, bill_date, quantity, rate, amount, commission, net_amount, supplier_cbill_id, old_balance, final_balance)
+                        (customer_id, bill_date, quantity, rate, amount, commission, net_amount, supplier_bill_id, old_balance, final_balance)
                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                     """,
                     (cid, bill_date, qty, rate, amount, 0, amount, cbill_id, cust_old, cust_new)
@@ -466,7 +466,7 @@ def supplier_bill_edit(cbill_id):
     cursor.execute("SELECT * FROM supplier_bill_items WHERE cbill_id = %s", (cbill_id,))
     items = cursor.fetchall()
 
-    cursor.execute("SELECT * FROM customer_bills WHERE supplier_cbill_id = %s", (cbill_id,))
+    cursor.execute("SELECT * FROM customer_bills WHERE supplier_bill_id = %s", (cbill_id,))
     cust_bills = cursor.fetchall()
 
     if request.method == "POST":
@@ -529,7 +529,7 @@ def supplier_bill_edit(cbill_id):
             old_customer_sums = {row["customer_id"]: to_decimal(row["total_amount"]) for row in cursor.fetchall()}
 
             cursor.execute("DELETE FROM supplier_bill_items WHERE cbill_id = %s",        (cbill_id,))
-            cursor.execute("DELETE FROM customer_bills WHERE supplier_cbill_id = %s",    (cbill_id,))
+            cursor.execute("DELETE FROM customer_bills WHERE supplier_bill_id = %s",    (cbill_id,))
 
             for it in new_items:
                 cid    = it["customer_id"]
@@ -549,7 +549,7 @@ def supplier_bill_edit(cbill_id):
                 cursor.execute(
                     """
                     INSERT INTO customer_bills
-                        (customer_id, bill_date, quantity, rate, amount, commission, net_amount, supplier_cbill_id, old_balance, final_balance)
+                        (customer_id, bill_date, quantity, rate, amount, commission, net_amount, supplier_bill_id, old_balance, final_balance)
                     VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
                     """,
                     (cid, new_bill_date, float(qty), float(rate), float(amount), 0.0, float(amount), cbill_id, 0.0, 0.0)
@@ -633,7 +633,7 @@ def supplier_bill_delete(cbill_id):
         )
 
         cursor.execute("DELETE FROM supplier_bill_items WHERE cbill_id = %s",     (cbill_id,))
-        cursor.execute("DELETE FROM customer_bills WHERE supplier_cbill_id = %s", (cbill_id,))
+        cursor.execute("DELETE FROM customer_bills WHERE supplier_bill_id = %s", (cbill_id,))
         cursor.execute("DELETE FROM supplier_bills WHERE cbill_id = %s",          (cbill_id,))
 
         conn.commit()
@@ -965,15 +965,15 @@ def customer_bill_delete(cbill_id):
         cust_id          = cb["customer_id"]
         bill_date        = cb["bill_date"]
         amount           = to_decimal(cb["amount"] or 0)
-        supplier_cbill_id = cb.get("supplier_cbill_id")
+        supplier_bill_id = cb.get("supplier_bill_id")
 
         cursor.execute(
             "UPDATE customers SET balance = balance - %s WHERE customer_id = %s",
             (float(amount), cust_id)
         )
 
-        if supplier_cbill_id:
-            cursor.execute("SELECT * FROM supplier_bills WHERE cbill_id = %s", (supplier_cbill_id,))
+        if supplier_bill_id:
+            cursor.execute("SELECT * FROM supplier_bills WHERE cbill_id = %s", (supplier_bill_id,))
             sb = cursor.fetchone()
 
             old_total_amount = to_decimal(sb["total_amount"])
@@ -994,11 +994,11 @@ def customer_bill_delete(cbill_id):
                 SET total_amount=%s, balance=%s, final_balance=%s
                 WHERE cbill_id=%s
                 """,
-                (float(new_total_amount), float(new_bill_balance), float(new_bill_balance) * -1, supplier_cbill_id)
+                (float(new_total_amount), float(new_bill_balance), float(new_bill_balance) * -1, supplier_bill_id)
             )
             cursor.execute(
                 "DELETE FROM supplier_bill_items WHERE cbill_id=%s AND customer_id=%s",
-                (supplier_cbill_id, cust_id)
+                (supplier_bill_id, cust_id)
             )
 
         cursor.execute("DELETE FROM customer_bills WHERE cbill_id = %s", (cbill_id,))
@@ -1129,7 +1129,7 @@ def customer_bill_print_search():
         to_d   = from_d
 
         cursor.execute(
-            "SELECT cbill_id, customer_id, bill_date, quantity, rate, amount, supplier_cbill_id, old_balance, final_balance "
+            "SELECT cbill_id, customer_id, bill_date, quantity, rate, amount, supplier_bill_id, old_balance, final_balance "
             "FROM customer_bills WHERE customer_id=%s AND bill_date BETWEEN %s AND %s ORDER BY bill_date, cbill_id",
             (customer_id, from_d, to_d)
         )
@@ -1169,7 +1169,7 @@ def customer_bill_print_search():
         for cust in custs:
             cid = cust["customer_id"]
             cursor.execute(
-                "SELECT cbill_id, customer_id, bill_date, quantity, rate, amount, supplier_cbill_id, old_balance, final_balance "
+                "SELECT cbill_id, customer_id, bill_date, quantity, rate, amount, supplier_bill_id, old_balance, final_balance "
                 "FROM customer_bills WHERE customer_id=%s AND bill_date=%s ORDER BY bill_date, cbill_id",
                 (cid, period)
             )
@@ -1732,8 +1732,18 @@ def account_summary():
 
     if customer_id:
         cursor.execute(
-            "SELECT cbill_id, bill_date, quantity, rate, amount, supplier_cbill_id FROM customer_bills "
-            "WHERE customer_id = %s AND bill_date BETWEEN %s AND %s ORDER BY bill_date ASC",
+            """
+            SELECT cbill_id,
+                   bill_date,
+                   quantity,
+                   rate,
+                   amount,
+                   supplier_bill_id
+            FROM customer_bills
+            WHERE customer_id = %s
+            AND bill_date BETWEEN %s AND %s
+            ORDER BY bill_date ASC
+            """,
             (customer_id, from_date, to_date)
         )
         for r in cursor.fetchall():
@@ -1744,7 +1754,7 @@ def account_summary():
                 "quantity":        r.get("quantity"),
                 "rate":            r.get("rate"),
                 "amount":          amt,
-                "supplier_cbill_id": r.get("supplier_cbill_id")
+                "supplier_bill_id": r.get("supplier_bill_id")
             })
             sum_purchases += amt
 
