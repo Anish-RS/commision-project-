@@ -375,55 +375,78 @@ def add_supplier_bill():
 
 @app.route("/bills/supplier/search", methods=["GET", "POST"])
 def supplier_bill_search():
-    name      = ""
+    name = ""
     bill_date = ""
-    bill_no   = ""
-    results   = []
+    bill_no = ""
+    results = []
 
     if request.method == "POST":
-        name      = request.form.get("name",      "").strip()
+        name = request.form.get("name", "").strip()
         bill_date = request.form.get("bill_date", "").strip()
-        bill_no   = request.form.get("bill_no",   "").strip()
+        bill_no = request.form.get("bill_no", "").strip()
     else:
-        name      = request.args.get("name",      "").strip()
+        name = request.args.get("name", "").strip()
         bill_date = request.args.get("bill_date", "").strip()
-        bill_no   = request.args.get("bill_no",   "").strip()
+        bill_no = request.args.get("bill_no", "").strip()
 
-    conn   = get_connection()
+    conn = get_connection()
     cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     if bill_no:
         try:
             cursor.execute(
-                "SELECT b.*, s.name AS supplier_name FROM supplier_bills b "
-                "JOIN suppliers s ON b.supplier_id = s.supplier_id WHERE b.cbill_id = %s",
+                """
+                SELECT b.*, s.name AS supplier_name
+                FROM supplier_bills b
+                JOIN suppliers s
+                    ON b.supplier_id = s.supplier_id
+                WHERE b.bill_id = %s
+                """,
                 (int(bill_no),)
             )
+
             row = cursor.fetchone()
+
             if row:
                 results = [row]
+
         except ValueError:
             pass
+
     else:
-        sql    = ("SELECT b.*, s.name AS supplier_name FROM supplier_bills b "
-                  "JOIN suppliers s ON b.supplier_id = s.supplier_id WHERE 1=1")
+        sql = """
+            SELECT b.*, s.name AS supplier_name
+            FROM supplier_bills b
+            JOIN suppliers s
+                ON b.supplier_id = s.supplier_id
+            WHERE 1=1
+        """
+
         params = []
+
         if name:
-            sql    += " AND s.name ILIKE %s"
+            sql += " AND s.name ILIKE %s"
             params.append(f"%{name}%")
+
         if bill_date:
-            sql    += " AND b.bill_date = %s"
+            sql += " AND b.bill_date = %s"
             params.append(bill_date)
-        sql += " ORDER BY b.bill_date DESC, b.cbill_id DESC"
+
+        sql += " ORDER BY b.bill_date DESC, b.bill_id DESC"
+
         cursor.execute(sql, params)
         results = cursor.fetchall()
 
     cursor.close()
     conn.close()
-    return render_template("supplier_bill_search.html", results=results,
-                           name=name, bill_date=bill_date, bill_no=bill_no)
 
-
+    return render_template(
+        "supplier_bill_search.html",
+        results=results,
+        name=name,
+        bill_date=bill_date,
+        bill_no=bill_no
+    )
 # ---------------------------------------------------------------------------
 # Supplier Bills — Edit
 # ---------------------------------------------------------------------------
