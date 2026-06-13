@@ -780,9 +780,9 @@ def customer_bill_search():
 
         if bill_no:
             try:
-                cursor.execute(
+               cursor.execute(
                     "SELECT cb.*, c.name AS customer_name FROM customer_bills cb "
-                    "JOIN customers c ON cb.customer_id = c.customer_id WHERE cb.bill_id = %s",
+                    "JOIN customers c ON cb.customer_id = c.customer_id WHERE cb.cbill_id = %s",
                     (int(bill_no),)
                 )
                 row = cursor.fetchone()
@@ -814,7 +814,7 @@ def customer_bill_search():
 # Customer Bills — Edit
 # ---------------------------------------------------------------------------
 
-@app.route("/bills/customer/edit/<int:bill_id>", methods=["GET", "POST"])
+@app.route("/bills/customer/edit/<int:cbill_id>", methods=["GET", "POST"])
 def customer_bill_edit(bill_id):
     conn   = get_connection()
     cursor = conn.cursor(cursor_factory=RealDictCursor)
