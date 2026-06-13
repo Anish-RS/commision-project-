@@ -106,9 +106,7 @@ def recompute_cash_in_hand_for_date(target_date):
     r = cursor.fetchone()
     opening = to_decimal(r["closing"]) if r and r.get("closing") is not None else to_decimal(0)
     closing = opening + total_receipts - total_payments
-
-    print("Receipts:", todays_receipts)
-    print("Payments:", todays_payments)
+    
     print("Total Receipts:", total_receipts)
     print("Total Payments:", total_payments)
     print("Opening:", opening)
@@ -1233,7 +1231,14 @@ def receipt_page():
         if not ok:
             flash(f"Error: {msg}", "danger")
         else:
-            flash(f"Receipt saved. Old balance: {data['old_balance']:.2f}, New balance: {data['new_balance']:.2f}", "success")
+            recompute_cash_in_hand_for_date(
+                datetime.strptime(tx_date, "%Y-%m-%d").date()
+            )
+        
+            flash(
+                f"Receipt saved. Old balance: {data['old_balance']:.2f}, New balance: {data['new_balance']:.2f}",
+                "success"
+            )
         cursor.close(); conn.close()
         return redirect(url_for("receipt_page"))
 
@@ -1272,7 +1277,14 @@ def payment_page():
         if not ok:
             flash(f"Error: {msg}", "danger")
         else:
-            flash(f"Payment saved. Old balance: {data['old_balance']:.2f}, New balance: {data['new_balance']:.2f}", "success")
+            recompute_cash_in_hand_for_date(
+                datetime.strptime(tx_date, "%Y-%m-%d").date()
+            )
+        
+            flash(
+                f"Receipt saved. Old balance: {data['old_balance']:.2f}, New balance: {data['new_balance']:.2f}",
+                "success"
+            )
         cursor.close(); conn.close()
         return redirect(url_for("payment_page"))
 
@@ -1348,10 +1360,20 @@ def cash_in_hand():
     total_receipts = sum(float(r.get("amount") or 0) for r in todays_receipts)
     total_payments = sum(float(p.get("amount") or 0) for p in all_payments)
 
-    cursor.execute("SELECT closing FROM cash_in_hand WHERE cdate = %s", (yesterday,))
-    row     = cursor.fetchone()
-    opening = float(row["closing"]) if row and row.get("closing") is not None else 0.0
-    closing = opening + total_receipts - total_payments
+    cursor.execute(
+        """
+        SELECT closing
+        FROM cash_in_hand
+        WHERE cdate < %s
+        ORDER BY cdate DESC
+        LIMIT 1
+        """,
+        (today,))
+
+row = cursor.fetchone()
+
+opening = float(row["closing"]) if row and row.get("closing") is not None else 0.0
+closing = opening + total_receipts - total_payments
 
     cursor.execute(
         """
