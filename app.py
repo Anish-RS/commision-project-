@@ -815,59 +815,106 @@ def customer_bill_search():
 # ---------------------------------------------------------------------------
 
 @app.route("/bills/customer/edit/<int:cbill_id>", methods=["GET", "POST"])
-def customer_bill_edit(bill_id):
-    conn   = get_connection()
+def customer_bill_edit(cbill_id):
+    conn = get_connection()
     cursor = conn.cursor(cursor_factory=RealDictCursor)
-    cursor.execute("SELECT * FROM customer_bills WHERE bill_id = %s", (bill_id,))
+
+    cursor.execute(
+        "SELECT * FROM customer_bills WHERE cbill_id = %s",
+        (cbill_id,)
+    )
     bill = cursor.fetchone()
+
     if not bill:
-        cursor.close(); conn.close()
-        flash("Not found", "danger")
+        cursor.close()
+        conn.close()
+        flash("Customer bill not found", "danger")
         return redirect(url_for("customer_bill_search"))
 
     if request.method == "POST":
         try:
-            qty        = to_decimal(request.form.get("quantity") or 0)
-            rate       = to_decimal(request.form.get("rate")     or 0)
+            qty = to_decimal(request.form.get("quantity") or 0)
+            rate = to_decimal(request.form.get("rate") or 0)
+
             new_amount = (qty * rate).quantize(Decimal("0.01"))
             old_amount = to_decimal(bill["amount"])
-            delta      = new_amount - old_amount
+            delta = new_amount - old_amount
 
             cursor.execute(
-                "UPDATE customer_bills SET quantity=%s, rate=%s, amount=%s WHERE bill_id=%s",
-                (float(qty), float(rate), float(new_amount), bill_id)
+                """
+                UPDATE customer_bills
+                SET quantity = %s,
+                    rate = %s,
+                    amount = %s
+                WHERE cbill_id = %s
+                """,
+                (
+                    float(qty),
+                    float(rate),
+                    float(new_amount),
+                    cbill_id
+                )
             )
+
             cursor.execute(
-                "UPDATE customers SET balance = balance + %s WHERE customer_id = %s",
-                (float(delta), bill["customer_id"])
+                """
+                UPDATE customers
+                SET balance = balance + %s
+                WHERE customer_id = %s
+                """,
+                (
+                    float(delta),
+                    bill["customer_id"]
+                )
             )
+
             conn.commit()
 
         except Exception as e:
             conn.rollback()
-            cursor.close(); conn.close()
-            flash("Error updating customer bill: " + str(e), "danger")
-            return redirect(url_for("customer_bill_edit", bill_id=bill_id))
+
+            cursor.close()
+            conn.close()
+
+            flash(f"Error updating customer bill: {e}", "danger")
+
+            return redirect(
+                url_for(
+                    "customer_bill_edit",
+                    cbill_id=cbill_id
+                )
+            )
 
         finally:
             try:
-                cursor.close(); conn.close()
-            except Exception:
+                cursor.close()
+                conn.close()
+            except:
                 pass
 
         bill_date_val = bill["bill_date"]
+
         if isinstance(bill_date_val, str):
-            bill_date_val = datetime.strptime(bill_date_val, "%Y-%m-%d").date()
+            bill_date_val = datetime.strptime(
+                bill_date_val,
+                "%Y-%m-%d"
+            ).date()
+
         recompute_cash_in_hand_for_date(bill_date_val)
+
         if bill_date_val != date.today():
             recompute_cash_in_hand_for_date(date.today())
 
-        flash("Customer bill updated", "success")
+        flash("Customer bill updated successfully", "success")
         return redirect(url_for("customer_bill_search"))
 
-    cursor.close(); conn.close()
-    return render_template("customer_bill_edit.html", bill=bill)
+    cursor.close()
+    conn.close()
 
+    return render_template(
+        "customer_bill_edit.html",
+        bill=bill
+    )
 
 # ---------------------------------------------------------------------------
 # Customer Bills — Delete
