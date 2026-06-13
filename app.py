@@ -127,8 +127,10 @@ def recompute_cash_in_hand_for_date(target_date):
     conn.commit()
     cursor.close()
     conn.close()
+    print("RECOMPUTE CALLED FOR:", target_date)
     return {"opening": opening, "receipts": total_receipts,
             "payments": total_payments, "closing": closing}
+    
 
 
 # ---------------------------------------------------------------------------
