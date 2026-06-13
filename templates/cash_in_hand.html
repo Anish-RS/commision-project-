@@ -17,9 +17,9 @@
     </tr>
     <tr>
         <td>
-            {% if receipts %}
+            {% if todays_receipts %}
                 <ul style="list-style: none; padding-left: 0;">
-                {% for r in receipts %}
+                {% for r in todays_receipts %}
                     {% if loop.first %}
                     <li style="font-weight:bold; margin-bottom:8px;">OPENING CASH — ₹{{ '%.2f'|format(r.amount) }}</li>
                     <hr>
@@ -39,9 +39,9 @@
 
 
         <td>
-            {% if payments %}
+            {% if all_payments %}
                 <ul>
-                {% for p in payments %}
+                {% for p in all_payments %}
                     <li>{{ p.name }} — ₹{{ '%.2f'|format(p.amount) }}</li>
                 {% endfor %}
                 </ul>
