@@ -1370,10 +1370,10 @@ def cash_in_hand():
         """,
         (today,))
 
-row = cursor.fetchone()
-
-opening = float(row["closing"]) if row and row.get("closing") is not None else 0.0
-closing = opening + total_receipts - total_payments
+    row = cursor.fetchone()
+    
+    opening = float(row["closing"]) if row and row.get("closing") is not None else 0.0
+    closing = opening + total_receipts - total_payments
 
     cursor.execute(
         """
