@@ -94,7 +94,15 @@ def recompute_cash_in_hand_for_date(target_date):
     total_payments += to_decimal(lr.get("labour_sum") or 0)
 
     yesterday = target_date - timedelta(days=1)
-    cursor.execute("SELECT closing FROM cash_in_hand WHERE cdate = %s", (yesterday,))
+    cursor.execute(
+    """
+    SELECT closing
+    FROM cash_in_hand
+    WHERE cdate < %s
+    ORDER BY cdate DESC
+    LIMIT 1
+    """,
+    (target_date,))
     r = cursor.fetchone()
     opening = to_decimal(r["closing"]) if r and r.get("closing") is not None else to_decimal(0)
     closing = opening + total_receipts - total_payments
