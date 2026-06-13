@@ -1947,21 +1947,19 @@ def transactions_list():
         start_utc = start_ist.astimezone(timezone.utc)
         end_utc   = end_ist.astimezone(timezone.utc)
 
-        start_sql = start_utc.replace(tzinfo=None).strftime("%Y-%m-%d %H:%M:%S")
-        end_sql   = end_utc.replace(tzinfo=None).strftime("%Y-%m-%d %H:%M:%S")
-
         conn   = get_connection()
         cursor = conn.cursor(cursor_factory=RealDictCursor)
         cursor.execute(
             """
             SELECT tx_id, tx_type, entity_type, entity_id, amount, note, tx_date
             FROM transactions
-            WHERE entity_type = %s AND entity_id = %s AND tx_type = %s
-              AND tx_date BETWEEN %s AND %s
+            WHERE entity_type = %s
+              AND entity_id = %s
+              AND tx_type = %s
             ORDER BY tx_date DESC, tx_id DESC
             LIMIT 500
             """,
-            (entity_type, entity_id, tx_type, start_sql, end_sql)
+            (entity_type, entity_id, tx_type)
         )
         rows = cursor.fetchall()
         cursor.close(); conn.close()
