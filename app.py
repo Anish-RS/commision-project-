@@ -99,6 +99,13 @@ def recompute_cash_in_hand_for_date(target_date):
     opening = to_decimal(r["closing"]) if r and r.get("closing") is not None else to_decimal(0)
     closing = opening + total_receipts - total_payments
 
+    print("Receipts:", todays_receipts)
+    print("Payments:", todays_payments)
+    print("Total Receipts:", total_receipts)
+    print("Total Payments:", total_payments)
+    print("Opening:", opening)
+    print("Closing:", closing)
+
     cursor.execute(
         """
         INSERT INTO cash_in_hand (cdate, opening, total_receipts, total_payments, closing)
