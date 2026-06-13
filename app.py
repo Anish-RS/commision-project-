@@ -1388,6 +1388,10 @@ def cash_in_hand():
     conn.commit()
     cursor.close(); conn.close()
 
+    print("TODAY =", today)
+    print("ROW =", row)
+    print("OPENING =", opening)
+
     return render_template(
         "cash_in_hand.html",
         todays_receipts=todays_receipts,
