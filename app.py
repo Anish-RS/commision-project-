@@ -1155,7 +1155,7 @@ def customer_bill_print_search():
 
         cursor.close(); conn.close()
         return render_template(
-            "customer_bill_print_many.html",
+            "customer_bill_consolidated_print.html",
             customer_id=customer_id, customer_name=customer_name,
             from_date=from_d, to_date=to_d,
             purchases=purchases, opening=opening, net=net,
@@ -1208,7 +1208,7 @@ def customer_bill_print_search():
         if not printable:
             flash("No customer bills found.", "info")
             return redirect(url_for("customer_bill_search"))
-        return render_template("customer_bill_print_many.html", printable=printable, now=datetime.now)
+        return render_template("customer_bill_consolidated_print.html", printable=printable, now=datetime.now)
 
     cursor.close(); conn.close()
     flash("Provide Bill No, Name, or Date.", "warning")
