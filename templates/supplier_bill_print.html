@@ -74,13 +74,15 @@
 
     <div style="text-align:center; margin-bottom:10px;">
         <div style="font-size:18px; font-weight:900;">
-            GOVINDHAN
+            S.GOVINDHAN
         </div>
 
         <div style="font-size:15px; font-weight:700;">
-            Banana Commission Business
+            Banana Commission Agent
         </div>
-
+        <div style="font-size:15px; font-weight:700;">
+            Thuckalay & Appta Market
+        </div>
         <div style="font-size:13px; font-weight:700;">
             Mobile: 9894726926
         </div>
@@ -91,7 +93,15 @@
     <h1>Supplier Bill #{{ bill.get('bill_id') }}</h1>
 
     <div class="meta" style="text-align:left;">
-        <div><strong>Supplier:</strong> {{ bill.get('supplier_name') or ("ID " ~ bill.get('supplier_id')) }}</div>
+        <div>
+            <strong>Supplier:</strong>
+            {{ bill.get('supplier_name') or '-' }}
+        </div>
+        
+        <div>
+            <strong>Supplier ID:</strong>
+            {{ bill.get('supplier_id') or '-' }}
+        </div>
         <div><strong>Date:</strong> {{ bill.get('bill_date') }}</div>
         <div><strong>Total:</strong> ₹{{ "%.2f"|format(bill.get('total_amount', 0) or 0) }}</div>
     </div>
