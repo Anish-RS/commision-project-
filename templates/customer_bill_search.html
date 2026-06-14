@@ -49,6 +49,7 @@
 
 <script>
 (() => {
+
   const printBtn = document.getElementById("print-all-by-date");
   const form = document.getElementById("customer-search-form");
   const urlInput = document.getElementById("print_search_url");
@@ -58,36 +59,35 @@
   const printSearchUrl = urlInput.value;
 
   printBtn.addEventListener("click", () => {
+
     const nameField = form.querySelector('input[name="name"]');
     const dateField = form.querySelector('input[name="bill_date"]');
 
     let name = nameField.value.trim();
     let bill_date = dateField.value.trim();
 
-    // If both empty → ask user and auto-fill today
+    // If both empty → use today's date
     if (!name && !bill_date) {
+
       const ok = confirm(
         "You did not enter Name or Date.\nPrint All requires at least a Date.\n\nClick OK to print for TODAY."
       );
+
       if (!ok) return;
 
       const d = new Date();
-      const pad = s => String(s).padStart(2, "0");
-      bill_date = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+      const pad = n => String(n).padStart(2, "0");
+
+      bill_date =
+        `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
     }
 
-    // Popup-safe
-    const w = window.open("", "_blank");
-    if (!w) {
-      alert("Popup blocked. Enable popups for this site.");
-      return;
-    }
-
-    // Build dynamic POST form for print_search
+    // Submit to NEW TAB
     const f = document.createElement("form");
+
     f.method = "POST";
     f.action = printSearchUrl;
-    f.target = w.name;
+    f.target = "_blank";
 
     const add = (name, value) => {
       const i = document.createElement("input");
@@ -97,19 +97,19 @@
       f.appendChild(i);
     };
 
-    // Force bill_no = "" so backend does NOT trigger single-bill mode
     add("bill_no", "");
     add("name", name);
     add("bill_date", bill_date);
 
-    // CSRF token support
     const csrf = document.querySelector('input[name="csrf_token"]');
     if (csrf) add("csrf_token", csrf.value);
 
     document.body.appendChild(f);
     f.submit();
     document.body.removeChild(f);
+
   });
+
 })();
 </script>
 
