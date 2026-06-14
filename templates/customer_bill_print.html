@@ -29,29 +29,51 @@
 <body>
   <button class="print-btn" onclick="window.print()">Print</button>
 
+  <!-- Business Header -->
+  <div style="text-align:center; margin-bottom:20px;">
+      <div style="font-size:28px; font-weight:900;">
+          GOVINDHAN
+      </div>
+
+      <div style="font-size:20px; font-weight:700; margin-top:5px;">
+          Banana Commission Business
+      </div>
+
+      <div style="font-size:16px; font-weight:700; margin-top:5px;">
+          Mobile: 9894726926
+      </div>
+
+      <hr style="margin-top:10px; border:1px solid #000;">
+  </div>
+
+  <!-- Bill Header -->
   <header>
-    <div style="font-size:18px; font-weight:900;">
-        GOVINDHAN
+      <div>
+          <h1>Customer Bill — #{{ bill.bill_id }}</h1>
+
+          <div class="meta">
+              <div>
+                  <strong>Customer:</strong>
+                  {{ bill.customer_name or ('ID ' ~ bill.customer_id) }}
+              </div>
+
+              <div>
+                  <strong>Date:</strong>
+                  {{ bill.bill_date }}
+              </div>
+          </div>
       </div>
-      <div style="font-size:15px; font-weight:700;">
-        Banana Commission Business
+
+      <div style="text-align:right;">
+          <div>
+              <strong>Bill ID:</strong> {{ bill.bill_id }}
+          </div>
+
+          <div>
+              <strong>Reference:</strong>
+              {{ bill.supplier_bill_id or '-' }}
+          </div>
       </div>
-      <div style="font-size:13px; font-weight:700;">
-        Mobile: 9894726926
-      </div>
-      <hr style="border:0; border-top:1px solid #000; margin:6px 0;">
-    </div>
-    <div>
-      <h1>Customer Bill — #{{ bill.bill_id }}</h1>
-      <div class="meta">
-        <div><strong>Customer:</strong> {{ bill.customer_name or ('ID ' ~ bill.customer_id) }}</div>
-        <div><strong>Date:</strong> {{ bill.bill_date }}</div>
-      </div>
-    </div>
-    <div style="text-align:right;">
-      <div><strong>Bill ID:</strong> {{ bill.bill_id }}</div>
-      <div><strong>Reference:</strong> {{ bill.supplier_bill_id or '-' }}</div>
-    </div>
   </header>
 
   <section class="section">
