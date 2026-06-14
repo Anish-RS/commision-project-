@@ -26,12 +26,12 @@
 
       &nbsp; | &nbsp;
 
-      <a href="{{ url_for('supplier_bill_edit', cbill_id=r.bill_id) }}">Edit</a>
+      <a href="{{ url_for('supplier_bill_edit', bill_id=r.bill_id) }}">Edit</a>
 
       &nbsp; | &nbsp;
 
       <form method="POST"
-            action="{{ url_for('supplier_bill_delete', cbill_id=r.bill_id) }}"
+            action="{{ url_for('supplier_bill_delete', bill_id=r.bill_id) }}"
             onsubmit="return confirm('Delete supplier bill #{{ r.bill_id }}? This will adjust balances and cash-in-hand. Proceed?');"
             style="display:inline;">
           <button type="submit" style="color:red;">Delete</button>
