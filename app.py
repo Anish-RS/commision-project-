@@ -19,13 +19,6 @@ app.secret_key = os.environ.get("SECRET_KEY", "secret123")
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
-IST = get_zone("Asia/Kolkata")
-
-def ist_today():
-    return datetime.now(IST).date()
-
-def ist_now():
-    return datetime.now(IST)
     
 def to_decimal(x):
     return Decimal(x or 0).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
@@ -50,6 +43,14 @@ except Exception:
         if tzname == "Asia/Kolkata":
             return timezone(timedelta(minutes=330))
         raise RuntimeError(f"zoneinfo unavailable and tzname '{tzname}' != Asia/Kolkata")
+
+IST = get_zone("Asia/Kolkata")
+
+def ist_today():
+    return datetime.now(IST).date()
+
+def ist_now():
+    return datetime.now(IST)
 
 
 # ---------------------------------------------------------------------------
