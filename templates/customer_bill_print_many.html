@@ -28,6 +28,18 @@
     <div>No bills to print.</div>
   {% endif %}
 
+  <div style="font-size:18px; font-weight:900;">
+        GOVINDHAN
+      </div>
+      <div style="font-size:15px; font-weight:700;">
+        Banana Commission Business
+      </div>
+      <div style="font-size:13px; font-weight:700;">
+        Mobile: 9894726926
+      </div>
+      <hr style="border:0; border-top:1px solid #000; margin:6px 0;">
+    </div>
+
   {% for p in printable %}
   <div class="bill">
     <h2>Customer Bill #{{ p.bill.bill_id }} — {{ p.bill.customer_name or ('ID ' ~ p.bill.customer_id) }}</h2>
