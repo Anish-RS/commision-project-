@@ -1,216 +1,247 @@
+
 <!doctype html>
 <html>
 <head>
   <meta charset="utf-8">
   <title>Customer Statement — {{ customer_name }}</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
   <style>
-    .business-header {
-        text-align: center;
-        margin-bottom: 25px;
+
+    @page {
+      size: 76.2mm auto;
+      margin: 2mm;
     }
-    
-    .business-header .name {
-        font-size: 32px;
-        font-weight: 900;
-        margin: 0;
-    }
-    
-    .business-header .business {
-        font-size: 18px;
-        font-weight: 700;
-        margin-top: 8px;
-    }
-    
-    .business-header .location {
-        font-size: 16px;
-        font-weight: 700;
-        margin-top: 4px;
-    }
-    
-    .business-header .mobile {
-        font-size: 18px;
-        font-weight: 700;
-        margin-top: 8px;
-    }
-    
-    .business-divider {
-        border: 0;
-        border-top: 3px solid #000;
-        margin: 15px 0;
-    }
-    body { 
-      font-family: Arial, Helvetica, sans-serif; 
-      margin: 12px; 
+
+    html, body {
+      width: 76.2mm;
+      margin: 0;
+      padding: 4mm 3mm;
+      font-family: Arial, Helvetica, sans-serif;
       color: #000;
-    }
-    h1 { margin:0 0 8px 0; }
-
-    .meta { margin-bottom: 12px; }
-
-    table { 
-      width:100%; 
-      border-collapse:collapse; 
-      margin-top:8px; 
-      font-size: 14px;
+      font-size: 11px;
+      box-sizing: border-box;
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
     }
 
-    th, td { 
-      border:1px solid #333; 
-      padding:8px; 
-      text-align:left; 
-    }
-
-    th { background:#f2f2f2; }
-
-    .right { text-align:right; }
-
-    .summary { 
-      margin-top:12px; 
-      width:420px; 
-      float:right; 
-      border-top:1px dashed #444; 
-      padding-top:8px;
-      font-size:14px;
-    }
-
-    .footer { 
-      clear:both; 
-      margin-top:18px; 
-      border-top:1px dashed #666; 
-      padding-top:8px; 
-      font-size: 13px;
-    }
-
-    button.print-btn { 
-      margin-bottom:8px; 
-      padding:6px 10px; 
-      font-size:14px;
+    button.print-btn {
+      display: inline-block;
+      margin-bottom: 6px;
+      padding: 6px 10px;
+      font-size: 12px;
+      cursor: pointer;
     }
 
     @media print {
-      button.print-btn { display:none; }
+      button.print-btn {
+        display: none;
+      }
+
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
     }
+
+    h1 {
+      font-size: 16px;
+      margin: 0 0 4px 0;
+      text-align: center;
+    }
+
+    .meta {
+      font-size: 10px;
+      line-height: 1.3;
+      margin-bottom: 6px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 6px;
+      font-size: 10.5px;
+    }
+
+    th, td {
+      padding: 4px;
+      text-align: left;
+      border-bottom: 1px dashed #222;
+    }
+
+    thead th {
+      border-bottom: 1px solid #222;
+      font-weight: 700;
+    }
+
+    .right {
+      text-align: right;
+    }
+
+    .summary {
+      margin-top: 8px;
+      font-size: 10.5px;
+      border-top: 1px dashed #999;
+      padding-top: 6px;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 2px 0;
+    }
+
+    .footer {
+      margin-top: 8px;
+      font-size: 9.5px;
+      border-top: 1px dashed #666;
+      padding-top: 6px;
+      color: #111;
+      clear: both;
+    }
+
   </style>
 </head>
+
 <body>
 
-  <button class="print-btn" onclick="window.print()">Print</button>
-  
-    <!-- Business Header -->
-  <div class="business-header">
-  
-      <div class="name">
-          S.GOVINDHAN
-      </div>
-  
-      <div class="business">
-          Banana Commission Agent
-      </div>
-  
-      <div class="location">
-          Thuckalay & Appta Market
-      </div>
-  
-      <div class="mobile">
-          Mobile: 9894726926
-      </div>
-  
-      <hr class="business-divider">
-  
-  </div>
-  
-  <h1 style="text-align:center;">
-      Customer Statement
-  </h1>
+<button class="print-btn" onclick="window.print()">
+  Print
+</button>
 
-  <div class="meta">
-    <div><strong>Customer ID:</strong> {{ customer_id }}</div>
-    <div><strong>Customer Name:</strong> {{ customer_name }}</div>
+<div style="text-align:center; margin-bottom:10px;">
 
-    <div><strong>Period:</strong>
-      {% if from_date == to_date %}
-        {{ from_date }}
-      {% else %}
-        {{ from_date }} — {{ to_date }}
-      {% endif %}
+    <div style="font-size:18px; font-weight:900;">
+        S.GOVINDHAN
     </div>
+
+    <div style="font-size:15px; font-weight:700;">
+        Banana Commission Agent
+    </div>
+
+    <div style="font-size:15px; font-weight:700;">
+        Thuckalay & Appta Market
+    </div>
+
+    <div style="font-size:13px; font-weight:700;">
+        Mobile: 9894726926
+    </div>
+
+    <hr style="border:0; border-top:1px solid #000; margin:6px 0;">
+</div>
+
+<h1>Customer Statement</h1>
+
+<div class="meta">
+
+  <div>
+    <strong>Customer:</strong>
+    {{ customer_name }}
   </div>
 
-  <!-- PURCHASE TABLE -->
-  <table>
-    <thead>
+  <div>
+    <strong>Customer ID:</strong>
+    {{ customer_id }}
+  </div>
+
+  <div>
+    <strong>Period:</strong>
+
+    {% if from_date == to_date %}
+      {{ from_date }}
+    {% else %}
+      {{ from_date }} — {{ to_date }}
+    {% endif %}
+  </div>
+
+</div>
+
+<table>
+
+  <thead>
+    <tr>
+      <th>Sr</th>
+      <th>Bill</th>
+      <th>Ref</th>
+      <th>Date</th>
+      <th class="right">Rate</th>
+      <th class="right">Qty</th>
+      <th class="right">Amt</th>
+    </tr>
+  </thead>
+
+  <tbody>
+
+    {% if purchases|length == 0 %}
+
       <tr>
-        <th>Sr</th>
-        <th>Bill ID</th>
-        <th>Supplier Ref</th>
-        <th>Date</th>
-        <th class="right">Rate</th>
-        <th class="right">Qty</th>
-        <th class="right">Amount (₹)</th>
-
+        <td colspan="7">No purchases found.</td>
       </tr>
-    </thead>
 
-    <tbody>
-      {% if purchases|length == 0 %}
-        <tr><td colspan="7">No purchases found for this period.</td></tr>
-      {% else %}
-        {% for p in purchases %}
-        <tr>
-          <td>{{ loop.index }}</td>
-          <td>{{ p.bill_id }}</td>
-          <td>{{ p.supplier_bill_id or "-" }}</td>
-          <td>{{ p.bill_date }}</td>
-          <td class="right">{{ "%.2f"|format(p.rate or 0) }}</td>
-          <td class="right">{{ "%.2f"|format(p.quantity or 0) }}</td>
-          <td class="right">{{ "%.2f"|format(p.amount or 0) }}</td>
+    {% else %}
 
-        </tr>
-        {% endfor %}
-      {% endif %}
-    </tbody>
-  </table>
+      {% for p in purchases %}
+      <tr>
+        <td>{{ loop.index }}</td>
+        <td>{{ p.bill_id }}</td>
+        <td>{{ p.supplier_bill_id or "-" }}</td>
+        <td>{{ p.bill_date }}</td>
+        <td class="right">{{ "%.2f"|format(p.rate or 0) }}</td>
+        <td class="right">{{ "%.2f"|format(p.quantity or 0) }}</td>
+        <td class="right">₹{{ "%.2f"|format(p.amount or 0) }}</td>
+      </tr>
+      {% endfor %}
 
-  <!-- SUMMARY BLOCK -->
-  <div class="summary" role="note" aria-label="Summary">
+    {% endif %}
 
-    <div style="display:flex;justify-content:space-between;">
-      <div>Total Purchases</div>
-      <div class="right">₹{{ "%.2f"|format(net or 0) }}</div>
-    </div>
+  </tbody>
 
-    <div style="display:flex;justify-content:space-between;">
-      <div>Total Receipts (this period)</div>
-      <div class="right">₹{{ "%.2f"|format(sum_receipts or 0) }}</div>
-    </div>
+</table>
 
-    <div style="display:flex;justify-content:space-between;">
-      <div>Opening (before period)</div>
-      <div class="right">₹{{ "%.2f"|format(opening or 0) }}</div>
-    </div>
+<div class="summary">
 
-    <div style="display:flex;justify-content:space-between; border-top:1px dashed #999; padding-top:6px;">
-      <div>Net Change</div>
-      <div class="right">₹{{ "%.2f"|format((net - sum_receipts) or 0) }}</div>
-    </div>
-
-    <div style="display:flex;justify-content:space-between; font-weight:bold;margin-top:6px;">
-      <div>Current Balance</div>
-      <div class="right">₹{{ "%.2f"|format(current_balance or 0) }}</div>
-    </div>
+  <div class="summary-row">
+    <div>Total Purchases</div>
+    <div>₹{{ "%.2f"|format(net or 0) }}</div>
   </div>
 
-  <div class="footer">
-    <div>
-      <strong>Note:</strong> 
-      Opening = Balance before period.  
-      Net Change = Purchases − Receipts.
-    </div>
-
-    <div style="margin-top:6px">
-      Printed on: {{ printed_on }}
-    </div>
+  <div class="summary-row">
+    <div>Total Receipts</div>
+    <div>₹{{ "%.2f"|format(sum_receipts or 0) }}</div>
   </div>
+
+  <div class="summary-row">
+    <div>Opening</div>
+    <div>₹{{ "%.2f"|format(opening or 0) }}</div>
+  </div>
+
+  <div class="summary-row" style="font-weight:bold;border-top:1px dashed #999;padding-top:6px;">
+    <div>Net Change</div>
+    <div>₹{{ "%.2f"|format((net - sum_receipts) or 0) }}</div>
+  </div>
+
+  <div class="summary-row" style="font-weight:bold;">
+    <div>Current Balance</div>
+    <div>₹{{ "%.2f"|format(current_balance or 0) }}</div>
+  </div>
+
+</div>
+
+<div class="footer">
+
+  <div>
+    Opening = Balance before period
+  </div>
+
+  <div>
+    Net Change = Purchases − Receipts
+  </div>
+
+  <div style="margin-top:6px;">
+    Printed on: {{ printed_on }}
+  </div>
+
+</div>
 
 </body>
 </html>
