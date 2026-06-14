@@ -1,4 +1,4 @@
-```html
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -180,10 +180,15 @@
 
       <div class="meta">
 
-        <div>
-          <strong>Customer:</strong>
-          {{ p.bill.customer_name or ('ID ' ~ p.bill.customer_id) }}
-        </div>
+       <div>
+          <strong>Customer Name:</strong>
+          {{ p.bill.customer_name or 'N/A' }}
+      </div>
+      
+      <div>
+          <strong>Customer ID:</strong>
+          {{ p.bill.customer_id }}
+      </div>
 
         <div>
           <strong>Date:</strong>
