@@ -1155,7 +1155,7 @@ def customer_bill_print_search():
 
         cursor.close(); conn.close()
         return render_template(
-            "customer_bill_consolidated_print.html",
+            "customer_bill_print_many.html",
             customer_id=customer_id, customer_name=customer_name,
             from_date=from_d, to_date=to_d,
             purchases=purchases, opening=opening, net=net,
