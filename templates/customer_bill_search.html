@@ -28,11 +28,7 @@
   <input type="hidden" id="print_search_url" value="{{ url_for('customer_bill_print_search') }}">
 </form>
 
-<a href="{{ url_for('send_sms_bill', bill_id=r.bill_id) }}"
-   class="btn secondary"
-   style="text-decoration:none;">
-   Send SMS
-</a>
+
 
 {% if results %}
   <ul>
@@ -46,6 +42,11 @@
             <input type="hidden" name="bill_no" value="{{ r.bill_id }}">
             <button type="submit">Print</button>
         </form>
+        <a href="{{ url_for('send_sms_bill', bill_id=r.bill_id) }}"
+           class="btn secondary"
+           style="text-decoration:none;">
+           Send SMS
+        </a>
       </li>
     {% endfor %}
   </ul>
