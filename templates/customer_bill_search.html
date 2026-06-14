@@ -136,7 +136,7 @@
         id="customer-search-form"
         action="{{ url_for('customer_bill_search') }}">
 
-```
+
 <div class="search-row">
 
   <input
@@ -169,13 +169,13 @@
     value="{{ url_for('customer_bill_print_search') }}">
 
 </div>
-```
+
 
   </form>
 
 {% if results %}
 
-```
+
 <div class="results-container">
 
   {% for r in results %}
@@ -226,15 +226,15 @@
   {% endfor %}
 
 </div>
-```
+
 
 {% else %}
 
-```
+
 <div class="empty-state">
   No results found.
 </div>
-```
+
 
 {% endif %}
 
