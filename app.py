@@ -1062,32 +1062,12 @@ def customer_bill_print(bill_id):
 
     return render_template("customer_bill_print.html", bill=bill, current_balance=current_balance)
 
-@app.route("/invoice/<int:bill_id>")
-def public_invoice(bill_id):
-    conn = get_connection()
-    cursor = conn.cursor(cursor_factory=RealDictCursor)
+@app.route("/send_sms/<int:bill_id>")
+def send_sms_bill(bill_id):
 
-    cursor.execute("""
-        SELECT cb.*, c.name AS customer_name
-        FROM customer_bills cb
-        JOIN customers c
-            ON cb.customer_id = c.customer_id
-        WHERE cb.bill_id = %s
-    """, (bill_id,))
+    flash(f"SMS button clicked for Bill #{bill_id}", "success")
 
-    bill = cursor.fetchone()
-
-    cursor.close()
-    conn.close()
-
-    if not bill:
-        return "Invoice not found", 404
-
-    return render_template(
-        "public_invoice.html",
-        bill=bill
-    )
-
+    return redirect(url_for("customer_bill_search"))
 
 # ---------------------------------------------------------------------------
 # Customer Bills — Print (search / multiple)
