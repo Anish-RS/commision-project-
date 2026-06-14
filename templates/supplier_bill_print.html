@@ -71,23 +71,31 @@
   <button class="print-btn" onclick="window.print()">Print</button>
 
   <header>
-    <div style="font-size:18px; font-weight:900;">
-        GOVINDHAN
-      </div>
-      <div style="font-size:15px; font-weight:700;">
-        Banana Commission Business
-      </div>
-      <div style="font-size:13px; font-weight:700;">
-        Mobile: 9894726926
-      </div>
-      <hr style="border:0; border-top:1px solid #000; margin:6px 0;">
+
+    <div style="text-align:center; margin-bottom:10px;">
+        <div style="font-size:18px; font-weight:900;">
+            GOVINDHAN
+        </div>
+
+        <div style="font-size:15px; font-weight:700;">
+            Banana Commission Business
+        </div>
+
+        <div style="font-size:13px; font-weight:700;">
+            Mobile: 9894726926
+        </div>
+
+        <hr style="border:0; border-top:1px solid #000; margin:6px 0;">
     </div>
-    <h1 style="font-size:16px;">Supplier Bill #{{ bill.get('bill_id') }}</h1>
-    <div class="meta">
-      <div><strong>Supplier:</strong> {{ bill.get('supplier_name') or ("ID " ~ bill.get('supplier_id')) }}</div>
-      <div><strong>Date:</strong> {{ bill.get('bill_date') }}</div>
-      <div><strong>Total:</strong> ₹{{ "%.2f"|format(bill.get('total_amount', 0) if bill.get('total_amount') is not none else 0) }}</div>
+
+    <h1>Supplier Bill #{{ bill.get('bill_id') }}</h1>
+
+    <div class="meta" style="text-align:left;">
+        <div><strong>Supplier:</strong> {{ bill.get('supplier_name') or ("ID " ~ bill.get('supplier_id')) }}</div>
+        <div><strong>Date:</strong> {{ bill.get('bill_date') }}</div>
+        <div><strong>Total:</strong> ₹{{ "%.2f"|format(bill.get('total_amount', 0) or 0) }}</div>
     </div>
+
   </header>
 
   <table aria-label="Bill items">
