@@ -32,20 +32,31 @@
     }
 
     /* Top navigation */
-    nav.main-nav {
-      display:flex;
-      gap:12px;
-      flex-wrap:wrap;
-      align-items:center;
-      padding:14px 16px;
-      background: linear-gradient(90deg, rgba(255,255,255,0.6), rgba(255,255,255,0.45));
-      border-bottom: 1px solid rgba(0,0,0,0.06);
-      box-shadow: 0 4px 18px rgba(20,30,80,0.03);
-      position: sticky;
-      top: 0;
-      z-index: 40;
+   nav.main-nav {
+        display:flex;
+        gap:12px;
+        flex-wrap:wrap;
+        align-items:center;
+        padding:14px 16px;
+        background: linear-gradient(90deg, rgba(255,255,255,0.6), rgba(255,255,255,0.45));
+        border-bottom: 1px solid rgba(0,0,0,0.06);
+        box-shadow: 0 4px 18px rgba(20,30,80,0.03);
+    
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+    
+        transition: top 0.3s ease;
     }
 
+    .container{
+        max-width:1100px;
+        margin:90px auto 80px;
+        padding:0 16px;
+    }
+    
     nav.main-nav .logo {
       font-weight:700;
       color:var(--pastel-indigo);
@@ -96,6 +107,23 @@
     footer.site-footer { text-align:center; color:var(--muted); padding:18px 0; font-size:13px; }
   </style>
 </head>
+
+<script>
+  let prevScrollPos = window.pageYOffset;
+  
+  window.addEventListener("scroll", function () {
+      let currentScrollPos = window.pageYOffset;
+      const nav = document.querySelector(".main-nav");
+  
+      if (prevScrollPos > currentScrollPos) {
+          nav.style.top = "0";
+      } else {
+          nav.style.top = "-120px";
+      }
+  
+      prevScrollPos = currentScrollPos;
+  });
+  </script>
 
 <body>
   <!-- NAV -->
