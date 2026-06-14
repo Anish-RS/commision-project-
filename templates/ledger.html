@@ -1,126 +1,304 @@
+```html
 {% extends "base.html" %}
 
 {% block content %}
-<h2>Credit / Debit Ledger</h2>
 
 <style>
-  .ledger-section { margin-bottom: 36px; }
-  .ledger-wrap { display:flex; gap:40px; flex-wrap:wrap; }
-  .ledger-card { border:1px solid #ccc; padding:12px; min-width:300px; }
-  table { width:100%; border-collapse:collapse; }
-  th, td { border:1px solid #ddd; padding:6px 8px; text-align:left; }
-  th { background:#f5f5f5; }
-  .tot-row { font-weight:bold; background:#fafafa; }
-  .credit { color: green; }
-  .debit { color: red; }
+  .print-header {
+      text-align: center;
+      margin-bottom: 20px;
+  }
+
+  .print-header h1 {
+      margin: 0;
+      font-size: 28px;
+  }
+
+  .print-header h3 {
+      margin: 5px 0;
+  }
+
+  .ledger-section {
+      margin-bottom: 30px;
+  }
+
+  .ledger-wrap {
+      display: flex;
+      gap: 40px;
+      flex-wrap: wrap;
+  }
+
+  .ledger-card {
+      border: 1px solid #ccc;
+      padding: 12px;
+      min-width: 350px;
+      background: white;
+  }
+
+  table {
+      width: 100%;
+      border-collapse: collapse;
+  }
+
+  th, td {
+      border: 1px solid #ddd;
+      padding: 6px 8px;
+      text-align: left;
+  }
+
+  th {
+      background: #f5f5f5;
+  }
+
+  .tot-row {
+      font-weight: bold;
+      background: #fafafa;
+  }
+
+  .credit {
+      color: green;
+  }
+
+  .debit {
+      color: red;
+  }
+
+  .print-btn {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      cursor: pointer;
+      margin-bottom: 15px;
+      border-radius: 4px;
+  }
+
+  @media screen {
+      .print-header {
+          display: none;
+      }
+  }
+
+  @media print {
+
+      .print-btn,
+      nav,
+      .navbar,
+      .sidebar,
+      footer {
+          display: none !important;
+      }
+
+      .print-header {
+          display: block !important;
+      }
+
+      body {
+          margin: 15px;
+          font-size: 12px;
+      }
+
+      .ledger-wrap {
+          display: block !important;
+      }
+
+      .ledger-card {
+          width: 100%;
+          margin-bottom: 25px;
+          border: 1px solid #000;
+          page-break-inside: avoid;
+      }
+
+      table {
+          page-break-inside: avoid;
+      }
+
+      h2, h3, h4 {
+          page-break-after: avoid;
+      }
+
+      hr {
+          margin: 20px 0;
+      }
+  }
 </style>
 
-<div class="ledger-section">
-  <h3>Suppliers</h3>
-  <div class="ledger-wrap">
-    <div class="ledger-card">
-      <h4>Credit (Supplier balance > 0)</h4>
-      {% if supplier_credit %}
-      <table>
-        <thead><tr><th>Supplier ID</th><th>Name</th><th>Amount</th></tr></thead>
-        <tbody>
-          {% for s in supplier_credit %}
-            <tr>
-              <td>{{ s.id }}</td>
-              <td>{{ s.name }}</td>
-              <td class="credit">₹ {{ '%.2f'|format(s.amount) }}</td>
-            </tr>
-          {% endfor %}
-          <tr class="tot-row">
-            <td colspan="2">Total Credit</td>
-            <td class="credit">₹ {{ '%.2f'|format(supplier_credit_total) }}</td>
-          </tr>
-        </tbody>
-      </table>
-      {% else %}
-        <p>No supplier credits.</p>
-      {% endif %}
-    </div>
-
-    <div class="ledger-card">
-      <h4>Debit (Supplier balance &lt; 0)</h4>
-      {% if supplier_debit %}
-      <table>
-        <thead><tr><th>Supplier ID</th><th>Name</th><th>Amount</th></tr></thead>
-        <tbody>
-          {% for s in supplier_debit %}
-            <tr>
-              <td>{{ s.id }}</td>
-              <td>{{ s.name }}</td>
-              <td class="debit">₹ {{ '%.2f'|format(s.amount) }}</td>
-            </tr>
-          {% endfor %}
-          <tr class="tot-row">
-            <td colspan="2">Total Debit</td>
-            <td class="debit">₹ {{ '%.2f'|format(supplier_debit_total) }}</td>
-          </tr>
-        </tbody>
-      </table>
-      {% else %}
-        <p>No supplier debits.</p>
-      {% endif %}
-    </div>
-  </div>
+<div class="print-header">
+    <h1>GOVINDHAN</h1>
+    <h3>Banana Commission Business</h3>
+    <p>Mobile: 9894726926</p>
+    <hr>
 </div>
 
-<hr>
+<h2>Credit / Debit Ledger</h2>
 
+<button onclick="window.print()" class="print-btn">
+    Print Ledger
+</button>
+
+<!-- SUPPLIER CREDIT -->
 <div class="ledger-section">
-  <h3>Customers</h3>
-  <div class="ledger-wrap">
     <div class="ledger-card">
-      <h4>Credit (Customer balance &gt; 0)</h4>
-      {% if customer_credit %}
-      <table>
-        <thead><tr><th>Customer ID</th><th>Name</th><th>Amount</th></tr></thead>
-        <tbody>
-          {% for c in customer_credit %}
-            <tr>
-              <td>{{ c.id }}</td>
-              <td>{{ c.name }}</td>
-              <td class="credit">₹ {{ '%.2f'|format(c.amount) }}</td>
-            </tr>
-          {% endfor %}
-          <tr class="tot-row">
-            <td colspan="2">Total Credit</td>
-            <td class="credit">₹ {{ '%.2f'|format(customer_credit_total) }}</td>
-          </tr>
-        </tbody>
-      </table>
-      {% else %}
-        <p>No customer credits.</p>
-      {% endif %}
-    </div>
 
-    <div class="ledger-card">
-      <h4>Debit (Customer balance &lt; 0)</h4>
-      {% if customer_debit %}
-      <table>
-        <thead><tr><th>Customer ID</th><th>Name</th><th>Amount</th></tr></thead>
-        <tbody>
-          {% for c in customer_debit %}
-            <tr>
-              <td>{{ c.id }}</td>
-              <td>{{ c.name }}</td>
-              <td class="debit">₹ {{ '%.2f'|format(c.amount) }}</td>
+        <h3>Supplier Credit</h3>
+
+        {% if supplier_credit %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Supplier ID</th>
+                    <th>Name</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+
+            {% for s in supplier_credit %}
+                <tr>
+                    <td>{{ s.id }}</td>
+                    <td>{{ s.name }}</td>
+                    <td class="credit">₹ {{ '%.2f'|format(s.amount) }}</td>
+                </tr>
+            {% endfor %}
+
+            <tr class="tot-row">
+                <td colspan="2">Total Credit</td>
+                <td class="credit">
+                    ₹ {{ '%.2f'|format(supplier_credit_total) }}
+                </td>
             </tr>
-          {% endfor %}
-          <tr class="tot-row">
-            <td colspan="2">Total Debit</td>
-            <td class="debit">₹ {{ '%.2f'|format(customer_debit_total) }}</td>
-          </tr>
-        </tbody>
-      </table>
-      {% else %}
-        <p>No customer debits.</p>
-      {% endif %}
+
+            </tbody>
+        </table>
+        {% else %}
+            <p>No supplier credits.</p>
+        {% endif %}
+
     </div>
-  </div>
+</div>
+
+<!-- SUPPLIER DEBIT -->
+<div class="ledger-section">
+    <div class="ledger-card">
+
+        <h3>Supplier Debit</h3>
+
+        {% if supplier_debit %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Supplier ID</th>
+                    <th>Name</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+
+            {% for s in supplier_debit %}
+                <tr>
+                    <td>{{ s.id }}</td>
+                    <td>{{ s.name }}</td>
+                    <td class="debit">₹ {{ '%.2f'|format(s.amount) }}</td>
+                </tr>
+            {% endfor %}
+
+            <tr class="tot-row">
+                <td colspan="2">Total Debit</td>
+                <td class="debit">
+                    ₹ {{ '%.2f'|format(supplier_debit_total) }}
+                </td>
+            </tr>
+
+            </tbody>
+        </table>
+        {% else %}
+            <p>No supplier debits.</p>
+        {% endif %}
+
+    </div>
+</div>
+
+<!-- CUSTOMER CREDIT -->
+<div class="ledger-section">
+    <div class="ledger-card">
+
+        <h3>Customer Credit</h3>
+
+        {% if customer_credit %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Customer ID</th>
+                    <th>Name</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+
+            {% for c in customer_credit %}
+                <tr>
+                    <td>{{ c.id }}</td>
+                    <td>{{ c.name }}</td>
+                    <td class="credit">₹ {{ '%.2f'|format(c.amount) }}</td>
+                </tr>
+            {% endfor %}
+
+            <tr class="tot-row">
+                <td colspan="2">Total Credit</td>
+                <td class="credit">
+                    ₹ {{ '%.2f'|format(customer_credit_total) }}
+                </td>
+            </tr>
+
+            </tbody>
+        </table>
+        {% else %}
+            <p>No customer credits.</p>
+        {% endif %}
+
+    </div>
+</div>
+
+<!-- CUSTOMER DEBIT -->
+<div class="ledger-section">
+    <div class="ledger-card">
+
+        <h3>Customer Debit</h3>
+
+        {% if customer_debit %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Customer ID</th>
+                    <th>Name</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+
+            {% for c in customer_debit %}
+                <tr>
+                    <td>{{ c.id }}</td>
+                    <td>{{ c.name }}</td>
+                    <td class="debit">₹ {{ '%.2f'|format(c.amount) }}</td>
+                </tr>
+            {% endfor %}
+
+            <tr class="tot-row">
+                <td colspan="2">Total Debit</td>
+                <td class="debit">
+                    ₹ {{ '%.2f'|format(customer_debit_total) }}
+                </td>
+            </tr>
+
+            </tbody>
+        </table>
+        {% else %}
+            <p>No customer debits.</p>
+        {% endif %}
+
+    </div>
 </div>
 
 {% endblock %}
+```
