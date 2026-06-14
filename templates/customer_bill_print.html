@@ -55,10 +55,15 @@
           <h1>Customer Bill — #{{ bill.bill_id }}</h1>
 
           <div class="meta">
-              <div>
-                  <strong>Customer:</strong>
-                  {{ bill.customer_name or ('ID ' ~ bill.customer_id) }}
-              </div>
+             <div>
+                <strong>Customer Name:</strong>
+                {{ bill.customer_name }}
+            </div>
+            
+            <div>
+                <strong>Customer ID:</strong>
+                {{ bill.customer_id }}
+            </div>
 
               <div>
                   <strong>Date:</strong>
