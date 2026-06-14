@@ -175,30 +175,28 @@
     <div>
 
       <h2>
-        Customer Bill #{{ p.bill.bill_id }}
+      Customer Statement
       </h2>
-
-      <div class="meta">
-
-       <div>
-          <strong>Customer Name:</strong>
-          {{ p.bill.customer_name or 'N/A' }}
-      </div>
       
-      <div>
-          <strong>Customer ID:</strong>
-          {{ p.bill.customer_id }}
-      </div>
-
+      <div class="meta">
+      
         <div>
-          <strong>Date:</strong>
-          {{ p.bill.bill_date }}
+            <strong>Customer ID:</strong>
+            {{ p.customer_id }}
         </div>
-
+      
+        <div>
+            <strong>Customer Name:</strong>
+            {{ p.customer_name }}
+        </div>
+      
+        <div>
+            <strong>Date:</strong>
+            {{ p.date }}
+        </div>
+      
       </div>
-
-    </div>
-
+          
     <div style="text-align:right;">
 
       <div>
