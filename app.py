@@ -284,7 +284,7 @@ def add_supplier_bill():
                 INSERT INTO supplier_bills
                     (supplier_id, bill_date, total_amount, commission, transport, labour, paid, balance, old_balance, final_balance)
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                RETURNING cbill_id
+                RETURNING bill_id
                 """,
                 (supplier_id, bill_date, total_amount, commission, transport, labour, paid,
                  bill_balance, old_supplier_balance, new_supplier_balance)
