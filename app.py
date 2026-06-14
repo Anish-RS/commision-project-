@@ -11,6 +11,7 @@ from decimal import Decimal, ROUND_HALF_UP
 import os
 import re
 import traceback
+from urllib.parse import quote
 from collections import defaultdict
 
 app = Flask(__name__)
@@ -1068,6 +1069,55 @@ def send_sms_bill(bill_id):
     flash(f"SMS button clicked for Bill #{bill_id}", "success")
 
     return redirect(url_for("customer_bill_search"))
+
+@app.route("/send_whatsapp/<int:bill_id>")
+
+def send_whatsapp_bill(bill_id):
+
+    conn = get_connection()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
+
+    cursor.execute("""
+        SELECT
+            cb.bill_id,
+            cb.amount,
+            c.name as customer_name,
+            c.phone
+        FROM customer_bills cb
+        JOIN customers c
+            ON cb.customer_id = c.customer_id
+        WHERE cb.bill_id = %s
+    """, (bill_id,))
+
+    bill = cursor.fetchone()
+
+    cursor.close()
+    conn.close()
+
+    if not bill:
+        flash("Bill not found", "danger")
+        return redirect(url_for("customer_bill_search"))
+
+    phone = str(bill["phone"]).strip()
+
+    if phone.startswith("+91"):
+        phone = phone[3:]
+
+    message = (
+        f"Thank you for purchasing from "
+        f"S.GOVINDHAN Banana Commission Agent.\n\n"
+        f"Customer: {bill['customer_name']}\n"
+        f"Bill No: {bill['bill_id']}\n"
+        f"Amount: ₹{bill['amount']}\n\n"
+        f"Thank you for your business."
+    )
+
+    whatsapp_url = (
+        f"https://wa.me/91{phone}"
+        f"?text={quote(message)}"
+    )
+
+    return redirect(whatsapp_url)
 
 # ---------------------------------------------------------------------------
 # Customer Bills — Print (search / multiple)
