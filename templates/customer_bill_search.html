@@ -1,58 +1,244 @@
 {% extends "base.html" %}
 {% block title %}Search Customer Bill{% endblock %}
+
 {% block content %}
+
 <style>
-  .search-row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:12px; }
-  .search-row input[type=text], .search-row input[type=date] {
-    padding:8px 10px; border-radius:6px; border:1px solid #dbeafc;
+  .page-card{
+    background:#fcfcff;
+    border:1px solid #e6eefb;
+    border-radius:16px;
+    padding:20px;
+    box-shadow:0 4px 12px rgba(0,0,0,.05);
   }
-  .btn { padding:8px 10px; border-radius:8px; background:linear-gradient(90deg,#64b5f6,#42a5f5);
-         color:#fff; border:0; cursor:pointer; font-weight:700; }
-  .btn.secondary { background:transparent; color:#1976d2; border:1px solid #dbeafc; padding:7px 10px; }
-  ul.results { list-style:none; padding:0; margin-top:14px; }
-  ul.results li { padding:10px 12px; border-bottom:1px solid #f0f4fb; display:flex; gap:8px; align-items:center; }
-  .muted { color:#667; }
+
+  .page-title{
+    margin-bottom:18px;
+    color:#34495e;
+  }
+
+  .search-row{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    align-items:center;
+    margin-bottom:16px;
+  }
+
+  .search-row input[type=text],
+  .search-row input[type=date]{
+    padding:10px 12px;
+    border-radius:10px;
+    border:1px solid #dbeafc;
+    background:#fff;
+    min-width:180px;
+  }
+
+  .btn{
+    padding:10px 14px;
+    border-radius:10px;
+    border:none;
+    cursor:pointer;
+    font-weight:600;
+    transition:.2s;
+  }
+
+  .btn:hover{
+    transform:translateY(-1px);
+  }
+
+  .btn-primary{
+    background:#9ec5fe;
+    color:#fff;
+  }
+
+  .btn-secondary{
+    background:#eef5ff;
+    border:1px solid #dbeafc;
+    color:#1976d2;
+  }
+
+  .results-container{
+    margin-top:20px;
+  }
+
+  .result-card{
+    background:#fff;
+    border:1px solid #eef2f8;
+    border-radius:14px;
+    padding:14px 16px;
+    margin-bottom:12px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:12px;
+  }
+
+  .bill-info{
+    color:#2c3e50;
+    font-size:15px;
+  }
+
+  .bill-info strong{
+    color:#1976d2;
+  }
+
+  .actions{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+
+  .action-link{
+    text-decoration:none;
+    padding:8px 12px;
+    border-radius:8px;
+    font-size:14px;
+    font-weight:600;
+  }
+
+  .edit-btn{
+    background:#d4edda;
+    color:#155724;
+  }
+
+  .print-btn{
+    background:#d6eaf8;
+    color:#21618c;
+    border:none;
+    cursor:pointer;
+    padding:8px 12px;
+    border-radius:8px;
+    font-weight:600;
+  }
+
+  .whatsapp-btn{
+    background:#d8f3dc;
+    color:#1b5e20;
+  }
+
+  .empty-state{
+    margin-top:20px;
+    padding:18px;
+    background:#fff8e7;
+    border:1px solid #ffe8a1;
+    border-radius:12px;
+    color:#8a6d3b;
+  }
 </style>
 
-<h2>Search Customer Bill</h2>
+<div class="page-card">
 
-<form method="POST" id="customer-search-form" action="{{ url_for('customer_bill_search') }}">
-  <input type="text" name="bill_no" placeholder="Bill #">
-  <input type="text" name="name" placeholder="Customer name / ID">
-  <input type="date" name="bill_date">
+  <h2 class="page-title">Search Customer Bill</h2>
 
-  <button type="submit" class="btn">Search</button>
+  <form method="POST"
+        id="customer-search-form"
+        action="{{ url_for('customer_bill_search') }}">
 
-  <button type="button" id="print-all-by-date" class="btn secondary">Print All (By Date)</button>
+```
+<div class="search-row">
 
-  <input type="hidden" id="print_search_url" value="{{ url_for('customer_bill_print_search') }}">
-</form>
+  <input
+    type="text"
+    name="bill_no"
+    placeholder="Bill Number">
 
+  <input
+    type="text"
+    name="name"
+    placeholder="Customer Name / ID">
 
+  <input
+    type="date"
+    name="bill_date">
+
+  <button type="submit" class="btn btn-primary">
+    Search
+  </button>
+
+  <button type="button"
+          id="print-all-by-date"
+          class="btn btn-secondary">
+    Print All (By Date)
+  </button>
+
+  <input
+    type="hidden"
+    id="print_search_url"
+    value="{{ url_for('customer_bill_print_search') }}">
+
+</div>
+```
+
+  </form>
 
 {% if results %}
-  <ul>
-    {% for r in results %}
-      <li>
-        Bill #{{ r.bill_id }} — {{ r.customer_name }} — {{ r.bill_date }}
 
-        <a href="{{ url_for('customer_bill_edit', bill_id=r.bill_id) }}">Edit</a>
+```
+<div class="results-container">
 
-        <form method="POST" action="{{ url_for('customer_bill_print_search') }}" target="_blank" style="display:inline;">
-            <input type="hidden" name="bill_no" value="{{ r.bill_id }}">
-            <button type="submit">Print</button>
-        </form>
-       <a href="{{ url_for('send_whatsapp_bill', bill_id=r.bill_id) }}"
-         class="btn secondary"
-         style="text-decoration:none;">
+  {% for r in results %}
+
+  <div class="result-card">
+
+    <div class="bill-info">
+      <strong>Bill #{{ r.bill_id }}</strong>
+      &nbsp;•&nbsp;
+      {{ r.customer_name }}
+      &nbsp;•&nbsp;
+      {{ r.bill_date }}
+    </div>
+
+    <div class="actions">
+
+      <a href="{{ url_for('customer_bill_edit', bill_id=r.bill_id) }}"
+         class="action-link edit-btn">
+         Edit
+      </a>
+
+      <form method="POST"
+            action="{{ url_for('customer_bill_print_search') }}"
+            target="_blank"
+            style="display:inline;">
+
+        <input
+          type="hidden"
+          name="bill_no"
+          value="{{ r.bill_id }}">
+
+        <button type="submit"
+                class="print-btn">
+          Print
+        </button>
+
+      </form>
+
+      <a href="{{ url_for('send_whatsapp_bill', bill_id=r.bill_id) }}"
+         class="action-link whatsapp-btn">
          Send WhatsApp
       </a>
-      </li>
-    {% endfor %}
-  </ul>
+
+    </div>
+
+  </div>
+
+  {% endfor %}
+
+</div>
+```
+
 {% else %}
-  <p>No results.</p>
+
+```
+<div class="empty-state">
+  No results found.
+</div>
+```
+
 {% endif %}
+
+</div>
 
 <script>
 (() => {
@@ -73,7 +259,6 @@
     let name = nameField.value.trim();
     let bill_date = dateField.value.trim();
 
-    // If both empty → use today's date
     if (!name && !bill_date) {
 
       const ok = confirm(
@@ -86,10 +271,9 @@
       const pad = n => String(n).padStart(2, "0");
 
       bill_date =
-        `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+        `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
     }
 
-    // Submit to NEW TAB
     const f = document.createElement("form");
 
     f.method = "POST";
