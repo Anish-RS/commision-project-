@@ -4,6 +4,40 @@
   <meta charset="utf-8">
   <title>Customer Statement — {{ customer_name }}</title>
   <style>
+    .business-header {
+        text-align: center;
+        margin-bottom: 25px;
+    }
+    
+    .business-header .name {
+        font-size: 32px;
+        font-weight: 900;
+        margin: 0;
+    }
+    
+    .business-header .business {
+        font-size: 18px;
+        font-weight: 700;
+        margin-top: 8px;
+    }
+    
+    .business-header .location {
+        font-size: 16px;
+        font-weight: 700;
+        margin-top: 4px;
+    }
+    
+    .business-header .mobile {
+        font-size: 18px;
+        font-weight: 700;
+        margin-top: 8px;
+    }
+    
+    .business-divider {
+        border: 0;
+        border-top: 3px solid #000;
+        margin: 15px 0;
+    }
     body { 
       font-family: Arial, Helvetica, sans-serif; 
       margin: 12px; 
@@ -61,11 +95,37 @@
 <body>
 
   <button class="print-btn" onclick="window.print()">Print</button>
-
-  <h1>Customer Statement — {{ customer_name }}</h1>
+  
+    <!-- Business Header -->
+  <div class="business-header">
+  
+      <div class="name">
+          S.GOVINDHAN
+      </div>
+  
+      <div class="business">
+          Banana Commission Agent
+      </div>
+  
+      <div class="location">
+          Thuckalay & Appta Market
+      </div>
+  
+      <div class="mobile">
+          Mobile: 9894726926
+      </div>
+  
+      <hr class="business-divider">
+  
+  </div>
+  
+  <h1 style="text-align:center;">
+      Customer Statement
+  </h1>
 
   <div class="meta">
     <div><strong>Customer ID:</strong> {{ customer_id }}</div>
+    <div><strong>Customer Name:</strong> {{ customer_name }}</div>
 
     <div><strong>Period:</strong>
       {% if from_date == to_date %}
