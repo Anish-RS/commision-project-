@@ -19,7 +19,14 @@ app.secret_key = os.environ.get("SECRET_KEY", "secret123")
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+IST = get_zone("Asia/Kolkata")
 
+def ist_today():
+    return datetime.now(IST).date()
+
+def ist_now():
+    return datetime.now(IST)
+    
 def to_decimal(x):
     return Decimal(x or 0).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
 
@@ -134,7 +141,7 @@ def recompute_cash_in_hand_for_date(target_date):
 def recompute_cash_in_hand_from_date(start_date):
     current = start_date
 
-    while current <= date.today():
+    while current <= ist_today():
         recompute_cash_in_hand_for_date(current)
         current += timedelta(days=1)
 
@@ -233,7 +240,7 @@ def add_supplier_bill():
             flash("Invalid supplier id.", "danger")
             return redirect(url_for("add_supplier_bill"))
 
-        bill_date = request.form.get("bill_date") or date.today().isoformat()
+        bill_date = request.form.get("bill_date") or ist_today().isoformat()
 
         try:
             commission = float(request.form.get("commission") or 0)
@@ -365,7 +372,7 @@ def add_supplier_bill():
     customers = cursor.fetchall()
     cursor.close()
     conn.close()
-    return render_template("supplier_bill.html", today=date.today().isoformat(),
+    return render_template("supplier_bill.html", today=ist_today().isoformat(),
                            suppliers=suppliers, customers=customers)
 
 
@@ -581,8 +588,8 @@ def supplier_bill_edit(bill_id):
             recompute_cash_in_hand_for_date(new_bill_date)
         except Exception:
             pass
-        if new_bill_date != date.today():
-            recompute_cash_in_hand_for_date(date.today())
+        if new_bill_date != ist_today():
+            recompute_cash_in_hand_for_date(ist_today())
 
         flash("Supplier bill updated successfully", "success")
         return redirect(url_for("supplier_bill_search"))
@@ -656,7 +663,7 @@ def supplier_bill_delete(bill_id):
             recompute_cash_in_hand_for_date(bd)
         except Exception:
             pass
-    recompute_cash_in_hand_for_date(date.today())
+    recompute_cash_in_hand_for_date(ist_today())
 
     flash(f"Supplier bill #{bill_id} deleted and balances adjusted.", "success")
     return redirect(url_for("supplier_bill_search"))
@@ -930,8 +937,8 @@ def customer_bill_edit(bill_id):
 
         recompute_cash_in_hand_for_date(bill_date_val)
 
-        if bill_date_val != date.today():
-            recompute_cash_in_hand_for_date(date.today())
+        if bill_date_val != ist_today():
+            recompute_cash_in_hand_for_date(ist_today())
 
         flash("Customer bill updated successfully", "success")
         return redirect(url_for("customer_bill_search"))
@@ -1021,7 +1028,7 @@ def customer_bill_delete(bill_id):
             recompute_cash_in_hand_for_date(bd)
         except Exception:
             pass
-    recompute_cash_in_hand_for_date(date.today())
+    recompute_cash_in_hand_for_date(ist_today())
 
     flash(f"Customer bill #{bill_id} deleted successfully.", "success")
     return redirect(url_for("customer_bill_search"))
@@ -1125,7 +1132,7 @@ def customer_bill_print_search():
             flash("Customer not found", "danger")
             return redirect(url_for("customer_bill_search"))
 
-        from_d = parsed_date or date.today()
+        from_d = parsed_date or ist_today()
         to_d   = from_d
 
         cursor.execute(
@@ -1385,7 +1392,7 @@ def payment_page():
 
 @app.route("/cash_in_hand")
 def cash_in_hand():
-    today          = date.today()
+    today          = ist_today()
     today_start    = datetime.combine(today, time.min)
     tomorrow_start = today_start + timedelta(days=1)
     yesterday      = today - timedelta(days=1)
@@ -1492,7 +1499,7 @@ def cash_in_hand():
 
 @app.route("/labour/add", methods=["GET", "POST"])
 def add_labour():
-    today = date.today()
+    today = ist_today()
 
     if request.method == "POST":
         amount = float(request.form.get("amount") or 0)
@@ -1672,7 +1679,7 @@ def account_summary():
     from_str = request.args.get("from_date")
     to_str   = request.args.get("to_date")
 
-    today = date.today()
+    today = ist_today()
     try:
         from_date = datetime.strptime(from_str, "%Y-%m-%d").date() if from_str else today
     except Exception:
@@ -1854,7 +1861,7 @@ def tally():
 def profit_loss():
     from_str = request.args.get("from_date")
     to_str   = request.args.get("to_date")
-    today    = date.today()
+    today    = ist_today()
 
     try:
         from_date = datetime.strptime(from_str, "%Y-%m-%d").date() if from_str else today
