@@ -1,100 +1,223 @@
 {% extends "base.html" %}
 {% block content %}
+
+<style>
+  .search-card {
+    background: #fdfcff;
+    border: 1px solid #e8e6f2;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    margin-bottom: 20px;
+  }
+
+  .search-card input {
+    padding: 8px 10px;
+    border: 1px solid #d8d6e8;
+    border-radius: 8px;
+    margin-right: 8px;
+  }
+
+  .search-btn {
+    background: #b8c0ff;
+    border: none;
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+
+  .search-btn:hover {
+    background: #9ea8ff;
+  }
+
+  .result-card {
+    background: #fffdfc;
+    border: 1px solid #eee4dc;
+    border-radius: 10px;
+    padding: 12px 15px;
+    margin-bottom: 10px;
+  }
+
+  .action-btn {
+    text-decoration: none;
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 14px;
+    display: inline-block;
+  }
+
+  .edit-btn {
+    background: #cdeac0;
+    color: #234;
+  }
+
+  .print-btn {
+    background: #d6e5fa;
+    color: #234;
+    border: none;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 6px;
+  }
+
+  .delete-btn {
+    background: #ffd6d6;
+    color: #900;
+    border: none;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 6px;
+  }
+
+  .result-count {
+    color: #666;
+    margin-bottom: 15px;
+  }
+</style>
+
 <h2>Search Supplier Bill</h2>
 
-<form method="POST" id="supplier-search-form" style="margin-bottom:12px;">
-  Bill No: <input name="bill_no" value="{{ request.form.bill_no if request.method=='POST' else '' }}" /> &nbsp;
-  Name: <input name="name" value="{{ request.form.name if request.method=='POST' else '' }}" /> &nbsp;
-  Date: <input type="date" name="bill_date" value="{{ request.form.bill_date if request.method=='POST' else '' }}" />
-  <button type="submit">Search</button>
+<div class="search-card">
+  <form method="POST" id="supplier-search-form">
 
-  <!-- Print All button -->
-  
-</form>
+    Bill No:
+    <input
+      name="bill_no"
+      value="{{ request.form.bill_no if request.method=='POST' else '' }}"
+    />
+
+    Name:
+    <input
+      name="name"
+      value="{{ request.form.name if request.method=='POST' else '' }}"
+    />
+
+    Date:
+    <input
+      type="date"
+      name="bill_date"
+      value="{{ request.form.bill_date if request.method=='POST' else '' }}"
+    />
+
+    <button type="submit" class="search-btn">
+      Search
+    </button>
+
+  </form>
+</div>
 
 {% if results %}
-  <h3>Results ({{ results|length }})</h3>
 
-  <ul style="list-style:none; padding-left:0;">
+  <h3 class="result-count">
+    Results ({{ results|length }})
+  </h3>
+
   {% for r in results %}
-    <li style="padding:8px 0; border-bottom:1px solid #eee;">
+    <div class="result-card">
+
       <strong>Bill #{{ r.bill_id }}</strong>
-      &nbsp; — &nbsp; Supplier ID: {{ r.supplier_id }}
-      {% if r.name %} &nbsp; — &nbsp; {{ r.name }}{% endif %}
-      &nbsp; — &nbsp; Date: {{ r.bill_date }}
-      &nbsp; — &nbsp; Amount: ₹ {{ '%.2f'|format(r.total_amount or 0) }}
 
-      &nbsp; | &nbsp;
+      &nbsp; — &nbsp;
 
-      <a href="{{ url_for('supplier_bill_edit', bill_id=r.bill_id) }}">Edit</a>
+      Supplier ID: {{ r.supplier_id }}
 
-      &nbsp; | &nbsp;
+      {% if r.supplier_name %}
+        &nbsp; — &nbsp;
+        Supplier: <strong>{{ r.supplier_name }}</strong>
+      {% endif %}
 
-      <form method="POST"
-            action="{{ url_for('supplier_bill_delete', bill_id=r.bill_id) }}"
-            onsubmit="return confirm('Delete supplier bill #{{ r.bill_id }}? This will adjust balances and cash-in-hand. Proceed?');"
-            style="display:inline;">
-          <button type="submit" style="color:red;">Delete</button>
+      &nbsp; — &nbsp;
+
+      Date: {{ r.bill_date }}
+
+      &nbsp; — &nbsp;
+
+      Amount:
+      <strong>₹ {{ '%.2f'|format(r.total_amount or 0) }}</strong>
+
+      <br><br>
+
+      <a
+        href="{{ url_for('supplier_bill_edit', bill_id=r.bill_id) }}"
+        class="action-btn edit-btn">
+        Edit
+      </a>
+
+      <form
+        method="POST"
+        action="{{ url_for('supplier_bill_delete', bill_id=r.bill_id) }}"
+        onsubmit="return confirm('Delete supplier bill #{{ r.bill_id }}? This will adjust balances and cash-in-hand. Proceed?');"
+        style="display:inline;">
+
+        <button
+          type="submit"
+          class="delete-btn">
+          Delete
+        </button>
       </form>
 
-      &nbsp; | &nbsp;
+      <button
+        type="button"
+        class="print-btn print-single-supplier"
+        data-bill="{{ r.bill_id }}">
+        Print
+      </button>
 
-      <!-- Print single -->
-      <button type="button" class="print-single-supplier" data-bill="{{ r.bill_id }}">Print</button>
-    </li>
+    </div>
   {% endfor %}
-  </ul>
+
 {% else %}
   <p>No results (or no search performed yet).</p>
 {% endif %}
 
 <script>
-  // Print single supplier bill: open printable page in a new tab/window
   document.querySelectorAll('.print-single-supplier').forEach(function(btn){
     btn.addEventListener('click', function(){
       var billId = this.dataset.bill;
       var w = window.open('/bills/supplier/print/' + billId, '_blank');
+
       if (!w) {
-        alert('Popup blocked. Allow popups for this site or use the Print All button.');
+        alert('Popup blocked. Allow popups for this site or use the Print button.');
       }
     });
   });
 
-  // Print All: submit current search form values to /bills/supplier/print_search in a NEW window
-  document.getElementById('print-all-supplier').addEventListener('click', function(){
-    var form = document.getElementById('supplier-search-form');
-    var data = new FormData(form);
+  var printAllBtn = document.getElementById('print-all-supplier');
 
-    // open new blank window
-    var w = window.open('', '_blank');
-    if (!w) {
-      alert('Popup blocked. Allow popups for this site or use the single Print buttons.');
-      return;
-    }
+  if (printAllBtn) {
+    printAllBtn.addEventListener('click', function(){
 
-    // build a temporary form that posts to the print_search route and targets the new window
-    var f = document.createElement('form');
-    f.method = 'POST';
-    f.action = '/bills/supplier/print_search';
-    f.target = w.name;
+      var form = document.getElementById('supplier-search-form');
+      var data = new FormData(form);
 
-    // copy fields into hidden inputs
-    for (var pair of data.entries()) {
-      var inp = document.createElement('input');
-      inp.type = 'hidden';
-      inp.name = pair[0];
-      inp.value = pair[1];
-      f.appendChild(inp);
-    }
+      var w = window.open('', '_blank');
 
-    // If your app uses CSRF tokens, also copy it here:
-    // var csrf = document.querySelector('input[name="csrf_token"]');
-    // if (csrf) { var ci = document.createElement('input'); ci.type='hidden'; ci.name='csrf_token'; ci.value=csrf.value; f.appendChild(ci); }
+      if (!w) {
+        alert('Popup blocked. Allow popups for this site.');
+        return;
+      }
 
-    document.body.appendChild(f);
-    f.submit();
-    document.body.removeChild(f);
-  });
+      var f = document.createElement('form');
+
+      f.method = 'POST';
+      f.action = '/bills/supplier/print_search';
+      f.target = w.name;
+
+      for (var pair of data.entries()) {
+        var inp = document.createElement('input');
+        inp.type = 'hidden';
+        inp.name = pair[0];
+        inp.value = pair[1];
+        f.appendChild(inp);
+      }
+
+      document.body.appendChild(f);
+      f.submit();
+      document.body.removeChild(f);
+
+    });
+  }
 </script>
 
 {% endblock %}
