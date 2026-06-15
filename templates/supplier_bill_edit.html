@@ -5,8 +5,21 @@
 
 <form method="POST" oninput="recalcTotals()">
 
-    <label>Supplier ID:</label>
-    <input type="number" name="supplier_id" value="{{ bill.supplier_id }}" readonly>
+    <div class="row">
+    <div class="col">
+            <label>Supplier ID:</label>
+            <input type="text"
+                   value="{{ bill.supplier_id }}"
+                   readonly>
+        </div>
+    
+        <div class="col">
+            <label>Supplier Name:</label>
+            <input type="text"
+                   value="{{ bill.supplier_name }}"
+                   readonly>
+        </div>
+    </div>
     <br><br>
 
     <label>Bill Date:</label>
