@@ -2,65 +2,174 @@
 
 {% block content %}
 
+<style>
+.tally-form{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-bottom:25px;
+    flex-wrap:wrap;
+}
+
+.tally-wrapper{
+    display:flex;
+    gap:35px;
+    flex-wrap:wrap;
+    margin-top:20px;
+}
+
+.tally-card{
+    background:rgba(255,255,255,0.85);
+    backdrop-filter:blur(8px);
+    border-radius:18px;
+    padding:20px;
+    box-shadow:0 6px 20px rgba(0,0,0,0.08);
+    min-width:500px;
+}
+
+.tally-card h3{
+    margin-top:0;
+    margin-bottom:15px;
+    color:#333;
+}
+
+.tally-table{
+    width:100%;
+    border-collapse:collapse;
+    overflow:hidden;
+    border-radius:12px;
+}
+
+.tally-table th{
+    background:#90CAF9;
+    color:#222;
+    padding:12px;
+    text-align:left;
+    font-weight:600;
+}
+
+.tally-table td{
+    padding:12px;
+    border-bottom:1px solid #e5e5e5;
+}
+
+.tally-table tr:nth-child(even){
+    background:#f8fbff;
+}
+
+.tally-table tr:hover{
+    background:#eef7ff;
+}
+
+.id-col{
+    width:90px;
+    text-align:center;
+}
+
+.amount-col{
+    text-align:right;
+    font-weight:600;
+    white-space:nowrap;
+}
+
+.summary-card{
+    margin-top:25px;
+    background:rgba(255,255,255,0.85);
+    backdrop-filter:blur(8px);
+    border-radius:18px;
+    padding:20px;
+    box-shadow:0 6px 20px rgba(0,0,0,0.08);
+}
+
+.summary-card h3{
+    margin-top:0;
+}
+
+.summary-row{
+    font-size:17px;
+    margin-bottom:10px;
+}
+
+.match{
+    color:#2e7d32;
+    font-weight:bold;
+    font-size:18px;
+}
+
+.mismatch{
+    color:#d32f2f;
+    font-weight:bold;
+    font-size:18px;
+}
+</style>
+
 <h2>Daily / Range Tally</h2>
 
-<form method="POST"
-      style="display:flex; align-items:center; gap:10px; margin-bottom:20px;">
+<form method="POST" class="tally-form">
 
-    <label style="display:inline-block; margin-bottom:0;">
+    <label style="display:inline-block;margin-bottom:0;">
         <b>From Date:</b>
     </label>
 
     <input type="date" name="from_date" value="{{ from_date }}" required>
 
-    <label style="display:inline-block; margin-bottom:0; margin-left:15px;">
+    <label style="display:inline-block;margin-bottom:0;margin-left:10px;">
         <b>To Date:</b>
     </label>
 
     <input type="date" name="to_date" value="{{ to_date }}" required>
 
-    <button type="submit" style="margin-left:15px; padding:5px 15px;">
+    <button type="submit" style="padding:8px 18px;">
         Get Tally
     </button>
 
 </form>
 
 {% if supplierData %}
-<div style="display:flex; gap:50px; flex-wrap:wrap;">
 
-    <!-- Supplier Table -->
-    <div>
+<div class="tally-wrapper">
+
+    <!-- Supplier Bills -->
+    <div class="tally-card">
         <h3>Supplier Bills</h3>
-        <table border="1" cellpadding="5">
+
+        <table class="tally-table">
             <tr>
                 <th>Supplier ID</th>
                 <th>Supplier Name</th>
                 <th>Amount</th>
             </tr>
+
             {% for row in supplierData %}
             <tr>
-                <td>{{ row.supplier_id }}</td>
+                <td class="id-col">{{ row.supplier_id }}</td>
                 <td>{{ row.supplier_name }}</td>
-                <td>₹ {{ "%.2f"|format(row.amount) }}</td>
+                <td class="amount-col">
+                    ₹ {{ "%.2f"|format(row.amount) }}
+                </td>
             </tr>
             {% endfor %}
         </table>
     </div>
 
-    <!-- Customer Table -->
-    <div>
+    <!-- Customer Bills -->
+    <div class="tally-card">
         <h3>Customer Bills</h3>
-        <table border="1" cellpadding="5">
+
+        <table class="tally-table">
             <tr>
                 <th>Customer ID</th>
                 <th>Customer Name</th>
                 <th>Amount</th>
             </tr>
+
             {% for row in customerData %}
             <tr>
-                <td>{{ row.customer_id }}</td>
+                <td class="id-col">{{ row.customer_id }}</td>
                 <td>{{ row.customer_name }}</td>
-                <td>₹ {{ "%.2f"|format(row.amount) }}</td>
+                <td class="amount-col">
+                    ₹ {{ "%.2f"|format(row.amount) }}
+                </td>
             </tr>
             {% endfor %}
         </table>
@@ -68,20 +177,36 @@
 
 </div>
 
-<hr style="margin-top:20px;">
+<div class="summary-card">
 
-<h3>Totals</h3>
-<p><b>Total Supplier Amount:</b> ₹ {{ "%.2f"|format(totalSupplier) }}</p>
-<p><b>Total Customer Amount:</b> ₹ {{ "%.2f"|format(totalCustomer) }}</p>
+    <h3>Summary</h3>
 
-<h3>Difference</h3>
-<p><b>Customer - Supplier =</b> ₹ {{ "%.2f"|format(difference) }}</p>
+    <div class="summary-row">
+        <b>Total Supplier Amount:</b>
+        ₹ {{ "%.2f"|format(totalSupplier) }}
+    </div>
 
-{% if difference == 0 %}
-    <p style="color:green; font-weight:bold;">✔ Tally Matched</p>
-{% else %}
-    <p style="color:red; font-weight:bold;">✘ Tally Mismatched</p>
-{% endif %}
+    <div class="summary-row">
+        <b>Total Customer Amount:</b>
+        ₹ {{ "%.2f"|format(totalCustomer) }}
+    </div>
+
+    <div class="summary-row">
+        <b>Difference:</b>
+        ₹ {{ "%.2f"|format(difference) }}
+    </div>
+
+    {% if difference == 0 %}
+        <div class="match">
+            ✔ Tally Matched
+        </div>
+    {% else %}
+        <div class="mismatch">
+            ✘ Tally Mismatched
+        </div>
+    {% endif %}
+
+</div>
 
 {% endif %}
 
