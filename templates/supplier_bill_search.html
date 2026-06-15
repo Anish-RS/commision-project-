@@ -74,69 +74,67 @@
     color: #666;
     margin-bottom: 15px;
   }
+
+  .page-card{
+    background:#fcfcff;
+    border:1px solid #e6eefb;
+    border-radius:16px;
+    padding:20px;
+    box-shadow:0 4px 12px rgba(0,0,0,.05);
+  }
+  .page-title{text-align:center;margin-bottom:24px;color:#34495e;font-size:52px;font-weight:700;}
+  .search-row{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-bottom:22px;}
+  .search-row input{padding:14px 16px;border-radius:14px;border:1px solid #dbeafc;min-width:220px;}
+  .btn{padding:14px 22px;border:none;border-radius:14px;cursor:pointer;font-weight:600;}
+  .btn-primary{background:#9ec5fe;color:#fff;}
+  .btn-secondary{background:#eef5ff;border:1px solid #dbeafc;color:#1976d2;}
+  .results-container{margin-top:20px;}
+  .result-header{display:flex;justify-content:space-between;align-items:center;background:#eef3fb;border:1px solid #dbeafc;border-radius:16px;padding:18px 22px;margin-bottom:14px;font-weight:700;color:#34495e;}
+  .header-info,.bill-info{display:flex;align-items:center;gap:40px;}
+  .col-bill{width:140px;}
+  .col-name{width:260px;}
+  .col-date{width:150px;}
+  .col-amount{width:140px;}
+  .header-actions{width:280px;text-align:center;}
+  .actions{display:flex;gap:10px;}
+
 </style>
 
-<h2>Search Supplier Bill</h2>
+<div class="page-card">
+<h2 class="page-title">Search Supplier Bill</h2>
 
-<div class="search-card">
-  <form method="POST" id="supplier-search-form">
+<form method="POST" id="supplier-search-form">
+<div class="search-row">
 
-    Bill No:
-    <input
-      name="bill_no"
-      value="{{ request.form.bill_no if request.method=='POST' else '' }}"
-    />
-
-    Name:
-    <input
-      name="name"
-      value="{{ request.form.name if request.method=='POST' else '' }}"
-    />
-
-    Date:
-    <input
-      type="date"
-      name="bill_date"
-      value="{{ request.form.bill_date if request.method=='POST' else '' }}"
-    />
-
-    <button type="submit" class="search-btn">
-      Search
-    </button>
-
-  </form>
+    <input name="bill_no" placeholder="Bill Number" value="{{ request.form.bill_no if request.method=='POST' else '' }}" />
+<input name="name" placeholder="Supplier Name / ID" value="{{ request.form.name if request.method=='POST' else '' }}" />
+<input type="date" name="bill_date" value="{{ request.form.bill_date if request.method=='POST' else '' }}" />
+<button type="submit" class="btn btn-primary">Search</button>
+<button type="button" id="print-all-supplier" class="btn btn-secondary">Print All (By Date)</button>
 </div>
+</form>
 
 {% if results %}
-
-  <h3 class="result-count">
-    Results ({{ results|length }})
-  </h3>
+<div class="results-container">
+<div class="result-header">
+<div class="header-info">
+<span class="col-bill">Bill ID</span>
+<span class="col-name">Supplier</span>
+<span class="col-date">Date</span>
+<span class="col-amount">Amount</span>
+</div>
+<div class="header-actions">Actions</div>
+</div>
 
   {% for r in results %}
     <div class="result-card">
-
-      <strong>Bill #{{ r.bill_id }}</strong>
-
-      &nbsp; — &nbsp;
-
-      Supplier ID: {{ r.supplier_id }}
-
-      {% if r.supplier_name %}
-        &nbsp; — &nbsp;
-        Supplier: <strong>{{ r.supplier_name }}</strong>
-      {% endif %}
-
-      &nbsp; — &nbsp;
-
-      Date: {{ r.bill_date }}
-
-      &nbsp; — &nbsp;
-
-      Amount:
-      <strong>₹ {{ '%.2f'|format(r.total_amount or 0) }}</strong>
-
-      <br><br>
+      <div class="bill-info">
+      <span class="col-bill"><strong>Bill #{{ r.bill_id }}</strong></span>
+      <span class="col-name">{{ r.supplier_name or r.supplier_id }}</span>
+      <span class="col-date">{{ r.bill_date }}</span>
+      <span class="col-amount">₹ {{ '%.2f'|format(r.total_amount or 0) }}</span>
+      </div>
+      <div class="actions">
 
       <a
         href="{{ url_for('supplier_bill_edit', bill_id=r.bill_id) }}"
@@ -163,9 +161,11 @@
         data-bill="{{ r.bill_id }}">
         Print
       </button>
-
+      </div>
     </div>
   {% endfor %}
+</div>
+</div>
 
 {% else %}
   <p>No results (or no search performed yet).</p>
