@@ -74,6 +74,20 @@
     color: #666;
     margin-bottom: 15px;
   }
+  .bill-grid{
+    display:grid;
+    grid-template-columns:100px 120px 1fr 150px 150px;
+    gap:15px;
+    align-items:center;
+  }
+  
+  .header-row{
+    background:#f4f6ff;
+    padding:12px;
+    border-radius:8px;
+    margin-bottom:10px;
+    font-weight:600;
+  }
 </style>
 
 <h2>Search Supplier Bill</h2>
@@ -113,30 +127,34 @@
     Results ({{ results|length }})
   </h3>
 
+  <div class="bill-grid header-row">
+  <div><strong>Bill ID</strong></div>
+  <div><strong>Supplier ID</strong></div>
+  <div><strong>Supplier</strong></div>
+  <div><strong>Date</strong></div>
+  <div><strong>Amount</strong></div>
+  </div>
+  
   {% for r in results %}
-    <div class="result-card">
-
-      <strong>Bill #{{ r.bill_id }}</strong>
-
-      &nbsp; — &nbsp;
-
-      Supplier ID: {{ r.supplier_id }}
-
-      {% if r.supplier_name %}
-        &nbsp; — &nbsp;
-        Supplier: <strong>{{ r.supplier_name }}</strong>
-      {% endif %}
-
-      &nbsp; — &nbsp;
-
-      Date: {{ r.bill_date }}
-
-      &nbsp; — &nbsp;
-
-      Amount:
-      <strong>₹ {{ '%.2f'|format(r.total_amount or 0) }}</strong>
-
-      <br><br>
+  <div class="result-card">
+  
+    <div class="bill-grid">
+      <div>#{{ r.bill_id }}</div>
+  
+      <div>{{ r.supplier_id }}</div>
+  
+      <div>
+        {% if r.supplier_name %}
+          {{ r.supplier_name }}
+        {% endif %}
+      </div>
+  
+      <div>{{ r.bill_date }}</div>
+  
+      <div>₹ {{ '%.2f'|format(r.total_amount or 0) }}</div>
+    </div>
+  
+    <br>
 
       <a
         href="{{ url_for('supplier_bill_edit', bill_id=r.bill_id) }}"
