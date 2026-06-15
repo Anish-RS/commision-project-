@@ -177,7 +177,7 @@
         <form
           method="POST"
           action="{{ url_for('supplier_bill_delete', bill_id=r.bill_id) }}"
-          onsubmit="return confirm('Delete supplier bill #{{ r.bill_id }}?');"
+          onsubmit="return confirm('Delete supplier bill #{{ r.bill_id }}? This will adjust balances and cash-in-hand. Proceed?');"
           style="display:inline;">
       
           <button type="submit" class="delete-btn">
@@ -197,8 +197,8 @@
       
       </div>
       </div>
-  {% endfor %}
-
+      
+      {% endfor %}
 {% else %}
   <p>No results (or no search performed yet).</p>
 {% endif %}
