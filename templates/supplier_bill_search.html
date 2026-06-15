@@ -100,6 +100,14 @@
       flex-wrap:wrap;
       align-items:center;
   }
+  .bill-row{
+      padding:12px 0;
+      border-bottom:1px solid #e5e5e5;
+  }
+  
+  .bill-row:last-child{
+      border-bottom:none;
+  }
 </style>
 
 <h2>Search Supplier Bill</h2>
@@ -148,57 +156,52 @@
     <div><strong>Actions</strong></div>
   </div>
     
-  {% for r in results %}
   <div class="result-card">
-  
-    <div class="bill-grid">
-      <div>#{{ r.bill_id }}</div>
-  
-      <div>{{ r.supplier_id }}</div>
-  
-      <div>
-        {% if r.supplier_name %}
-          {{ r.supplier_name }}
-        {% endif %}
+    
+    {% for r in results %}
+    
+      <div class="bill-grid bill-row">
+    
+          <div>#{{ r.bill_id }}</div>
+    
+          <div>{{ r.supplier_id }}</div>
+    
+          <div>{{ r.supplier_name }}</div>
+    
+          <div>{{ r.bill_date }}</div>
+    
+          <div>₹ {{ '%.2f'|format(r.total_amount or 0) }}</div>
+    
+          <div class="action-group">
+    
+            <a href="{{ url_for('supplier_bill_edit', bill_id=r.bill_id) }}"
+               class="action-btn edit-btn">
+              Edit
+            </a>
+    
+            <form method="POST"
+                  action="{{ url_for('supplier_bill_delete', bill_id=r.bill_id) }}"
+                  style="display:inline;">
+    
+              <button type="submit" class="delete-btn">
+                Delete
+              </button>
+    
+            </form>
+    
+            <button type="button"
+                    class="print-btn print-single-supplier"
+                    data-bill="{{ r.bill_id }}">
+              Print
+            </button>
+    
+          </div>
+    
       </div>
-  
-      <div>{{ r.bill_date }}</div>
-  
-      <div>₹ {{ '%.2f'|format(r.total_amount or 0) }}</div>
-
-      <div class="action-group">
-      
-        <a
-          href="{{ url_for('supplier_bill_edit', bill_id=r.bill_id) }}"
-          class="action-btn edit-btn">
-          Edit
-        </a>
-      
-        <form
-          method="POST"
-          action="{{ url_for('supplier_bill_delete', bill_id=r.bill_id) }}"
-          onsubmit="return confirm('Delete supplier bill #{{ r.bill_id }}? This will adjust balances and cash-in-hand. Proceed?');"
-          style="display:inline;">
-      
-          <button type="submit" class="delete-btn">
-            Delete
-          </button>
-      
-        </form>
-      
-        <button
-          type="button"
-          class="print-btn print-single-supplier"
-          data-bill="{{ r.bill_id }}">
-          Print
-        </button>
-      
-      </div>
-      
-      </div>
-      </div>
-      
-      {% endfor %}
+    
+    {% endfor %}
+    
+    </div>
 {% else %}
   <p>No results (or no search performed yet).</p>
 {% endif %}
