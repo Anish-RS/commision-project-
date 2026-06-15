@@ -74,11 +74,17 @@
     color: #666;
     margin-bottom: 15px;
   }
- .bill-grid{
+  .bill-grid{
       display:grid;
-      grid-template-columns:90px 110px 180px 130px 130px 220px;
-      gap:8px;
+      grid-template-columns:
+          120px
+          140px
+          220px
+          180px
+          180px
+          260px;
       align-items:center;
+      gap:20px;
   }
   
   .header-row{
@@ -160,34 +166,7 @@
   
       <div>₹ {{ '%.2f'|format(r.total_amount or 0) }}</div>
 
-      <div class="action-group">
-      
-        <a
-          href="{{ url_for('supplier_bill_edit', bill_id=r.bill_id) }}"
-          class="action-btn edit-btn">
-          Edit
-        </a>
-      
-        <form
-          method="POST"
-          action="{{ url_for('supplier_bill_delete', bill_id=r.bill_id) }}"
-          onsubmit="return confirm('Delete supplier bill #{{ r.bill_id }}? This will adjust balances and cash-in-hand. Proceed?');"
-          style="display:inline;">
-      
-          <button type="submit" class="delete-btn">
-            Delete
-          </button>
-      
-        </form>
-      
-        <button
-          type="button"
-          class="print-btn print-single-supplier"
-          data-bill="{{ r.bill_id }}">
-          Print
-        </button>
-      
-      </div>
+      <div class="action-group"> </div>
       
       </div>
   {% endfor %}
