@@ -62,6 +62,37 @@
     margin-top:20px;
   }
 
+
+  .result-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:12px 16px;
+    margin-bottom:10px;
+    background:#eef5ff;
+    border:1px solid #dbeafc;
+    border-radius:12px;
+    font-weight:700;
+    color:#34495e;
+  }
+
+  .header-info,
+  .bill-info{
+    display:flex;
+    align-items:center;
+    gap:30px;
+  }
+
+  .col-bill{ width:120px; }
+  .col-name{ width:240px; }
+  .col-date{ width:140px; }
+
+  .header-actions{
+    min-width:280px;
+    text-align:center;
+  }
+
+
   .result-card{
     background:#fff;
     border:1px solid #eef2f8;
@@ -178,16 +209,23 @@
 
 <div class="results-container">
 
+  <div class="result-header">
+    <div class="header-info">
+      <span class="col-bill">Bill ID</span>
+      <span class="col-name">Customer Name</span>
+      <span class="col-date">Date</span>
+    </div>
+    <div class="header-actions">Actions</div>
+  </div>
+
   {% for r in results %}
 
   <div class="result-card">
 
     <div class="bill-info">
-      <strong>Bill #{{ r.bill_id }}</strong>
-      &nbsp;•&nbsp;
-      {{ r.customer_name }}
-      &nbsp;•&nbsp;
-      {{ r.bill_date }}
+      <span class="col-bill"><strong>Bill #{{ r.bill_id }}</strong></span>
+      <span class="col-name">{{ r.customer_name }}</span>
+      <span class="col-date">{{ r.bill_date }}</span>
     </div>
 
     <div class="actions">
