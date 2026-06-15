@@ -4,14 +4,25 @@
 
 <h2>Daily / Range Tally</h2>
 
-<form method="POST" style="margin-bottom:20px;">
-    <label><b>From Date:</b></label>
+<form method="POST"
+      style="display:flex; align-items:center; gap:10px; margin-bottom:20px;">
+
+    <label style="display:inline-block; margin-bottom:0;">
+        <b>From Date:</b>
+    </label>
+
     <input type="date" name="from_date" value="{{ from_date }}" required>
 
-    <label style="margin-left:20px;"><b>To Date:</b></label>
+    <label style="display:inline-block; margin-bottom:0; margin-left:15px;">
+        <b>To Date:</b>
+    </label>
+
     <input type="date" name="to_date" value="{{ to_date }}" required>
 
-    <button type="submit" style="margin-left:20px; padding:5px 15px;">Get Tally</button>
+    <button type="submit" style="margin-left:15px; padding:5px 15px;">
+        Get Tally
+    </button>
+
 </form>
 
 {% if supplierData %}
