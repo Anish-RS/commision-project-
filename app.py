@@ -1901,16 +1901,29 @@ def tally():
 
         conn   = get_connection()
         cursor = conn.cursor(cursor_factory=RealDictCursor)
-        cursor.execute(
-            "SELECT supplier_id, total_amount AS amount FROM supplier_bills "
-            "WHERE bill_date >= %s AND bill_date < %s",
-            (from_dt, to_dt)
-        )
+        cursor.execute("""
+            SELECT
+                sb.supplier_id,
+                s.name AS supplier_name,
+                sb.total_amount AS amount
+            FROM supplier_bills sb
+            LEFT JOIN suppliers s
+                ON sb.supplier_id = s.supplier_id
+            WHERE sb.bill_date >= %s
+              AND sb.bill_date < %s
+        """, (from_dt, to_dt))
         supplier_data = cursor.fetchall()
-        cursor.execute(
-            "SELECT customer_id, amount FROM customer_bills WHERE bill_date >= %s AND bill_date < %s",
-            (from_dt, to_dt)
-        )
+        cursor.execute("""
+            SELECT
+                cb.customer_id,
+                c.name AS customer_name,
+                cb.amount
+            FROM customer_bills cb
+            LEFT JOIN customers c
+                ON cb.customer_id = c.customer_id
+            WHERE cb.bill_date >= %s
+              AND cb.bill_date < %s
+        """, (from_dt, to_dt))
         customer_data = cursor.fetchall()
         cursor.close(); conn.close()
 
