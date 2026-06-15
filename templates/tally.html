@@ -13,18 +13,20 @@
 
 .tally-wrapper{
     display:flex;
-    gap:35px;
-    flex-wrap:wrap;
+    gap:25px;
+    flex-wrap:nowrap;
     margin-top:20px;
+    align-items:flex-start;
 }
 
 .tally-card{
+    flex:1;
+    min-width:0;
     background:rgba(255,255,255,0.85);
     backdrop-filter:blur(8px);
     border-radius:18px;
     padding:20px;
     box-shadow:0 6px 20px rgba(0,0,0,0.08);
-    min-width:500px;
 }
 
 .tally-card h3{
