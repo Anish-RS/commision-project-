@@ -465,7 +465,15 @@ def supplier_bill_edit(bill_id):
     conn   = get_connection()
     cursor = conn.cursor(cursor_factory=RealDictCursor)
 
-    cursor.execute("SELECT * FROM supplier_bills WHERE bill_id = %s", (bill_id,))
+    cursor.execute("""
+        SELECT
+            sb.*,
+            s.name AS supplier_name
+        FROM supplier_bills sb
+        LEFT JOIN suppliers s
+            ON sb.supplier_id = s.supplier_id
+        WHERE sb.bill_id = %s
+    """, (bill_id,))
     bill = cursor.fetchone()
     if not bill:
         cursor.close(); conn.close()
