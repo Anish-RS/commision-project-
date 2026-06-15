@@ -480,7 +480,15 @@ def supplier_bill_edit(bill_id):
         flash("Bill not found", "danger")
         return redirect(url_for("supplier_bill_search"))
 
-    cursor.execute("SELECT * FROM supplier_bill_items WHERE bill_id = %s", (bill_id,))
+    cursor.execute("""
+        SELECT
+            sbi.*,
+            c.name AS customer_name
+        FROM supplier_bill_items sbi
+        LEFT JOIN customers c
+            ON sbi.customer_id = c.customer_id
+        WHERE sbi.bill_id = %s
+    """, (bill_id,))
     items = cursor.fetchall()
 
     cursor.execute("SELECT * FROM customer_bills WHERE supplier_bill_id = %s", (bill_id,))
