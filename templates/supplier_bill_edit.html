@@ -35,10 +35,11 @@
     <table id="lines-table" border="1" cellpadding="5" cellspacing="0">
         <thead>
             <tr>
-                <th>Customer ID</th>
-                <th>Rate</th>
-                <th>Quantity</th>
-                <th>Amount</th>
+               <th>Customer ID</th>
+               <th>Customer Name</th>
+               <th>Rate</th>
+               <th>Quantity</th>
+               <th>Amount</th>
 
                 <th></th>
             </tr>
@@ -49,8 +50,17 @@
             {% for it in items %}
             <tr>
                 <td>
-                    <input type="number" name="customer_id[]" value="{{ it.customer_id }}" required>
-                </td>
+                   <input type="number"
+                          name="customer_id[]"
+                          value="{{ it.customer_id }}"
+                          required>
+               </td>
+               
+               <td>
+                   <input type="text"
+                          value="{{ it.customer_name }}"
+                          readonly>
+               </td>
                 <td>
                     <input type="number" step="0.01" name="rate[]" class="rate"
                         value="{{ it.rate }}" oninput="recalcTotals()">
