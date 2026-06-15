@@ -31,12 +31,17 @@
     background: #9ea8ff;
   }
 
-  .result-card {
-    background: #fffdfc;
-    border: 1px solid #eee4dc;
-    border-radius: 10px;
-    padding: 12px 15px;
-    margin-bottom: 10px;
+  .result-card{
+    background:#fff;
+    border:1px solid #eef2f8;
+    border-radius:16px;
+    padding:18px 22px;
+    margin-bottom:14px;
+  
+    display:grid;
+    grid-template-columns: 1fr 280px;
+    align-items:center;
+    gap:20px;
   }
 
   .action-btn {
@@ -89,14 +94,15 @@
   .btn-primary{background:#9ec5fe;color:#fff;}
   .btn-secondary{background:#eef5ff;border:1px solid #dbeafc;color:#1976d2;}
   .results-container{margin-top:20px;}
-  .result-header{display:flex;justify-content:space-between;align-items:center;background:#eef3fb;border:1px solid #dbeafc;border-radius:16px;padding:18px 22px;margin-bottom:14px;font-weight:700;color:#34495e;}
-  .header-info,.bill-info{display:flex;align-items:center;gap:40px;}
+  .result-header{display:grid;grid-template-columns:1fr 280px;align-items:center;background:#eef3fb;border:1px solid #dbeafc;border-radius:16px;padding:18px 22px;margin-bottom:14px;font-weight:700;color:#34495e;}
+  .header-info{display:grid;grid-template-columns:140px 320px 180px 180px;align-items:center;width:100%;}
+  .bill-info{display:grid;grid-template-columns:140px 320px 180px 180px;align-items:center;width:100%;}
+  .actions{display:flex;justify-content:center;align-items:center;gap:10px;width:280px;}
+  .header-actions{width:280px;text-align:center;}
   .col-bill{width:140px;}
   .col-name{width:260px;}
   .col-date{width:150px;}
   .col-amount{width:140px;}
-  .header-actions{width:280px;text-align:center;}
-  .actions{display:flex;gap:10px;}
 
 </style>
 
