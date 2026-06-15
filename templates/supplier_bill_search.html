@@ -75,10 +75,10 @@
     margin-bottom: 15px;
   }
   .bill-grid{
-    display:grid;
-    grid-template-columns:100px 120px 1fr 150px 150px;
-    gap:15px;
-    align-items:center;
+      display:grid;
+      grid-template-columns:100px 120px 220px 150px 150px 220px;
+      gap:10px;
+      align-items:start;
   }
   
   .header-row{
@@ -87,6 +87,12 @@
     border-radius:8px;
     margin-bottom:10px;
     font-weight:600;
+  }
+  .action-group{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      align-items:center;
   }
 </style>
 
@@ -128,13 +134,14 @@
   </h3>
 
   <div class="bill-grid header-row">
-  <div><strong>Bill ID</strong></div>
-  <div><strong>Supplier ID</strong></div>
-  <div><strong>Supplier</strong></div>
-  <div><strong>Date</strong></div>
-  <div><strong>Amount</strong></div>
+    <div><strong>Bill ID</strong></div>
+    <div><strong>Supplier ID</strong></div>
+    <div><strong>Supplier</strong></div>
+    <div><strong>Date</strong></div>
+    <div><strong>Amount</strong></div>
+    <div><strong>Actions</strong></div>
   </div>
-  
+    
   {% for r in results %}
   <div class="result-card">
   
@@ -152,9 +159,37 @@
       <div>{{ r.bill_date }}</div>
   
       <div>₹ {{ '%.2f'|format(r.total_amount or 0) }}</div>
-    </div>
-  
-    <br>
+
+      <div class="action-group">
+      
+        <a
+          href="{{ url_for('supplier_bill_edit', bill_id=r.bill_id) }}"
+          class="action-btn edit-btn">
+          Edit
+        </a>
+      
+        <form
+          method="POST"
+          action="{{ url_for('supplier_bill_delete', bill_id=r.bill_id) }}"
+          onsubmit="return confirm('Delete supplier bill #{{ r.bill_id }}? This will adjust balances and cash-in-hand. Proceed?');"
+          style="display:inline;">
+      
+          <button type="submit" class="delete-btn">
+            Delete
+          </button>
+      
+        </form>
+      
+        <button
+          type="button"
+          class="print-btn print-single-supplier"
+          data-bill="{{ r.bill_id }}">
+          Print
+        </button>
+      
+      </div>
+      
+      </div>
 
       <a
         href="{{ url_for('supplier_bill_edit', bill_id=r.bill_id) }}"
