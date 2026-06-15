@@ -166,8 +166,36 @@
   
       <div>₹ {{ '%.2f'|format(r.total_amount or 0) }}</div>
 
-      <div class="action-group"> </div>
+      <div class="action-group">
       
+        <a
+          href="{{ url_for('supplier_bill_edit', bill_id=r.bill_id) }}"
+          class="action-btn edit-btn">
+          Edit
+        </a>
+      
+        <form
+          method="POST"
+          action="{{ url_for('supplier_bill_delete', bill_id=r.bill_id) }}"
+          onsubmit="return confirm('Delete supplier bill #{{ r.bill_id }}?');"
+          style="display:inline;">
+      
+          <button type="submit" class="delete-btn">
+            Delete
+          </button>
+      
+        </form>
+      
+        <button
+          type="button"
+          class="print-btn print-single-supplier"
+          data-bill="{{ r.bill_id }}">
+          Print
+        </button>
+      
+      </div>
+      
+      </div>
       </div>
   {% endfor %}
 
