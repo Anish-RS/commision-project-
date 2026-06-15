@@ -5,20 +5,24 @@
 
 <form method="POST" oninput="recalcTotals()">
 
-   <div class="row">
-        <div class="col">
-            <label>Supplier ID:</label>
-            <input type="text"
-                   value="{{ bill.supplier_id }}"
-                   readonly>
-        </div>
-    
-        <div class="col">
-            <label>Supplier Name:</label>
-            <input type="text"
-                   value="{{ bill.supplier_name }}"
-                   readonly>
-        </div>
+   <div style="display:flex; gap:20px; margin-bottom:20px;">
+
+       <div style="width:250px;">
+           <label><b>Supplier ID:</b></label><br>
+           <input type="text"
+                  value="{{ bill.supplier_id }}"
+                  readonly
+                  style="width:100%;">
+       </div>
+   
+       <div style="width:250px;">
+           <label><b>Supplier Name:</b></label><br>
+           <input type="text"
+                  value="{{ bill.supplier_name }}"
+                  readonly
+                  style="width:100%;">
+       </div>
+   
     </div>
     
     <br><br>
