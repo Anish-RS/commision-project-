@@ -25,13 +25,15 @@
    
     </div>
     
-    <br><br>
-
-    <label>Bill Date:</label>
-    <input type="date" name="bill_date" value="{{ bill.bill_date }}" required>
-    <br><br>
-
-    <h4>Line Items</h4>
+   <div style="margin-top:15px;">
+       <label><b>Bill Date:</b></label><br>
+       <input type="date"
+              name="bill_date"
+              value="{{ bill.bill_date }}"
+              required>
+   </div>
+   
+   <h4 style="margin-top:25px;">Line Items</h4>
     <table id="lines-table" border="1" cellpadding="5" cellspacing="0">
         <thead>
             <tr>
