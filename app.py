@@ -372,10 +372,15 @@ def add_supplier_bill():
     suppliers = cursor.fetchall()
     cursor.execute("SELECT customer_id AS id, name FROM customers ORDER BY name ASC")
     customers = cursor.fetchall()
+    cursor.execute("""
+        SELECT COALESCE(MAX(bill_id),0) + 1 AS next_bill_no
+        FROM supplier_bills
+    """)
+    next_bill_no = cursor.fetchone()["next_bill_no"]
     cursor.close()
     conn.close()
     return render_template("supplier_bill.html", today=ist_today().isoformat(),
-                           suppliers=suppliers, customers=customers)
+                           suppliers=suppliers, customers=customers,next_bill_no=next_bill_no)
 
 
 # ---------------------------------------------------------------------------
