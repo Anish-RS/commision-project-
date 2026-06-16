@@ -4,6 +4,112 @@
 {% block content %}
 
 <style>
+  @page {
+    size: 76.2mm auto;
+    margin: 2mm;
+  }
+  
+  html, body {
+      width: 76.2mm;
+      margin: 0;
+      padding: 3mm;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 10px;
+      color: #000;
+      box-sizing: border-box;
+  }
+  
+  .print-header {
+      text-align:center;
+      margin-bottom:8px;
+  }
+  
+  .print-header h1 {
+      font-size:18px;
+      margin:0;
+  }
+  
+  .print-header h3,
+  .print-header h4 {
+      margin:2px 0;
+      font-size:12px;
+  }
+  
+  .ledger-card {
+      border:none;
+      padding:0;
+      margin-bottom:12px;
+      width:100%;
+  }
+  
+  .ledger-section {
+      margin-bottom:10px;
+  }
+  
+  h2 {
+      font-size:14px;
+      text-align:center;
+      margin-bottom:10px;
+  }
+  
+  h3 {
+      font-size:12px;
+      text-align:center;
+      margin-bottom:5px;
+  }
+  
+  table {
+      width:100%;
+      border-collapse:collapse;
+      font-size:10px;
+  }
+  
+  th,
+  td {
+      padding:3px;
+      border-bottom:1px dashed #444;
+  }
+  
+  th {
+      border-bottom:1px solid #000;
+      font-weight:bold;
+  }
+  
+  .credit {
+      color:black;
+      font-weight:bold;
+  }
+  
+  .debit {
+      color:black;
+      font-weight:bold;
+  }
+  
+  .tot-row {
+      font-weight:bold;
+      border-top:1px solid #000;
+  }
+  
+  .print-btn {
+      padding:8px 12px;
+      cursor:pointer;
+  }
+  
+  @media print {
+  
+      .print-btn,
+      nav,
+      .navbar,
+      .sidebar,
+      footer {
+          display:none !important;
+      }
+  
+      body {
+          margin:0;
+          padding:0;
+      }
+  }
   .print-header {
       text-align: center;
       margin-bottom: 20px;
@@ -146,20 +252,23 @@
         {% if supplier_credit %}
         <table>
             <thead>
-                <tr>
-                    <th>Supplier ID</th>
-                    <th>Name</th>
-                    <th>Amount</th>
-                </tr>
+            <tr>
+                <th>Supplier</th>
+                <th>Amount</th>
+            </tr>
             </thead>
             <tbody>
 
             {% for s in supplier_credit %}
                 <tr>
-                    <td>{{ s.id }}</td>
-                    <td>{{ s.name }}</td>
-                    <td class="credit">₹ {{ '%.2f'|format(s.amount) }}</td>
-                </tr>
+                  <td>
+                      {{ s.id }}<br>
+                      {{ s.name }}
+                  </td>
+                  <td style="text-align:right;" class="credit">
+                      ₹ {{ '%.2f'|format(s.amount) }}
+                  </td>
+              </tr>
             {% endfor %}
 
             <tr class="tot-row">
@@ -187,20 +296,21 @@
         {% if supplier_debit %}
         <table>
             <thead>
-                <tr>
-                    <th>Supplier ID</th>
-                    <th>Name</th>
-                    <th>Amount</th>
-                </tr>
+            <tr>
+                <th>Supplier</th>
+                <th>Amount</th>
+            </tr>
             </thead>
             <tbody>
 
             {% for s in supplier_debit %}
-                <tr>
-                    <td>{{ s.id }}</td>
-                    <td>{{ s.name }}</td>
-                    <td class="debit">₹ {{ '%.2f'|format(s.amount) }}</td>
-                </tr>
+                <td>
+                    {{ s.id }}<br>
+                    {{ s.name }}
+                </td>
+                <td class="debit" style="text-align:right;">
+                    ₹ {{ '%.2f'|format(s.amount) }}
+                </td>
             {% endfor %}
 
             <tr class="tot-row">
@@ -228,24 +338,25 @@
         {% if customer_credit %}
         <table>
             <thead>
-                <tr>
-                    <th>Customer ID</th>
-                    <th>Name</th>
-                    <th>Amount</th>
-                </tr>
+            <tr>
+                <th>Supplier</th>
+                <th>Amount</th>
+            </tr>
             </thead>
             <tbody>
 
             {% for c in customer_credit %}
-                <tr>
-                    <td>{{ c.id }}</td>
-                    <td>{{ c.name }}</td>
-                    <td class="credit">₹ {{ '%.2f'|format(c.amount) }}</td>
-                </tr>
+                <td>
+                    {{ c.id }}<br>
+                    {{ c.name }}
+                </td>
+                <td class="credit" style="text-align:right;">
+                    ₹ {{ '%.2f'|format(c.amount) }}
+                </td>
             {% endfor %}
 
             <tr class="tot-row">
-                <td colspan="2">Total Credit</td>
+                <td>Total Credit</td>
                 <td class="credit">
                     ₹ {{ '%.2f'|format(customer_credit_total) }}
                 </td>
@@ -269,24 +380,26 @@
         {% if customer_debit %}
         <table>
             <thead>
-                <tr>
-                    <th>Customer ID</th>
-                    <th>Name</th>
-                    <th>Amount</th>
-                </tr>
+            <tr>
+                <th>Supplier</th>
+                <th>Amount</th>
+            </tr>
+            </thead>
             </thead>
             <tbody>
 
             {% for c in customer_debit %}
-                <tr>
-                    <td>{{ c.id }}</td>
-                    <td>{{ c.name }}</td>
-                    <td class="debit">₹ {{ '%.2f'|format(c.amount) }}</td>
-                </tr>
+                <td>
+                    {{ c.id }}<br>
+                    {{ c.name }}
+                </td>
+                <td class="debit" style="text-align:right;">
+                    ₹ {{ '%.2f'|format(c.amount) }}
+                </td>
             {% endfor %}
 
             <tr class="tot-row">
-                <td colspan="2">Total Debit</td>
+                <td>Total Debit</td>
                 <td class="debit">
                     ₹ {{ '%.2f'|format(customer_debit_total) }}
                 </td>
