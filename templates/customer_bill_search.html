@@ -48,10 +48,13 @@
   }
 
   .btn-primary{
-    background:#9ec5fe;
+    background:#2196f3;
     color:#fff;
+    box-shadow:0 3px 8px rgba(33,150,243,0.35);
   }
-
+  .btn-primary:hover{
+    background:#0069d9;
+  }
   .btn-secondary{
     background:#eef5ff;
     border:1px solid #dbeafc;
@@ -230,10 +233,6 @@
 
     <div class="actions">
 
-      <a href="{{ url_for('customer_bill_edit', bill_id=r.bill_id) }}"
-         class="action-link edit-btn">
-         Edit
-      </a>
 
       <form method="POST"
             action="{{ url_for('customer_bill_print_search') }}"
