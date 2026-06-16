@@ -145,6 +145,14 @@ body { background: linear-gradient(135deg,#eaf6ff,#fff0f4); }
 
 <div class="card">
   <form method="POST" id="bill-form" oninput="recalcTotals()">
+    <div style="margin-bottom:15px;">
+        <label class="label">Bill Number</label>
+        <input type="text"
+               class="input-field"
+               value="{{ next_bill_no }}"
+               readonly
+               style="background:#fff;font-weight:bold;">
+    </div>
     <!-- SUPPLIER SEARCH -->
     <div style="margin-bottom:12px;">
       <label class="label">Supplier (ID / Name)</label>
@@ -251,6 +259,14 @@ body { background: linear-gradient(135deg,#eaf6ff,#fff0f4); }
     <div style="margin-top:18px;">
       <label class="label">Old Supplier Balance (stored):</label>
       <input type="text" id="old_balance_display" class="input-field balance-zero" readonly style="background:#fff;">
+    </div>
+    <div style="margin-top:12px;">
+      <label class="label">Bill Amount</label>
+      <input type="text"
+             id="bill_amount_display"
+             class="input-field"
+             readonly
+             style="background:#fff;">
     </div>
 
     <div style="margin-top:12px;">
@@ -485,6 +501,8 @@ function recalcTotals() {
   const paid = parseFloat(document.getElementById('paid')?.value) || 0;
 
   const bill_balance = total - commission - labour - transport - paid;
+  document.getElementById("bill_amount_display").value =
+    total.toFixed(2);
   document.getElementById('total_amount').value = total.toFixed(2);
 
   // get old_signed from displayed old_balance (which we set when supplier chosen)
@@ -681,7 +699,6 @@ document.addEventListener("keydown", function (e) {
     // Paid → Submit
     if (active.id === "paid") {
         e.preventDefault();
-        document.getElementById("createBtn")?.focus();
         return;
     }
 
