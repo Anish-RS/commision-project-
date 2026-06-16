@@ -67,13 +67,7 @@
 
   </style>
 </head>
-<script>
-window.onload = function () {
-    setTimeout(() => {
-        window.print();
-    }, 300);
-};
-</script>
+
 <body>
   <button class="print-btn" onclick="window.print()">Print</button>
 
@@ -168,5 +162,17 @@ window.onload = function () {
   <div class="footer">
     <div class="muted" style="font-size:9px; color:#444;">Printed on: {{ now().strftime("%Y-%m-%d %H:%M:%S") }}</div>
   </div>
+  <script>
+  window.onload = function () {
+      setTimeout(() => {
+          window.print();
+      }, 300);
+  };
+  
+  window.onafterprint = function () {
+      window.location.href = "/bills/supplier/add";
+  };
+  </script>
+
 </body>
 </html>
