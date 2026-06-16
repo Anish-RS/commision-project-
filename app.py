@@ -363,7 +363,12 @@ def add_supplier_bill():
                 f"Bill: ₹{bill_balance:.2f}. Now supplier owes us ₹{new_supplier_balance:.2f}.",
                 "success"
             )
-        return redirect(url_for("add_supplier_bill"))
+        return redirect(
+            url_for(
+                "supplier_bill_print",
+                bill_id=bill_id
+            )
+        )
 
     # GET
     conn   = get_connection()
