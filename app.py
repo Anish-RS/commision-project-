@@ -832,51 +832,80 @@ def customer_bill_search():
         bill_date = request.args.get("bill_date", "").strip()
 
     # Run query whenever any filter is provided (GET or POST)
-    if bill_no or name or bill_date:
-        conn   = get_connection()
+        conn = get_connection()
         cursor = conn.cursor(cursor_factory=RealDictCursor)
-
-        if bill_no:
-            try:
-                cursor.execute(
-                    "SELECT cb.*, c.customer_id, c.name AS customer_name "
-                    "FROM customer_bills cb "
-                    "JOIN customers c ON cb.customer_id = c.customer_id "
-                    "WHERE cb.bill_id = %s",
-                    (int(bill_no),)
-                )
         
-                row = cursor.fetchone()
+        # If page opened without any search, show today's bills
+        if not bill_no and not name and not bill_date:
         
-                if row:
-                    results = [row]
+            bill_date = ist_today().strftime("%Y-%m-%d")
         
-            except ValueError:
-                pass
-        else:
-            sql = ("SELECT cb.*, c.customer_id, c.name AS customer_name FROM customer_bills cb "
-                   "JOIN customers c ON cb.customer_id = c.customer_id WHERE 1=1")
-            params = []
-            if name:
-                sql += """
-                    AND (
-                        c.name ILIKE %s
-                        OR CAST(c.customer_id AS TEXT) = %s
-                    )
-                """
-                params.extend([f"%{name}%", name])
-            if bill_date:
-                sql    += " AND cb.bill_date = %s"
-                params.append(bill_date)
-            sql += " ORDER BY cb.bill_date DESC, cb.bill_id DESC LIMIT 200"
-            cursor.execute(sql, params)
+            cursor.execute("""
+                SELECT cb.*, c.customer_id, c.name AS customer_name
+                FROM customer_bills cb
+                JOIN customers c
+                    ON cb.customer_id = c.customer_id
+                WHERE cb.bill_date = %s
+                ORDER BY cb.bill_id DESC
+            """, (bill_date,))
+        
             results = cursor.fetchall()
-
-        cursor.close(); conn.close()
-
-    return render_template("customer_bill_search.html", results=results,
-                           name=name, bill_date=bill_date, bill_no=bill_no)
-
+        
+        else:
+        
+            if bill_no:
+                try:
+                    cursor.execute(
+                        """
+                        SELECT cb.*, c.customer_id, c.name AS customer_name
+                        FROM customer_bills cb
+                        JOIN customers c
+                            ON cb.customer_id = c.customer_id
+                        WHERE cb.bill_id = %s
+                        """,
+                        (int(bill_no),)
+                    )
+        
+                    row = cursor.fetchone()
+        
+                    if row:
+                        results = [row]
+        
+                except ValueError:
+                    pass
+        
+            else:
+        
+                sql = """
+                    SELECT cb.*, c.customer_id, c.name AS customer_name
+                    FROM customer_bills cb
+                    JOIN customers c
+                        ON cb.customer_id = c.customer_id
+                    WHERE 1=1
+                """
+        
+                params = []
+        
+                if name:
+                    sql += """
+                        AND (
+                            c.name ILIKE %s
+                            OR CAST(c.customer_id AS TEXT) = %s
+                        )
+                    """
+                    params.extend([f"%{name}%", name])
+        
+                if bill_date:
+                    sql += " AND cb.bill_date = %s"
+                    params.append(bill_date)
+        
+                sql += " ORDER BY cb.bill_date DESC, cb.bill_id DESC LIMIT 200"
+        
+                cursor.execute(sql, params)
+                results = cursor.fetchall()
+        
+        cursor.close()
+        conn.close()
 
 # ---------------------------------------------------------------------------
 # Customer Bills — Edit
