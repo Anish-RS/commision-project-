@@ -839,7 +839,7 @@ def customer_bill_search():
         if bill_no:
             try:
                 cursor.execute(
-                    "SELECT cb.*, c.name AS customer_name "
+                    "SELECT cb.*, c.customer_id, c.name AS customer_name "
                     "FROM customer_bills cb "
                     "JOIN customers c ON cb.customer_id = c.customer_id "
                     "WHERE cb.bill_id = %s",
@@ -854,8 +854,8 @@ def customer_bill_search():
             except ValueError:
                 pass
         else:
-            sql    = ("SELECT cb.*, c.name AS customer_name FROM customer_bills cb "
-                      "JOIN customers c ON cb.customer_id = c.customer_id WHERE 1=1")
+            sql = ("SELECT cb.*, c.customer_id, c.name AS customer_name FROM customer_bills cb "
+                   "JOIN customers c ON cb.customer_id = c.customer_id WHERE 1=1")
             params = []
             if name:
                 sql += """
