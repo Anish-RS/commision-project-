@@ -71,7 +71,6 @@
 .result-table{
     width:100%;
     border-collapse:collapse;
-    table-layout:fixed;
     overflow:hidden;
     border-radius:14px;
 }
@@ -81,27 +80,28 @@
 }
 
 .result-table th{
-    padding:18px 20px;
+    padding:14px;
+    text-align:left;
     color:#444;
     font-weight:700;
-    font-size:20px;
-    text-align:center;
 }
 
 .result-table td{
-    padding:18px 20px;
+    padding:12px 14px;
     border-top:1px solid #edf2f7;
-    font-size:18px;
-    vertical-align:middle;
 }
 
 .result-table tbody tr:hover{
     background:#fafcff;
 }
 
-.balance-positive,
+.balance-positive{
+    color:#2e7d32;
+    font-weight:700;
+}
+
 .balance-negative{
-    font-size:18px;
+    color:#d32f2f;
     font-weight:700;
 }
 
@@ -115,44 +115,19 @@
 }
 
 .badge{
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    min-width:42px;
-    height:42px;
-    border-radius:50%;
-    font-size:18px;
+    display:inline-block;
+    padding:4px 10px;
+    border-radius:999px;
+    font-size:12px;
     font-weight:600;
     background:#eef5ff;
-    color:#555;
-}
-
-/* Name column */
-.result-table th:nth-child(1),
-.result-table td:nth-child(1){
-    width:50%;
-    text-align:left;
-}
-
-/* ID column */
-.result-table th:nth-child(2),
-.result-table td:nth-child(2){
-    width:20%;
-    text-align:center;
-}
-
-/* Amount column */
-.result-table th:nth-child(3),
-.result-table td:nth-child(3){
-    width:30%;
-    text-align:right;
-    padding-right:40px;
+    color:#5a5a5a;
 }
 </style>
 
 <div class="find-card">
 
-
+```
 <h2 class="page-title">🔍 Find Supplier / Customer</h2>
 
 <form method="GET" action="/find" class="search-bar">
