@@ -227,7 +227,9 @@
 
     <div class="bill-info">
       <span class="col-bill"><strong>Bill #{{ r.bill_id }}</strong></span>
-      <span class="col-name">{{ r.customer_name }}</span>
+      <span class="col-name">
+          {{ r.customer_name }} (ID: {{ r.customer_id }})
+      </span>
       <span class="col-date">{{ r.bill_date }}</span>
     </div>
 
