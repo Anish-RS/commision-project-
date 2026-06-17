@@ -831,16 +831,13 @@ def customer_bill_search():
         name      = request.args.get("name",      "").strip()
         bill_date = request.args.get("bill_date", "").strip()
 
-    # Run query whenever any filter is provided (GET or POST)
-        conn = get_connection()
-        cursor = conn.cursor(cursor_factory=RealDictCursor)
-        
-        # If page opened without any search, show today's bills
-        if not bill_no and not name and not bill_date:
-        
+     conn = get_connection()
+     cursor = conn.cursor(cursor_factory=RealDictCursor)
+    
+     if not bill_no and not name and not bill_date:
+    
             bill_date = ist_today().strftime("%Y-%m-%d")
-        
-            cursor.execute("""
+     cursor.execute("""
                 SELECT cb.*, c.customer_id, c.name AS customer_name
                 FROM customer_bills cb
                 JOIN customers c
@@ -848,11 +845,11 @@ def customer_bill_search():
                 WHERE cb.bill_date = %s
                 ORDER BY cb.bill_id DESC
             """, (bill_date,))
-        
+    
             results = cursor.fetchall()
-        
+    
         else:
-        
+    
             if bill_no:
                 try:
                     cursor.execute(
@@ -865,17 +862,17 @@ def customer_bill_search():
                         """,
                         (int(bill_no),)
                     )
-        
+    
                     row = cursor.fetchone()
-        
+    
                     if row:
                         results = [row]
-        
+    
                 except ValueError:
                     pass
-        
+    
             else:
-        
+    
                 sql = """
                     SELECT cb.*, c.customer_id, c.name AS customer_name
                     FROM customer_bills cb
@@ -883,9 +880,9 @@ def customer_bill_search():
                         ON cb.customer_id = c.customer_id
                     WHERE 1=1
                 """
-        
+    
                 params = []
-        
+    
                 if name:
                     sql += """
                         AND (
@@ -894,19 +891,28 @@ def customer_bill_search():
                         )
                     """
                     params.extend([f"%{name}%", name])
-        
+    
                 if bill_date:
                     sql += " AND cb.bill_date = %s"
                     params.append(bill_date)
-        
+    
                 sql += " ORDER BY cb.bill_date DESC, cb.bill_id DESC LIMIT 200"
-        
+    
                 cursor.execute(sql, params)
                 results = cursor.fetchall()
-        
+    
         cursor.close()
         conn.close()
+    
+        return render_template(
+            "customer_bill_search.html",
+            results=results,
+            name=name,
+            bill_date=bill_date,
+            bill_no=bill_no
+        )
 
+            
 # ---------------------------------------------------------------------------
 # Customer Bills — Edit
 # ---------------------------------------------------------------------------
