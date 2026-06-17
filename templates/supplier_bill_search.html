@@ -168,7 +168,11 @@
     
           <div>{{ r.supplier_name }}</div>
     
-          <div>{{ r.bill_date }}</div>
+          <div>
+            {% if r.bill_date %}
+              {{ r.bill_date.strftime('%d-%m-%Y') }}
+            {% endif %}
+          </div>
     
           <div>₹ {{ '%.2f'|format(r.total_amount or 0) }}</div>
     
