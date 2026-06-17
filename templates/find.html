@@ -165,12 +165,25 @@
 
     <thead>
         <tr>
-            <th>Name</th>
-            <th>ID</th>
-            <th>Balance</th>
+            <th>
+                {% if mode == 'supplier' %}
+                    Supplier Name
+                {% else %}
+                    Customer Name
+                {% endif %}
+            </th>
+    
+            <th>
+                {% if mode == 'supplier' %}
+                    Supplier ID
+                {% else %}
+                    Customer ID
+                {% endif %}
+            </th>
+    
+            <th>Amount</th>
         </tr>
     </thead>
-
     <tbody>
 
     {% for r in results %}
