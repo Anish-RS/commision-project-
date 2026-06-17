@@ -3,18 +3,19 @@
 
 <style>
 .edit-container{
-    max-width:1400px;
+    max-width:1100px;
     margin:20px auto;
     background:#fff;
-    padding:30px;
-    border-radius:16px;
-    box-shadow:0 4px 20px rgba(0,0,0,.08);
+    padding:20px;
+    border-radius:12px;
+    box-shadow:0 2px 10px rgba(0,0,0,.08);
 }
 
 .page-title{
-    margin-bottom:30px;
-    font-size:38px;
+    margin-bottom:20px;
+    font-size:28px;
     font-weight:700;
+    text-align:center;
     color:#1f2937;
 }
 
@@ -37,13 +38,13 @@
 }
 
 .field-group input{
-    height:45px;
+    height:40px;
 }
 
 input,
 select{
     width:100%;
-    padding:10px 12px;
+    padding:8px 10px;
     border:1px solid #d1d5db;
     border-radius:8px;
     font-size:15px;
@@ -161,6 +162,7 @@ input:focus{
 </h2>
 
 <form method="POST" oninput="recalcTotals()">
+    <div style="display:flex; gap:20px; align-items:end; flex-wrap:wrap; margin-bottom:20px;">
 
    <div class="field-group">
           <label>Supplier ID</label>
@@ -180,10 +182,10 @@ input:focus{
    
     </div>
     
-   <div class="field-group" style="max-width:300px;">
+   <div class="field-group" style="width:220px;">
           <label>Bill Date</label>
           <input type="text"
-                 value="{{ bill.bill_date }}"
+                   value="{{ bill.bill_date.strftime('%d-%m-%Y') if bill.bill_date else '' }}"
                  readonly
                  class="readonly">
       </div>
@@ -191,6 +193,7 @@ input:focus{
       <input type="hidden"
              name="bill_date"
              value="{{ bill.bill_date }}">
+    </div>
    </div>
    
    <h3 class="section-title">Line Items</h3>
