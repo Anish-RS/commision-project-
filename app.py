@@ -858,8 +858,13 @@ def customer_bill_search():
                       "JOIN customers c ON cb.customer_id = c.customer_id WHERE 1=1")
             params = []
             if name:
-                sql    += " AND c.name ILIKE %s"
-                params.append(f"%{name}%")
+                sql += """
+                    AND (
+                        c.name ILIKE %s
+                        OR CAST(c.customer_id AS TEXT) = %s
+                    )
+                """
+                params.extend([f"%{name}%", name])
             if bill_date:
                 sql    += " AND cb.bill_date = %s"
                 params.append(bill_date)
