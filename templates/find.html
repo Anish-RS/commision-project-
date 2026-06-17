@@ -219,11 +219,14 @@
 {% else %}
 
 <div class="empty-state">
-    No suppliers/customers found.
+    {% if mode == 'supplier' %}
+        No suppliers found.
+    {% else %}
+        No customers found.
+    {% endif %}
 </div>
 
 {% endif %}
-
 </div>
 
 {% endblock %}
