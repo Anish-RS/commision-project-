@@ -238,7 +238,9 @@
           {{ r.customer_name }}
       </span>
       
-      <span class="col-date">{{ r.bill_date }}</span>
+      <span class="col-date">
+        {{ r.bill_date.strftime('%d-%m-%Y') if r.bill_date else '' }}
+    </span>
     </div>
 
     <div class="actions">
