@@ -87,6 +87,7 @@
   }
 
   .col-bill{ width:120px; }
+  .col-customer-id{ width:120px; }
   .col-name{ width:240px; }
   .col-date{ width:140px; }
 
@@ -215,6 +216,7 @@
   <div class="result-header">
     <div class="header-info">
       <span class="col-bill">Bill ID</span>
+      <span class="col-customer-id">Customer ID</span>
       <span class="col-name">Customer Name</span>
       <span class="col-date">Date</span>
     </div>
@@ -227,9 +229,15 @@
 
     <div class="bill-info">
       <span class="col-bill"><strong>Bill #{{ r.bill_id }}</strong></span>
-      <span class="col-name">
-          {{ r.customer_name }} (ID: {{ r.customer_id }})
+
+      <span class="col-customer-id">
+          {{ r.customer_id }}
       </span>
+      
+      <span class="col-name">
+          {{ r.customer_name }}
+      </span>
+      
       <span class="col-date">{{ r.bill_date }}</span>
     </div>
 
