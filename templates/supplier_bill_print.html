@@ -178,7 +178,9 @@
   </div>
 
   <div class="footer">
-    <div class="muted" style="font-size:9px; color:#444;">Printed on: {{ now().strftime("%Y-%m-%d %H:%M:%S") }}</div>
+   <div class="muted" style="font-size:9px; color:#444;">
+      Printed on: {{ now().strftime("%d %B %Y %H:%M:%S") }}
+  </div>
   </div>
   <script>
   window.onload = function () {
