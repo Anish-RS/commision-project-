@@ -164,17 +164,41 @@ def home():
 @app.route("/customers/add", methods=["GET", "POST"])
 def add_customer():
     if request.method == "POST":
-        name            = request.form["name"]
+        name            = request.form["name"].strip()
         phone           = request.form.get("phone")
         address         = request.form.get("address")
         opening_balance = request.form.get("opening_balance", 0)
 
         conn   = get_connection()
-        cursor = conn.cursor()
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+
+        # Check duplicate customer
         cursor.execute(
-            "INSERT INTO customers (name, phone, address, opening_balance) VALUES (%s, %s, %s, %s)",
+            """
+            SELECT customer_id
+            FROM customers
+            WHERE LOWER(TRIM(name)) = LOWER(TRIM(%s))
+            """,
+            (name,)
+        )
+
+        existing = cursor.fetchone()
+
+        if existing:
+            cursor.close()
+            conn.close()
+            flash("Customer already present. Cannot add duplicate customer.", "danger")
+            return redirect(url_for("add_customer"))
+
+        cursor.execute(
+            """
+            INSERT INTO customers
+            (name, phone, address, opening_balance)
+            VALUES (%s, %s, %s, %s)
+            """,
             (name, phone, address, opening_balance)
         )
+
         conn.commit()
         cursor.close()
         conn.close()
