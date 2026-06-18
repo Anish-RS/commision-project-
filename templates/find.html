@@ -123,11 +123,27 @@
     background:#eef5ff;
     color:#5a5a5a;
 }
+
+.edit-btn{
+    display:inline-block;
+    padding:6px 12px;
+    font-size:13px;
+    font-weight:600;
+    text-decoration:none;
+    color:white;
+    background:#64B5F6;
+    border-radius:8px;
+    transition:0.2s;
+}
+
+.edit-btn:hover{
+    background:#42A5F5;
+    transform:translateY(-1px);
+}
 </style>
 
 <div class="find-card">
 
-```
 <h2 class="page-title">🔍 Find Supplier / Customer</h2>
 
 <form method="GET" action="/find" class="search-bar">
@@ -182,7 +198,7 @@
             </th>
     
             <th>Amount</th>
-            <th>Edit</th>
+            <th>Action</th>
         </tr>
     </thead>
     <tbody>
@@ -213,8 +229,8 @@
             
             <td>
                 {% if mode == 'supplier' %}
-                    <a href="/supplier/edit/{{ r.id }}" class="search-btn">
-                        Edit
+                    <a href="/supplier/edit/{{ r.id }}" class="edit-btn">
+                        ✏ Edit
                     </a>
                 {% endif %}
             </td>
