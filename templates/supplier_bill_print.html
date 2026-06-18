@@ -160,15 +160,15 @@
   </table>
 
   <div class="summary" role="note" aria-label="Bill summary">
-    <div class="row"><div>Subtotal</div><div>₹{{ "%.2f"|format(bill.get('total_amount', 0) or 0) }}</div></div>
-    <div class="row"><div>Commission</div><div>₹{{ "%.2f"|format(bill.get('commission', 0) or 0) }}</div></div>
-    <div class="row"><div>Labour</div><div>₹{{ "%.2f"|format(bill.get('labour', 0) or 0) }}</div></div>
-    <div class="row"><div>Transport</div><div>₹{{ "%.2f"|format(bill.get('transport', 0) or 0) }}</div></div>
-    <div class="row"><div>Paid / Cash</div><div>₹{{ "%.2f"|format(bill.get('paid', 0) or 0) }}</div></div>
+    <div class="row"><div>Subtotal</div><div>{{ "%.2f"|format(bill.get('total_amount', 0) or 0) }}</div></div>
+    <div class="row"><div>Commission</div><div>{{ "%.2f"|format(bill.get('commission', 0) or 0) }}</div></div>
+    <div class="row"><div>Labour</div><div>{{ "%.2f"|format(bill.get('labour', 0) or 0) }}</div></div>
+    <div class="row"><div>Transport</div><div>{{ "%.2f"|format(bill.get('transport', 0) or 0) }}</div></div>
+    <div class="row"><div>Paid / Cash</div><div>{{ "%.2f"|format(bill.get('paid', 0) or 0) }}</div></div>
 
     <div class="row bold" style="border-top:1px dashed #999; padding-top:6px;">
       <div>Bill Balance (net)</div>
-      <div>₹{{ "%.2f"|format(bill.get('balance') if bill.get('balance') is not none else ((bill.get('total_amount') or 0) - (bill.get('commission') or 0) - (bill.get('labour') or 0) - (bill.get('transport') or 0) - (bill.get('paid') or 0))) }}</div>
+      <div>{{ "%.2f"|format(bill.get('balance') if bill.get('balance') is not none else ((bill.get('total_amount') or 0) - (bill.get('commission') or 0) - (bill.get('labour') or 0) - (bill.get('transport') or 0) - (bill.get('paid') or 0))) }}</div>
     </div>
 
     <div class="row"><div>Opening</div><div>₹{{ "%.2f"|format(bill.get('old_balance', 0) or 0) }}</div></div>
