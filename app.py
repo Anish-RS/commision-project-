@@ -164,7 +164,7 @@ def home():
 @app.route("/customers/add", methods=["GET", "POST"])
 def add_customer():
     if request.method == "POST":
-        name            = request.form["name"].strip()
+        name = request.form["name"].strip().title()
         phone           = request.form.get("phone")
         address         = request.form.get("address")
         opening_balance = request.form.get("opening_balance", 0)
@@ -263,7 +263,7 @@ def add_supplier():
 @app.route("/api/check_customer")
 def check_customer():
 
-    name = request.args.get("name", "").strip()
+    name = request.args.get("name", "").strip().title()
 
     conn = get_connection()
     cursor = conn.cursor(cursor_factory=RealDictCursor)
