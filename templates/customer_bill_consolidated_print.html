@@ -151,9 +151,11 @@
     <strong>Period:</strong>
 
     {% if from_date == to_date %}
-      {{ from_date }}
+      {{ from_date.strftime('%d %B %Y') if from_date else '' }}
     {% else %}
-      {{ from_date }} — {{ to_date }}
+      {{ from_date.strftime('%d %B %Y') if from_date else '' }}
+      —
+      {{ to_date.strftime('%d %B %Y') if to_date else '' }}
     {% endif %}
   </div>
 
@@ -188,7 +190,9 @@
         <td>{{ loop.index }}</td>
         <td>{{ p.bill_id }}</td>
         <td>{{ p.supplier_bill_id or "-" }}</td>
-        <td>{{ p.bill_date }}</td>
+        <td>
+          {{ p.bill_date.strftime('%d %B %Y') if p.bill_date else '' }}
+        </td>
         <td class="right">{{ "%.2f"|format(p.rate or 0) }}</td>
         <td class="right">{{ "%.2f"|format(p.quantity or 0) }}</td>
         <td class="right">₹{{ "%.2f"|format(p.amount or 0) }}</td>
@@ -241,7 +245,8 @@
   </div>
 
   <div style="margin-top:6px;">
-    Printed on: {{ printed_on }}
+    Printed on:
+    {{ printed_on.strftime('%d %B %Y') if printed_on else '' }}
   </div>
 
 </div>
