@@ -1180,6 +1180,85 @@ def send_whatsapp_bill(bill_id):
     )
 
     return redirect(whatsapp_url)
+@app.route("/send_supplier_whatsapp/<int:bill_id>")
+def send_supplier_whatsapp(bill_id):
+
+    conn = get_connection()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
+
+    cursor.execute("""
+        SELECT
+            sb.*,
+            s.name AS supplier_name,
+            s.phone
+        FROM supplier_bills sb
+        JOIN suppliers s
+            ON sb.supplier_id = s.supplier_id
+        WHERE sb.bill_id = %s
+    """, (bill_id,))
+    bill = cursor.fetchone()
+
+    if not bill:
+        cursor.close()
+        conn.close()
+        flash("Bill not found", "danger")
+        return redirect(url_for("supplier_bill_search"))
+
+    cursor.execute("""
+        SELECT
+            i.quantity,
+            i.rate,
+            i.amount,
+            c.name AS customer_name
+        FROM supplier_bill_items i
+        LEFT JOIN customers c
+            ON i.customer_id = c.customer_id
+        WHERE i.bill_id = %s
+    """, (bill_id,))
+
+    items = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    phone = str(bill["phone"] or "").strip()
+
+    if phone.startswith("+91"):
+        phone = phone[3:]
+
+    msg = f"""S.GOVINDHAN Banana Commission Agent
+
+Supplier Bill #{bill['bill_id']}
+Date: {bill['bill_date']}
+
+Supplier: {bill['supplier_name']}
+
+"""
+
+    msg += "Items:\n"
+    msg += "----------------------\n"
+
+    for item in items:
+        msg += (
+            f"{item['customer_name']}\n"
+            f"Qty: {item['quantity']}\n"
+            f"Rate: {item['rate']}\n"
+            f"Amount: ₹{item['amount']}\n\n"
+        )
+
+    msg += (
+        "----------------------\n"
+        f"Total Amount : ₹{bill['total_amount']}\n"
+        f"Commission   : ₹{bill['commission']}\n"
+        f"Labour       : ₹{bill['labour']}\n"
+        f"Transport    : ₹{bill['transport']}\n"
+        f"Paid         : ₹{bill['paid']}\n"
+        f"Balance      : ₹{bill['balance']}\n"
+    )
+
+    whatsapp_url = f"https://wa.me/91{phone}?text={quote(msg)}"
+
+    return redirect(whatsapp_url)
 
 # ---------------------------------------------------------------------------
 # Customer Bills — Print (search / multiple)
