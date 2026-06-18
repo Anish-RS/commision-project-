@@ -236,7 +236,7 @@
                 </td>
 
                 <td class="right">
-                    ₹{{ "%.2f"|format(p.amount or 0) }}
+                    {{ "%.2f"|format(p.amount or 0) }}
                 </td>
 
             </tr>
@@ -262,22 +262,22 @@
 
         <div class="row">
             <div>Opening Balance</div>
-            <div>₹{{ "%.2f"|format(block.opening) }}</div>
+            <div>{{ "%.2f"|format(block.opening) }}</div>
         </div>
 
         <div class="row">
             <div>Total Purchases</div>
-            <div>₹{{ "%.2f"|format(block.net) }}</div>
+            <div>{{ "%.2f"|format(block.net) }}</div>
         </div>
 
         <div class="row">
             <div>Total Receipts</div>
-            <div>₹{{ "%.2f"|format(block.sum_receipts) }}</div>
+            <div>{{ "%.2f"|format(block.sum_receipts) }}</div>
         </div>
 
         <div class="row" style="border-top:1px dashed #999;padding-top:6px;font-weight:bold;">
             <div>Current Balance</div>
-            <div>₹{{ "%.2f"|format(block.current_balance) }}</div>
+            <div>{{ "%.2f"|format(block.current_balance) }}</div>
         </div>
 
     </div>
