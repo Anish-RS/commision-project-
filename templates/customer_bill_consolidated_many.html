@@ -194,7 +194,7 @@
 
         <div>
             <strong>Date:</strong>
-            {{ block.date }}
+            {{ block.date.strftime('%d %B %Y') if block.date else '' }}
         </div>
 
     </div>
@@ -302,9 +302,11 @@
 const d = new Date();
 
 const formatted =
-    d.getFullYear() + "-" +
-    String(d.getMonth()+1).padStart(2,"0") + "-" +
-    String(d.getDate()).padStart(2,"0") + " " +
+    d.toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric'
+    }) + " " +
     String(d.getHours()).padStart(2,"0") + ":" +
     String(d.getMinutes()).padStart(2,"0") + ":" +
     String(d.getSeconds()).padStart(2,"0");
