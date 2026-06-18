@@ -148,7 +148,7 @@
 
     <div>
       <strong>Date:</strong>
-      {{ bill.bill_date }}
+      {{ bill.bill_date.strftime('%d-%m-%Y') if bill.bill_date else '-' }}
     </div>
 
     <div>
@@ -228,9 +228,9 @@
 const d = new Date();
 
 document.getElementById('printed_ts').textContent =
-    d.getFullYear() + "-" +
+    String(d.getDate()).padStart(2,"0") + "-" +
     String(d.getMonth()+1).padStart(2,"0") + "-" +
-    String(d.getDate()).padStart(2,"0") + " " +
+    d.getFullYear() + " " +
     String(d.getHours()).padStart(2,"0") + ":" +
     String(d.getMinutes()).padStart(2,"0") + ":" +
     String(d.getSeconds()).padStart(2,"0");
