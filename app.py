@@ -236,6 +236,27 @@ def add_supplier():
 
     return render_template("add_supplier.html")
 
+@app.route("/api/check_customer")
+def check_customer():
+
+    name = request.args.get("name", "").strip()
+
+    conn = get_connection()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
+
+    cursor.execute("""
+        SELECT customer_id
+        FROM customers
+        WHERE LOWER(TRIM(name)) = LOWER(TRIM(%s))
+    """, (name,))
+
+    exists = cursor.fetchone() is not None
+
+    cursor.close()
+    conn.close()
+
+    return jsonify({"exists": exists})
+
 
 @app.route("/api/supplier/<int:supplier_id>/balance")
 def get_supplier_balance(supplier_id):
