@@ -179,6 +179,14 @@
   </div>
   <script>
   window.onload = function () {
+
+    // Open WhatsApp in new tab
+      window.open(
+          "/send_supplier_whatsapp/{{ bill.bill_id }}",
+          "_blank"
+      );
+  
+      // Open print dialog
       setTimeout(() => {
           window.print();
       }, 300);
