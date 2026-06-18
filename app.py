@@ -216,7 +216,7 @@ def add_customer():
 @app.route("/suppliers/add", methods=["GET", "POST"])
 def add_supplier():
     if request.method == "POST":
-        name = request.form["name"].strip()
+        name = request.form["name"].strip().title()
         phone = request.form.get("phone")
         address = request.form.get("address")
         opening_balance = request.form.get("opening_balance", 0)
