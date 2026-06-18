@@ -1915,6 +1915,48 @@ def edit_supplier(supplier_id):
         "supplier_edit_simple.html",
         supplier=supplier
     )
+
+@app.route("/customer/edit/<int:customer_id>", methods=["GET", "POST"])
+def edit_customer(customer_id):
+
+    conn = get_connection()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
+
+    if request.method == "POST":
+
+        name = request.form.get("name", "").strip().title()
+        phone = request.form.get("phone", "").strip()
+
+        cursor.execute("""
+            UPDATE customers
+            SET name = %s,
+                phone = %s
+            WHERE customer_id = %s
+        """, (name, phone, customer_id))
+
+        conn.commit()
+
+        cursor.close()
+        conn.close()
+
+        flash("Customer updated successfully!", "success")
+        return redirect(url_for("find_page", mode="customer"))
+
+    cursor.execute("""
+        SELECT customer_id, name, phone
+        FROM customers
+        WHERE customer_id = %s
+    """, (customer_id,))
+
+    customer = cursor.fetchone()
+
+    cursor.close()
+    conn.close()
+
+    return render_template(
+        "customer_edit_simple.html",
+        customer=customer
+    )
     
 # ---------------------------------------------------------------------------
 # Account adjustment
