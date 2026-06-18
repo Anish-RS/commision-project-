@@ -578,7 +578,16 @@ function moveToFirstCustomer() {
 
 
 /* prevent form submit if supplier not chosen or no items */
-document.getElementById('bill-form').addEventListener('submit', function(e){
+document.getElementById('bill-form').addEventListener('submit', function() {
+        const comm = document.getElementById('commission');
+    
+        if (comm.value.includes('%')) {
+            const total = parseFloat(document.getElementById('total_amount').value) || 0;
+            const pct = parseFloat(comm.value.replace('%', '')) || 0;
+    
+            comm.value = ((total * pct) / 100).toFixed(2);
+        }
+    });
   const sid = document.getElementById('supplier_id').value;
   if (!sid) {
     e.preventDefault();
