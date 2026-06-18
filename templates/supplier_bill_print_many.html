@@ -39,7 +39,9 @@
     <h1>Supplier Bill #{{ bill['bill_id'] }}</h1>
     <div class="meta">
       <div><strong>Supplier:</strong> {{ bill['supplier_name'] or ('ID ' ~ bill['supplier_id']) }}</div>
-      <div><strong>Bill Date:</strong> {{ bill['bill_date'] }}</div>
+      <div><strong>Bill Date:</strong>
+        {{ bill['bill_date'].strftime('%d-%m-%Y') if bill['bill_date'] else '' }}
+      </div>
       <div><strong>Total Amount:</strong> ₹{{ "%.2f"|format(bill.get('total_amount', 0)) }}</div>
     </div>
   </header>
@@ -98,7 +100,7 @@
   </div>
 
   <div class="footer">
-    <div class="muted">Printed on: {{ now().strftime("%Y-%m-%d %H:%M:%S") }}</div>
+    <div class="muted">Printed on: {{ now().strftime("%d-%m-%Y %H:%M:%S") }}</div>
   </div>
 
 </body>
