@@ -182,6 +182,7 @@
             </th>
     
             <th>Amount</th>
+            <th>Edit</th>
         </tr>
     </thead>
     <tbody>
@@ -207,6 +208,14 @@
                     <span class="balance-positive">
                         ₹ {{ "%.2f"|format(r.balance) }}
                     </span>
+                {% endif %}
+            </td>
+            
+            <td>
+                {% if mode == 'supplier' %}
+                    <a href="/supplier/edit/{{ r.id }}" class="search-btn">
+                        Edit
+                    </a>
                 {% endif %}
             </td>
         </tr>
