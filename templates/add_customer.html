@@ -181,6 +181,9 @@ document.addEventListener("keydown", function (e) {
 const customerName = document.getElementById("customer_name");
 const duplicateMsg = document.getElementById("duplicate-msg");
 const saveBtn = document.getElementById("saveBtn");
+customerName.addEventListener("input", function () {
+    this.value = this.value.replace(/\b\w/g, c => c.toUpperCase());
+});
 
 customerName.addEventListener("blur", function () {
 
