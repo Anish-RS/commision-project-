@@ -2,44 +2,134 @@
 
 {% block content %}
 
-<div class="card" style="max-width:600px;margin:auto;">
+<style>
+.edit-card{
+    max-width:700px;
+    margin:20px auto;
+    background:rgba(255,255,255,0.95);
+    border-radius:24px;
+    padding:35px;
+    box-shadow:0 12px 35px rgba(108,99,255,0.12);
+    border-left:8px solid #7ec8ff;
+}
 
-    <h2>✏️ Edit Customer</h2>
+.edit-title{
+    margin:0 0 30px;
+    font-size:38px;
+    font-weight:800;
+    color:#222;
+}
+
+.form-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+}
+
+.form-group{
+    display:flex;
+    flex-direction:column;
+}
+
+.form-group.full{
+    grid-column:1 / -1;
+}
+
+.form-label{
+    font-size:16px;
+    font-weight:700;
+    color:#444;
+    margin-bottom:8px;
+}
+
+.form-input{
+    width:100%;
+    padding:14px 16px;
+    border:2px solid #d9ecff;
+    border-radius:14px;
+    background:#f8fbff;
+    font-size:16px;
+    transition:0.2s;
+    box-sizing:border-box;
+}
+
+.form-input:focus{
+    outline:none;
+    border-color:#7ec8ff;
+    box-shadow:0 0 0 4px rgba(126,200,255,0.18);
+}
+
+.readonly-field{
+    background:#eef3f8;
+    color:#666;
+    font-weight:700;
+}
+
+.update-btn{
+    margin-top:30px;
+    width:100%;
+    padding:16px;
+    border:none;
+    border-radius:14px;
+    font-size:18px;
+    font-weight:700;
+    color:#fff;
+    cursor:pointer;
+    background:linear-gradient(135deg,#64B5F6,#6C63FF);
+    transition:0.2s;
+}
+
+.update-btn:hover{
+    transform:translateY(-2px);
+    box-shadow:0 10px 25px rgba(108,99,255,0.25);
+}
+
+@media(max-width:768px){
+    .form-grid{
+        grid-template-columns:1fr;
+    }
+}
+</style>
+
+<div class="edit-card">
+
+    <h2 class="edit-title">✏️ Edit Customer</h2>
 
     <form method="POST">
 
-        <div style="margin-bottom:15px;">
-            <label>Customer ID</label>
-            <input
-                type="text"
-                value="{{ customer.customer_id }}"
-                readonly
-                class="form-control"
-            >
+        <div class="form-grid">
+
+            <div class="form-group">
+                <label class="form-label">Customer ID</label>
+                <input
+                    type="text"
+                    value="{{ customer.customer_id }}"
+                    readonly
+                    class="form-input readonly-field">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Phone Number</label>
+                <input
+                    type="text"
+                    name="phone"
+                    value="{{ customer.phone or '' }}"
+                    class="form-input">
+            </div>
+
+            <div class="form-group full">
+                <label class="form-label">Customer Name</label>
+                <input
+                    type="text"
+                    name="name"
+                    value="{{ customer.name }}"
+                    required
+                    class="form-input">
+            </div>
+
         </div>
 
-        <div style="margin-bottom:15px;">
-            <label>Customer Name</label>
-            <input
-                type="text"
-                name="name"
-                value="{{ customer.name }}"
-                required
-                class="form-control"
-            >
-        </div>
-
-        <div style="margin-bottom:15px;">
-            <label>Phone Number</label>
-            <input
-                type="text"
-                name="phone"
-                value="{{ customer.phone or '' }}"
-                class="form-control"
-            >
-        </div>
-
-        <button type="submit" class="search-btn">
+        <button type="submit" class="update-btn">
             💾 Update Customer
         </button>
 
