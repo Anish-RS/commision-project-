@@ -100,6 +100,23 @@
 
 <div class="customer-card">
 
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div style="
+            background:#ffebee;
+            color:#c62828;
+            padding:10px;
+            margin-bottom:15px;
+            border-radius:8px;
+            text-align:center;
+            font-weight:bold;">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
     <form method="POST">
 
         <div class="form-group">
