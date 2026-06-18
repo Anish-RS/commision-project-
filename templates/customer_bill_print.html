@@ -184,7 +184,7 @@
       </td>
 
       <td class="right">
-        ₹{{ "%.2f"|format(bill.amount or 0) }}
+        {{ "%.2f"|format(bill.amount or 0) }}
       </td>
     </tr>
   </tbody>
@@ -197,12 +197,12 @@
 
     <div style="display:flex;justify-content:space-between;">
       <div>Subtotal</div>
-      <div>₹{{ "%.2f"|format(bill.amount or 0) }}</div>
+      <div>{{ "%.2f"|format(bill.amount or 0) }}</div>
     </div>
 
     <div style="display:flex;justify-content:space-between;margin-top:4px;font-weight:bold;">
       <div>Total</div>
-      <div>₹{{ "%.2f"|format(bill.amount or 0) }}</div>
+      <div>{{ "%.2f"|format(bill.amount or 0) }}</div>
     </div>
 
   </div>
@@ -213,7 +213,7 @@
 
   <div>
     <strong>Current Account Balance:</strong>
-    ₹{{ "%.2f"|format(current_balance or 0) }}
+    {{ "%.2f"|format(current_balance or 0) }}
   </div>
 
   <div style="margin-top:6px;">
