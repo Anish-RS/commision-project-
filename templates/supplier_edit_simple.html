@@ -2,29 +2,102 @@
 
 {% block content %}
 
-<h2>Edit Supplier</h2>
+<style>
+.edit-card{
+    max-width:500px;
+    margin:40px auto;
+    background:#fff;
+    padding:30px;
+    border-radius:16px;
+    box-shadow:0 4px 20px rgba(0,0,0,0.08);
+}
 
-<form method="POST">
+.edit-title{
+    text-align:center;
+    margin-bottom:25px;
+}
 
-    <label>Supplier Name</label>
-    <input type="text"
-           name="name"
-           value="{{ supplier.name }}"
-           required>
+.edit-title h2{
+    margin:0;
+    font-size:32px;
+    color:#2c3e50;
+}
 
-    <br><br>
+.form-group{
+    margin-bottom:20px;
+}
 
-    <label>Phone Number</label>
-    <input type="text"
-           name="phone"
-           value="{{ supplier.phone or '' }}">
+.form-group label{
+    display:block;
+    margin-bottom:8px;
+    font-weight:600;
+    color:#444;
+}
 
-    <br><br>
+.form-control{
+    width:100%;
+    padding:12px 14px;
+    border:1px solid #dcdcdc;
+    border-radius:10px;
+    font-size:16px;
+    box-sizing:border-box;
+}
 
-    <button type="submit">
-        Save Changes
-    </button>
+.form-control:focus{
+    outline:none;
+    border-color:#6c63ff;
+    box-shadow:0 0 0 3px rgba(108,99,255,0.15);
+}
 
-</form>
+.save-btn{
+    width:100%;
+    padding:14px;
+    border:none;
+    border-radius:10px;
+    background:#4f46e5;
+    color:white;
+    font-size:16px;
+    font-weight:600;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.save-btn:hover{
+    background:#4338ca;
+}
+</style>
+
+<div class="edit-card">
+
+    <div class="edit-title">
+        <h2>✏️ Edit Supplier</h2>
+    </div>
+
+    <form method="POST">
+
+        <div class="form-group">
+            <label>Supplier Name</label>
+            <input type="text"
+                   name="name"
+                   class="form-control"
+                   value="{{ supplier.name }}"
+                   required>
+        </div>
+
+        <div class="form-group">
+            <label>Phone Number</label>
+            <input type="text"
+                   name="phone"
+                   class="form-control"
+                   value="{{ supplier.phone or '' }}">
+        </div>
+
+        <button type="submit" class="save-btn">
+            Save Changes
+        </button>
+
+    </form>
+
+</div>
 
 {% endblock %}
