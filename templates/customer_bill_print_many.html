@@ -191,9 +191,9 @@
         </div>
       
         <div>
-            <strong>Date:</strong>
-            {{ p.date }}
-        </div>
+          <strong>Date:</strong>
+          {{ p.date.strftime('%d-%m-%Y') if p.date else '' }}
+      </div>
       
       </div>
           
@@ -297,7 +297,8 @@
 
 <script>
 
-  const now = new Date().toLocaleString();
+  const now = new Date().toLocaleDateString('en-GB') + ' ' +
+  new Date().toLocaleTimeString('en-GB');
 
   document.querySelectorAll('.ts').forEach(function(el){
       el.textContent = now;
