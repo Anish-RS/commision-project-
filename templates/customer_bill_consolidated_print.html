@@ -209,27 +209,27 @@
 
   <div class="summary-row">
     <div>Total Purchases</div>
-    <div>₹{{ "%.2f"|format(net or 0) }}</div>
+    <div>{{ "%.2f"|format(net or 0) }}</div>
   </div>
 
   <div class="summary-row">
     <div>Total Receipts</div>
-    <div>₹{{ "%.2f"|format(sum_receipts or 0) }}</div>
+    <div>{{ "%.2f"|format(sum_receipts or 0) }}</div>
   </div>
 
   <div class="summary-row">
     <div>Opening</div>
-    <div>₹{{ "%.2f"|format(opening or 0) }}</div>
+    <div>{{ "%.2f"|format(opening or 0) }}</div>
   </div>
 
   <div class="summary-row" style="font-weight:bold;border-top:1px dashed #999;padding-top:6px;">
     <div>Net Change</div>
-    <div>₹{{ "%.2f"|format((net - sum_receipts) or 0) }}</div>
+    <div>{{ "%.2f"|format((net - sum_receipts) or 0) }}</div>
   </div>
 
   <div class="summary-row" style="font-weight:bold;">
     <div>Current Balance</div>
-    <div>₹{{ "%.2f"|format(current_balance or 0) }}</div>
+    <div>{{ "%.2f"|format(current_balance or 0) }}</div>
   </div>
 
 </div>
