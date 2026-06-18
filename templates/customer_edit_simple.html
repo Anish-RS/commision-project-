@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="card" style="max-width:600px;margin:auto;">
+
+    <h2>✏️ Edit Customer</h2>
+
+    <form method="POST">
+
+        <div style="margin-bottom:15px;">
+            <label>Customer ID</label>
+            <input
+                type="text"
+                value="{{ customer.customer_id }}"
+                readonly
+                class="form-control"
+            >
+        </div>
+
+        <div style="margin-bottom:15px;">
+            <label>Customer Name</label>
+            <input
+                type="text"
+                name="name"
+                value="{{ customer.name }}"
+                required
+                class="form-control"
+            >
+        </div>
+
+        <div style="margin-bottom:15px;">
+            <label>Phone Number</label>
+            <input
+                type="text"
+                name="phone"
+                value="{{ customer.phone or '' }}"
+                class="form-control"
+            >
+        </div>
+
+        <button type="submit" class="search-btn">
+            💾 Update Customer
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}
