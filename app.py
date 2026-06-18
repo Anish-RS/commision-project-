@@ -1870,7 +1870,52 @@ def find_page():
     cursor.close(); conn.close()
     return render_template("find.html", mode=mode, q=q, results=results)
 
+# ---------------------------------------------------------------------------
+# Supplier Edit
+# ---------------------------------------------------------------------------
 
+@app.route("/supplier/edit/<int:supplier_id>", methods=["GET", "POST"])
+def edit_supplier(supplier_id):
+
+    conn = get_connection()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
+
+    if request.method == "POST":
+
+        name = request.form.get("name", "").strip().title()
+        phone = request.form.get("phone", "").strip()
+
+        cursor.execute("""
+            UPDATE suppliers
+            SET name = %s,
+                phone = %s
+            WHERE supplier_id = %s
+        """, (name, phone, supplier_id))
+
+        conn.commit()
+
+        cursor.close()
+        conn.close()
+
+        flash("Supplier updated successfully!", "success")
+        return redirect(url_for("find_page", mode="supplier"))
+
+    cursor.execute("""
+        SELECT supplier_id, name, phone
+        FROM suppliers
+        WHERE supplier_id = %s
+    """, (supplier_id,))
+
+    supplier = cursor.fetchone()
+
+    cursor.close()
+    conn.close()
+
+    return render_template(
+        "supplier_edit_simple.html",
+        supplier=supplier
+    )
+    
 # ---------------------------------------------------------------------------
 # Account adjustment
 # ---------------------------------------------------------------------------
