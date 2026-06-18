@@ -177,6 +177,36 @@ document.addEventListener("keydown", function (e) {
         focusable[index + 1].focus();
     }
 });
+
+const customerName = document.getElementById("customer_name");
+const duplicateMsg = document.getElementById("duplicate-msg");
+const saveBtn = document.getElementById("saveBtn");
+
+customerName.addEventListener("blur", function () {
+
+    const name = this.value.trim();
+
+    if (!name) {
+        duplicateMsg.style.display = "none";
+        saveBtn.disabled = false;
+        return;
+    }
+
+    fetch(`/api/check_customer?name=${encodeURIComponent(name)}`)
+        .then(response => response.json())
+        .then(data => {
+
+            if (data.exists) {
+                duplicateMsg.style.display = "block";
+                saveBtn.disabled = true;
+            } else {
+                duplicateMsg.style.display = "none";
+                saveBtn.disabled = false;
+            }
+
+        });
+});
+
 </script>
 
 {% endblock %}
