@@ -229,8 +229,12 @@
             
             <td>
                 {% if mode == 'supplier' %}
-                    <a href="/supplier/edit/{{ r.id }}" class="edit-btn">
-                        ✏ Edit
+                    <a href="/supplier/edit/{{ r.id }}" class="search-btn">
+                        ✏️ Edit
+                    </a>
+                {% else %}
+                    <a href="/customer/edit/{{ r.id }}" class="search-btn">
+                        ✏️ Edit
                     </a>
                 {% endif %}
             </td>
