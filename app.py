@@ -216,17 +216,42 @@ def add_customer():
 @app.route("/suppliers/add", methods=["GET", "POST"])
 def add_supplier():
     if request.method == "POST":
-        name            = request.form["name"]
-        phone           = request.form.get("phone")
-        address         = request.form.get("address")
+        name = request.form["name"].strip()
+        phone = request.form.get("phone")
+        address = request.form.get("address")
         opening_balance = request.form.get("opening_balance", 0)
 
-        conn   = get_connection()
-        cursor = conn.cursor()
+        conn = get_connection()
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+
+        # Check duplicate supplier
         cursor.execute(
-            "INSERT INTO suppliers (name, phone, address, opening_balance) VALUES (%s, %s, %s, %s)",
+            """
+            SELECT supplier_id
+            FROM suppliers
+            WHERE LOWER(TRIM(name)) = LOWER(TRIM(%s))
+            """,
+            (name,)
+        )
+
+        existing = cursor.fetchone()
+
+        if existing:
+            cursor.close()
+            conn.close()
+
+            flash("Supplier already present. Cannot add duplicate supplier.", "danger")
+            return redirect(url_for("add_supplier"))
+
+        cursor.execute(
+            """
+            INSERT INTO suppliers
+            (name, phone, address, opening_balance)
+            VALUES (%s, %s, %s, %s)
+            """,
             (name, phone, address, opening_balance)
         )
+
         conn.commit()
         cursor.close()
         conn.close()
@@ -235,7 +260,6 @@ def add_supplier():
         return redirect(url_for("add_supplier"))
 
     return render_template("add_supplier.html")
-
 @app.route("/api/check_customer")
 def check_customer():
 
