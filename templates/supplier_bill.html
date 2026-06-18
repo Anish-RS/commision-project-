@@ -577,34 +577,41 @@ function moveToFirstCustomer() {
 
 
 
-/* prevent form submit if supplier not chosen or no items */
+/* Convert % commission to amount before submit */
 document.getElementById('bill-form').addEventListener('submit', function() {
-        const comm = document.getElementById('commission');
-    
-        if (comm.value.includes('%')) {
-            const total = parseFloat(document.getElementById('total_amount').value) || 0;
-            const pct = parseFloat(comm.value.replace('%', '')) || 0;
-    
-            comm.value = ((total * pct) / 100).toFixed(2);
-        }
-    });
-  const sid = document.getElementById('supplier_id').value;
-  if (!sid) {
-    e.preventDefault();
-    alert('Please select a supplier from the dropdown before creating the bill.');
-    document.getElementById('supplier_search').focus();
-    return false;
-  }
-  // ensure at least one item with customer id
-  const anyCust = Array.from(document.querySelectorAll('.customer_id')).some(h=>h.value);
-  if (!anyCust) {
-    e.preventDefault();
-    alert('Please add at least one line item with a customer selected.');
-    return false;
-  }
-  return true;
+    const comm = document.getElementById('commission');
+
+    if (comm.value.includes('%')) {
+        const total = parseFloat(document.getElementById('total_amount').value) || 0;
+        const pct = parseFloat(comm.value.replace('%', '')) || 0;
+
+        comm.value = ((total * pct) / 100).toFixed(2);
+    }
 });
 
+/* Validate form */
+document.getElementById('bill-form').addEventListener('submit', function(e){
+    const sid = document.getElementById('supplier_id').value;
+
+    if (!sid) {
+        e.preventDefault();
+        alert('Please select a supplier from the dropdown before creating the bill.');
+        document.getElementById('supplier_search').focus();
+        return false;
+    }
+
+    const anyCust = Array.from(
+        document.querySelectorAll('.customer_id')
+    ).some(h => h.value);
+
+    if (!anyCust) {
+        e.preventDefault();
+        alert('Please add at least one line item with a customer selected.');
+        return false;
+    }
+
+    return true;
+});
 /* On page load: setup date control + minimal setup */
 document.addEventListener('DOMContentLoaded', function(){
   // --- Bill date: ensure a value and keep disabled until Edit clicked ---
