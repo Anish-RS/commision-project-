@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Edit Supplier</h2>
+
+<form method="POST">
+
+    <label>Supplier Name</label>
+    <input type="text"
+           name="name"
+           value="{{ supplier.name }}"
+           required>
+
+    <br><br>
+
+    <label>Phone Number</label>
+    <input type="text"
+           name="phone"
+           value="{{ supplier.phone or '' }}">
+
+    <br><br>
+
+    <button type="submit">
+        Save Changes
+    </button>
+
+</form>
+
+{% endblock %}
