@@ -121,7 +121,12 @@
 
         <div class="form-group">
             <label>Name:</label>
-            <input type="text" name="name" class="input-field" placeholder="Customer Name" required>
+            <input type="text" id="customer_name" name="name" class="input-field" placeholder="Customer Name" required>
+
+            <div id="duplicate-msg"
+                 style="display:none;color:red;font-weight:bold;margin-top:5px;">
+                Customer already present
+            </div>
         </div>
 
         <div class="form-group">
@@ -139,7 +144,7 @@
             <input type="number" step="0.01" name="opening_balance" value="0" class="input-field">
         </div>
 
-        <button type="submit" class="btn-submit">💾 Save Customer</button>
+        <button type="submit" id="saveBtn" class="btn-submit">💾 Save Customer</button>
 
     </form>
 
