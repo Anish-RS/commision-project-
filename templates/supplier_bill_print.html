@@ -118,7 +118,10 @@
             <strong>Supplier ID:</strong>
             {{ bill.get('supplier_id') or '-' }}
         </div>
-        <div><strong>Date:</strong> {{ bill.get('bill_date') }}</div>
+        <div>
+            <strong>Date:</strong>
+            {{ bill.get('bill_date').strftime('%d %B %Y') if bill.get('bill_date') else '-' }}
+        </div>
         <div><strong>Total:</strong> ₹{{ "%.2f"|format(bill.get('total_amount', 0) or 0) }}</div>
     </div>
 
