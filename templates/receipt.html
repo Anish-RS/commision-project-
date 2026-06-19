@@ -108,24 +108,36 @@ button:hover {
     <input type="number" name="entity_id" id="entity_id">
   </div>
 
-  <!-- NAME SELECT -->
-  <div id="name_block">
-    <label>Select Name:</label>
-    <select name="entity_name" id="entity_name">
+  <!-- CUSTOMER / SUPPLIER SEARCH -->
+  <div>
+    <label>Customer / Supplier (Search by ID or Name):</label>
+  
+    <input type="text"
+           id="entity_search"
+           placeholder="Type ID or Name..."
+           onkeyup="filterEntityList()">
+  
+    <select name="entity_name"
+            id="entity_name"
+            required
+            size="6"
+            style="height:auto;margin-top:8px;">
+  
       <option value="">-- Select --</option>
-
-      <!-- Customers -->
+  
       {% for c in customers %}
-        <option value="{{ c.id }}" data-type="customer">{{ c.name }}</option>
+        <option value="{{ c.id }}" data-type="customer">
+          {{ c.id }} - {{ c.name }}
+        </option>
       {% endfor %}
-
-      <!-- Suppliers -->
+  
       {% for s in suppliers %}
-        <option value="{{ s.id }}" data-type="supplier">{{ s.name }}</option>
+        <option value="{{ s.id }}" data-type="supplier">
+          {{ s.id }} - {{ s.name }}
+        </option>
       {% endfor %}
     </select>
   </div>
-
   <!-- AMOUNT -->
   <div>
     <label>Amount:</label>
@@ -145,65 +157,50 @@ button:hover {
 </form>
 
 <script>
-function toggleInputs() {
-  const mode = document.getElementById("search_by").value;
 
-  const idBlock = document.getElementById("id_block");
-  const nameBlock = document.getElementById("name_block");
-  const idInput = document.getElementById("entity_id");
-  const nameSelect = document.getElementById("entity_name");
+function filterEntityList() {
+  const search =
+    document.getElementById("entity_search")
+    .value.toLowerCase();
 
-  if (mode === "id") {
-    idBlock.style.display = "block";
-    nameBlock.style.display = "none";
-    idInput.required = true;
-    nameSelect.required = false;
-  } else {
-    idBlock.style.display = "none";
-    nameBlock.style.display = "block";
-    idInput.required = false;
-    nameSelect.required = true;
+  const entityType =
+    document.getElementById("entity_type").value;
+
+  const options =
+    document.getElementById("entity_name").options;
+
+  for (let i = 0; i < options.length; i++) {
+
+    const opt = options[i];
+    const type = opt.getAttribute("data-type");
+
+    if (!type) continue;
+
+    const matchType = (type === entityType);
+
+    const matchSearch =
+      opt.text.toLowerCase().includes(search);
+
+    opt.style.display =
+      (matchType && matchSearch) ? "" : "none";
   }
 }
 
 function filterNames() {
-  const entityType = document.getElementById("entity_type").value;
-  const options = document.getElementById("entity_name").options;
-
-  for (let i = 0; i < options.length; i++) {
-    const opt = options[i];
-    const t = opt.getAttribute("data-type");
-
-    if (!t) {   // default "-- Select --"
-      opt.style.display = "";
-      continue;
-    }
-
-    opt.style.display = (t === entityType) ? "" : "none";
-  }
-
-  document.getElementById("entity_name").value = "";
+  filterEntityList();
 }
+  
 
 // prevent empty submissions
 document.getElementById("receiptForm").addEventListener("submit", function(e) {
-  const mode = document.getElementById("search_by").value;
 
-  if (mode === "name") {
-    if (!document.getElementById("entity_name").value) {
-      e.preventDefault();
-      alert("Please select a name.");
-      return false;
-    }
-  } else {
-    if (!document.getElementById("entity_id").value) {
-      e.preventDefault();
-      alert("Please enter an ID.");
-      return false;
-    }
+  if (!document.getElementById("entity_name").value) {
+    e.preventDefault();
+    alert("Please select a customer/supplier.");
+    return false;
   }
-});
 
+});
 // init on page load
 document.addEventListener("DOMContentLoaded", function() {
   // --- NEW: Auto-set today's date ---
@@ -213,7 +210,6 @@ document.addEventListener("DOMContentLoaded", function() {
     dateInput.value = today;
   }
 
-  toggleInputs();
   filterNames();
 });
 </script>
