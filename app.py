@@ -621,7 +621,7 @@ def supplier_bill_edit(bill_id):
                 new_total_amount += amount
             if commission_raw.endswith("%"):
 
-                pct = Decimal(
+                pct = to_decimal(
                     commission_raw.replace("%", "")
                 )
             
