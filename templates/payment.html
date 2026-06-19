@@ -187,24 +187,40 @@ function filterNames() {
   document.getElementById("entity_name").value = "";
 }
 
-document.getElementById("paymentForm").addEventListener("submit", function(e) {
-  const mode = document.getElementById("search_by").value;
+let paymentSubmitting = false;
 
-  if (mode === "name") {
-    const nameVal = document.getElementById("entity_name").value;
-    if (!nameVal) {
-      e.preventDefault();
-      alert("Please select a name.");
-      return false;
+document.getElementById("paymentForm").addEventListener("submit", function(e) {
+
+    const mode = document.getElementById("search_by").value;
+
+    if (mode === "name") {
+        const nameVal = document.getElementById("entity_name").value;
+
+        if (!nameVal) {
+            e.preventDefault();
+            alert("Please select a name.");
+            return false;
+        }
+    } else {
+        const idVal = document.getElementById("entity_id").value;
+
+        if (!idVal) {
+            e.preventDefault();
+            alert("Please enter an ID.");
+            return false;
+        }
     }
-  } else {
-    const idVal = document.getElementById("entity_id").value;
-    if (!idVal) {
-      e.preventDefault();
-      alert("Please enter an ID.");
-      return false;
+
+    if (paymentSubmitting) {
+        e.preventDefault();
+        return false;
     }
-  }
+
+    paymentSubmitting = true;
+
+    const btn = document.querySelector("#paymentForm button[type='submit']");
+    btn.disabled = true;
+    btn.innerText = "Saving Payment...";
 });
 
 // Initialize on load
