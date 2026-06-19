@@ -2134,11 +2134,13 @@ def account_summary():
             })
             sum_purchases += amt
 
+        # NOTE: wrapping tx_date in DATE(...) previously forced a full table
+        # scan. A half-open range on the raw column lets the index be used.
         cursor.execute(
             "SELECT tx_id, tx_date, amount, note, tx_type FROM transactions "
             "WHERE entity_type='customer' AND entity_id=%s AND tx_type='receipt' "
-            "AND DATE(tx_date) BETWEEN %s AND %s ORDER BY tx_date ASC",
-            (customer_id, from_date, to_date)
+            "AND tx_date >= %s AND tx_date < %s ORDER BY tx_date ASC",
+            (customer_id, from_date, to_date + timedelta(days=1))
         )
         for r in cursor.fetchall():
             amt = float(r.get("amount") or 0.0)
