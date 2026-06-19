@@ -590,7 +590,9 @@ def supplier_bill_edit(bill_id):
 
     if request.method == "POST":
         try:
-            commission    = to_decimal(request.form.get("commission") or 0)
+            commission_raw = (
+                request.form.get("commission") or "0"
+            ).strip()
             labour        = to_decimal(request.form.get("labour")     or 0)
             transport     = to_decimal(request.form.get("transport")  or 0)
             paid          = to_decimal(request.form.get("paid")       or 0)
@@ -608,6 +610,7 @@ def supplier_bill_edit(bill_id):
 
             new_items        = []
             new_total_amount = to_decimal(0)
+            
             for cid, q, r in zip(customer_ids, quantities, rates_list):
                 if not cid:
                     continue
@@ -616,6 +619,19 @@ def supplier_bill_edit(bill_id):
                 amount = (qty * rate).quantize(Decimal("0.01"))
                 new_items.append({"customer_id": int(cid), "quantity": qty, "rate": rate, "amount": amount})
                 new_total_amount += amount
+            if commission_raw.endswith("%"):
+
+                pct = Decimal(
+                    commission_raw.replace("%", "")
+                )
+            
+                commission = (
+                    new_total_amount * pct / Decimal("100")
+                ).quantize(Decimal("0.01"))
+            
+            else:
+            
+                commission = to_decimal(commission_raw)
 
             new_bill_balance = (new_total_amount - commission - labour - transport - paid).quantize(Decimal("0.01"))
 
