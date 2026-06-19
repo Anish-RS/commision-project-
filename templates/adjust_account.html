@@ -213,7 +213,7 @@
                   : customerListData;
   
           const matches = data.filter(item =>
-              item.name.toLowerCase().includes(query) ||
+              (item.name || "").toLowerCase().includes(query) ||
               String(item.id).includes(query)
           );
   
@@ -315,8 +315,13 @@ document.getElementById("adjust-form").addEventListener("submit", function(e) {
 });
 
   document.addEventListener("DOMContentLoaded", function() {
+
       document.getElementById("entity_type").value = "customer";
+  
       onModeChange();
+  
+      setupAutocomplete();
+  
   });
 </script>
 
