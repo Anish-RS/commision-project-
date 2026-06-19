@@ -101,26 +101,20 @@ button:hover {
     <input type="text"
            id="entity_search"
            name="entity_name"
-           list="entity_list"
            placeholder="Type ID or Name..."
            autocomplete="off"
            required>
-  
-    <datalist id="entity_list">
-  
-      {% for c in customers %}
-        <option value="{{ c.id }} - {{ c.name }}"
-                data-type="customer">
-        </option>
-      {% endfor %}
-  
-      {% for s in suppliers %}
-        <option value="{{ s.id }} - {{ s.name }}"
-                data-type="supplier">
-        </option>
-      {% endfor %}
-  
-    </datalist>
+    
+    <div id="suggestions"
+         style="
+            display:none;
+            background:#fff;
+            border:1px solid #ddd;
+            border-radius:10px;
+            max-height:220px;
+            overflow-y:auto;
+            margin-top:4px;">
+    </div>
   </div>
   <!-- AMOUNT -->
   <div>
@@ -141,6 +135,71 @@ button:hover {
 </form>
 
 <script>
+
+const allEntities = [
+{% for c in customers %}
+{
+  type: "customer",
+  value: "{{ c.id }} - {{ c.name }}"
+},
+{% endfor %}
+
+{% for s in suppliers %}
+{
+  type: "supplier",
+  value: "{{ s.id }} - {{ s.name }}"
+},
+{% endfor %}
+];
+
+const input = document.getElementById("entity_search");
+const suggestions = document.getElementById("suggestions");
+
+input.addEventListener("input", function () {
+
+  const text = this.value.toLowerCase().trim();
+  const entityType =
+      document.getElementById("entity_type").value;
+
+  suggestions.innerHTML = "";
+
+  if (text.length < 1) {
+    suggestions.style.display = "none";
+    return;
+  }
+
+  const matches = allEntities.filter(x =>
+      x.type === entityType &&
+      x.value.toLowerCase().includes(text)
+  );
+
+  matches.slice(0, 20).forEach(item => {
+
+    const div = document.createElement("div");
+
+    div.style.padding = "10px";
+    div.style.cursor = "pointer";
+
+    div.innerText = item.value;
+
+    div.onclick = function () {
+      input.value = item.value;
+      suggestions.style.display = "none";
+    };
+
+    suggestions.appendChild(div);
+  });
+
+  suggestions.style.display =
+      matches.length ? "block" : "none";
+});
+
+document.addEventListener("click", function(e){
+  if (!suggestions.contains(e.target) &&
+      e.target !== input) {
+      suggestions.style.display = "none";
+  }
+});
 
   
 
