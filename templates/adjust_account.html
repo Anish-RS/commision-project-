@@ -134,14 +134,36 @@
     <div class="form-row" style="margin-bottom:14px;">
       <div class="col-full">
         <label for="searchBox">Search Supplier / Customer</label>
-        <input id="searchBox" type="text" class="input-field" placeholder="Type name or ID..." oninput="filterDropdown()">
-        <select id="entity_select" name="entity_id" class="input-field" style="margin-top:10px;" required>
-          <!-- JS will populate -->
-        </select>
-        <div class="small-note">Type to filter; select the item to set ID. Balances are shown for convenience.</div>
+    
+        <input
+          id="searchBox"
+          type="text"
+          class="input-field"
+          placeholder="Type Supplier/Customer Name or ID..."
+          autocomplete="off"
+        >
+    
+        <input type="hidden" id="entity_id" name="entity_id">
+    
+        <div id="suggestions"
+             style="
+                display:none;
+                background:#fff;
+                border:1px solid #dbefff;
+                border-radius:10px;
+                max-height:220px;
+                overflow-y:auto;
+                margin-top:5px;
+                box-shadow:0 4px 10px rgba(0,0,0,.08);
+                z-index:999;
+                position:relative;">
+        </div>
+    
+        <div class="small-note">
+          Type name or ID. Suggestions appear automatically.
+        </div>
       </div>
     </div>
-
     <!-- Amount and Note aligned -->
     <div class="grid-amount-note" style="margin-top:10px;">
       <div>
@@ -166,58 +188,89 @@
   const supplierListData = JSON.parse('{{ suppliers | tojson | safe }}');
   const customerListData = JSON.parse('{{ customers | tojson | safe }}');
 
-  function populateDropdown(mode) {
-    const sel = document.getElementById("entity_select");
-    sel.innerHTML = "";
-    const arr = (mode === "supplier") ? supplierListData : customerListData;
+  function setupAutocomplete() {
 
-    arr.forEach(it => {
-      const opt = document.createElement("option");
-      opt.value = it.id;
-      // keep text short to avoid wrapping; full balance shown in tooltip
-      opt.textContent = `${it.name} (ID: ${it.id})`;
-      opt.title = `Balance: ₹${parseFloat(it.balance || 0).toFixed(2)}`;
-      sel.appendChild(opt);
-    });
-
-    if (!sel.value && sel.options.length === 0) {
-      const placeholder = document.createElement("option");
-      placeholder.value = "";
-      placeholder.textContent = "(no items)";
-      sel.appendChild(placeholder);
-    }
+      const searchBox = document.getElementById("searchBox");
+      const suggestionBox = document.getElementById("suggestions");
+  
+      searchBox.addEventListener("input", function () {
+  
+          const query = this.value.trim().toLowerCase();
+  
+          suggestionBox.innerHTML = "";
+  
+          if (query.length < 1) {
+              suggestionBox.style.display = "none";
+              document.getElementById("entity_id").value = "";
+              return;
+          }
+  
+          const mode = document.getElementById("entity_type").value;
+  
+          const data =
+              mode === "supplier"
+                  ? supplierListData
+                  : customerListData;
+  
+          const matches = data.filter(item =>
+              item.name.toLowerCase().includes(query) ||
+              String(item.id).includes(query)
+          );
+  
+          if (matches.length === 0) {
+              suggestionBox.style.display = "none";
+              return;
+          }
+  
+          matches.forEach(item => {
+  
+              const row = document.createElement("div");
+  
+              row.style.padding = "10px";
+              row.style.cursor = "pointer";
+              row.style.borderBottom = "1px solid #eee";
+  
+              row.innerHTML =
+                  `<strong>${item.name}</strong> (ID: ${item.id})`;
+  
+              row.onclick = function () {
+  
+                  searchBox.value =
+                      `${item.name} (ID: ${item.id})`;
+  
+                  document.getElementById("entity_id").value =
+                      item.id;
+  
+                  suggestionBox.style.display = "none";
+              };
+  
+              suggestionBox.appendChild(row);
+          });
+  
+          suggestionBox.style.display = "block";
+      });
+  
+      document.addEventListener("click", function(e){
+  
+          if (
+              !searchBox.contains(e.target) &&
+              !suggestionBox.contains(e.target)
+          ) {
+              suggestionBox.style.display = "none";
+          }
+  
+      });
   }
-
-  function filterDropdown() {
-    const query = document.getElementById("searchBox").value.toLowerCase().trim();
-    const mode = document.getElementById("entity_type").value;
-    const arr = (mode === "supplier") ? supplierListData : customerListData;
-    const sel = document.getElementById("entity_select");
-    sel.innerHTML = "";
-
-    arr.forEach(it => {
-      const name = (it.name || "").toLowerCase();
-      const idstr = String(it.id);
-      if (!query || name.includes(query) || idstr.includes(query)) {
-        const opt = document.createElement("option");
-        opt.value = it.id;
-        opt.textContent = `${it.name} (ID: ${it.id})`;
-        opt.title = `Balance: ₹${parseFloat(it.balance || 0).toFixed(2)}`;
-        sel.appendChild(opt);
-      }
-    });
-
-    if (sel.options.length === 0) {
-      const placeholder = document.createElement("option");
-      placeholder.value = "";
-      placeholder.textContent = "(no matches)";
-      sel.appendChild(placeholder);
-    }
-  }
-
+  
   function onModeChange() {
-    document.getElementById("searchBox").value = "";
-    populateDropdown(document.getElementById("entity_type").value);
+
+      document.getElementById("searchBox").value = "";
+  
+      document.getElementById("entity_id").value = "";
+  
+      document.getElementById("suggestions").innerHTML = "";
+  
+      document.getElementById("suggestions").style.display = "none";
   }
 
   // Enter key navigation: only submit when focused on submit button
@@ -237,9 +290,10 @@
 
 document.getElementById("adjust-form").addEventListener("submit", function(e) {
 
-    const sel = document.getElementById("entity_select");
-
-    if (!sel.value) {
+    const selectedId =
+        document.getElementById("entity_id").value;
+    
+    if (!selectedId) {
         e.preventDefault();
         alert("Please select a supplier or customer from the list before submitting.");
         document.getElementById("searchBox").focus();
