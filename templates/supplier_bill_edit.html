@@ -260,11 +260,10 @@ input:focus{
     
         <div class="field-group">
             <label>Commission</label>
-            <input type="number"
-                   step="0.01"
-                   name="commission"
-                   id="commission"
-                   value="{{ bill.commission }}">
+            <input type="text"
+               name="commission"
+               id="commission"
+               value="{{ bill.commission }}">
         </div>
     
         <div class="field-group">
@@ -361,7 +360,23 @@ function recalcTotals() {
         total += amount;
     });
 
-    const commission = parseFloat(document.getElementById('commission').value) || 0;
+    const commissionInput =
+        document.getElementById('commission').value.trim();
+    
+    let commission = 0;
+    
+    if (commissionInput.endsWith('%')) {
+    
+        const pct =
+            parseFloat(commissionInput.replace('%', '')) || 0;
+    
+        commission = total * pct / 100;
+    
+    } else {
+    
+        commission =
+            parseFloat(commissionInput) || 0;
+    }
     const labour = parseFloat(document.getElementById('labour').value) || 0;
     const transport = parseFloat(document.getElementById('transport').value) || 0;
     const paid = parseFloat(document.getElementById('paid').value) || 0;
