@@ -92,22 +92,7 @@ button:hover {
     </select>
   </div>
 
-  <!-- SEARCH BY -->
-  <div>
-    <label>Search By:</label>
-    <select name="search_by" id="search_by" onchange="toggleInputs()">
-      <option value="name" selected>Name</option>
-      <option value="id">ID</option>
-    </select>
-
-  </div>
-
-  <!-- ID INPUT -->
-  <div id="id_block" style="display:none;">
-    <label>Entity ID:</label>
-    <input type="number" name="entity_id" id="entity_id">
-  </div>
-
+  
   <!-- CUSTOMER / SUPPLIER SEARCH -->
   <div>
     <label>Customer / Supplier (Search by ID or Name):</label>
@@ -118,10 +103,9 @@ button:hover {
            onkeyup="filterEntityList()">
   
     <select name="entity_name"
-            id="entity_name"
-            required
-            size="6"
-            style="height:auto;margin-top:8px;">
+        id="entity_name"
+        required
+        style="margin-top:8px;">
   
       <option value="">-- Select --</option>
   
