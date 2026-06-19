@@ -731,10 +731,43 @@ document.addEventListener("keydown", function (e) {
         return;
     }
 
-    // Quantity → Commission
+    // Quantity → Next Line or Commission
     if (active.classList.contains("qty")) {
         e.preventDefault();
-        document.getElementById("commission")?.focus();
+    
+        const currentRow = active.closest("tr");
+        const rows = [...document.querySelectorAll("#lines-body tr")];
+        const currentIndex = rows.indexOf(currentRow);
+    
+        const nextRow = rows[currentIndex + 1];
+    
+        // Existing next row with customer selected
+        if (
+            nextRow &&
+            nextRow.querySelector(".customer_id")?.value.trim() !== ""
+        ) {
+            nextRow.querySelector(".customer_search")?.focus();
+            return;
+        }
+    
+        // Existing next row but empty
+        if (
+            nextRow &&
+            nextRow.querySelector(".customer_id")?.value.trim() === ""
+        ) {
+            document.getElementById("commission")?.focus();
+            return;
+        }
+    
+        // No next row -> create one
+        addLine();
+    
+        setTimeout(() => {
+            const rowsAfter = document.querySelectorAll("#lines-body tr");
+            const newRow = rowsAfter[rowsAfter.length - 1];
+            newRow.querySelector(".customer_search")?.focus();
+        }, 50);
+    
         return;
     }
 
