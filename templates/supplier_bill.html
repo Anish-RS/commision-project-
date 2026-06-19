@@ -736,26 +736,36 @@ document.addEventListener("keydown", function (e) {
         e.preventDefault();
     
         const currentRow = active.closest("tr");
-        const rows = [...document.querySelectorAll("#lines-body tr")];
-        const currentIndex = rows.indexOf(currentRow);
     
-        const nextRow = rows[currentIndex + 1];
+        const customer =
+            currentRow.querySelector(".customer_id")?.value.trim();
     
-        // Existing next row with customer selected
-        if (
-            nextRow &&
-            nextRow.querySelector(".customer_id")?.value.trim() !== ""
-        ) {
-            nextRow.querySelector(".customer_search")?.focus();
+        const rate =
+            currentRow.querySelector(".rate")?.value.trim();
+    
+        const qty =
+            currentRow.querySelector(".qty")?.value.trim();
+    
+        // If row is incomplete -> Commission
+        if (!customer || !rate || !qty) {
+            document.getElementById("commission")?.focus();
             return;
         }
     
-        // Existing next row but empty
-        if (
-            nextRow &&
-            nextRow.querySelector(".customer_id")?.value.trim() === ""
-        ) {
-            document.getElementById("commission")?.focus();
+        const rows = [...document.querySelectorAll("#lines-body tr")];
+        const currentIndex = rows.indexOf(currentRow);
+        const nextRow = rows[currentIndex + 1];
+    
+        // Next row already exists
+        if (nextRow) {
+            const nextCustomer =
+                nextRow.querySelector(".customer_id")?.value.trim();
+    
+            if (nextCustomer) {
+                nextRow.querySelector(".customer_search")?.focus();
+            } else {
+                document.getElementById("commission")?.focus();
+            }
             return;
         }
     
@@ -763,14 +773,13 @@ document.addEventListener("keydown", function (e) {
         addLine();
     
         setTimeout(() => {
-            const rowsAfter = document.querySelectorAll("#lines-body tr");
-            const newRow = rowsAfter[rowsAfter.length - 1];
-            newRow.querySelector(".customer_search")?.focus();
+            document
+                .querySelector("#lines-body tr:last-child .customer_search")
+                ?.focus();
         }, 50);
     
         return;
     }
-
     // Commission → Labour
     if (active.id === "commission") {
         e.preventDefault();
