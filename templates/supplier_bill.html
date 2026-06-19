@@ -407,7 +407,38 @@ function chooseSupplier(s) {
         if (firstCustomer) firstCustomer.focus();
     }, 0);
 }
+let billSubmitting = false;
+document.getElementById('bill-form').addEventListener('submit', function(e){
 
+    const sid = document.getElementById('supplier_id').value;
+
+    if (!sid) {
+        e.preventDefault();
+        alert('Please select a supplier');
+        return false;
+    }
+
+    const anyCust = Array.from(
+        document.querySelectorAll('.customer_id')
+    ).some(h => h.value);
+
+    if (!anyCust) {
+        e.preventDefault();
+        alert('Please add at least one customer');
+        return false;
+    }
+
+    if (billSubmitting) {
+        e.preventDefault();
+        return false;
+    }
+
+    billSubmitting = true;
+
+    const btn = document.getElementById('createBtn');
+    btn.disabled = true;
+    btn.innerText = 'Creating...';
+});
 function filterCustomerList(inputEl) {
     const q = inputEl.value.trim().toLowerCase();
     const box = inputEl.parentNode.querySelector(".customer_list");
@@ -626,29 +657,6 @@ document.getElementById('bill-form').addEventListener('submit', function() {
     }
 });
 
-/* Validate form */
-document.getElementById('bill-form').addEventListener('submit', function(e){
-    const sid = document.getElementById('supplier_id').value;
-
-    if (!sid) {
-        e.preventDefault();
-        alert('Please select a supplier from the dropdown before creating the bill.');
-        document.getElementById('supplier_search').focus();
-        return false;
-    }
-
-    const anyCust = Array.from(
-        document.querySelectorAll('.customer_id')
-    ).some(h => h.value);
-
-    if (!anyCust) {
-        e.preventDefault();
-        alert('Please add at least one line item with a customer selected.');
-        return false;
-    }
-
-    return true;
-});
 /* On page load: setup date control + minimal setup */
 document.addEventListener('DOMContentLoaded', function(){
   // --- Bill date: ensure a value and keep disabled until Edit clicked ---
@@ -805,7 +813,9 @@ document.addEventListener("keydown", function (e) {
     if (active.id === "paid") {
         e.preventDefault();
     
-        document.getElementById("createBtn").click();
+        if (billSubmitting) return;
+    
+        document.getElementById("bill-form").requestSubmit();
     
         return;
     }
