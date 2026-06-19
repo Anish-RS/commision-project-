@@ -313,12 +313,27 @@ def add_supplier_bill():
 
         bill_date = request.form.get("bill_date") or ist_today().isoformat()
 
+        # Mandatory fields check
+        if not request.form.get("commission", "").strip():
+            flash("Commission is required.", "danger")
+            return redirect(url_for("add_supplier_bill"))
+        
+        if not request.form.get("labour", "").strip():
+            flash("Labour is required.", "danger")
+            return redirect(url_for("add_supplier_bill"))
+        
+        if not request.form.get("transport", "").strip():
+            flash("Transport is required.", "danger")
+            return redirect(url_for("add_supplier_bill"))
+        
         try:
-            commission = float(request.form.get("commission") or 0)
-            labour     = float(request.form.get("labour")     or 0)
-            transport  = float(request.form.get("transport")  or 0)
-            paid       = float(request.form.get("paid")       or 0)
+            commission = float(request.form.get("commission"))
+            labour     = float(request.form.get("labour"))
+            transport  = float(request.form.get("transport"))
+            paid       = float(request.form.get("paid") or 0)
         except ValueError:
+            flash("Commission, Labour and Transport must be valid numbers.", "danger")
+            return redirect(url_for("add_supplier_bill"))
             flash("Numeric values must be valid numbers.", "danger")
             return redirect(url_for("add_supplier_bill"))
 
