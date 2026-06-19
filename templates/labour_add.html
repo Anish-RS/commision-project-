@@ -73,7 +73,7 @@
 <div class="labour-card">
   <div class="labour-title">Add Labour Entry</div>
 
-  <form method="POST">
+  <form method="POST" id="labourForm">
 
     <div class="form-field">
       <label>Amount (₹)</label>
@@ -86,11 +86,40 @@
     </div>
 
     <div style="margin-top:18px;">
-      <button class="btn-primary" type="submit">Save Labour</button>
+      <button class="btn-primary" type="submit" id="saveLabourBtn">
+          Save Labour
+      </button>
       <a href="{{ url_for('cash_in_hand') }}" class="btn-secondary">Back to Cash In Hand</a>
     </div>
 
   </form>
 </div>
+<script>
+let labourSubmitting = false;
 
+document.getElementById("labourForm").addEventListener("submit", function(e) {
+
+    const amount =
+        document.querySelector('input[name="amount"]').value;
+
+    if (!amount || parseFloat(amount) <= 0) {
+        e.preventDefault();
+        alert("Please enter a valid labour amount.");
+        return false;
+    }
+
+    if (labourSubmitting) {
+        e.preventDefault();
+        return false;
+    }
+
+    labourSubmitting = true;
+
+    const btn = document.getElementById("saveLabourBtn");
+    btn.disabled = true;
+    btn.innerText = "Saving Labour...";
+
+    return true;
+});
+</script>
 {% endblock %}
