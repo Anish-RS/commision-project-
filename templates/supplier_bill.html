@@ -801,9 +801,12 @@ document.addEventListener("keydown", function (e) {
         return;
     }
 
-    // Paid → Submit
+    // Paid → Submit Bill
     if (active.id === "paid") {
         e.preventDefault();
+    
+        document.getElementById("createBtn").click();
+    
         return;
     }
 
