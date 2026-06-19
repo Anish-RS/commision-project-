@@ -204,14 +204,26 @@ document.addEventListener("click", function(e){
   
 
 // prevent empty submissions
+let receiptSubmitting = false;
+
 document.getElementById("receiptForm").addEventListener("submit", function(e) {
 
-  if (!document.getElementById("entity_name").value) {
-    e.preventDefault();
-    alert("Please select a customer/supplier.");
-    return false;
-  }
+    if (!document.getElementById("entity_search").value.trim()) {
+        e.preventDefault();
+        alert("Please select a customer/supplier.");
+        return false;
+    }
 
+    if (receiptSubmitting) {
+        e.preventDefault();
+        return false;
+    }
+
+    receiptSubmitting = true;
+
+    const btn = document.querySelector("#receiptForm button[type='submit']");
+    btn.disabled = true;
+    btn.innerText = "Saving Receipt...";
 });
 // init on page load
 document.addEventListener("DOMContentLoaded", function() {
