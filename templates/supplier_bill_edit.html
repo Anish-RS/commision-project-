@@ -257,14 +257,43 @@ input:focus{
     <br><br>
 
     <div class="summary-grid">
-        <input type="number" step="0.01" name="commission" id="commission"
-               placeholder="Commission" value="{{ bill.commission }}">
-        <input type="number" step="0.01" name="labour" id="labour"
-               placeholder="Labour" value="{{ bill.labour }}">
-        <input type="number" step="0.01" name="transport" id="transport"
-               placeholder="Transport" value="{{ bill.transport }}">
-        <input type="number" step="0.01" name="paid" id="paid"
-               placeholder="Paid" value="{{ bill.paid }}">
+    
+        <div class="field-group">
+            <label>Commission</label>
+            <input type="number"
+                   step="0.01"
+                   name="commission"
+                   id="commission"
+                   value="{{ bill.commission }}">
+        </div>
+    
+        <div class="field-group">
+            <label>Labour</label>
+            <input type="number"
+                   step="0.01"
+                   name="labour"
+                   id="labour"
+                   value="{{ bill.labour }}">
+        </div>
+    
+        <div class="field-group">
+            <label>Transport</label>
+            <input type="number"
+                   step="0.01"
+                   name="transport"
+                   id="transport"
+                   value="{{ bill.transport }}">
+        </div>
+    
+        <div class="field-group">
+            <label>Paid</label>
+            <input type="number"
+                   step="0.01"
+                   name="paid"
+                   id="paid"
+                   value="{{ bill.paid }}">
+        </div>
+    
     </div>
 
     <div class="balance-card">
