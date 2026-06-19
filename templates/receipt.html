@@ -86,41 +86,41 @@ button:hover {
   <!-- ENTITY TYPE -->
   <div>
     <label>Entity Type:</label>
-    <select name="entity_type" id="entity_type" onchange="filterNames()" required>
+    <select name="entity_type"
+        id="entity_type"
+        required>
       <option value="customer">Customer</option>
       <option value="supplier">Supplier</option>
     </select>
   </div>
 
   
-  <!-- CUSTOMER / SUPPLIER SEARCH -->
   <div>
-    <label>Customer / Supplier (Search by ID or Name):</label>
+    <label>Customer / Supplier:</label>
   
     <input type="text"
            id="entity_search"
+           name="entity_name"
+           list="entity_list"
            placeholder="Type ID or Name..."
-           onkeyup="filterEntityList()">
+           autocomplete="off"
+           required>
   
-    <select name="entity_name"
-        id="entity_name"
-        required
-        style="margin-top:8px;">
-  
-      <option value="">-- Select --</option>
+    <datalist id="entity_list">
   
       {% for c in customers %}
-        <option value="{{ c.id }}" data-type="customer">
-          {{ c.id }} - {{ c.name }}
+        <option value="{{ c.id }} - {{ c.name }}"
+                data-type="customer">
         </option>
       {% endfor %}
   
       {% for s in suppliers %}
-        <option value="{{ s.id }}" data-type="supplier">
-          {{ s.id }} - {{ s.name }}
+        <option value="{{ s.id }} - {{ s.name }}"
+                data-type="supplier">
         </option>
       {% endfor %}
-    </select>
+  
+    </datalist>
   </div>
   <!-- AMOUNT -->
   <div>
@@ -142,37 +142,6 @@ button:hover {
 
 <script>
 
-function filterEntityList() {
-  const search =
-    document.getElementById("entity_search")
-    .value.toLowerCase();
-
-  const entityType =
-    document.getElementById("entity_type").value;
-
-  const options =
-    document.getElementById("entity_name").options;
-
-  for (let i = 0; i < options.length; i++) {
-
-    const opt = options[i];
-    const type = opt.getAttribute("data-type");
-
-    if (!type) continue;
-
-    const matchType = (type === entityType);
-
-    const matchSearch =
-      opt.text.toLowerCase().includes(search);
-
-    opt.style.display =
-      (matchType && matchSearch) ? "" : "none";
-  }
-}
-
-function filterNames() {
-  filterEntityList();
-}
   
 
 // prevent empty submissions
@@ -193,8 +162,6 @@ document.addEventListener("DOMContentLoaded", function() {
     const today = new Date().toISOString().split("T")[0];
     dateInput.value = today;
   }
-
-  filterNames();
 });
 </script>
 
