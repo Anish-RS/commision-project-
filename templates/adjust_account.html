@@ -124,8 +124,8 @@
       <div class="col-full">
         <label for="entity_type">Entity Type</label>
         <select id="entity_type" name="entity_type" class="input-field" onchange="onModeChange()" required>
-          <option value="supplier">Supplier</option>
-          <option value="customer">Customer</option>
+            <option value="supplier">Supplier</option>
+            <option value="customer" selected>Customer</option>
         </select>
       </div>
     </div>
@@ -245,7 +245,8 @@
   });
 
   document.addEventListener("DOMContentLoaded", function() {
-    onModeChange();
+      document.getElementById("entity_type").value = "customer";
+      onModeChange();
   });
 </script>
 
