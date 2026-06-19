@@ -233,16 +233,32 @@
   });
 
   // Prevent submission without selection
-  document.getElementById("adjust-form").addEventListener("submit", function(e) {
+  let adjustmentSubmitting = false;
+
+document.getElementById("adjust-form").addEventListener("submit", function(e) {
+
     const sel = document.getElementById("entity_select");
+
     if (!sel.value) {
-      e.preventDefault();
-      alert("Please select a supplier or customer from the list before submitting.");
-      document.getElementById("searchBox").focus();
-      return false;
+        e.preventDefault();
+        alert("Please select a supplier or customer from the list before submitting.");
+        document.getElementById("searchBox").focus();
+        return false;
     }
+
+    if (adjustmentSubmitting) {
+        e.preventDefault();
+        return false;
+    }
+
+    adjustmentSubmitting = true;
+
+    const btn = document.getElementById("submitBtn");
+    btn.disabled = true;
+    btn.innerText = "Applying...";
+
     return true;
-  });
+});
 
   document.addEventListener("DOMContentLoaded", function() {
       document.getElementById("entity_type").value = "customer";
