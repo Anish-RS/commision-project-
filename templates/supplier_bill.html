@@ -253,7 +253,7 @@ body { background: linear-gradient(135deg,#eaf6ff,#fff0f4); }
                    readonly
                    style="background:#fff;">
         </div>
-    
+        
         <div>
             <label class="label">Bill Amount</label>
             <input type="text"
@@ -262,9 +262,7 @@ body { background: linear-gradient(135deg,#eaf6ff,#fff0f4); }
                    readonly
                    style="background:#fff;">
         </div>
-    
-        <div></div>
-    
+        
         <div>
             <label class="label">
                 New Total (Resulting Supplier Balance)
@@ -275,7 +273,15 @@ body { background: linear-gradient(135deg,#eaf6ff,#fff0f4); }
                    readonly
                    style="background:#fff;">
         </div>
-    
+        
+        <div>
+            <label class="label">Current Amount</label>
+            <input type="text"
+                   id="current_amount_display"
+                   class="input-field"
+                   readonly
+                   style="background:#fff;">
+        </div>
     </div>
 
     <div class="controls-row">
@@ -535,9 +541,15 @@ function recalcTotals() {
   const transport = parseFloat(document.getElementById('transport')?.value) || 0;
   const paid = parseFloat(document.getElementById('paid')?.value) || 0;
 
+  const current_amount = total - commission - labour - transport;
+
   const bill_balance = total - commission - labour - transport - paid;
+
   document.getElementById("bill_amount_display").value =
     total.toFixed(2);
+
+  document.getElementById("current_amount_display").value =
+    current_amount.toFixed(2);
   document.getElementById('total_amount').value = total.toFixed(2);
 
   // get old_signed from displayed old_balance (which we set when supplier chosen)
