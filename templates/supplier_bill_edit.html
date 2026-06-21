@@ -285,7 +285,7 @@ input:focus{
             <input type="text"
                name="commission"
                id="commission"
-               value="{{ bill.commission }}">
+               value="{{ bill.commission_text if bill.commission_text else bill.commission }}">
         </div>
     
         <div class="field-group">
