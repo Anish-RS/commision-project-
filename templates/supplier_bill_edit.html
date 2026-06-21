@@ -224,7 +224,6 @@ input:focus{
                <td>
                    <input type="text"
                            class="customer-name"
-                           name="customer_name[]"
                            value="{{ it.customer_name }}">
                </td>
                 <td>
@@ -374,16 +373,9 @@ function addLine() {
     `;
 
     body.appendChild(tr);
-}
-    body.appendChild(tr);
 
-    const newIdInput =
-        tr.querySelector('input[name="customer_id[]"]');
-    
-    fetchCustomerName(newIdInput);
     recalcTotals();
-}
-    
+}    
 
     async function fetchCustomerName(input) {
 
