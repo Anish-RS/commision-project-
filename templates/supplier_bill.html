@@ -236,7 +236,14 @@ body { background: linear-gradient(135deg,#eaf6ff,#fff0f4); }
     <div style="margin-bottom:12px;">
       <button type="button" class="btn btn-small" onclick="addLine()">+ Add Line</button>
     </div>
-
+    <div>
+        <label class="label">Total Quantity</label>
+        <input type="text"
+               id="total_qty_display"
+               class="input-field"
+               readonly
+               style="background:#fff;">
+    </div>
     <div style="
         display:grid;
         grid-template-columns: 1.3fr 1fr;
@@ -310,6 +317,7 @@ body { background: linear-gradient(135deg,#eaf6ff,#fff0f4); }
     <!-- hidden fields -->
     <input type="hidden" id="total_amount" name="total_amount" value="0">
     <input type="hidden" id="balance" name="balance" value="0">
+    <input type="hidden" id="total_quantity" name="total_quantity" value="0">
 
     <div style="display:flex; justify-content:flex-end; margin-top:18px;">
       <button type="submit" class="btn btn-primary" id="createBtn">Create Bill</button>
@@ -573,13 +581,16 @@ function removeLine(btn) {
 function recalcTotals() {
   const rows = document.querySelectorAll('#lines-body tr');
   let total = 0;
+  let totalQty = 0;
   rows.forEach(row => {
     const qty = parseFloat(row.querySelector('.qty')?.value) || 0;
     const rate = parseFloat(row.querySelector('.rate')?.value) || 0;
     const amount = qty * rate;
+    total += amount;
+    totalQty += qty;
+
     const amtEl = row.querySelector('.amount');
     if (amtEl) amtEl.value = amount.toFixed(2);
-    total += amount;
   });
 
   let commissionInput = document.getElementById('commission')?.value.trim() || "";
@@ -605,7 +616,11 @@ function recalcTotals() {
   document.getElementById("current_amount_display").value =
     current_amount.toFixed(2);
   document.getElementById('total_amount').value = total.toFixed(2);
-
+  document.getElementById("total_qty_display").value =
+    totalQty.toFixed(2);
+    
+  document.getElementById("total_quantity").value =
+    totalQty.toFixed(2);
   // get old_signed from displayed old_balance (which we set when supplier chosen)
   let old_signed = parseFloat(document.getElementById('old_balance_display').value);
   if (isNaN(old_signed)) old_signed = 0.0;
