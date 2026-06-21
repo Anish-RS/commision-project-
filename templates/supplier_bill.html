@@ -563,6 +563,94 @@ Pasted text(37).txt
 Document
  as the bill is made i need a new field as total quantity showing the sum of aall the quantites of that bill 
 
+That's easy. You already calculate quantity for each row inside recalcTotals(). 
+
+
+1. Add a Total Quantity field
+Place it near Bill Amount and Current Amount:
+
+<div>
+    <label class="label">Total Quantity</label>
+    <input type="text"
+           id="total_qty_display"
+           class="input-field"
+           readonly
+           style="background:#fff;">
+</div>
+You can place it just below Bill Amount.
+
+2. Add a hidden field
+Near your existing hidden fields:
+
+<input type="hidden" id="total_quantity" name="total_quantity" value="0">
+3. Update recalcTotals()
+Currently you have:
+
+let total = 0;
+
+rows.forEach(row => {
+    const qty = parseFloat(row.querySelector('.qty')?.value) || 0;
+    const rate = parseFloat(row.querySelector('.rate')?.value) || 0;
+
+    const amount = qty * rate;
+
+    total += amount;
+});
+Change to:
+
+let total = 0;
+let totalQty = 0;
+
+rows.forEach(row => {
+
+    const qty =
+        parseFloat(row.querySelector('.qty')?.value) || 0;
+
+    const rate =
+        parseFloat(row.querySelector('.rate')?.value) || 0;
+
+    const amount = qty * rate;
+
+    total += amount;
+    totalQty += qty;
+
+    const amtEl = row.querySelector('.amount');
+    if (amtEl) amtEl.value = amount.toFixed(2);
+});
+4. Display it
+Just below:
+
+document.getElementById("bill_amount_display").value =
+    total.toFixed(2);
+add:
+
+document.getElementById("total_qty_display").value =
+    totalQty.toFixed(2);
+
+document.getElementById("total_quantity").value =
+    totalQty.toFixed(2);
+5. Save to Database (optional)
+If you want to store it permanently:
+
+ALTER TABLE supplier_bills
+ADD COLUMN total_quantity DECIMAL(12,2) DEFAULT 0;
+Then in your INSERT:
+
+total_quantity = request.form.get("total_quantity", 0)
+and save it into supplier_bills.
+
+Result:
+
+Customer      Qty
+A             10
+B             20
+C             15
+--------------
+Total Qty = 45
+Bill Amount = xxxx
+The Total Quantity will automatically update whenever quantity values change.
+
+
 
 ### 5\. Save to Database (optional) If you want to store it permanently: SQL ALTER TABLE supplier_billsADD COLUMN total_quantity DECIMAL(12,2) DEFAULT 0; Then in your INSERT: Python Run total_quantity = request.form.get("total_quantity", 0) and save it into `supplier_bills`.
 
@@ -740,7 +828,6 @@ From the file you just pasted, I can see that none of those Total Quantity addit
 
 
 So the fix is simply: add the HTML field and the totalQty calculation to this version of the page.
-
 
 
 {% extends "base.html" %}
