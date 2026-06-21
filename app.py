@@ -353,7 +353,9 @@ def add_supplier_bill():
             return redirect(url_for("add_supplier_bill"))
         
         try:
-            commission = float(request.form.get("commission"))
+            commission_raw = request.form.get("commission", "").strip()
+
+        try:
             labour     = float(request.form.get("labour"))
             transport  = float(request.form.get("transport"))
             paid       = float(request.form.get("paid") or 0)
@@ -384,6 +386,16 @@ def add_supplier_bill():
             total_amount += amount
             items.append({"customer_id": int(cid), "quantity": qty, "rate": rate, "amount": amount})
 
+        if commission_raw.endswith("%"):
+
+            pct = float(commission_raw.replace("%", ""))
+        
+            commission = total_amount * pct / 100
+        
+        else:
+        
+            commission = float(commission_raw or 0)
+
         bill_balance = total_amount - commission - labour - transport - paid
 
         conn   = get_connection()
@@ -401,8 +413,8 @@ def add_supplier_bill():
             cursor.execute(
                 """
                 INSERT INTO supplier_bills
-                    (supplier_id, bill_date, total_amount, commission, transport, labour, paid, balance, old_balance, final_balance)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    (supplier_id, bill_date, total_amount, commission, commission_text, transport, labour, paid, balance, old_balance, final_balance)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 RETURNING bill_id
                 """,
                 (supplier_id, bill_date, total_amount, commission, transport, labour, paid,
