@@ -292,6 +292,32 @@ def get_supplier_balance(supplier_id):
     conn.close()
     return jsonify({"old_balance": float(row[0]) if row else 0.0})
 
+@app.route("/api/customer/<int:customer_id>")
+def get_customer(customer_id):
+
+    conn = get_connection()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
+
+    cursor.execute("""
+        SELECT customer_id, name
+        FROM customers
+        WHERE customer_id = %s
+    """, (customer_id,))
+
+    row = cursor.fetchone()
+
+    cursor.close()
+    conn.close()
+
+    if not row:
+        return jsonify({"success": False})
+
+    return jsonify({
+        "success": True,
+        "customer_id": row["customer_id"],
+        "name": row["name"]
+    })
+
 
 # ---------------------------------------------------------------------------
 # Supplier Bills — Create
