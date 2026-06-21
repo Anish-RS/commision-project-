@@ -1,1001 +1,879 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+/* Simple pastel theme + consistent inputs for perfect alignment */
+* { box-sizing: border-box; }
+body { background: linear-gradient(135deg,#eaf6ff,#fff0f4); }
+
+.page-title { color:#6C63FF; font-size:28px; font-weight:700; text-align:center; margin:18px 0; }
+
+/* Clean pastel dropdown list */
+.dropdown-list {
+    display: none;
+    background: #eaf6ff;
+    border: 2px solid #d0e7ff;
+    border-radius: 12px;
+    margin-top: 6px;
+    max-height: 180px;
+    overflow-y: auto;
+    box-shadow: 0 4px 12px rgba(28,37,70,0.12);
+    padding: 6px 0;
+    z-index: 60;
+}
+.dropdown-item.active {
+  background: #90caf9;
+  color: #000;
+}
+
+.dropdown-list::-webkit-scrollbar { width: 6px; }
+.dropdown-list::-webkit-scrollbar-thumb { background: #90caf9; border-radius: 10px; }
+.dropdown-list::-webkit-scrollbar-track { background: transparent; }
+
+.dropdown-item {
+    padding: 10px 14px;
+    cursor: pointer;
+    transition: 0.12s ease;
+    font-size: 15px;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+.dropdown-item:last-child { border-bottom: none; }
+.dropdown-item:hover { background: #d7ecff; }
+
+.card {
+  max-width:1100px;
+  margin:18px auto;
+  background:rgba(255,255,255,0.96);
+  padding:22px;
+  border-radius:14px;
+  border-left:6px solid #90CAF9;
+  box-shadow:0 10px 30px rgba(28,37,70,0.06);
+}
+
+.label { display:block; font-weight:600; margin-bottom:6px; color:#333; }
+
+.input-field {
+  width:100%;
+  padding:12px 14px;
+  border-radius:12px;
+  border:2px solid #dbefff;
+  background:#eaf6ff;
+  outline:none;
+  transition:0.16s;
+  font-size:15px;
+  height:44px; /* fixed height to align all controls */
+}
+
+.input-field:focus { border-color:#64b5f6; background:#fff; box-shadow:0 4px 12px rgba(100,181,246,0.12); }
+
+.table {
+  width:100%;
+  border-collapse:collapse;
+  margin-top:10px;
+  margin-bottom:10px;
+}
+
+.table th, .table td {
+  border:1px solid rgba(0,0,0,0.12);
+  padding:8px;
+  text-align:left;
+  vertical-align:middle;
+}
+
+.table th { background:rgba(255,240,245,0.5); font-weight:700; }
+
+.small-note { font-size:13px; color:#666; margin-top:6px; }
+
+.controls-row { display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-top:12px; }
+
+.col-1 { flex:1 1 220px; min-width:160px; }
+.col-2 { flex:2 1 420px; min-width:220px; }
+
+.btn { padding:10px 14px; border-radius:10px; border:none; cursor:pointer; font-weight:700; }
+.btn-primary { background:linear-gradient(90deg,#ff9a9a,#ff6b6b); color:white; box-shadow:0 6px 18px rgba(255,107,107,0.18); }
+.btn-small { padding:6px 8px; border-radius:8px; background:#eee; }
+
+.grid-amount-note { display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-top:12px; align-items:start; }
+@media (max-width:760px) { .grid-amount-note { grid-template-columns: 1fr; } .col-1,.col-2{flex:1 1 100%} .card{padding:14px} }
+
+.right { text-align:right; }
+
+/* position for customer box dropdown inside table cell */
+.customer-box { position: relative; }
+/* ensure dropdown fills width of the cell */
+.customer-box .dropdown-list { position: absolute; left: 0; right: 0; z-index:70; }
+
+.date-edit-btn {
+  display: inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:6px 8px;
+  border-radius:8px;
+  background:#fff;
+  border:1px solid #dbefff;
+  cursor:pointer;
+  height:40px;
+}
+
+.date-edit-btn:hover { box-shadow:0 6px 18px rgba(100,181,246,0.08); transform:translateY(-1px); }
+
+/* ---------- Balance color classes ---------- */
+.balance-pos {
+  color: #0dfd1d; /* green (darker) */
+  background: rgba(129,199,132,0.08);
+  border-color: rgba(129,199,132,0.25);
+  font-weight:700;
+}
+
+.balance-neg {
+  color: #ef0505; /* red (darker) */
+  background: rgba(255,138,128,0.06);
+  border-color: rgba(244,67,54,0.12);
+  font-weight:700;
+}
+
+/* neutral (zero) */
+.balance-zero {
+  color: #444;
+  background: rgba(255,255,255,0.0);
+  border-color: #dbefff;
+  font-weight:600;
+}
+</style>
+
+<h2 class="page-title">Create Supplier Bill</h2>
+
+<div class="card">
+  <form method="POST" id="bill-form" oninput="recalcTotals()">
+    <div style="margin-bottom:15px;">
+        <label class="label">Bill Number</label>
+        <input type="text"
+               class="input-field"
+               value="{{ next_bill_no }}"
+               readonly
+               style="background:#fff;font-weight:bold;">
+    </div>
+    <!-- SUPPLIER SEARCH -->
+    <div style="margin-bottom:12px;">
+      <label class="label">Supplier (ID / Name)</label>
+      <input id="supplier_search" type="text" class="input-field"
+             placeholder="Type supplier ID or name..."
+             oninput="filterSupplierList()" autocomplete="off">
+
+      <div id="supplier_list" class="dropdown-list" role="listbox" aria-hidden="true"></div>
+
+      <input type="hidden" name="supplier_id" id="supplier_id" required>
+      <div class="small-note">Type to search and choose supplier. Old balance loads automatically.</div>
+    </div>
+    <!-- BILL DATE: default to today, disabled until Edit clicked -->
+    <div style="margin-bottom:12px;">
+      <label class="label" for="bill_date">Bill Date <span style="color:#b00">*</span></label>
+
+      <div style="display:flex; gap:8px; align-items:center; max-width:360px;">
+        <!-- VISIBLE date (disabled to prevent accidental edit). Name changed so it does NOT submit. -->
+        <input type="date" id="bill_date" name="bill_date_visible"
+               class="input-field"
+               required
+               disabled
+               value="{{ today if today is defined else '' }}" />
+
+        <!-- Hidden field that will actually be submitted as bill_date -->
+        <input type="hidden" id="bill_date_hidden" name="bill_date" value="{{ today if today is defined else '' }}">
+
+        <!-- edit button (text or icon) -->
+        <button type="button" id="dateEditBtn" class="date-edit-btn" aria-label="Edit date" title="Click to change date">📅</button>
+      </div>
+
+      <div class="small-note">Date defaults to today and is protected. Click the calendar icon to change it when needed.</div>
+    </div>
 
 
+    <!-- Line items -->
+    <h4 style="margin-top:8px;">Line Items</h4>
+    <table class="table" id="lines-table">
+      <thead>
+        <tr>
+          <th style="width:40%">Customer</th>
+          <th style="width:18%">Rate</th>
+          <th style="width:18%">Quantity</th>
+
+          <th style="width:18%">Amount</th>
+          <th style="width:6%"></th>
+        </tr>
+      </thead>
+      <tbody id="lines-body">
+        <tr>
+          <td>
+            <div class="customer-box">
+              <input type="text" class="input-field customer_search" placeholder="Customer ID / Name" oninput="filterCustomerList(this)" autocomplete="off">
+              <div class="customer_list dropdown-list" role="listbox" aria-hidden="true"></div>
+              <input type="hidden" name="customer_id[]" class="customer_id" required>
+            </div>
+            
+          </td>
+          <td>
+            <!-- RATE -->
+            <input type="number" step="0.01"
+                  name="rate[]"
+                  class="input-field rate"
+                  oninput="recalcTotals()">
+          </td>
+
+          <td>
+            <!-- QUANTITY -->
+            <input type="number" step="0.01"
+                  name="quantity[]"
+                  class="input-field qty"
+                  oninput="recalcTotals()">
+          </td>
+
+          <td><input type="number" step="0.01" name="amount[]" class="input-field amount" readonly></td>
+          <td class="right"><button type="button" class="btn btn-small" onclick="removeLine(this)">X</button></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div style="margin-bottom:12px;">
+      <button type="button" class="btn btn-small" onclick="addLine()">+ Add Line</button>
+    </div>
+    <div>
+        <label class="label">Total Quantity</label>
+        <input type="text"
+               id="total_qty_display"
+               class="input-field"
+               readonly
+               style="background:#fff;">
+    </div>
+    <div style="
+        display:grid;
+        grid-template-columns: 1.3fr 1fr;
+        gap:20px 60px;
+        margin:20px 0;
+        align-items:end;
+    ">
+    
+        <div>
+            <label class="label">Old Supplier Balance</label>
+            <input type="text"
+                   id="old_balance_display"
+                   class="input-field balance-zero"
+                   readonly
+                   style="background:#fff;">
+        </div>
+        
+        <div>
+            <label class="label">Bill Amount</label>
+            <input type="text"
+                   id="bill_amount_display"
+                   class="input-field"
+                   readonly
+                   style="background:#fff;">
+        </div>
+        
+        <div>
+            <label class="label">
+                New Total (Resulting Supplier Balance)
+            </label>
+            <input type="text"
+                   id="new_total_display"
+                   class="input-field balance-zero"
+                   readonly
+                   style="background:#fff;">
+        </div>
+        
+        <div>
+            <label class="label">Current Amount</label>
+            <input type="text"
+                   id="current_amount_display"
+                   class="input-field"
+                   readonly
+                   style="background:#fff;">
+        </div>
+    </div>
+
+    <div class="controls-row">
+      <div class="col-1">
+        <label class="label">Commission</label>
+        <input type="text" id="commission" name="commission" required
+           class="input-field"
+           placeholder="100 or 5%">
+      </div>
+      <div class="col-1">
+        <label class="label">Labour</label>
+        <input type="number" step="0.01" id="labour" name="labour" required class="input-field" placeholder="Labour">
+      </div>
+      <div class="col-1">
+        <label class="label">Transport</label>
+        <input type="number" step="0.01" id="transport" name="transport" required class="input-field" placeholder="Transport">
+      </div>
+      <div class="col-1">
+        <label class="label">Paid</label>
+        <input type="number" step="0.01" id="paid" name="paid" class="input-field" placeholder="Paid">
+      </div>
+    </div>
+
+   
+    
+    <!-- hidden fields -->
+    <input type="hidden" id="total_amount" name="total_amount" value="0">
+    <input type="hidden" id="balance" name="balance" value="0">
+    <input type="hidden" id="total_quantity" name="total_quantity" value="0">
+
+    <div style="display:flex; justify-content:flex-end; margin-top:18px;">
+      <button type="submit" class="btn btn-primary" id="createBtn">Create Bill</button>
+    </div>
+  </form>
+</div>
+
+<script>
+/* Server-provided lists */
+const suppliers = JSON.parse('{{ suppliers | tojson | safe }}');
+const customers = JSON.parse('{{ customers | tojson | safe }}');
 
 
-<div>₹ {{ '%.2f'|format(r.total_amount or 0) }}</div> i dont need rupeed symbol
+function filterSupplierList() {
+    const input = document.getElementById("supplier_search");
+    const q = input.value.trim().toLowerCase();
+    const box = document.getElementById("supplier_list");
 
-Just remove the ₹ symbol from the template:
+    box.innerHTML = "";
+    input._activeIndex ??= -1;
 
-<div>{{ '%.2f'|format(r.total_amount or 0) }}</div>
-If you want commas for thousands as well (e.g., 12,345.67), use:
-
-<div>{{ "{:,.2f}".format(r.total_amount or 0) }}</div>
-This will display:
-
-12345.67
-or
-
-12,345.67
-without the rupee symbol.
-
-
-
-Pasted text(32).txt
-Document
-
-Pasted text (2)(2).txt
-Document
- see how the search is done here...like on searching result is auto filled in it like wise i need supplier id/name and customer id/name search in supplier bill creation and on auto filling when i click enter it must go to next field and also initially without pointing to the supplier id/name field automatically have me make a entry there...this wa the entire bill creatuon will be enter automated
-
-Yes, I checked your search implementation in the Receipt/Payment page and your Supplier Bill page. 
-
- 
-
-
-You already have autocomplete + arrow key selection + Enter selection working for Supplier and Customer. What you want is:
-
-Required Flow
-When Create Supplier Bill opens:
-
-Cursor should automatically be in Supplier ID/Name
-
-Type supplier name/id
-
-Press Enter
-
-Supplier selected automatically
-
-Cursor moves to Customer ID/Name
-
-Type customer
-
-Press Enter
-
-Customer selected automatically
-
-Cursor moves to Rate
-
-Enter Rate → Enter
-
-Cursor moves to Quantity
-
-Enter Quantity → Enter
-
-New row created automatically
-
-Cursor moves to next Customer field
-
-Repeat...
-
-Last row → Commission → Labour → Transport → Paid → Submit
-
-This will make the entire bill entry keyboard-only.
-
-1. Auto Focus Supplier on Page Load
-Inside your existing DOMContentLoaded:
-
-document.addEventListener('DOMContentLoaded', function(){
-
-    const supplierField =
-        document.getElementById('supplier_search');
-
-    if (supplierField) {
-        setTimeout(() => supplierField.focus(), 100);
+    if (!q) {
+        box.style.display = "none";
+        box.setAttribute("aria-hidden", "true");
+        input._activeIndex = -1;
+        return;
     }
 
-});
-2. Supplier Enter → First Customer
-Modify your supplier Enter logic.
+    suppliers.forEach(s => {
+        if (
+            String(s.id).includes(q) ||
+            (s.name || "").toLowerCase().includes(q)
+        ) {
+            const div = document.createElement("div");
+            div.className = "dropdown-item";
+            div.textContent = `${s.name} (ID: ${s.id}) — ₹${parseFloat(s.balance || 0).toFixed(2)}`;
 
-Current:
+            div.onclick = () => {
+                chooseSupplier(s);
+                input._activeIndex = -1;
+            };
 
-else if (e.key === "Enter") {
-    if (input._activeIndex >= 0) {
+            box.appendChild(div);
+        }
+    });
+
+    const items = box.querySelectorAll(".dropdown-item");
+    box.style.display = items.length ? "block" : "none";
+    box.setAttribute("aria-hidden", items.length ? "false" : "true");
+
+    input.onkeydown = function (e) {
+        if (!items.length) return;
+
+        if (e.key === "ArrowDown") {
+            e.preventDefault();
+            input._activeIndex = (input._activeIndex + 1) % items.length;
+        } 
+        else if (e.key === "ArrowUp") {
+            e.preventDefault();
+            input._activeIndex = (input._activeIndex - 1 + items.length) % items.length;
+        } 
+        else if (e.key === "Enter") {
+
+            e.preventDefault();
+        
+            if (input._activeIndex >= 0) {
+        
+                items[input._activeIndex].click();
+        
+            } else if (items.length === 1) {
+        
+                items[0].click();
+            }
+        }
+        else if (e.key === "Escape") {
+            box.style.display = "none";
+            box.setAttribute("aria-hidden", "true");
+            input._activeIndex = -1;
+            return;
+        }
+
+        items.forEach(i => i.classList.remove("active"));
+
+        if (input._activeIndex >= 0) {
+            items[input._activeIndex].classList.add("active");
+            items[input._activeIndex].scrollIntoView({
+                block: "nearest"
+            });
+        }
+    };
+}
+
+function chooseSupplier(s) {
+    document.getElementById("supplier_id").value = s.id;
+    document.getElementById("supplier_search").value = `${s.name} (ID: ${s.id})`;
+    document.getElementById("old_balance_display").value =
+        (parseFloat(s.balance) || 0).toFixed(2);
+
+    document.getElementById("supplier_list").style.display = "none";
+    updateBalanceColors();
+    recalcTotals();
+
+    setTimeout(() => {
+        const firstCustomer = document.querySelector(".customer_search");
+        if (firstCustomer) firstCustomer.focus();
+    }, 0);
+}
+let billSubmitting = false;
+document.getElementById('bill-form').addEventListener('submit', function(e){
+
+    const sid = document.getElementById('supplier_id').value;
+
+    if (!sid) {
         e.preventDefault();
-        items[input._activeIndex].click();
+        alert('Please select a supplier');
+        return false;
     }
-}
-Replace with:
 
-else if (e.key === "Enter") {
+    const anyCust = Array.from(
+        document.querySelectorAll('.customer_id')
+    ).some(h => h.value);
 
-    e.preventDefault();
-
-    if (input._activeIndex >= 0) {
-
-        items[input._activeIndex].click();
-
-    } else if (items.length === 1) {
-
-        items[0].click();
+    if (!anyCust) {
+        e.preventDefault();
+        alert('Please add at least one customer');
+        return false;
     }
+
+    if (billSubmitting) {
+        e.preventDefault();
+        return false;
+    }
+
+    billSubmitting = true;
+
+    const btn = document.getElementById('createBtn');
+    btn.disabled = true;
+    btn.innerText = 'Creating...';
+});
+function filterCustomerList(inputEl) {
+    const q = inputEl.value.trim().toLowerCase();
+    const box = inputEl.parentNode.querySelector(".customer_list");
+
+    box.innerHTML = "";
+    inputEl._activeIndex ??= -1;
+
+    if (!q) {
+        box.style.display = "none";
+        inputEl._activeIndex = -1;
+        return;
+    }
+
+    customers.forEach(c => {
+        if (
+            String(c.id).includes(q) ||
+            (c.name || "").toLowerCase().includes(q)
+        ) {
+            const div = document.createElement("div");
+            div.className = "dropdown-item";
+            div.textContent = `${c.name} (ID: ${c.id})`;
+
+            div.onclick = () => {
+                chooseCustomer(c, inputEl);
+                inputEl._activeIndex = -1;
+            };
+
+            box.appendChild(div);
+        }
+    });
+
+    const items = box.querySelectorAll(".dropdown-item");
+    box.style.display = items.length ? "block" : "none";
+
+    inputEl.onkeydown = function (e) {
+        if (!items.length) return;
+
+        if (e.key === "ArrowDown") {
+            e.preventDefault();
+            inputEl._activeIndex = (inputEl._activeIndex + 1) % items.length;
+        } 
+        else if (e.key === "ArrowUp") {
+            e.preventDefault();
+            inputEl._activeIndex = (inputEl._activeIndex - 1 + items.length) % items.length;
+        } 
+        else if (e.key === "Enter") {
+
+            e.preventDefault();
+            e.stopImmediatePropagation();
+        
+            if (inputEl._activeIndex >= 0) {
+        
+                items[inputEl._activeIndex].click();
+                inputEl._activeIndex = -1;
+        
+            } else if (items.length === 1) {
+        
+                items[0].click();
+            }
+        
+            return;
+        }
+
+
+        items.forEach(i => i.classList.remove("active"));
+
+        if (inputEl._activeIndex >= 0) {
+            items[inputEl._activeIndex].classList.add("active");
+            items[inputEl._activeIndex].scrollIntoView({
+                block: "nearest"
+            });
+        }
+    };
 }
-Then in chooseSupplier():
-
-setTimeout(() => {
-    document
-        .querySelector(".customer_search")
-        ?.focus();
-}, 50);
-You already have something similar, so keep it.
-
-3. Customer Enter → Rate
-Your code already does this:
 
 function chooseCustomer(customer, inputEl) {
+    const box = inputEl.parentNode;
+    box.querySelector(".customer_id").value = customer.id;
+    inputEl.value = `${customer.name} (ID: ${customer.id})`;
+    box.querySelector(".customer_list").style.display = "none";
+    recalcTotals();
 
-    ...
-
-    const rate =
-        inputEl.closest("tr")
-               .querySelector(".rate");
-
+    const rate = inputEl.closest("tr").querySelector(".rate");
     if (rate) rate.focus();
 }
-Perfect.
 
-4. Enter Should Select Customer Even Without Arrow Keys
-Currently user must ArrowDown first.
+/* Add / remove lines */
+function addLine() {
+    const tbody = document.getElementById('lines-body');
+    const tr = document.createElement('tr');
 
-Change Customer Enter section:
+    tr.innerHTML = `
+    <td>
+      <div class="customer-box">
+        <input type="text" class="input-field customer_search" 
+               placeholder="Customer ID / Name" 
+               oninput="filterCustomerList(this)" autocomplete="off">
+        <div class="customer_list dropdown-list" role="listbox" aria-hidden="true"></div>
+        <input type="hidden" name="customer_id[]" class="customer_id" required>
+      </div>
+    </td>
+    <td><input type="number" step="0.01" name="rate[]" class="input-field rate" oninput="recalcTotals()"></td>
+    <td><input type="number" step="0.01" name="quantity[]" class="input-field qty" oninput="recalcTotals()"></td>
 
-else if (e.key === "Enter") {
+    <td><input type="number" step="0.01" name="amount[]" class="input-field amount" readonly></td>
+    <td><button type="button" class="btn btn-small" onclick="removeLine(this)">X</button></td>
+    `;
 
-    e.preventDefault();
-
-    if (inputEl._activeIndex >= 0) {
-
-        items[inputEl._activeIndex].click();
-
-    } else if (items.length === 1) {
-
-        items[0].click();
-    }
+    tbody.appendChild(tr);
 }
-Do the same for Supplier.
 
-Now:
-
-sup
-Enter
-automatically selects supplier if only one match exists.
-
-5. Quantity Enter → New Row
-You already implemented this perfectly:
-
-addLine();
-
-setTimeout(() => {
-    document
-      .querySelector(
-        "#lines-body tr:last-child .customer_search"
-      )
-      ?.focus();
-}, 50);
-So no changes needed.
-
-6. Make Supplier Search Work Like Receipt/Payment Search
-Your Receipt/Payment page uses a <select> dropdown. 
-
-
-For Supplier Bill you're using a custom autocomplete. 
-
-
-I would keep the current autocomplete because it is much faster for data entry than a select box.
-
-Final User Experience
-After these changes:
-
-Page Opens
-↓
-Cursor in Supplier
-↓
-Type "mur"
-↓
-Enter
-↓
-Supplier Selected
-↓
-Customer Field Focused
-↓
-Type "raj"
-↓
-Enter
-↓
-Customer Selected
-↓
-Rate
-↓
-Enter
-↓
-Quantity
-↓
-Enter
-↓
-Next Row Customer
-↓
-...
-↓
-Commission
-↓
-Labour
-↓
-Transport
-↓
-Paid
-↓
-Enter
-↓
-Bill Created
-No mouse required at all. This is exactly how high-speed billing systems are usually optimized.
-
-
-
-Pasted text(33).txt
-Document
- is it ok now?
-
-Almost. I found one issue and one improvement in your latest code. 
-
-
-✅ Working
-Auto focus on Supplier field on page load.
-
-Supplier selection moves to first Customer.
-
-Customer selection moves to Rate.
-
-Rate → Quantity.
-
-Quantity → Next row.
-
-Commission → Labour → Transport → Paid → Submit.
-
-❌ Issue #1 (Customer Enter Auto-Select)
-For Supplier you changed it to:
-
-else if (e.key === "Enter") {
-
-    e.preventDefault();
-
-    if (input._activeIndex >= 0) {
-        items[input._activeIndex].click();
-    }
-    else if (items.length === 1) {
-        items[0].click();
-    }
+/* remove line */
+function removeLine(btn) {
+  const tbody = document.getElementById('lines-body');
+  if (tbody.rows.length > 1) {
+    btn.closest('tr').remove();
+    recalcTotals();
+  }
 }
-But Customer still has:
 
-else if (e.key === "Enter") {
-    if (inputEl._activeIndex >= 0) {
-        e.preventDefault();
-        e.stopImmediatePropagation();
-        items[inputEl._activeIndex].click();
-        inputEl._activeIndex = -1;
-    }
-    return;
-}
-So customer autocomplete will not select automatically when only one match exists.
-
-Replace with:
-
-else if (e.key === "Enter") {
-
-    e.preventDefault();
-    e.stopImmediatePropagation();
-
-    if (inputEl._activeIndex >= 0) {
-
-        items[inputEl._activeIndex].click();
-        inputEl._activeIndex = -1;
-
-    } else if (items.length === 1) {
-
-        items[0].click();
-    }
-
-    return;
-}
-⚠ Issue #2 (Potential JS Error)
-You have:
-
-items.forEach(i => i.classList.remove("active"));
-items[input._activeIndex].classList.add("active");
-items[input._activeIndex].scrollIntoView({
-    block: "nearest"
-});
-If:
-
-input._activeIndex === -1
-then:
-
-items[-1]
-is undefined and can throw errors.
-
-Use:
-
-items.forEach(i => i.classList.remove("active"));
-
-if (input._activeIndex >= 0) {
-    items[input._activeIndex].classList.add("active");
-    items[input._activeIndex].scrollIntoView({
-        block: "nearest"
-    });
-}
-Do the same for customer search.
-
-One More Nice Improvement
-After supplier selection, highlight the customer field contents:
-
-setTimeout(() => {
-    const firstCustomer =
-        document.querySelector(".customer_search");
-
-    if (firstCustomer) {
-        firstCustomer.focus();
-        firstCustomer.select();
-    }
-}, 0);
-This makes rapid keyboard entry smoother.
-
-After fixing the Customer Enter logic and the activeIndex guard, your keyboard-only billing workflow should work properly. The biggest remaining issue is the customer autocomplete Enter behavior.
-
-
-
-Pasted text(34).txt
-Document
-
-You're very close. I found one bug remaining in the latest version. 
-
-
-Inside filterCustomerList() you changed:
-
-items.forEach(i => i.classList.remove("active"));
-
-if (input._activeIndex >= 0) {
-    items[input._activeIndex].classList.add("active");
-    items[input._activeIndex].scrollIntoView({
-        block: "nearest"
-    });
-}
-But there is no variable named input in this function.
-
-It should be:
-
-items.forEach(i => i.classList.remove("active"));
-
-if (inputEl._activeIndex >= 0) {
-    items[inputEl._activeIndex].classList.add("active");
-    items[inputEl._activeIndex].scrollIntoView({
-        block: "nearest"
-    });
-}
-Otherwise you'll get:
-
-ReferenceError: input is not defined
-when using arrow keys in customer search.
-
-After fixing that, your flow becomes:
-
-Page Open
-↓
-Supplier field auto focused
-↓
-Type supplier
-↓
-Enter
-↓
-Supplier selected
-↓
-Customer field focused
-↓
-Type customer
-↓
-Enter
-↓
-Customer selected
-↓
-Rate
-↓
-Enter
-↓
-Quantity
-↓
-Enter
-↓
-New row created
-↓
-Customer field focused
-↓
-Repeat
-↓
-Commission
-↓
-Labour
-↓
-Transport
-↓
-Paid
-↓
-Enter
-↓
-Bill Created
-That is exactly the keyboard-driven billing workflow you were aiming for.
-
-One optional improvement:
-
-if (firstCustomer) {
-    firstCustomer.focus();
-    firstCustomer.select();
-}
-inside chooseSupplier() so the cursor is ready immediately after supplier selection. Other than the input → inputEl bug, the logic looks good.
-
-
-
-Pasted text(35).txt
-Document
-
-Yes, now the previously reported bug is fixed. 
-
-
-I checked the latest version and:
-
-✅ Supplier field auto-focuses on page load.
-
-✅ Supplier Enter selects the item when there is exactly one match.
-
-✅ Customer Enter selects the item when there is exactly one match.
-
-✅ Arrow key navigation works.
-
-✅ The input → inputEl mistake has been corrected.
-
-✅ Customer selection moves to Rate.
-
-✅ Rate → Quantity.
-
-✅ Quantity → New Customer row.
-
-✅ Commission → Labour → Transport → Paid → Submit.
-
-One thing I'd still improve:
-
-In chooseSupplier():
-
-setTimeout(() => {
-    const firstCustomer = document.querySelector(".customer_search");
-    if (firstCustomer) firstCustomer.focus();
-}, 0);
-Change to:
-
-setTimeout(() => {
-    const firstCustomer = document.querySelector(".customer_search");
-
-    if (firstCustomer) {
-        firstCustomer.focus();
-        firstCustomer.select();
-    }
-}, 0);
-This makes high-speed data entry smoother.
-
-I would now test these scenarios:
-
-Test 1
-Supplier:
-mur
-Enter
-Should auto-select supplier and move to customer.
-
-Test 2
-Customer:
-raj
-Enter
-Should auto-select customer and move to rate.
-
-Test 3
-Rate
-100
-Enter
-
-Qty
-20
-Enter
-Should create a new row and focus next customer.
-
-Test 4
-Multiple matching customers:
-
-ra
-Press ↓ and Enter.
-
-Should select highlighted customer.
-
-If all 4 tests pass, your keyboard-only billing workflow is complete and production-ready.
-
-
-
-Pasted text(36).txt
-Document
- like the prev code i need search field here also (autofill) which is already available but initially it is as choose ...i want it as blank
-
-Yes. In your Edit Receipts/Payments page, the reason you see:
-
-<option value="">-- choose --</option>
-is because of this line in rebuildPersonList(): 
-
-
-sel.innerHTML = '<option value="">-- choose --</option>';
-If you want the dropdown to start blank instead of showing "choose", change it to:
-
-sel.innerHTML = '<option value=""></option>';
-or
-
-sel.innerHTML = '<option value="" selected></option>';
-Then the Person field will appear empty initially.
-
-If you want true autocomplete search like your Supplier Bill page (type customer/supplier ID or name and get filtered suggestions), I'd actually replace this:
-
-<select id="entity-id">
-with:
-
-<input
-    type="text"
-    id="entity-search"
-    class="input-field"
-    placeholder="Customer / Supplier ID or Name">
-and reuse the same autocomplete code you're already using in Supplier Bill.
-
-That gives:
-
-raj
-↓
-Rajesh (ID: 12)
-↓
-Enter
-instead of opening a dropdown and scrolling through hundreds of names.
-
-If your goal is faster keyboard-only entry, I recommend converting the Person <select> into the same autocomplete search used in Supplier Bill rather than just making the first option blank.
-
-
-
-Pasted text(37).txt
-Document
- as the bill is made i need a new field as total quantity showing the sum of aall the quantites of that bill 
-
-That's easy. You already calculate quantity for each row inside recalcTotals(). 
-
-
-1. Add a Total Quantity field
-Place it near Bill Amount and Current Amount:
-
-<div>
-    <label class="label">Total Quantity</label>
-    <input type="text"
-           id="total_qty_display"
-           class="input-field"
-           readonly
-           style="background:#fff;">
-</div>
-You can place it just below Bill Amount.
-
-2. Add a hidden field
-Near your existing hidden fields:
-
-<input type="hidden" id="total_quantity" name="total_quantity" value="0">
-3. Update recalcTotals()
-Currently you have:
-
-let total = 0;
-
-rows.forEach(row => {
+/* Recalculate totals and new supplier balance */
+function recalcTotals() {
+  const rows = document.querySelectorAll('#lines-body tr');
+  let total = 0;
+  let totalQty = 0;
+  rows.forEach(row => {
     const qty = parseFloat(row.querySelector('.qty')?.value) || 0;
     const rate = parseFloat(row.querySelector('.rate')?.value) || 0;
-
     const amount = qty * rate;
-
-    total += amount;
-});
-Change to:
-
-let total = 0;
-let totalQty = 0;
-
-rows.forEach(row => {
-
-    const qty =
-        parseFloat(row.querySelector('.qty')?.value) || 0;
-
-    const rate =
-        parseFloat(row.querySelector('.rate')?.value) || 0;
-
-    const amount = qty * rate;
-
     total += amount;
     totalQty += qty;
 
     const amtEl = row.querySelector('.amount');
     if (amtEl) amtEl.value = amount.toFixed(2);
-});
-4. Display it
-Just below:
+  });
 
-document.getElementById("bill_amount_display").value =
+  let commissionInput = document.getElementById('commission')?.value.trim() || "";
+    let commission = 0;
+    
+    if (commissionInput.includes("%")) {
+        let percent = parseFloat(commissionInput.replace("%", "")) || 0;
+        commission = (total * percent) / 100;
+    } else {
+        commission = parseFloat(commissionInput) || 0;
+    }
+  const labour = parseFloat(document.getElementById('labour')?.value) || 0;
+  const transport = parseFloat(document.getElementById('transport')?.value) || 0;
+  const paid = parseFloat(document.getElementById('paid')?.value) || 0;
+
+  const current_amount = total - commission - labour - transport;
+
+  const bill_balance = total - commission - labour - transport - paid;
+
+  document.getElementById("bill_amount_display").value =
     total.toFixed(2);
-add:
 
-document.getElementById("total_qty_display").value =
+  document.getElementById("current_amount_display").value =
+    current_amount.toFixed(2);
+  document.getElementById('total_amount').value = total.toFixed(2);
+  document.getElementById("total_qty_display").value =
     totalQty.toFixed(2);
-
-document.getElementById("total_quantity").value =
+    
+  document.getElementById("total_quantity").value =
     totalQty.toFixed(2);
-5. Save to Database (optional)
-If you want to store it permanently:
+  // get old_signed from displayed old_balance (which we set when supplier chosen)
+  let old_signed = parseFloat(document.getElementById('old_balance_display').value);
+  if (isNaN(old_signed)) old_signed = 0.0;
 
-ALTER TABLE supplier_bills
-ADD COLUMN total_quantity DECIMAL(12,2) DEFAULT 0;
-Then in your INSERT:
+  // apply your formula: new = old - bill_balance
+  const new_signed = old_signed - bill_balance;
 
-total_quantity = request.form.get("total_quantity", 0)
-and save it into supplier_bills.
+  // show in UI
+  document.getElementById('new_total_display').value = new_signed.toFixed(2);
+  document.getElementById('balance').value = new_signed.toFixed(2);
 
-Result:
+  // update balance colors (old and new)
+  updateBalanceColors();
 
-Customer      Qty
-A             10
-B             20
-C             15
---------------
-Total Qty = 45
-Bill Amount = xxxx
-The Total Quantity will automatically update whenever quantity values change.
+  // hidden bill_balance
+  let hb = document.getElementById('bill_balance_hidden');
+  if (!hb) {
+    hb = document.createElement('input'); hb.type='hidden'; hb.id='bill_balance_hidden'; hb.name='bill_balance';
+    document.getElementById('bill-form').appendChild(hb);
+  }
+  hb.value = bill_balance.toFixed(2);
+}
 
+/* Update color classes for old and new balance fields */
+function updateBalanceColors() {
+  const oldEl = document.getElementById('old_balance_display');
+  const newEl = document.getElementById('new_total_display');
 
+  // helper to apply classes
+  function applyClass(el, value) {
+    el.classList.remove('balance-pos', 'balance-neg', 'balance-zero');
+    if (value > 0) el.classList.add('balance-pos');
+    else if (value < 0) el.classList.add('balance-neg');
+    else el.classList.add('balance-zero');
+  }
 
-### 5\. Save to Database (optional) If you want to store it permanently: SQL ALTER TABLE supplier_billsADD COLUMN total_quantity DECIMAL(12,2) DEFAULT 0; Then in your INSERT: Python Run total_quantity = request.form.get("total_quantity", 0) and save it into `supplier_bills`.
+  let oldVal = parseFloat(oldEl.value);
+  if (isNaN(oldVal)) oldVal = 0;
+  let newVal = parseFloat(newEl.value);
+  if (isNaN(newVal)) newVal = 0;
 
-if i need to print this bill there also i can use hardcode logic ryt?  database is not needed?
+  applyClass(oldEl, oldVal);
+  applyClass(newEl, newVal);
+}
+function focusNextRate(inputEl) {
+    const row = inputEl.closest('tr');
+    if (!row) return;
 
-Yes, if Total Quantity is only needed for display/printing, you don't need a database column.
-
-When generating the print page, you can simply calculate it from the bill items:
-
-total_qty = sum(item["quantity"] for item in bill_items)
-or in Jinja:
-
-{% set total_qty = bill_items | sum(attribute='quantity') %}
-
-<tr>
-    <td colspan="2"><strong>Total Quantity</strong></td>
-    <td>{{ "%.2f"|format(total_qty) }}</td>
-</tr>
-This is usually sufficient because:
-
-Quantity already exists in supplier_bill_items
-
-Total quantity is a derived value
-
-No risk of data getting out of sync
-
-No extra column to maintain
-
-I would only store total_quantity in supplier_bills if:
-
-You frequently filter/search by total quantity
-
-You generate reports on total quantity
-
-You want faster queries without recalculating
-
-For your current commission system, I'd keep it calculated dynamically for the bill screen and print page rather than adding another database column. The quantity data already exists in the line items, so storing the sum would be redundant.
-
-
-
-Pasted text(38).txt
-Document
- ?
-
-Yes, exactly.
-
-Looking at your current code, you're already calculating:
-
-let totalQty = 0;
-
-rows.forEach(row => {
-    const qty = parseFloat(
-        row.querySelector('.qty')?.value
-    ) || 0;
-
-    totalQty += qty;
-});
-and storing it in:
-
-document.getElementById("total_quantity").value =
-    totalQty.toFixed(2);
+    const rate = row.querySelector('.rate');
+    if (rate) {
+        setTimeout(() => rate.focus(), 0);
+    }
+}
+function moveToFirstCustomer() {
+    setTimeout(() => {
+        const firstCustomer = document.querySelector('.customer_search');
+        if (firstCustomer) firstCustomer.focus();
+    }, 0);
+}
 
 
-So for printing you have 2 options:
 
-Option 1 (Recommended)
-Calculate again from bill items when printing.
+/* Convert % commission to amount before submit */
+document.getElementById('bill-form').addEventListener('submit', function() {
+    const comm = document.getElementById('commission');
 
-total_qty = sum(
-    item["quantity"]
-    for item in bill_items
-)
-No database column needed.
+    if (comm.value.includes('%')) {
+        const total = parseFloat(document.getElementById('total_amount').value) || 0;
+        const pct = parseFloat(comm.value.replace('%', '')) || 0;
 
-Option 2
-Pass the hidden field value during creation and save it in supplier_bills.
-
-Not necessary because:
-
-Total Quantity
-=
-Sum of quantities in supplier_bill_items
-It's a derived value.
-
-For your commission system I'd do:
-
-supplier_bills
-    bill_id
-    supplier_id
-    total_amount
-    commission
-    labour
-    transport
-    paid
-
-supplier_bill_items
-    bill_id
-    customer_id
-    quantity
-    rate
-    amount
-Then whenever printing:
-
-total_qty = SUM(quantity)
-from the bill items.
-
-This avoids storing duplicate data and guarantees the printed total quantity is always correct even if a bill item is edited later. No database column required. 👍
-
-
-image(107).png
-
-Pasted text(39).txt
-Document
- where is the tot quantity field ...
-
-The reason you don't see the Total Quantity field is because the code in the screenshot and the code you pasted are different versions.
-
-In the screenshot, after:
-
-<div style="margin-bottom:12px;">
-  <button type="button" class="btn btn-small" onclick="addLine()">+ Add Line</button>
-</div>
-it immediately goes to:
-
-<div style="
-    display:grid;
-    grid-template-columns: 1.3fr 1fr;
-There is no Total Quantity block there. 
-
-
-You need to insert:
-
-<div style="margin-bottom:20px;">
-    <label class="label">Total Quantity</label>
-    <input type="text"
-           id="total_qty_display"
-           class="input-field"
-           readonly
-           style="background:#fff;">
-</div>
-between these two sections:
-
-<div style="margin-bottom:12px;">
-  <button type="button" class="btn btn-small" onclick="addLine()">+ Add Line</button>
-</div>
-
-<!-- INSERT TOTAL QUANTITY HERE -->
-
-<div style="
-    display:grid;
-    grid-template-columns: 1.3fr 1fr;
-Also make sure you have:
-
-<input type="hidden"
-       id="total_quantity"
-       name="total_quantity"
-       value="0">
-and inside recalcTotals():
-
-let totalQty = 0;
-
-rows.forEach(row => {
-    const qty =
-        parseFloat(row.querySelector('.qty')?.value) || 0;
-
-    totalQty += qty;
+        comm.value = ((total * pct) / 100).toFixed(2);
+    }
 });
 
-document.getElementById("total_qty_display").value =
-    totalQty.toFixed(2);
+/* On page load: setup date control + minimal setup */
+document.addEventListener('DOMContentLoaded', function(){
+  // --- Bill date: ensure a value and keep disabled until Edit clicked ---
+  const dateInput = document.getElementById('bill_date');         // visible (disabled) input
+  const hiddenDate = document.getElementById('bill_date_hidden'); // hidden input that will be submitted
+  const editBtn = document.getElementById('dateEditBtn');
+  const supplierField =
+    document.getElementById('supplier_search');
 
-document.getElementById("total_quantity").value =
-    totalQty.toFixed(2);
-From the file you just pasted, I can see that none of those Total Quantity additions exist in this version, which is why nothing appears on the screen. 
+  if (supplierField) {
+    setTimeout(() => supplierField.focus(), 100);
+  }
+  if (dateInput && hiddenDate) {
+    // if server didn't supply a date, set today
+    if (!dateInput.value) {
+      dateInput.value = new Date().toISOString().split('T')[0];
+    }
+    // ensure hidden holds same value initially
+    hiddenDate.value = dateInput.value;
 
+    // attach edit behavior
+    if (editBtn) {
+      editBtn.addEventListener('click', function(){
+        // enable input temporarily and focus
+        dateInput.disabled = false;
+        dateInput.focus();
+        // try to open native picker if supported
+        if (typeof dateInput.showPicker === 'function') {
+          try { dateInput.showPicker(); } catch(e){ /* ignore */ }
+        }
+      });
+    }
 
-So the fix is simply: add the HTML field and the totalQty calculation to this version of the page.
+    // sync hidden when user changes date, and re-disable visible input after
+    dateInput.addEventListener('change', function(){
+      hiddenDate.value = dateInput.value;
+      setTimeout(()=> dateInput.disabled = true, 100);
+    });
+    // also sync on blur
+    dateInput.addEventListener('blur', function(){
+      hiddenDate.value = dateInput.value;
+      setTimeout(()=> dateInput.disabled = true, 100);
+    });
 
+    // ensure hidden value is up-to-date right before submit
+    document.getElementById('bill-form').addEventListener('submit', function(){
+      hiddenDate.value = dateInput.value;
+    });
 
-{% extends "base.html" %}
-{% block content %}
+    // extra guard: prevent typing when disabled
+    dateInput.addEventListener('keydown', function(e){
+      if (dateInput.disabled) e.preventDefault();
+    });
+  }
 
-  <div id="supplier_list" class="dropdown-list" role="listbox" aria-hidden="true"></div>
+  // other initializations
+  recalcTotals();
+  updateBalanceColors();
+});
+document.addEventListener("keydown", function (e) {
+    // 🔹 Let dropdowns handle arrows
+    if (e.key === "ArrowDown" || e.key === "ArrowUp") return;
 
-  <input type="hidden" name="supplier_id" id="supplier_id" required>
-  <div class="small-note">Type to search and choose supplier. Old balance loads automatically.</div>
-</div>
-<!-- BILL DATE: default to today, disabled until Edit clicked -->
-<div style="margin-bottom:12px;">
-  <label class="label" for="bill_date">Bill Date <span style="color:#b00">*</span></label>
+    if (e.key !== "Enter") return;
 
-  <div style="display:flex; gap:8px; align-items:center; max-width:360px;">
-    <!-- VISIBLE date (disabled to prevent accidental edit). Name changed so it does NOT submit. -->
-    <input type="date" id="bill_date" name="bill_date_visible"
-           class="input-field"
-           required
-           disabled
-           value="{{ today if today is defined else '' }}" />
+    // ⛔ Do not interfere if dropdown is open
+    if (document.querySelector('.dropdown-list[style*="block"]')) return;
 
-    <!-- Hidden field that will actually be submitted as bill_date -->
-    <input type="hidden" id="bill_date_hidden" name="bill_date" value="{{ today if today is defined else '' }}">
+    const active = document.activeElement;
 
-    <!-- edit button (text or icon) -->
-    <button type="button" id="dateEditBtn" class="date-edit-btn" aria-label="Edit date" title="Click to change date">📅</button>
-  </div>
+    /* ========= EXPLICIT FLOW RULES ========= */
 
-  <div class="small-note">Date defaults to today and is protected. Click the calendar icon to change it when needed.</div>
-</div>
+    // Customer → Rate
+    if (active.classList.contains("customer_search")) {
+        e.preventDefault();
+        const row = active.closest("tr");
+        row?.querySelector(".rate")?.focus();
+        return;
+    }
 
+    // Rate → Quantity
+    if (active.classList.contains("rate")) {
+        e.preventDefault();
+        active.closest("tr")?.querySelector(".qty")?.focus();
+        return;
+    }
 
-<!-- Line items -->
-<h4 style="margin-top:8px;">Line Items</h4>
-<table class="table" id="lines-table">
-  <thead>
-    <tr>
-      <th style="width:40%">Customer</th>
-      <th style="width:18%">Rate</th>
-      <th style="width:18%">Quantity</th>
-
-      <th style="width:18%">Amount</th>
-      <th style="width:6%"></th>
-    </tr>
-  </thead>
-  <tbody id="lines-body">
-    <tr>
-      <td>
-        <div class="customer-box">
-          <input type="text" class="input-field customer_search" placeholder="Customer ID / Name" oninput="filterCustomerList(this)" autocomplete="off">
-          <div class="customer_list dropdown-list" role="listbox" aria-hidden="true"></div>
-          <input type="hidden" name="customer_id[]" class="customer_id" required>
-        </div>
-        
-      </td>
-      <td>
-        <!-- RATE -->
-        <input type="number" step="0.01"
-              name="rate[]"
-              class="input-field rate"
-              oninput="recalcTotals()">
-      </td>
-
-      <td>
-        <!-- QUANTITY -->
-        <input type="number" step="0.01"
-              name="quantity[]"
-              class="input-field qty"
-              oninput="recalcTotals()">
-      </td>
-
-      <td><input type="number" step="0.01" name="amount[]" class="input-field amount" readonly></td>
-      <td class="right"><button type="button" class="btn btn-small" onclick="removeLine(this)">X</button></td>
-    </tr>
-  </tbody>
-</table>
-
-<div style="margin-bottom:12px;">
-  <button type="button" class="btn btn-small" onclick="addLine()">+ Add Line</button>
-</div>
-<div>
-    <label class="label">Total Quantity</label>
-    <input type="text"
-           id="total_qty_display"
-           class="input-field"
-           readonly
-           style="background:#fff;">
-</div>
-<div style="
-    display:grid;
-    grid-template-columns: 1.3fr 1fr;
-    gap:20px 60px;
-    margin:20px 0;
-    align-items:end;
-">
-
-    <div>
-        <label class="label">Old Supplier Balance</label>
-        <input type="text"
-               id="old_balance_display"
-               class="input-field balance-zero"
-               readonly
-               style="background:#fff;">
-    </div>
+    // Quantity → Next Line or Commission
+    if (active.classList.contains("qty")) {
+        e.preventDefault();
     
-    <div>
-        <label class="label">Bill Amount</label>
-        <input type="text"
-               id="bill_amount_display"
-               class="input-field"
-               readonly
-               style="background:#fff;">
-    </div>
+        const currentRow = active.closest("tr");
     
-    <div>
-        <label class="label">
-            New Total (Resulting Supplier Balance)
-        </label>
-        <input type="text"
-               id="new_total_display"
-               class="input-field balance-zero"
-               readonly
-               style="background:#fff;">
-    </div>
+        const customer =
+            currentRow.querySelector(".customer_id")?.value.trim();
     
-    <div>
-        <label class="label">Current Amount</label>
-        <input type="text"
-               id="current_amount_display"
-               class="input-field"
-               readonly
-               style="background:#fff;">
-    </div>
-</div>
+        const rate =
+            currentRow.querySelector(".rate")?.value.trim();
+    
+        const qty =
+            currentRow.querySelector(".qty")?.value.trim();
+    
+        // If row is incomplete -> Commission
+        if (!customer || !rate || !qty) {
+            document.getElementById("commission")?.focus();
+            return;
+        }
+    
+        const rows = [...document.querySelectorAll("#lines-body tr")];
+        const currentIndex = rows.indexOf(currentRow);
+        const nextRow = rows[currentIndex + 1];
+    
+        // Next row already exists
+        if (nextRow) {
+            const nextCustomer =
+                nextRow.querySelector(".customer_id")?.value.trim();
+    
+            if (nextCustomer) {
+                nextRow.querySelector(".customer_search")?.focus();
+            } else {
+                document.getElementById("commission")?.focus();
+            }
+            return;
+        }
+    
+        // No next row -> create one
+        addLine();
+    
+        setTimeout(() => {
+            document
+                .querySelector("#lines-body tr:last-child .customer_search")
+                ?.focus();
+        }, 50);
+    
+        return;
+    }
+    // Commission → Labour
+    if (active.id === "commission") {
+        e.preventDefault();
+        document.getElementById("labour")?.focus();
+        return;
+    }
 
-<div class="controls-row">
-  <div class="col-1">
-    <label class="label">Commission</label>
-    <input type="text" id="commission" name="commission" required
-       class="input-field"
-       placeholder="100 or 5%">
-  </div>
-  <div class="col-1">
-    <label class="label">Labour</label>
-    <input type="number" step="0.01" id="labour" name="labour" required class="input-field" placeholder="Labour">
-  </div>
-  <div class="col-1">
-    <label class="label">Transport</label>
-    <input type="number" step="0.01" id="transport" name="transport" required class="input-field" placeholder="Transport">
-  </div>
-  <div class="col-1">
-    <label class="label">Paid</label>
-    <input type="number" step="0.01" id="paid" name="paid" class="input-field" placeholder="Paid">
-  </div>
-</div>
+    // Labour → Transport
+    if (active.id === "labour") {
+        e.preventDefault();
+        document.getElementById("transport")?.focus();
+        return;
+    }
 
+    // Transport → Paid
+    if (active.id === "transport") {
+        e.preventDefault();
+        document.getElementById("paid")?.focus();
+        return;
+    }
 
+    // Paid → Submit Bill
+    if (active.id === "paid") {
+        e.preventDefault();
+    
+        if (billSubmitting) return;
+    
+        document.getElementById("bill-form").requestSubmit();
+    
+        return;
+    }
 
-<!-- hidden fields -->
-<input type="hidden" id="total_amount" name="total_amount" value="0">
-<input type="hidden" id="balance" name="balance" value="0">
-<input type="hidden" id="total_quantity" name="total_quantity" value="0">
+    /* ========= FALLBACK (safe) ========= */
 
-<div style="display:flex; justify-content:flex-end; margin-top:18px;">
-  <button type="submit" class="btn btn-primary" id="createBtn">Create Bill</button>
-</div>
+    // Ignore buttons & supplier field
+    if (
+        active.tagName === "BUTTON" ||
+        active.id === "supplier_search"
+    ) return;
+
+    e.preventDefault();
+});
+
+</script>
+
 {% endblock %}
-
-
-Close
