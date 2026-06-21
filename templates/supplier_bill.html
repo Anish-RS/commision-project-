@@ -372,13 +372,18 @@ function filterSupplierList() {
             input._activeIndex = (input._activeIndex - 1 + items.length) % items.length;
         } 
         else if (e.key === "Enter") {
+
+            e.preventDefault();
+        
             if (input._activeIndex >= 0) {
-                e.preventDefault();
+        
                 items[input._activeIndex].click();
-                input._activeIndex = -1;
+        
+            } else if (items.length === 1) {
+        
+                items[0].click();
             }
-            return;
-        } 
+        }
         else if (e.key === "Escape") {
             box.style.display = "none";
             box.setAttribute("aria-hidden", "true");
@@ -387,8 +392,13 @@ function filterSupplierList() {
         }
 
         items.forEach(i => i.classList.remove("active"));
-        items[input._activeIndex].classList.add("active");
-        items[input._activeIndex].scrollIntoView({ block: "nearest" });
+
+        if (input._activeIndex >= 0) {
+            items[input._activeIndex].classList.add("active");
+            items[input._activeIndex].scrollIntoView({
+                block: "nearest"
+            });
+        }
     };
 }
 
@@ -485,19 +495,32 @@ function filterCustomerList(inputEl) {
             inputEl._activeIndex = (inputEl._activeIndex - 1 + items.length) % items.length;
         } 
         else if (e.key === "Enter") {
-          if (inputEl._activeIndex >= 0) {
-              e.preventDefault();
-              e.stopImmediatePropagation();   // 🔴 THIS IS THE FIX
-              items[inputEl._activeIndex].click();
-              inputEl._activeIndex = -1;
-          }
-          return;
+
+            e.preventDefault();
+            e.stopImmediatePropagation();
+        
+            if (inputEl._activeIndex >= 0) {
+        
+                items[inputEl._activeIndex].click();
+                inputEl._activeIndex = -1;
+        
+            } else if (items.length === 1) {
+        
+                items[0].click();
+            }
+        
+            return;
         }
 
 
         items.forEach(i => i.classList.remove("active"));
-        items[inputEl._activeIndex].classList.add("active");
-        items[inputEl._activeIndex].scrollIntoView({ block: "nearest" });
+
+        if (inputEl._activeIndex >= 0) {
+            items[inputEl._activeIndex].classList.add("active");
+            items[inputEl._activeIndex].scrollIntoView({
+                block: "nearest"
+            });
+        }
     };
 }
 
@@ -663,7 +686,12 @@ document.addEventListener('DOMContentLoaded', function(){
   const dateInput = document.getElementById('bill_date');         // visible (disabled) input
   const hiddenDate = document.getElementById('bill_date_hidden'); // hidden input that will be submitted
   const editBtn = document.getElementById('dateEditBtn');
+  const supplierField =
+    document.getElementById('supplier_search');
 
+  if (supplierField) {
+    setTimeout(() => supplierField.focus(), 100);
+  }
   if (dateInput && hiddenDate) {
     // if server didn't supply a date, set today
     if (!dateInput.value) {
