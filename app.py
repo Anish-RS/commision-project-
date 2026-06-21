@@ -352,8 +352,7 @@ def add_supplier_bill():
             flash("Transport is required.", "danger")
             return redirect(url_for("add_supplier_bill"))
         
-        try:
-            commission_raw = request.form.get("commission", "").strip()
+        commission_raw = request.form.get("commission", "").strip()
 
         try:
             labour     = float(request.form.get("labour"))
@@ -362,12 +361,10 @@ def add_supplier_bill():
         except ValueError:
             flash("Commission, Labour and Transport must be valid numbers.", "danger")
             return redirect(url_for("add_supplier_bill"))
-            flash("Numeric values must be valid numbers.", "danger")
-            return redirect(url_for("add_supplier_bill"))
-
-        customer_ids = request.form.getlist("customer_id[]")
-        quantities   = request.form.getlist("quantity[]")
-        rates        = request.form.getlist("rate[]")
+        
+                customer_ids = request.form.getlist("customer_id[]")
+                quantities   = request.form.getlist("quantity[]")
+                rates        = request.form.getlist("rate[]")
 
         items        = []
         total_amount = 0.0
@@ -413,7 +410,7 @@ def add_supplier_bill():
             cursor.execute(
                 """
                 INSERT INTO supplier_bills
-                    (supplier_id, bill_date, total_amount, commission, commission_text, transport, labour, paid, balance, old_balance, final_balance)
+                    (supplier_id,bill_date,total_amount,commission,commission_raw,transport,labour,paid,bill_balance,old_supplier_balance,new_supplier_balance)
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 RETURNING bill_id
                 """,
