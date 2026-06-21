@@ -340,12 +340,15 @@ function addLine() {
         <td>
             <input type="number"
                    name="customer_id[]"
-                   value="${lastCustomerId}">
+                   value="${lastCustomerId}"
+                   onchange="fetchCustomerName(this)">
         </td>
 
         <td>
             <input type="text"
-                   value="${lastCustomerName}">
+                   class="customer-name"
+                   value="${lastCustomerName}"
+                   readonly>
         </td>
 
         <td>
@@ -385,6 +388,34 @@ function addLine() {
     body.appendChild(tr);
     recalcTotals();
 }
+
+    async function fetchCustomerName(input) {
+
+        const customerId = input.value;
+    
+        if (!customerId) return;
+    
+        try {
+    
+            const response =
+                await fetch(`/api/customer/${customerId}`);
+    
+            const data = await response.json();
+    
+            if (data.success) {
+    
+                const row = input.closest('tr');
+    
+                row.querySelector('.customer-name').value =
+                    data.name;
+    
+            }
+    
+        } catch (err) {
+            console.log(err);
+        }
+    }
+    
     function removeLine(btn) {
     const body = document.getElementById('lines-body');
     if (body.rows.length > 1) {
