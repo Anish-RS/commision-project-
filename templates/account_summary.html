@@ -101,7 +101,7 @@
                         <tr>
                           <td>{{ p.date }}</td>
                           <td>Bill #{{ p.bill_id }} {% if p.supplier_bill_id %} — SB#{{ p.supplier_bill_id }}{% endif %}</td>
-                          <td class="right">₹ {{ '%.2f'|format(p.amount) }}</td>
+                          <td class="right"> {{ '%.2f'|format(p.amount) }}</td>
                         </tr>
                       {% endfor %}
                     {% else %}
@@ -115,7 +115,7 @@
               <div style="margin-top:12px;">
                 <div class="total-card" role="status" aria-live="polite">
                   <div class="total-label">Purchases total</div>
-                  <div class="total-value negative">₹ {{ '%.2f'|format(sum_purchases) }}</div>
+                  <div class="total-value negative"> {{ '%.2f'|format(sum_purchases) }}</div>
                 </div>
               </div>
             </div>
@@ -130,7 +130,7 @@
                   <tbody>
                     {% if receipts %}
                       {% for r in receipts %}
-                        <tr><td>{{ r.date }}</td><td>{{ r.note or '-' }}</td><td class="right">₹ {{ '%.2f'|format(r.amount) }}</td></tr>
+                        <tr><td>{{ r.date }}</td><td>{{ r.note or '-' }}</td><td class="right"> {{ '%.2f'|format(r.amount) }}</td></tr>
                       {% endfor %}
                     {% else %}
                       <tr><td colspan="3" class="muted">No receipts in this range.</td></tr>
@@ -142,7 +142,7 @@
               <div style="margin-top:12px;">
                 <div class="total-card">
                   <div class="total-label">Receipts total</div>
-                  <div class="total-value positive">₹ {{ '%.2f'|format(sum_receipts) }}</div>
+                  <div class="total-value positive"> {{ '%.2f'|format(sum_receipts) }}</div>
                 </div>
               </div>
             </div>
@@ -154,9 +154,9 @@
           <div class="net-box" role="note" aria-live="polite">
             <div class="net-title">Net (Receipts − Purchases)</div>
             {% if net >= 0 %}
-              <div class="net-amount positive">₹ {{ '%.2f'|format(net) }}</div>
+              <div class="net-amount positive"> {{ '%.2f'|format(net) }}</div>
             {% else %}
-              <div class="net-amount negative">-₹ {{ '%.2f'|format(-net) }}</div>
+              <div class="net-amount negative">- {{ '%.2f'|format(-net) }}</div>
             {% endif %}
           </div>
 
@@ -165,11 +165,11 @@
             <div class="total-value">
               {% if current_balance is not none %}
                 {% if current_balance < 0 %}
-                  <span class="negative">₹ {{ '%.2f'|format(current_balance) }} (we owe)</span>
+                  <span class="negative"> {{ '%.2f'|format(current_balance) }} (we owe)</span>
                 {% elif current_balance > 0 %}
-                  <span class="positive">₹ {{ '%.2f'|format(current_balance) }} (credit)</span>
+                  <span class="positive"> {{ '%.2f'|format(current_balance) }} (credit)</span>
                 {% else %}
-                  <span>₹ 0.00</span>
+                  <span> 0.00</span>
                 {% endif %}
               {% else %}
                 n/a
