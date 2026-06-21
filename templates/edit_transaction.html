@@ -214,7 +214,7 @@
             : '';
           tr.innerHTML = `<td>${t.tx_id}</td>
                           <td>${date}</td>
-                          <td>₹${(t.amount||0).toFixed(2)}</td>
+                          <td>${(t.amount||0).toFixed(2)}</td>
                           <td>${t.note || ''}</td>
                           <td><button data-tx="${t.tx_id}" class="btn btn-small edit-tx-btn">Edit</button></td>`;
           tb.appendChild(tr);
