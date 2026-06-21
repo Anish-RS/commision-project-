@@ -87,10 +87,21 @@
     }
 
     .totals .box {
-      width: 100%;
-      border-top: 1px dashed #999;
-      padding-top: 6px;
-      font-size: 12.5px;
+        width: 100%;
+        border-top: 1px dashed #999;
+        padding-top: 8px;
+        font-size: 16px;      /* increased from 12.5px */
+        font-weight: 700;
+    }
+    
+    .totals .grand-total {
+        font-size: 18px;
+        font-weight: 900;
+    }
+    
+    .footer .balance {
+        font-size: 17px;
+        font-weight: 900;
     }
 
     .footer {
@@ -196,13 +207,14 @@
   <div class="box">
 
     <div style="display:flex;justify-content:space-between;">
-      <div>Subtotal</div>
-      <div>{{ "%.2f"|format(bill.amount or 0) }}</div>
+        <div>Subtotal</div>
+        <div>{{ "%.2f"|format(bill.amount or 0) }}</div>
     </div>
-
-    <div style="display:flex;justify-content:space-between;margin-top:4px;font-weight:bold;">
-      <div>Total</div>
-      <div>{{ "%.2f"|format(bill.amount or 0) }}</div>
+    
+    <div class="grand-total"
+         style="display:flex;justify-content:space-between;margin-top:6px;">
+        <div>Total</div>
+        <div>{{ "%.2f"|format(bill.amount or 0) }}</div>
     </div>
 
   </div>
@@ -211,9 +223,9 @@
 
 <div class="footer">
 
-  <div>
-    <strong>Current Account Balance:</strong>
-    {{ "%.2f"|format(current_balance or 0) }}
+  <div class="balance">
+      Current Account Balance:
+      {{ "%.2f"|format(current_balance or 0) }}
   </div>
 
   <div style="margin-top:6px;">
