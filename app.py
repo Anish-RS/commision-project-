@@ -703,20 +703,23 @@ def supplier_bill_edit(bill_id):
                     commission_text=%s,
                     transport=%s,
                     labour=%s,
-                    paid=%s, balance=%s, final_balance=%s
+                    paid=%s,
+                    balance=%s,
+                    final_balance=%s
                 WHERE bill_id=%s
                 """,
                 (
-                new_bill_date,
-                float(new_total_amount),
-                float(commission),
-                commission_raw,
-                float(transport),
-                float(labour),
-                float(paid),
-                float(new_bill_balance),
-                float(new_final_signed),
-                bill_id
+                    new_bill_date,
+                    float(new_total_amount),
+                    float(commission),
+                    commission_raw,
+                    float(transport),
+                    float(labour),
+                    float(paid),
+                    float(new_bill_balance),
+                    float(new_final_signed),
+                    bill_id
+                )
             )
             cursor.execute(
                 "UPDATE suppliers SET balance = balance + %s WHERE supplier_id = %s",
