@@ -129,7 +129,7 @@
     const sel = by('entity-id');
     // remember selection
     const prev = sel.value;
-    sel.innerHTML = '<option value="">-- choose --</option>';
+    sel.innerHTML = '<option value=""></option>';
 
     if (entityType === 'customer') {
       allCustomers.forEach(c=>{
