@@ -231,7 +231,7 @@ input:focus{
           {% for it in items %}
             <tr>
                 <td>
-                   <input type="text"
+                   <input type="number"
                            name="customer_id[]"
                            class="customer-id"
                            value="{{ it.customer_id }}"
@@ -246,6 +246,7 @@ input:focus{
                            value="{{ it.customer_name }}"
                            autocomplete="off"
                            oninput="showCustomerSuggestions(this)">
+                    <div class="customer-suggestions" style="display:none;"></div>
                </td>
                 <td>
                     <input type="number" step="0.01" name="rate[]" class="rate"
@@ -359,7 +360,7 @@ function addLine() {
 
     tr.innerHTML = `
         <td>
-            <input type="text"
+            <input type="number"
                    name="customer_id[]"
                    class="customer-id"
                    autocomplete="off"
@@ -370,7 +371,10 @@ function addLine() {
         <td>
             <input type="text"
                    class="customer-name"
-                   name="customer_name[]">
+                   name="customer_name[]"
+                   autocomplete="off"
+                   oninput="showCustomerSuggestions(this)">
+            <div class="customer-suggestions" style="display:none;"></div>
         </td>
 
         <td>
@@ -423,7 +427,7 @@ function addLine() {
             input.parentNode.appendChild(box);
         }
     
-        const text = input.value.toLowerCase().trim();
+        const text = String(input.value).toLowerCase().trim();
     
         box.innerHTML = "";
     
@@ -432,9 +436,12 @@ function addLine() {
             return;
         }
     
+        const isIdField = input.classList.contains("customer-id");
+
         const matches = allCustomers.filter(c =>
-            c.id.toString().includes(text) ||
-            c.name.toLowerCase().includes(text)
+            isIdField
+                ? c.id.toString().includes(text)
+                : c.name.toLowerCase().includes(text)
         );
     
         matches.slice(0,20).forEach(c => {
