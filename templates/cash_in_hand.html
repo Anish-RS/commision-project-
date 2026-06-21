@@ -63,13 +63,13 @@
     </tr>
     <tr>
             <td>
-            <div><strong>Opening Cash:</strong> ₹{{ "%.2f"|format(opening) }}</div>
+            <div><strong>Opening Cash:</strong> {{ "%.2f"|format(opening) }}</div>
             <hr>
         
             {% if todays_receipts %}
                 <ul style="list-style:none; padding-left:0;">
                 {% for r in todays_receipts %}
-                    <li>{{ r.name }} — ₹{{ "%.2f"|format(r.amount) }}</li>
+                    <li>{{ r.name }} — {{ "%.2f"|format(r.amount) }}</li>
                 {% endfor %}
                 </ul>
             {% else %}
@@ -77,8 +77,8 @@
             {% endif %}
         
             <hr>
-            <div><strong>Total Receipts:</strong> ₹{{ "%.2f"|format(total_receipts) }}</div>
-            <div><strong>Closing Cash:</strong> ₹{{ "%.2f"|format(closing) }}</div>
+            <div><strong>Total Receipts:</strong> {{ "%.2f"|format(total_receipts) }}</div>
+            <div><strong>Closing Cash:</strong> {{ "%.2f"|format(closing) }}</div>
         </td>
 
 
@@ -86,7 +86,7 @@
             {% if all_payments %}
                 <ul style="list-style:none; padding-left:0;">
                 {% for p in all_payments %}
-                    <li>{{ p.name }} — ₹{{ "%.2f"|format(p.amount) }}</li>
+                    <li>{{ p.name }} — {{ "%.2f"|format(p.amount) }}</li>
                 {% endfor %}
                 </ul>
             {% else %}
@@ -94,7 +94,7 @@
             {% endif %}
         
             <hr>
-            <div><strong>Total Payments:</strong> ₹{{ "%.2f"|format(total_payments) }}</div>
+            <div><strong>Total Payments:</strong> {{ "%.2f"|format(total_payments) }}</div>
         </td>
     </tr>
 </table>
