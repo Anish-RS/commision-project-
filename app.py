@@ -410,12 +410,23 @@ def add_supplier_bill():
             cursor.execute(
                 """
                 INSERT INTO supplier_bills
-                    (supplier_id,bill_date,total_amount,commission,commission_raw,transport,labour,paid,bill_balance,old_supplier_balance,new_supplier_balance)
+                    (supplier_id,bill_date,total_amount,commission,commission_text,transport,labour,paid,balance,old_balance,final_balance)
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 RETURNING bill_id
                 """,
-                (supplier_id, bill_date, total_amount, commission, transport, labour, paid,
-                 bill_balance, old_supplier_balance, new_supplier_balance)
+                (
+                    supplier_id,
+                    bill_date,
+                    total_amount,
+                    commission,
+                    commission_raw,
+                    transport,
+                    labour,
+                    paid,
+                    bill_balance,
+                    old_supplier_balance,
+                    new_supplier_balance
+                )
             )
             bill_id = cursor.fetchone()["bill_id"]
 
