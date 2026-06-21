@@ -386,8 +386,14 @@ function addLine() {
     `;
 
     body.appendChild(tr);
+
+    const newIdInput =
+        tr.querySelector('input[name="customer_id[]"]');
+    
+    fetchCustomerName(newIdInput);
     recalcTotals();
 }
+    
 
     async function fetchCustomerName(input) {
 
