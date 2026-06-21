@@ -614,6 +614,13 @@ def supplier_bill_edit(bill_id):
     cursor.execute("SELECT * FROM customer_bills WHERE supplier_bill_id = %s", (bill_id,))
     cust_bills = cursor.fetchall()
 
+    cursor.execute("""
+        SELECT customer_id, name
+        FROM customers
+        ORDER BY name
+    """)
+    customers = cursor.fetchall()
+
     if request.method == "POST":
         try:
             commission_raw = (
@@ -749,7 +756,13 @@ def supplier_bill_edit(bill_id):
         return redirect(url_for("supplier_bill_search"))
 
     cursor.close(); conn.close()
-    return render_template("supplier_bill_edit.html", bill=bill, items=items, cust_bills=cust_bills)
+    return render_template(
+        "supplier_bill_edit.html",
+        bill=bill,
+        items=items,
+        cust_bills=cust_bills,
+        customers=customers
+    )
 
 
 # ---------------------------------------------------------------------------
