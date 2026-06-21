@@ -59,7 +59,7 @@
     <div>
       <label><strong>Person</strong></label><br>
       <select id="entity-id" class="input-field" style="min-width:300px;">
-        <option value="">-- choose --</option>
+        <option value=""></option>
         {% for c in customers %}
           <option data-name="{{ c.name }}" value="{{ c.id }}">{{ c.name }} (ID: {{ c.id }})</option>
         {% endfor %}
