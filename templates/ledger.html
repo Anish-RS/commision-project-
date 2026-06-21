@@ -194,7 +194,7 @@ th {
                       {{ s.name }}
                   </td>
                   <td style="text-align:right;" class="credit">
-                      ₹ {{ '%.2f'|format(s.amount) }}
+                       {{ '%.2f'|format(s.amount) }}
                   </td>
               </tr>
             {% endfor %}
@@ -202,7 +202,7 @@ th {
             <tr class="tot-row">
                 <td>Total Credit</td>
                 <td style="text-align:right;">
-                    ₹ {{ '%.2f'|format(supplier_credit_total) }}
+                     {{ '%.2f'|format(supplier_credit_total) }}
                 </td>
             </tr>
 
@@ -238,7 +238,7 @@ th {
                     {{ s.name }}
                 </td>
                 <td class="debit" style="text-align:right;">
-                    ₹ {{ '%.2f'|format(s.amount) }}
+                     {{ '%.2f'|format(s.amount) }}
                 </td>
               </tr>
             {% endfor %}
@@ -246,7 +246,7 @@ th {
             <tr class="tot-row">
                 <td>Total Debit</td>
                 <td style="text-align:right;">
-                    ₹ {{ '%.2f'|format(supplier_debit_total) }}
+                     {{ '%.2f'|format(supplier_debit_total) }}
                 </td>
             </tr>
 
@@ -282,7 +282,7 @@ th {
                     {{ c.name }}
                 </td>
                 <td class="credit" style="text-align:right;">
-                    ₹ {{ '%.2f'|format(c.amount) }}
+                     {{ '%.2f'|format(c.amount) }}
                 </td>
               </tr>
             {% endfor %}
@@ -290,7 +290,7 @@ th {
             <tr class="tot-row">
                 <td>Total Credit</td>
                 <td class="credit">
-                    ₹ {{ '%.2f'|format(customer_credit_total) }}
+                     {{ '%.2f'|format(customer_credit_total) }}
                 </td>
             </tr>
 
@@ -327,7 +327,7 @@ th {
                     {{ c.name }}
                 </td>
                 <td class="debit" style="text-align:right;">
-                    ₹ {{ '%.2f'|format(c.amount) }}
+                     {{ '%.2f'|format(c.amount) }}
                 </td>
               </tr>
             {% endfor %}
@@ -335,7 +335,7 @@ th {
             <tr class="tot-row">
                 <td>Total Debit</td>
                 <td style="text-align:right;">
-                    ₹ {{ '%.2f'|format(supplier_debit_total) }}
+                     {{ '%.2f'|format(supplier_debit_total) }}
                 </td>
             </tr>
 
