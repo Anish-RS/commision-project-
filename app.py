@@ -362,9 +362,9 @@ def add_supplier_bill():
             flash("Commission, Labour and Transport must be valid numbers.", "danger")
             return redirect(url_for("add_supplier_bill"))
         
-                customer_ids = request.form.getlist("customer_id[]")
-                quantities   = request.form.getlist("quantity[]")
-                rates        = request.form.getlist("rate[]")
+        customer_ids = request.form.getlist("customer_id[]")
+        quantities   = request.form.getlist("quantity[]")
+        rates        = request.form.getlist("rate[]")
 
         items        = []
         total_amount = 0.0
@@ -697,12 +697,26 @@ def supplier_bill_edit(bill_id):
             cursor.execute(
                 """
                 UPDATE supplier_bills
-                SET bill_date=%s, total_amount=%s, commission=%s, transport=%s, labour=%s,
+                SET bill_date=%s,
+                    total_amount=%s,
+                    commission=%s,
+                    commission_text=%s,
+                    transport=%s,
+                    labour=%s,
                     paid=%s, balance=%s, final_balance=%s
                 WHERE bill_id=%s
                 """,
-                (new_bill_date, float(new_total_amount), float(commission), float(transport),
-                 float(labour), float(paid), float(new_bill_balance), float(new_final_signed), bill_id)
+                (
+                new_bill_date,
+                float(new_total_amount),
+                float(commission),
+                commission_raw,
+                float(transport),
+                float(labour),
+                float(paid),
+                float(new_bill_balance),
+                float(new_final_signed),
+                bill_id
             )
             cursor.execute(
                 "UPDATE suppliers SET balance = balance + %s WHERE supplier_id = %s",
