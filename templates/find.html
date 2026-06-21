@@ -218,11 +218,11 @@
             <td>
                 {% if r.balance < 0 %}
                     <span class="balance-negative">
-                        ₹ {{ "%.2f"|format(r.balance) }}
+                          {{ "%.2f"|format(r.balance) }}
                     </span>
                 {% else %}
                     <span class="balance-positive">
-                        ₹ {{ "%.2f"|format(r.balance) }}
+                          {{ "%.2f"|format(r.balance) }}
                     </span>
                 {% endif %}
             </td>
