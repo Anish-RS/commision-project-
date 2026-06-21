@@ -683,16 +683,10 @@ function moveToFirstCustomer() {
 
 
 
-/* Convert % commission to amount before submit */
+/* Keep percentage text exactly as entered */
 document.getElementById('bill-form').addEventListener('submit', function() {
-    const comm = document.getElementById('commission');
-
-    if (comm.value.includes('%')) {
-        const total = parseFloat(document.getElementById('total_amount').value) || 0;
-        const pct = parseFloat(comm.value.replace('%', '')) || 0;
-
-        comm.value = ((total * pct) / 100).toFixed(2);
-    }
+    // Do nothing here.
+    // Flask will receive values like 5% directly.
 });
 
 /* On page load: setup date control + minimal setup */
