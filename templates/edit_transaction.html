@@ -34,51 +34,96 @@
 .table td:nth-child(5){
     width:120px;
 }
+.filter-card{
+    background:#fff;
+    border:1px solid #ddd;
+    border-radius:10px;
+    padding:18px;
+    margin-bottom:20px;
+}
+
+.filter-row{
+    display:flex;
+    gap:16px;
+    align-items:flex-end;
+    flex-wrap:wrap;
+}
+
+.field{
+    display:flex;
+    flex-direction:column;
+}
+
+.field label{
+    margin-bottom:6px;
+    font-weight:600;
+}
+
+.field select,
+.field input{
+    height:44px;
+    min-width:180px;
+}
+
+.person-field{
+    flex:1;
+    min-width:320px;
+}
+
+.btn-field button{
+    height:44px;
+    min-width:110px;
+}
 </style>
 
 <h2>Edit Receipts / Payments</h2>
 
-<div style="max-width:1000px; margin:6px 0 18px 0;">
-  <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
-    <div>
-      <label><strong>Transaction Type</strong></label><br>
-      <select id="tx-type" class="input-field" style="width:160px;">
-        <option value="receipt">Receipt (money received)</option>
-        <option value="payment">Payment (money paid)</option>
-      </select>
-    </div>
+<div class="filter-card">
+    <div class="filter-row">
 
-    <div>
-      <label><strong>Entity</strong></label><br>
-      <select id="entity-type" class="input-field" style="width:160px;">
-        <option value="customer">Customer</option>
-        <option value="supplier">Supplier</option>
-      </select>
-    </div>
+        <div class="field">
+            <label><strong>Transaction Type</strong></label>
+            <select id="tx-type" class="input-field">
+                <option value="receipt">Receipt</option>
+                <option value="payment">Payment</option>
+            </select>
+        </div>
 
-    <div>
-      <label><strong>Person</strong></label><br>
-      <input
-          type="text"
-          id="person-search"
-          class="input-field"
-          list="person-list"
-          placeholder="Type ID or Name"
-          style="min-width:300px;">
-    
-      <datalist id="person-list"></datalist>
-    </div>
-    
-   
+        <div class="field">
+            <label><strong>Entity</strong></label>
+            <select id="entity-type" class="input-field">
+                <option value="customer">Customer</option>
+                <option value="supplier">Supplier</option>
+            </select>
+        </div>
 
-    <div>
-      <button id="load-transactions" class="btn btn-primary" style="height:44px; margin-top:18px;">Load</button>
-    </div>
-  </div>
+        <div class="field person-field">
+            <label><strong>Person (ID / Name)</strong></label>
+            <input
+                type="text"
+                id="person-search"
+                class="input-field"
+                list="person-list"
+                placeholder="Search customer or supplier">
 
-  <p class="small-note">Choose the type (receipt/payment), choose customer or supplier, then select person and click Load to show transactions for editing.</p>
+            <datalist id="person-list"></datalist>
+        </div>
+
+        <div class="field btn-field">
+            <button id="load-transactions" class="btn btn-primary">
+                Load
+            </button>
+        </div>
+
+    </div>
 </div>
 
+<p class="small-note">
+  Choose the type (receipt/payment), choose customer or supplier,
+  then select person and click Load to show transactions for editing.
+</p>
+
+<hr>
 <hr>
 
 <div id="tx-list-wrap">
