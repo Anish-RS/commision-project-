@@ -102,7 +102,12 @@
       color: #111;
       clear: both;
     }
-
+    .current-balance-row {
+        border-top: 1px dashed #999;
+        padding-top: 6px;
+        font-weight: bold;
+        font-size: 18px;
+    }
   </style>
 </head>
 
@@ -227,10 +232,10 @@
     <div>{{ "%.2f"|format((net - sum_receipts) or 0) }}</div>
   </div>
 
-  <div class="summary-row" style="font-weight:bold;">
+  <div class="row current-balance-row">
     <div>Current Balance</div>
-    <div>{{ "%.2f"|format(current_balance or 0) }}</div>
-  </div>
+    <div>{{ "%.2f"|format(block.current_balance) }}</div>
+</div>
 
 </div>
 
