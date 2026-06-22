@@ -3,347 +3,293 @@
 {% block content %}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
-  *, *::before, *::after { box-sizing: border-box; }
+*, *::before, *::after { box-sizing: border-box; }
 
-  /* ── Tokens ── */
-  :root {
-    --navy:        #0f1c2e;
-    --navy-mid:    #1e3352;
-    --blue:        #2563eb;
-    --blue-light:  #eff6ff;
-    --blue-border: #bfdbfe;
-    --bg:          #f0f4f8;
-    --surface:     #ffffff;
-    --surface-2:   #f8fafc;
-    --border:      #e2e8f0;
-    --border-2:    #f1f5f9;
-    --text-primary:#0f172a;
-    --text-mid:    #334155;
-    --text-muted:  #64748b;
-    --green:       #059669;
-    --green-bg:    #ecfdf5;
-    --green-border:#a7f3d0;
-    --red:         #dc2626;
-    --red-bg:      #fef2f2;
-    --red-border:  #fecaca;
-    --radius-sm:   8px;
-    --radius-md:   12px;
-    --radius-lg:   16px;
-    --shadow-sm:   0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
-    --shadow-md:   0 4px 16px rgba(15,28,46,.08);
-    --shadow-lg:   0 8px 32px rgba(15,28,46,.12);
-  }
+:root {
+  --navy:        #0f1c2e;
+  --navy-mid:    #1e3352;
+  --blue:        #2563eb;
+  --blue-hover:  #1d4ed8;
+  --blue-light:  #eff6ff;
+  --blue-border: #bfdbfe;
+  --bg:          #eef2f7;
+  --surface:     #ffffff;
+  --surface-2:   #f8fafc;
+  --border:      #e2e8f0;
+  --border-2:    #f1f5f9;
+  --text-hi:     #0f172a;
+  --text-mid:    #334155;
+  --text-muted:  #64748b;
+  --green:       #059669;
+  --green-bg:    #ecfdf5;
+  --green-border:#a7f3d0;
+  --red:         #dc2626;
+  --red-bg:      #fef2f2;
+  --red-border:  #fecaca;
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --sh-sm: 0 1px 3px rgba(0,0,0,.06);
+  --sh-md: 0 4px 20px rgba(15,28,46,.09);
+}
 
-  /* ── Page shell ── */
-  body { background: var(--bg); font-family: 'Inter', sans-serif; color: var(--text-primary); }
+body { background: var(--bg); font-family: 'Inter', sans-serif; color: var(--text-hi); margin: 0; }
 
-  .acct-wrap { max-width: 1140px; margin: 0 auto; padding: 28px 20px 48px; }
+/* ── Wrapper ── */
+.acct-wrap { max-width: 1200px; margin: 0 auto; padding: 32px 24px 56px; }
 
-  /* ── Page header ── */
-  .page-header {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    margin-bottom: 24px;
-  }
-  .page-header-icon {
-    width: 44px; height: 44px;
-    background: var(--navy);
-    border-radius: var(--radius-md);
-    display: grid; place-items: center;
-    flex-shrink: 0;
-  }
-  .page-header-icon svg { color: #fff; }
-  .page-header h1 {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 22px; font-weight: 700;
-    color: var(--navy);
-    margin: 0 0 2px 0;
-    letter-spacing: -.3px;
-  }
-  .page-header p { margin: 0; font-size: 13px; color: var(--text-muted); }
+/* ── Page header ── */
+.page-header { display: flex; align-items: center; gap: 14px; margin-bottom: 24px; }
+.ph-icon {
+  width: 46px; height: 46px; border-radius: var(--r-md);
+  background: var(--navy); display: grid; place-items: center; flex-shrink: 0;
+}
+.ph-icon svg { color: #fff; }
+.ph-text h1 {
+  font-family: 'DM Sans', sans-serif; font-size: 22px; font-weight: 800;
+  color: var(--navy); margin: 0 0 2px; letter-spacing: -.4px;
+}
+.ph-text p { margin: 0; font-size: 13px; color: var(--text-muted); }
 
-  /* ── Card ── */
-  .card {
-    background: var(--surface);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-md);
-    border: 1px solid var(--border);
-    overflow: hidden;
-  }
+/* ── Main card ── */
+.card {
+  background: var(--surface);
+  border-radius: var(--r-lg);
+  box-shadow: var(--sh-md);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
 
-  /* ── Controls bar ── */
-  .controls-bar {
-    padding: 20px 24px;
-    border-bottom: 1px solid var(--border-2);
-    background: var(--surface-2);
-  }
-  .controls {
-    display: flex;
-    gap: 14px;
-    align-items: flex-end;
-    flex-wrap: wrap;
-  }
-  .control-field {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-  }
-  label.small {
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: .5px;
-    text-transform: uppercase;
-    color: var(--text-muted);
-  }
-  .input {
-    height: 40px;
-    min-width: 180px;
-    padding: 0 12px;
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--border);
-    background: var(--surface);
-    font-family: 'Inter', sans-serif;
-    font-size: 14px;
-    color: var(--text-primary);
-    transition: border-color .15s, box-shadow .15s;
-  }
-  .input:focus {
-    outline: none;
-    border-color: var(--blue);
-    box-shadow: 0 0 0 3px rgba(37,99,235,.12);
-  }
-  select.input { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
-  .actions { margin-left: auto; display: flex; gap: 8px; align-items: flex-end; }
-  .btn {
-    height: 40px;
-    padding: 0 18px;
-    border-radius: var(--radius-sm);
-    border: none;
-    cursor: pointer;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    font-weight: 600;
-    display: inline-flex; align-items: center; gap: 6px;
-    transition: background .15s, transform .1s, box-shadow .15s;
-    text-decoration: none;
-  }
-  .btn:active { transform: translateY(1px); }
-  .btn-primary { background: var(--blue); color: #fff; box-shadow: 0 2px 8px rgba(37,99,235,.3); }
-  .btn-primary:hover { background: #1d4ed8; box-shadow: 0 4px 12px rgba(37,99,235,.4); }
-  .btn-ghost { background: transparent; color: var(--text-mid); border: 1px solid var(--border); }
-  .btn-ghost:hover { background: var(--bg); }
+/* ── Controls ── */
+.controls-bar { background: var(--surface-2); border-bottom: 1px solid var(--border); padding: 18px 24px; }
 
-  /* ── Content area ── */
-  .content-area { padding: 24px; }
+/* Row 1: Customer selector + manual input */
+.ctrl-row { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
+.ctrl-row + .ctrl-row { margin-top: 12px; }
 
-  /* ── Grid ── */
-  .grid {
-    display: grid;
-    grid-template-columns: 1fr 380px;
-    gap: 20px;
-  }
-  @media (max-width: 960px) { .grid { grid-template-columns: 1fr; } }
+.ctrl-field { display: flex; flex-direction: column; gap: 5px; }
+.ctrl-label {
+  font-size: 11px; font-weight: 700; letter-spacing: .6px;
+  text-transform: uppercase; color: var(--text-muted);
+}
+.inp {
+  height: 40px; padding: 0 12px;
+  border-radius: var(--r-sm); border: 1px solid var(--border);
+  background: var(--surface); font-family: 'Inter', sans-serif;
+  font-size: 14px; color: var(--text-hi);
+  transition: border-color .15s, box-shadow .15s;
+  white-space: nowrap;
+}
+.inp:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37,99,235,.14); }
+.inp-customer { min-width: 240px; }
+.inp-manual   { min-width: 210px; }
+.inp-date     { min-width: 148px; }
 
-  /* ── Tables ── */
-  .section-label {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: .6px;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    margin-bottom: 10px;
-  }
-  .list-box {
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    overflow: auto;
-    max-height: 380px;
-  }
-  table.summary {
-    width: 100%; border-collapse: collapse;
-    font-size: 13px;
-  }
-  table.summary thead th {
-    position: sticky; top: 0; z-index: 1;
-    background: var(--surface-2);
-    padding: 10px 14px;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: .4px;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    border-bottom: 1px solid var(--border);
-    text-align: left;
-  }
-  table.summary tbody tr { transition: background .1s; }
-  table.summary tbody tr:nth-child(even) { background: var(--surface-2); }
-  table.summary tbody tr:hover { background: var(--blue-light); }
-  table.summary tbody td {
-    padding: 9px 14px;
-    border-bottom: 1px solid var(--border-2);
-    color: var(--text-mid);
-    font-variant-numeric: tabular-nums;
-  }
-  table.summary tbody tr:last-child td { border-bottom: none; }
-  .muted { color: var(--text-muted); font-size: 13px; }
-  .right { text-align: right; }
-  .mono { font-family: 'Inter', monospace; }
+select.inp {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 12px center; padding-right: 34px;
+}
 
-  /* ── Sub totals ── */
-  .sub-total {
-    margin-top: 10px;
-    padding: 12px 14px;
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--border);
-    background: var(--surface-2);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .sub-total-label { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: .4px; }
-  .sub-total-value { font-size: 15px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.ctrl-divider {
+  height: 40px; width: 1px; background: var(--border); flex-shrink: 0; align-self: flex-end;
+}
 
-  /* ── Two-column purchase/receipt layout ── */
-  .data-cols { display: flex; gap: 16px; }
-  .data-col-wide { flex: 1; min-width: 0; }
-  .data-col-narrow { width: 240px; flex-shrink: 0; }
-  @media (max-width: 700px) { .data-cols { flex-direction: column; } .data-col-narrow { width: 100%; } }
+.actions { display: flex; gap: 8px; align-items: flex-end; margin-left: auto; }
 
-  /* ── Right panel (net + balance) ── */
-  .totals-stack { display: flex; flex-direction: column; gap: 16px; }
+.btn {
+  height: 40px; padding: 0 18px; border-radius: var(--r-sm); border: none; cursor: pointer;
+  font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 700;
+  display: inline-flex; align-items: center; gap: 6px;
+  transition: background .14s, box-shadow .14s, transform .1s;
+  text-decoration: none; white-space: nowrap;
+}
+.btn:active { transform: translateY(1px); }
+.btn-primary { background: var(--blue); color: #fff; box-shadow: 0 2px 8px rgba(37,99,235,.28); }
+.btn-primary:hover { background: var(--blue-hover); box-shadow: 0 4px 14px rgba(37,99,235,.38); }
+.btn-ghost { background: var(--surface); color: var(--text-mid); border: 1px solid var(--border); }
+.btn-ghost:hover { background: var(--bg); }
 
-  /* Signature element: big net box */
-  .net-box {
-    border-radius: var(--radius-lg);
-    padding: 28px 24px;
-    position: relative;
-    overflow: hidden;
-    border: 1px solid var(--border);
-  }
-  .net-box.net-positive { background: var(--green-bg); border-color: var(--green-border); }
-  .net-box.net-negative { background: var(--red-bg); border-color: var(--red-border); }
-  .net-box.net-zero { background: var(--surface-2); }
-  .net-box::before {
-    content: '';
-    position: absolute;
-    left: 0; top: 0; bottom: 0;
-    width: 5px;
-  }
-  .net-box.net-positive::before { background: var(--green); }
-  .net-box.net-negative::before { background: var(--red); }
-  .net-box.net-zero::before { background: var(--text-muted); }
-  .net-eyebrow {
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: .6px;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    margin-bottom: 8px;
-  }
-  .net-amount {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 42px;
-    font-weight: 700;
-    line-height: 1;
-    font-variant-numeric: tabular-nums;
-    letter-spacing: -1px;
-  }
-  .net-amount.positive { color: var(--green); }
-  .net-amount.negative { color: var(--red); }
-  .net-subtitle {
-    font-size: 12px;
-    color: var(--text-muted);
-    margin-top: 8px;
-  }
+/* ── Content ── */
+.content-area { padding: 24px; }
 
-  .balance-card {
-    border-radius: var(--radius-md);
-    border: 1px solid var(--border);
-    background: var(--surface);
-    padding: 18px 20px;
-    box-shadow: var(--shadow-sm);
-  }
-  .balance-label {
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: .5px;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    margin-bottom: 10px;
-  }
-  .balance-value {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 26px;
-    font-weight: 700;
-    font-variant-numeric: tabular-nums;
-  }
-  .balance-badge {
-    display: inline-block;
-    margin-top: 8px;
-    padding: 3px 10px;
-    border-radius: 999px;
-    font-size: 11px;
-    font-weight: 600;
-  }
-  .badge-green { background: var(--green-bg); color: var(--green); }
-  .badge-red   { background: var(--red-bg);   color: var(--red); }
-  .badge-gray  { background: var(--surface-2); color: var(--text-muted); }
+/* Result banner */
+.result-banner {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--blue-light); border: 1px solid var(--blue-border);
+  border-radius: var(--r-sm); padding: 9px 14px;
+  font-size: 13px; color: var(--navy-mid); margin-bottom: 22px;
+}
+.result-banner svg { color: var(--blue); flex-shrink: 0; }
 
-  /* ── Result context note ── */
-  .result-note {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: var(--blue-light);
-    border: 1px solid var(--blue-border);
-    border-radius: var(--radius-sm);
-    padding: 8px 14px;
-    font-size: 13px;
-    color: var(--navy-mid);
-    margin-bottom: 20px;
-  }
-  .result-note svg { color: var(--blue); flex-shrink: 0; }
+/* ── Two column grid: tables | summary ── */
+.main-grid {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 20px;
+  align-items: start;
+}
+@media (max-width: 980px) { .main-grid { grid-template-columns: 1fr; } }
 
-  /* ── Empty states ── */
-  .empty-state td { padding: 24px 14px !important; color: var(--text-muted); font-style: italic; }
+/* Tables panel */
+.tables-panel { display: flex; flex-direction: column; gap: 20px; }
 
-  /* ── Idle prompt ── */
-  .idle-prompt {
-    padding: 48px 24px;
-    text-align: center;
-  }
-  .idle-prompt svg { color: #cbd5e1; margin-bottom: 16px; }
-  .idle-prompt p { color: var(--text-muted); font-size: 14px; max-width: 340px; margin: 0 auto; }
+.section-head {
+  display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;
+}
+.section-label {
+  font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 700;
+  color: var(--text-mid); letter-spacing: .1px;
+}
+.section-count {
+  font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 999px;
+  background: var(--surface-2); color: var(--text-muted); border: 1px solid var(--border);
+}
+
+.list-box {
+  border: 1px solid var(--border); border-radius: var(--r-md); overflow: auto; max-height: 320px;
+}
+table.t {
+  width: 100%; border-collapse: collapse; font-size: 13.5px;
+}
+table.t thead th {
+  position: sticky; top: 0; z-index: 1;
+  background: var(--surface-2); padding: 10px 14px;
+  font-size: 11px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase;
+  color: var(--text-muted); border-bottom: 1px solid var(--border); text-align: left;
+}
+table.t tbody tr { transition: background .1s; }
+table.t tbody tr:nth-child(even) { background: #fafcff; }
+table.t tbody tr:hover { background: var(--blue-light); }
+table.t tbody td {
+  padding: 10px 14px; border-bottom: 1px solid var(--border-2);
+  color: var(--text-mid); vertical-align: middle;
+}
+table.t tbody tr:last-child td { border-bottom: none; }
+.td-date  { font-size: 12px; color: var(--text-muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.td-ref   { font-size: 13px; }
+.td-sub   { font-size: 11px; color: var(--text-muted); }
+.td-amt   { text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.amt-red  { color: var(--red); }
+.amt-green{ color: var(--green); }
+.ta-r     { text-align: right; }
+
+.empty-row td { padding: 28px 14px !important; color: var(--text-muted); font-style: italic; text-align: center; }
+
+/* Sub-total bar */
+.subtotal-bar {
+  margin-top: 8px; padding: 11px 14px;
+  border-radius: var(--r-sm); border: 1px solid var(--border);
+  background: var(--surface-2); display: flex; align-items: center; justify-content: space-between;
+}
+.st-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--text-muted); }
+.st-value { font-size: 15px; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+/* ── Right summary panel ── */
+.summary-panel { display: flex; flex-direction: column; gap: 14px; }
+
+/* Net position — signature element */
+.net-card {
+  border-radius: var(--r-lg); padding: 24px 22px 22px;
+  position: relative; overflow: hidden;
+  border: 1px solid var(--border);
+}
+.net-card::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 5px;
+}
+.net-card.pos { background: var(--green-bg); border-color: var(--green-border); }
+.net-card.pos::before { background: var(--green); }
+.net-card.neg { background: var(--red-bg); border-color: var(--red-border); }
+.net-card.neg::before { background: var(--red); }
+.net-card.zero { background: var(--surface-2); }
+.net-card.zero::before { background: var(--text-muted); }
+
+.net-eyebrow {
+  font-size: 11px; font-weight: 700; letter-spacing: .6px;
+  text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px;
+}
+.net-figure {
+  font-family: 'DM Sans', sans-serif; font-size: 40px; font-weight: 800;
+  line-height: 1; letter-spacing: -1.5px; font-variant-numeric: tabular-nums;
+}
+.net-figure.pos { color: var(--green); }
+.net-figure.neg { color: var(--red); }
+.net-figure.zero{ color: var(--text-muted); }
+.net-sub { font-size: 12.5px; color: var(--text-muted); margin-top: 8px; }
+
+/* Balance card */
+.bal-card {
+  border-radius: var(--r-md); padding: 18px 20px;
+  border: 1px solid var(--border); background: var(--surface);
+  box-shadow: var(--sh-sm);
+}
+.bal-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--text-muted); margin-bottom: 10px; }
+.bal-figure {
+  font-family: 'DM Sans', sans-serif; font-size: 28px; font-weight: 700;
+  font-variant-numeric: tabular-nums; line-height: 1;
+}
+.bal-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  margin-top: 10px; padding: 4px 11px; border-radius: 999px; font-size: 11px; font-weight: 700;
+}
+.badge-green { background: var(--green-bg); color: var(--green); }
+.badge-red   { background: var(--red-bg);   color: var(--red); }
+.badge-gray  { background: var(--surface-2); color: var(--text-muted); border: 1px solid var(--border); }
+
+/* Breakdown mini table inside summary panel */
+.breakdown {
+  border-radius: var(--r-md); border: 1px solid var(--border); overflow: hidden;
+  background: var(--surface);
+}
+.breakdown-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px; font-size: 13px;
+}
+.breakdown-row + .breakdown-row { border-top: 1px solid var(--border-2); }
+.br-label { color: var(--text-muted); font-weight: 500; display: flex; align-items: center; gap: 8px; }
+.br-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.br-dot-red   { background: var(--red); }
+.br-dot-green { background: var(--green); }
+.br-val { font-weight: 700; font-variant-numeric: tabular-nums; }
+
+/* ── Idle state ── */
+.idle-wrap {
+  padding: 60px 24px; text-align: center;
+}
+.idle-wrap svg { color: #c8d5e8; margin-bottom: 16px; }
+.idle-wrap p { color: var(--text-muted); font-size: 14px; max-width: 320px; margin: 0 auto; line-height: 1.6; }
 </style>
 
 <div class="acct-wrap">
 
-  <!-- Page header -->
+  <!-- Header -->
   <div class="page-header">
-    <div class="page-header-icon">
-      <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/><path d="M7 8h.01M12 8h5M7 12h5M14 12h3"/></svg>
+    <div class="ph-icon">
+      <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+        <rect x="2" y="3" width="20" height="14" rx="2"/>
+        <path d="M8 21h8M12 17v4M7 8h.01M12 8h5M7 12h5M14 12h3"/>
+      </svg>
     </div>
-    <div>
+    <div class="ph-text">
       <h1>Account Summary</h1>
-      <p>Purchases, receipts &amp; net position by customer</p>
+      <p>Purchases, receipts &amp; net position by customer and date range</p>
     </div>
   </div>
 
   <div class="card">
 
-    <!-- Controls -->
+    <!-- ── Controls ── -->
     <div class="controls-bar">
       <form method="GET" action="{{ url_for('account_summary') }}" id="acct-form">
-        <div class="controls">
 
-          <div class="control-field">
-            <label class="small" for="customer-select">Customer</label>
-            <select id="customer-select" class="input" aria-label="Customer selector">
+        <!-- Row 1: customer fields -->
+        <div class="ctrl-row">
+          <div class="ctrl-field">
+            <label class="ctrl-label" for="customer-select">Customer</label>
+            <select id="customer-select" class="inp inp-customer" aria-label="Customer selector">
               <option value="">— All customers —</option>
               {% for c in customers %}
                 <option value="{{ c.id }}" {% if selected_customer and (selected_customer|int) == (c.id|int) %}selected{% endif %}>
@@ -353,149 +299,200 @@
             </select>
           </div>
 
-          <div class="control-field">
-            <label class="small" for="customer-manual">Or enter ID / Name</label>
-            <input id="customer-manual" name="customer_manual" class="input" placeholder="e.g. 1 or Acme Corp" style="min-width:200px;" />
+          <div class="ctrl-field">
+            <label class="ctrl-label" for="customer-manual">Or enter ID / Name</label>
+            <input id="customer-manual" name="customer_manual" class="inp inp-manual" placeholder="e.g. 1 or Acme Corp">
           </div>
 
-          <div class="control-field">
-            <label class="small">From</label>
-            <input type="date" name="from_date" value="{{ from_date }}" class="input" style="min-width:150px;">
+          <div class="ctrl-divider" aria-hidden="true"></div>
+
+          <div class="ctrl-field">
+            <label class="ctrl-label">From</label>
+            <input type="date" name="from_date" value="{{ from_date }}" class="inp inp-date">
           </div>
 
-          <div class="control-field">
-            <label class="small">To</label>
-            <input type="date" name="to_date" value="{{ to_date }}" class="input" style="min-width:150px;">
+          <div class="ctrl-field">
+            <label class="ctrl-label">To</label>
+            <input type="date" name="to_date" value="{{ to_date }}" class="inp inp-date">
           </div>
 
           <input type="hidden" name="customer_id" id="customer_id_hidden" value="{{ selected_customer or '' }}">
 
           <div class="actions">
             <button class="btn btn-primary" type="submit">
-              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+              </svg>
               Show
             </button>
             <a href="{{ url_for('account_summary') }}" class="btn btn-ghost" role="button">Reset</a>
           </div>
         </div>
+
       </form>
     </div>
 
-    <!-- Content -->
+    <!-- ── Content ── -->
     <div class="content-area">
       {% if selected_customer %}
 
-        <div class="result-note">
-          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
-          Showing <strong>&nbsp;{{ selected_customer }}&nbsp;</strong> from <strong>&nbsp;{{ from_date }}&nbsp;</strong> to <strong>&nbsp;{{ to_date }}</strong>
+        <!-- Result banner -->
+        <div class="result-banner">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>
+          </svg>
+          Showing results for&nbsp;<strong>{{ selected_customer }}</strong>&nbsp;
+          from&nbsp;<strong>{{ from_date }}</strong>&nbsp;to&nbsp;<strong>{{ to_date }}</strong>
         </div>
 
-        <div class="grid">
-          <!-- Left: purchases + receipts -->
-          <div>
-            <div class="data-cols">
+        <div class="main-grid">
 
-              <!-- Purchases -->
-              <div class="data-col-wide">
-                <div class="section-label">Purchases</div>
-                <div class="list-box" role="region" aria-label="Purchases list">
-                  <table class="summary" role="table" aria-label="Purchases table">
-                    <thead>
-                      <tr>
-                        <th style="width:110px">Date</th>
-                        <th>Reference</th>
-                        <th class="right" style="width:110px">Amount</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {% if purchases %}
-                        {% for p in purchases %}
-                          <tr>
-                            <td class="mono" style="color:var(--text-muted);font-size:12px;">{{ p.date }}</td>
-                            <td>Bill #{{ p.bill_id }}{% if p.supplier_bill_id %} <span style="color:var(--text-muted)">— SB#{{ p.supplier_bill_id }}</span>{% endif %}</td>
-                            <td class="right mono" style="color:var(--red);font-weight:600;">{{ '%.2f'|format(p.amount) }}</td>
-                          </tr>
-                        {% endfor %}
-                      {% else %}
-                        <tr class="empty-state"><td colspan="3">No purchases in this range.</td></tr>
-                      {% endif %}
-                    </tbody>
-                  </table>
-                </div>
-                <div class="sub-total">
-                  <span class="sub-total-label">Purchases total</span>
-                  <span class="sub-total-value" style="color:var(--red);">{{ '%.2f'|format(sum_purchases) }}</span>
-                </div>
-              </div>
+          <!-- ── Left: tables ── -->
+          <div class="tables-panel">
 
-              <!-- Receipts -->
-              <div class="data-col-narrow">
-                <div class="section-label">Receipts</div>
-                <div class="list-box" role="region" aria-label="Receipts list">
-                  <table class="summary" role="table" aria-label="Receipts table">
-                    <thead>
-                      <tr>
-                        <th style="width:100px">Date</th>
-                        <th>Note</th>
-                        <th class="right" style="width:100px">Amount</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {% if receipts %}
-                        {% for r in receipts %}
-                          <tr>
-                            <td class="mono" style="color:var(--text-muted);font-size:12px;">{{ r.date }}</td>
-                            <td style="color:var(--text-muted)">{{ r.note or '—' }}</td>
-                            <td class="right mono" style="color:var(--green);font-weight:600;">{{ '%.2f'|format(r.amount) }}</td>
-                          </tr>
-                        {% endfor %}
-                      {% else %}
-                        <tr class="empty-state"><td colspan="3">No receipts in this range.</td></tr>
-                      {% endif %}
-                    </tbody>
-                  </table>
-                </div>
-                <div class="sub-total">
-                  <span class="sub-total-label">Receipts total</span>
-                  <span class="sub-total-value" style="color:var(--green);">{{ '%.2f'|format(sum_receipts) }}</span>
-                </div>
-              </div>
-
-            </div>
-          </div>
-
-          <!-- Right: net + balance -->
-          <aside class="totals-stack" role="complementary" aria-label="Summary totals">
-
-            <div class="net-box {% if net > 0 %}net-positive{% elif net < 0 %}net-negative{% else %}net-zero{% endif %}" role="note" aria-live="polite">
-              <div class="net-eyebrow">Net position (Receipts − Purchases)</div>
-              <div class="net-amount {% if net >= 0 %}positive{% else %}negative{% endif %}" id="net-display">
-                {% if net >= 0 %}
-                  {{ '%.2f'|format(net) }}
-                {% else %}
-                  −{{ '%.2f'|format(-net) }}
+            <!-- Purchases -->
+            <div>
+              <div class="section-head">
+                <span class="section-label">
+                  <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" style="vertical-align:-2px;margin-right:5px;color:var(--red)">
+                    <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>
+                  </svg>
+                  Purchases
+                </span>
+                {% if purchases %}
+                  <span class="section-count">{{ purchases|length }} record{% if purchases|length != 1 %}s{% endif %}</span>
                 {% endif %}
               </div>
-              <div class="net-subtitle">
-                {% if net > 0 %}Customer is in credit for this period{% elif net < 0 %}Outstanding balance owed{% else %}Balanced — no net position{% endif %}
+              <div class="list-box" role="region" aria-label="Purchases list">
+                <table class="t" role="table" aria-label="Purchases table">
+                  <thead>
+                    <tr>
+                      <th style="width:105px">Date</th>
+                      <th>Reference</th>
+                      <th class="ta-r" style="width:115px">Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% if purchases %}
+                      {% for p in purchases %}
+                        <tr>
+                          <td class="td-date">{{ p.date }}</td>
+                          <td class="td-ref">
+                            Bill #{{ p.bill_id }}
+                            {% if p.supplier_bill_id %}
+                              <div class="td-sub">SB #{{ p.supplier_bill_id }}</div>
+                            {% endif %}
+                          </td>
+                          <td class="td-amt amt-red">{{ '%.2f'|format(p.amount) }}</td>
+                        </tr>
+                      {% endfor %}
+                    {% else %}
+                      <tr class="empty-row"><td colspan="3">No purchases found in this range.</td></tr>
+                    {% endif %}
+                  </tbody>
+                </table>
+              </div>
+              <div class="subtotal-bar">
+                <span class="st-label">Purchases total</span>
+                <span class="st-value amt-red">{{ '%.2f'|format(sum_purchases) }}</span>
               </div>
             </div>
 
-            <div class="balance-card">
-              <div class="balance-label">Current stored balance</div>
+            <!-- Receipts -->
+            <div>
+              <div class="section-head">
+                <span class="section-label">
+                  <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" style="vertical-align:-2px;margin-right:5px;color:var(--green)">
+                    <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                  </svg>
+                  Receipts
+                </span>
+                {% if receipts %}
+                  <span class="section-count">{{ receipts|length }} record{% if receipts|length != 1 %}s{% endif %}</span>
+                {% endif %}
+              </div>
+              <div class="list-box" role="region" aria-label="Receipts list">
+                <table class="t" role="table" aria-label="Receipts table">
+                  <thead>
+                    <tr>
+                      <th style="width:105px">Date</th>
+                      <th>Note</th>
+                      <th class="ta-r" style="width:115px">Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% if receipts %}
+                      {% for r in receipts %}
+                        <tr>
+                          <td class="td-date">{{ r.date }}</td>
+                          <td style="color:var(--text-muted); font-size:13px;">{{ r.note or '—' }}</td>
+                          <td class="td-amt amt-green">{{ '%.2f'|format(r.amount) }}</td>
+                        </tr>
+                      {% endfor %}
+                    {% else %}
+                      <tr class="empty-row"><td colspan="3">No receipts found in this range.</td></tr>
+                    {% endif %}
+                  </tbody>
+                </table>
+              </div>
+              <div class="subtotal-bar">
+                <span class="st-label">Receipts total</span>
+                <span class="st-value amt-green">{{ '%.2f'|format(sum_receipts) }}</span>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- ── Right: summary panel ── -->
+          <aside class="summary-panel" role="complementary" aria-label="Summary totals">
+
+            <!-- Net position -->
+            <div class="net-card {% if net > 0 %}pos{% elif net < 0 %}neg{% else %}zero{% endif %}" role="status" aria-live="polite">
+              <div class="net-eyebrow">Net position · Receipts − Purchases</div>
+              <div class="net-figure {% if net > 0 %}pos{% elif net < 0 %}neg{% else %}zero{% endif %}">
+                {% if net < 0 %}−{{ '%.2f'|format(-net) }}{% else %}{{ '%.2f'|format(net) }}{% endif %}
+              </div>
+              <div class="net-sub">
+                {% if net > 0 %}Customer is in credit this period
+                {% elif net < 0 %}Outstanding balance owed
+                {% else %}Balanced — no net difference{% endif %}
+              </div>
+            </div>
+
+            <!-- Breakdown -->
+            <div class="breakdown">
+              <div class="breakdown-row">
+                <span class="br-label"><span class="br-dot br-dot-red"></span>Purchases</span>
+                <span class="br-val amt-red">{{ '%.2f'|format(sum_purchases) }}</span>
+              </div>
+              <div class="breakdown-row">
+                <span class="br-label"><span class="br-dot br-dot-green"></span>Receipts</span>
+                <span class="br-val amt-green">{{ '%.2f'|format(sum_receipts) }}</span>
+              </div>
+            </div>
+
+            <!-- Current balance -->
+            <div class="bal-card">
+              <div class="bal-label">Current stored balance</div>
               {% if current_balance is not none %}
-                <div class="balance-value {% if current_balance < 0 %}negative{% elif current_balance > 0 %}positive{% endif %}" style="{% if current_balance < 0 %}color:var(--red){% elif current_balance > 0 %}color:var(--green){% endif %}">
+                <div class="bal-figure" style="color:{% if current_balance < 0 %}var(--red){% elif current_balance > 0 %}var(--green){% else %}var(--text-muted){% endif %}">
                   {% if current_balance < 0 %}−{{ '%.2f'|format(-current_balance) }}{% else %}{{ '%.2f'|format(current_balance) }}{% endif %}
                 </div>
                 {% if current_balance < 0 %}
-                  <div><span class="balance-badge badge-red">We owe</span></div>
+                  <span class="bal-badge badge-red">
+                    <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+                    We owe
+                  </span>
                 {% elif current_balance > 0 %}
-                  <div><span class="balance-badge badge-green">Credit</span></div>
+                  <span class="bal-badge badge-green">
+                    <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+                    Credit
+                  </span>
                 {% else %}
-                  <div><span class="balance-badge badge-gray">Settled</span></div>
+                  <span class="bal-badge badge-gray">Settled</span>
                 {% endif %}
               {% else %}
-                <div class="balance-value" style="color:var(--text-muted)">n/a</div>
+                <div class="bal-figure" style="color:var(--text-muted); font-size:20px;">n/a</div>
               {% endif %}
             </div>
 
@@ -504,8 +501,10 @@
 
       {% else %}
 
-        <div class="idle-prompt">
-          <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        <div class="idle-wrap">
+          <svg width="52" height="52" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          </svg>
           <p>Select a customer and date range above, then click <strong>Show</strong> to view the account summary.</p>
         </div>
 
@@ -520,7 +519,6 @@
     var hidden = document.getElementById('customer_id_hidden');
     var select = document.getElementById('customer-select');
     var manual = document.getElementById('customer-manual');
-
     form.addEventListener('submit', function(){
       var m = manual.value && manual.value.trim();
       hidden.value = m ? m : (select.value || '');
