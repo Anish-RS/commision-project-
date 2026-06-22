@@ -218,26 +218,6 @@
       <div>{{ "%.2f"|format(bill.amount or 0) }}</div>
     </div>
 
-    <div style="display:flex;justify-content:space-between;margin-top:8px;font-size:16px;">
-      <div>Old Balance</div>
-      <div>{{ "%.2f"|format(old_balance or 0) }}</div>
-    </div>
-
-    <div style="
-        display:flex;
-        justify-content:space-between;
-        margin-top:8px;
-        padding-top:6px;
-        border-top:1px dashed #999;
-        font-size:20px;
-        font-weight:900;
-    ">
-      <div>Net Total</div>
-      <div>
-        {{ "%.2f"|format((old_balance or 0) + (bill.amount or 0)) }}
-      </div>
-    </div>
-
   </div>
 
 </div>
