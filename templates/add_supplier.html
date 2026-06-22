@@ -3,435 +3,151 @@
 {% block content %}
 
 <style>
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
-
-    /* ---------- PREMIUM BACKGROUND ---------- */
+    /* ---------- PASTEL BACKGROUND ---------- */
     body {
-        background: linear-gradient(135deg, #0f1419 0%, #1a2634 100%);
+        background: linear-gradient(135deg, #e3f2fd, #fce4ec); /* pastel blue → pastel pink */
         background-attachment: fixed;
-        min-height: 100vh;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
-        color: #2c3e50;
     }
 
-    /* ---------- PAGE LAYOUT ---------- */
-    .page-container {
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        padding: 40px 20px;
-    }
-
-    /* ---------- TITLE SECTION ---------- */
-    .header-section {
-        text-align: center;
-        margin-bottom: 48px;
-        max-width: 600px;
-    }
-
+    /* ---------- TITLE ---------- */
     .page-title {
-        font-size: 42px;
+        color: #6C63FF; /* pastel indigo */
+        font-size: 30px;
         font-weight: 700;
-        color: #ffffff;
-        margin-bottom: 12px;
-        letter-spacing: -0.5px;
-        line-height: 1.1;
+        margin-bottom: 25px;
+        text-align: center;
     }
 
-    .page-subtitle {
-        font-size: 16px;
-        color: rgba(255, 255, 255, 0.6);
-        font-weight: 400;
-        letter-spacing: 0.3px;
+    /* ---------- CARD ---------- */
+    .supplier-card {
+        background: #ffffffcc; /* translucent white */
+        backdrop-filter: blur(6px);
+        padding: 25px;
+        border-radius: 18px;
+        max-width: 520px;
+        margin: auto;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+        border-left: 8px solid #90CAF9; /* pastel blue */
+        animation: fadeIn 0.4s ease;
     }
 
-    /* ---------- CARD DESIGN ---------- */
-    .customer-card {
-        background: #ffffff;
-        padding: 48px;
-        border-radius: 16px;
-        max-width: 480px;
-        width: 100%;
-        box-shadow: 
-            0 20px 60px rgba(0, 0, 0, 0.3),
-            0 0 1px rgba(0, 0, 0, 0.1);
-        animation: slideUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-        position: relative;
-        overflow: hidden;
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
     }
 
-    .customer-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 4px;
-        background: linear-gradient(90deg, #10a759 0%, #14c973 100%);
-    }
-
-    @keyframes slideUp {
-        from {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    /* ---------- FORM STRUCTURE ---------- */
-    form {
-        display: flex;
-        flex-direction: column;
-        gap: 0;
-    }
-
+    /* ---------- FORM GROUPS ---------- */
     .form-group {
-        margin-bottom: 28px;
-        position: relative;
+        margin-bottom: 18px;
     }
 
-    .form-group:last-of-type {
-        margin-bottom: 32px;
-    }
-
-    /* ---------- LABELS ---------- */
     label {
-        display: block;
-        font-size: 13px;
         font-weight: 600;
-        color: #1a2634;
-        margin-bottom: 8px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
+        margin-bottom: 6px;
+        color: #444;
+        display: block;
     }
 
-    /* ---------- INPUT FIELDS ---------- */
+    /* ---------- INPUT FIELD ---------- */
     .input-field {
         width: 100%;
-        padding: 14px 16px;
-        font-size: 15px;
-        border: 2px solid #e8eef5;
-        border-radius: 10px;
-        background: #f8fafb;
-        color: #2c3e50;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        font-family: inherit;
+        padding: 12px;
+        border-radius: 12px;
+        border: 2px solid #bbdefb; 
+        background: #e3f2fd; /* pastel blue */
         outline: none;
-    }
-
-    .input-field::placeholder {
-        color: #9ca3af;
-        font-weight: 400;
-    }
-
-    .input-field:hover {
-        border-color: #d1dce6;
-        background: #ffffff;
+        transition: 0.25s ease;
+        font-size: 15px;
     }
 
     .input-field:focus {
-        border-color: #10a759;
+        border-color: #64b5f6;
         background: #ffffff;
-        box-shadow: 0 0 0 3px rgba(16, 167, 89, 0.1);
-    }
-
-    .input-field.error {
-        border-color: #ef4444;
-        background: rgba(239, 68, 68, 0.02);
-    }
-
-    .input-field.error:focus {
-        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
-    }
-
-    /* ---------- VALIDATION MESSAGES ---------- */
-    .field-error {
-        display: none;
-        font-size: 12px;
-        color: #ef4444;
-        margin-top: 6px;
-        font-weight: 500;
-        animation: slideDown 0.2s ease;
-    }
-
-    @keyframes slideDown {
-        from {
-            opacity: 0;
-            transform: translateY(-4px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    .field-error.show {
-        display: block;
-    }
-
-    /* ---------- FLASH MESSAGES ---------- */
-    .alert {
-        padding: 14px 16px;
-        border-radius: 10px;
-        margin-bottom: 24px;
-        font-size: 14px;
-        font-weight: 500;
-        animation: slideDown 0.3s ease;
-    }
-
-    .alert-error {
-        background: rgba(239, 68, 68, 0.08);
-        color: #991b1b;
-        border-left: 3px solid #ef4444;
-    }
-
-    .alert-success {
-        background: rgba(16, 167, 89, 0.08);
-        color: #15803d;
-        border-left: 3px solid #10a759;
+        box-shadow: 0 0 5px rgba(100,181,246,0.5);
     }
 
     /* ---------- BUTTON ---------- */
     .btn-submit {
-        background: linear-gradient(135deg, #10a759 0%, #14c973 100%);
-        color: white;
-        padding: 14px 20px;
+        background: #ff8a80; /* pastel red */
+        padding: 12px 18px;
         border: none;
-        border-radius: 10px;
-        font-size: 15px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        letter-spacing: 0.3px;
-        box-shadow: 0 4px 12px rgba(16, 167, 89, 0.3);
-        position: relative;
-        overflow: hidden;
-        font-family: inherit;
-    }
-
-    .btn-submit::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
+        color: white;
+        font-size: 17px;
+        border-radius: 12px;
         width: 100%;
-        height: 100%;
-        background: rgba(255, 255, 255, 0.2);
-        transition: left 0.3s ease;
+        cursor: pointer;
+        transition: 0.25s ease;
+        font-weight: 600;
     }
 
-    .btn-submit:hover:not(:disabled) {
+    .btn-submit:hover {
+        background: #ff5252; 
         transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(16, 167, 89, 0.4);
-    }
-
-    .btn-submit:hover:not(:disabled)::before {
-        left: 100%;
-    }
-
-    .btn-submit:active:not(:disabled) {
-        transform: translateY(0);
-    }
-
-    .btn-submit:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-        transform: none;
-    }
-
-    /* ---------- RESPONSIVE DESIGN ---------- */
-    @media (max-width: 640px) {
-        .page-container {
-            padding: 20px 16px;
-        }
-
-        .page-title {
-            font-size: 32px;
-            margin-bottom: 8px;
-        }
-
-        .page-subtitle {
-            font-size: 14px;
-        }
-
-        .header-section {
-            margin-bottom: 32px;
-        }
-
-        .customer-card {
-            padding: 32px 24px;
-            border-radius: 12px;
-        }
-
-        .form-group {
-            margin-bottom: 24px;
-        }
-    }
-
-    /* ---------- ACCESSIBILITY ---------- */
-    .input-field:focus-visible {
-        outline: 2px solid #10a759;
-        outline-offset: 2px;
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-        * {
-            animation-duration: 0.01ms !important;
-            animation-iteration-count: 1 !important;
-            transition-duration: 0.01ms !important;
-        }
+        box-shadow: 0 4px 12px rgba(255,82,82,0.4);
     }
 </style>
 
-<div class="page-container">
-    <div class="header-section">
-        <h1 class="page-title">Add New Supplier</h1>
-        <p class="page-subtitle">Enter supplier details to create a new account</p>
-    </div>
+<h2 class="page-title">➕ Add New Supplier</h2>
 
-    <div class="customer-card">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert {% if category == 'error' %}alert-error{% else %}alert-success{% endif %}">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
+<div class="supplier-card">
 
-        <form method="POST">
-            <div class="form-group">
-                <label for="supplier_name">Supplier Name</label>
-                <input 
-                    type="text" 
-                    id="supplier_name" 
-                    name="name" 
-                    class="input-field" 
-                    placeholder="Enter supplier name"
-                    oninput="this.value = this.value.replace(/\b\w/g, c => c.toUpperCase())"
-                    required>
-                <div id="duplicate-msg" class="field-error">
-                    This supplier already exists. Try a different name.
-                </div>
+    <form method="POST">
+
+        <div class="form-group">
+            <label>Name:</label>
+            <input type="text"
+               name="name"
+               class="input-field"
+               placeholder="Supplier Name"
+               oninput="this.value = this.value.replace(/\b\w/g, c => c.toUpperCase())"
+               required>
             </div>
 
-            <div class="form-group">
-                <label for="supplier_phone">Phone Number</label>
-                <input 
-                    type="text" 
-                    id="supplier_phone" 
-                    name="phone" 
-                    class="input-field" 
-                    placeholder="(Optional) Phone number">
-            </div>
+        <div class="form-group">
+            <label>Phone:</label>
+            <input type="text" name="phone" class="input-field" placeholder="Phone Number">
+        </div>
 
-            <div class="form-group">
-                <label for="supplier_address">Address</label>
-                <input 
-                    type="text" 
-                    id="supplier_address" 
-                    name="address" 
-                    class="input-field" 
-                    placeholder="(Optional) Street address">
-            </div>
+        <div class="form-group">
+            <label>Address:</label>
+            <input type="text" name="address" class="input-field" placeholder="Address">
+        </div>
 
-            <div class="form-group">
-                <label for="supplier_balance">Opening Balance</label>
-                <input 
-                    type="number" 
-                    id="supplier_balance" 
-                    name="opening_balance" 
-                    value="0" 
-                    step="0.01"
-                    class="input-field"
-                    placeholder="0.00">
-            </div>
+        <div class="form-group">
+            <label>Opening Balance:</label>
+            <input type="number" step="0.01" name="opening_balance" value="0" class="input-field">
+        </div>
 
-            <button type="submit" id="saveBtn" class="btn-submit">
-                Save Supplier
-            </button>
-        </form>
-    </div>
+        <button type="submit" class="btn-submit">💾 Save Supplier</button>
+
+    </form>
+
 </div>
 
 <script>
-    document.addEventListener("keydown", function (e) {
-        if (e.key !== "Enter") return;
+// ENTER KEY → move to next field, submit only on button
+document.addEventListener("keydown", function (e) {
+    if (e.key !== "Enter") return;
 
-        const active = document.activeElement;
+    const active = document.activeElement;
 
-        if (active.tagName === "BUTTON" && active.type === "submit") {
-            return;
-        }
+    // Allow submit only if Enter is pressed on Submit button
+    if (active.tagName === "BUTTON" && active.type === "submit") {
+        return;
+    }
 
-        e.preventDefault();
+    // Prevent accidental form submission
+    e.preventDefault();
 
-        const focusable = Array.from(
-            document.querySelectorAll(
-                "input:not([type=hidden]), select, textarea, button"
-            )
-        ).filter(el => !el.disabled && el.offsetParent !== null);
+    const focusable = Array.from(
+        document.querySelectorAll("input:not([type=hidden]), select, textarea, button")
+    ).filter(el => !el.disabled && el.offsetParent !== null);
 
-        const index = focusable.indexOf(active);
-
-        if (index > -1 && index < focusable.length - 1) {
-            focusable[index + 1].focus();
-        }
-    });
-
-    const supplierName = document.getElementById("supplier_name");
-    const duplicateMsg = document.getElementById("duplicate-msg");
-    const saveBtn = document.getElementById("saveBtn");
-
-    supplierName.addEventListener("input", function () {
-        this.value = this.value.replace(/\b\w/g, c => c.toUpperCase());
-        
-        // Remove error state when user is typing
-        this.classList.remove("error");
-        duplicateMsg.classList.remove("show");
-        saveBtn.disabled = false;
-    });
-
-    supplierName.addEventListener("blur", function () {
-        const name = this.value.trim();
-
-        if (!name) {
-            duplicateMsg.classList.remove("show");
-            this.classList.remove("error");
-            saveBtn.disabled = false;
-            return;
-        }
-
-        fetch(`/api/check_supplier?name=${encodeURIComponent(name)}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.exists) {
-                    duplicateMsg.classList.add("show");
-                    supplierName.classList.add("error");
-                    saveBtn.disabled = true;
-                } else {
-                    duplicateMsg.classList.remove("show");
-                    supplierName.classList.remove("error");
-                    saveBtn.disabled = false;
-                }
-            })
-            .catch(error => {
-                console.error("Error checking supplier:", error);
-                duplicateMsg.classList.remove("show");
-                supplierName.classList.remove("error");
-                saveBtn.disabled = false;
-            });
-    });
+    const index = focusable.indexOf(active);
+    if (index > -1 && index < focusable.length - 1) {
+        focusable[index + 1].focus();
+    }
+});
 </script>
 
 {% endblock %}
