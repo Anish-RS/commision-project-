@@ -210,37 +210,34 @@
 
 <div class="totals">
 
-    <div class="box">
+  <div class="box">
 
-        <div class="grand-total"
-             style="display:flex;justify-content:space-between;">
-            <div>Total</div>
-            <div>{{ "%.2f"|format(bill.amount or 0) }}</div>
-        </div>
-
+    <div style="display:flex;justify-content:space-between;">
+        <div>Subtotal</div>
+        <div>{{ "%.2f"|format(bill.amount or 0) }}</div>
     </div>
+    
+    <div class="grand-total"
+         style="display:flex;justify-content:space-between;margin-top:6px;">
+        <div>Total</div>
+        <div>{{ "%.2f"|format(bill.amount or 0) }}</div>
+    </div>
+
+  </div>
 
 </div>
 
 <div class="footer">
 
-    <div class="row current-balance-row">
-        <div>Current Balance</div>
-        <div>{{ "%.2f"|format(current_balance or 0) }}</div>
-    </div>
+  <div class="row current-balance-row">
+      <div>Current Balance</div>
+      <div>{{ "%.2f"|format(current_balance or 0) }}</div>
+  </div>
 
-    <div class="row current-balance-row"
-         style="margin-top:6px;border-top:1px dashed #999;padding-top:6px;">
-        <div>Net Total</div>
-        <div>
-            {{ "%.2f"|format((current_balance or 0) + (bill.amount or 0)) }}
-        </div>
-    </div>
-
-    <div style="margin-top:6px;">
-        Printed on:
-        <span id="printed_ts">--</span>
-    </div>
+  <div style="margin-top:6px;">
+    Printed on:
+    <span id="printed_ts">--</span>
+  </div>
 
 </div>
 
@@ -273,4 +270,4 @@ window.onafterprint = function(){
 </script>
 
 </body>
-</html>
+</html> what isdiff bewten subtatatal and total
