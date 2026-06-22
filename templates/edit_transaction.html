@@ -55,6 +55,8 @@
 }
 
 .btn-field button{
+    display:flex;
+    align-items:flex-end;
     height:46px;
     min-width:100px;
     padding:0 24px;
@@ -246,7 +248,7 @@ body{
             <datalist id="person-list"></datalist>
         </div>
 
-        <div class="field btn-field">
+        <div class="btn-field">
             <button id="load-transactions" class="btn btn-primary">
                 Load
             </button>
@@ -423,29 +425,45 @@ body{
   });
   
 
-  function populatePersonList() {
-      const entityType = by('entity-type').value;
-      const list = by('person-list');
+  function populatePersonList(searchText = '') {
 
-      list.innerHTML = '';
+    const entityType = by('entity-type').value;
+    const list = by('person-list');
 
-      const data =
-          entityType === 'customer'
-              ? allCustomers
-              : allSuppliers;
+    list.innerHTML = '';
 
-      data.forEach(item => {
-          const option = document.createElement('option');
-          option.value = `${item.name} (ID: ${item.id})`;
-          list.appendChild(option);
-      });
-  }
+    if (searchText.length < 1) {
+        return;
+    }
 
-  by('entity-type').addEventListener('change', function(){
-      by('person-search').value = '';
-      populatePersonList();
-  });
+    const data =
+        entityType === 'customer'
+            ? allCustomers
+            : allSuppliers;
 
+    data
+        .filter(item =>
+            item.name.toLowerCase().includes(searchText.toLowerCase())
+        )
+        .slice(0, 15)
+        .forEach(item => {
+
+            const option = document.createElement('option');
+            option.value = `${item.name} (ID: ${item.id})`;
+            list.appendChild(option);
+
+        });
+}
+
+by('person-search').addEventListener('input', function(){
+    populatePersonList(this.value);
+});
+
+by('entity-type').addEventListener('change', function(){
+    by('person-search').value = '';
+    by('person-list').innerHTML = '';
+});
+    
   populatePersonList();
   // open edit form for a tx id: fetch tx row and populate form
   function openEditForm(txid) {
