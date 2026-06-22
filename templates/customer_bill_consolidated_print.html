@@ -214,9 +214,9 @@
   <div class="summary-row">
     <div>Total Quantity</div>
     <div>
-      {{ "%.2f"|format(
-          purchases|sum(attribute='quantity')
-      ) }}
+        {{ "%.2f"|format(
+            purchases|map(attribute='quantity')|sum
+        ) }}
     </div>
   </div>
 
