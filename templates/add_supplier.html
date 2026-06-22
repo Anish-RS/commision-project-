@@ -294,8 +294,8 @@
 
 <div class="page-container">
     <div class="header-section">
-        <h1 class="page-title">Add New Customer</h1>
-        <p class="page-subtitle">Enter customer details to create a new account</p>
+        <h1 class="page-title">Add New Supplier</h1>
+        <p class="page-subtitle">Enter supplier details to create a new account</p>
     </div>
 
     <div class="customer-card">
@@ -311,44 +311,45 @@
 
         <form method="POST">
             <div class="form-group">
-                <label for="customer_name">Customer Name</label>
+                <label for="supplier_name">Supplier Name</label>
                 <input 
                     type="text" 
-                    id="customer_name" 
+                    id="supplier_name" 
                     name="name" 
                     class="input-field" 
-                    placeholder="Enter full name"
+                    placeholder="Enter supplier name"
+                    oninput="this.value = this.value.replace(/\b\w/g, c => c.toUpperCase())"
                     required>
                 <div id="duplicate-msg" class="field-error">
-                    This customer already exists. Try a different name.
+                    This supplier already exists. Try a different name.
                 </div>
             </div>
 
             <div class="form-group">
-                <label for="customer_phone">Phone Number</label>
+                <label for="supplier_phone">Phone Number</label>
                 <input 
                     type="text" 
-                    id="customer_phone" 
+                    id="supplier_phone" 
                     name="phone" 
                     class="input-field" 
                     placeholder="(Optional) Phone number">
             </div>
 
             <div class="form-group">
-                <label for="customer_address">Address</label>
+                <label for="supplier_address">Address</label>
                 <input 
                     type="text" 
-                    id="customer_address" 
+                    id="supplier_address" 
                     name="address" 
                     class="input-field" 
                     placeholder="(Optional) Street address">
             </div>
 
             <div class="form-group">
-                <label for="customer_balance">Opening Balance</label>
+                <label for="supplier_balance">Opening Balance</label>
                 <input 
                     type="number" 
-                    id="customer_balance" 
+                    id="supplier_balance" 
                     name="opening_balance" 
                     value="0" 
                     step="0.01"
@@ -357,7 +358,7 @@
             </div>
 
             <button type="submit" id="saveBtn" class="btn-submit">
-                Save Customer
+                Save Supplier
             </button>
         </form>
     </div>
@@ -388,11 +389,11 @@
         }
     });
 
-    const customerName = document.getElementById("customer_name");
+    const supplierName = document.getElementById("supplier_name");
     const duplicateMsg = document.getElementById("duplicate-msg");
     const saveBtn = document.getElementById("saveBtn");
 
-    customerName.addEventListener("input", function () {
+    supplierName.addEventListener("input", function () {
         this.value = this.value.replace(/\b\w/g, c => c.toUpperCase());
         
         // Remove error state when user is typing
@@ -401,7 +402,7 @@
         saveBtn.disabled = false;
     });
 
-    customerName.addEventListener("blur", function () {
+    supplierName.addEventListener("blur", function () {
         const name = this.value.trim();
 
         if (!name) {
@@ -411,23 +412,23 @@
             return;
         }
 
-        fetch(`/api/check_customer?name=${encodeURIComponent(name)}`)
+        fetch(`/api/check_supplier?name=${encodeURIComponent(name)}`)
             .then(response => response.json())
             .then(data => {
                 if (data.exists) {
                     duplicateMsg.classList.add("show");
-                    customerName.classList.add("error");
+                    supplierName.classList.add("error");
                     saveBtn.disabled = true;
                 } else {
                     duplicateMsg.classList.remove("show");
-                    customerName.classList.remove("error");
+                    supplierName.classList.remove("error");
                     saveBtn.disabled = false;
                 }
             })
             .catch(error => {
-                console.error("Error checking customer:", error);
+                console.error("Error checking supplier:", error);
                 duplicateMsg.classList.remove("show");
-                customerName.classList.remove("error");
+                supplierName.classList.remove("error");
                 saveBtn.disabled = false;
             });
     });
