@@ -264,13 +264,13 @@
     <!-- SUMMARY -->
 
     <div class="summary">
-        <div class="summary-row">
-          <div>Total Quantity</div>
-          <div>
-            {{ "%.2f"|format(
-                purchases|sum(attribute='quantity')
-            ) }}
-          </div>
+        <div class="row">
+            <div>Total Quantity</div>
+            <div>
+                {{ "%.2f"|format(
+                    block.purchases|sum(attribute='quantity')
+                ) }}
+            </div>
         </div>
 
         <div class="row">
