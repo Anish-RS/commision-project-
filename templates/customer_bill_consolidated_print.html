@@ -211,6 +211,14 @@
 </table>
 
 <div class="summary">
+  <div class="summary-row">
+    <div>Total Quantity</div>
+    <div>
+      {{ "%.2f"|format(
+          purchases|sum(attribute='quantity')
+      ) }}
+    </div>
+  </div>
 
   <div class="summary-row">
     <div>Total Purchases</div>
