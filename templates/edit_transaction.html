@@ -2,339 +2,756 @@
 {% block content %}
 
 <style>
-.filter-card{
-    background:#ffffff;
-    border:none;
-    border-radius:18px;
-    padding:18px 20px;
-    margin-bottom:20px;
-    box-shadow:0 10px 30px rgba(0,0,0,0.08);
-    max-width:1200px;
-    margin:0 auto 16px auto;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+/* ── Reset & base ── */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 15px;
+    background: #f0f4f8;
+    color: #1e293b;
 }
 
-.filter-row{
-    display:flex;
-    gap:20px;
-    align-items:end;
-    flex-wrap:wrap;
+/* ── Page shell ── */
+.et-page {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 32px 24px 64px;
 }
 
-.field{
-    display:flex;
-    flex-direction:column;
+/* ── Page header ── */
+.et-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 28px;
 }
 
-.field label{
-    font-size:13px;
-    font-weight:700;
-    color:#374151;
-    margin-bottom:8px;
+.et-header-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #0d9488, #0891b2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 4px 14px rgba(13,148,136,0.35);
 }
 
+.et-header-icon svg {
+    width: 24px;
+    height: 24px;
+    color: #fff;
+}
+
+.et-header-text h2 {
+    font-size: 26px;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0 0 4px 0;
+    letter-spacing: -0.5px;
+}
+
+.et-header-text p {
+    font-size: 14px;
+    color: #64748b;
+    margin: 0;
+}
+
+/* ── Card base ── */
+.et-card {
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.06);
+    border: 1px solid rgba(255,255,255,0.8);
+}
+
+/* ── Filter card ── */
+.filter-card {
+    padding: 24px 28px;
+    margin-bottom: 14px;
+}
+
+.filter-row {
+    display: flex;
+    gap: 16px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.field label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+
+/* Shared control style */
 .field select,
-.field input{
-    height:46px;
-    border:2px solid #dbeafe;
-    border-radius:14px;
-    padding:0 16px;
-    font-size:16px;
-    transition:all .25s ease;
+.field input {
+    height: 46px;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 0 14px;
+    font-size: 14px;
+    font-family: inherit;
+    color: #0f172a;
+    background: #f8fafc;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    outline: none;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+.field select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%2394a3b8' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 36px;
 }
 
 .field select:focus,
-.field input:focus{
-    outline:none;
-    border-color:#60a5fa;
-    box-shadow:0 0 0 4px rgba(96,165,250,0.15);
+.field input:focus {
+    border-color: #0d9488;
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(13,148,136,0.12);
 }
 
-.person-field{
-    flex:1;
-    min-width:280px;
+.person-field {
+    flex: 1;
+    min-width: 280px;
 }
 
-.btn-field{
-    display:flex;
-    align-items:flex-end;
-    padding-top:21px;
+/* Load button */
+.btn-field {
+    display: flex;
+    align-items: flex-end;
 }
 
-.btn-field button{
-    height:46px;
-    min-width:100px;
-    padding:0 24px;
-    border:none;
-    border-radius:14px;
-    background:linear-gradient(135deg,#6366f1,#8b5cf6);
-    color:#fff;
-    font-size:16px;
-    font-weight:600;
-    cursor:pointer;
-    transition:.25s;
+.btn-load {
+    height: 46px;
+    padding: 0 28px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #0d9488, #0891b2);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+    box-shadow: 0 4px 14px rgba(13,148,136,0.35);
+    letter-spacing: 0.3px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
-.small-note{
-    background:#eff6ff;
-    border-left:5px solid #3b82f6;
-    padding:10px 14px;
-    max-width:1200px;
-    margin:0 auto 16px auto;
-    border-radius:10px;
-    margin-bottom:20px;
-    color:#374151;
+.btn-load:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(13,148,136,0.45);
 }
 
-#tx-list-wrap{
-    background:#ffffff;
-    border-radius:18px;
-    padding:18px 20px;
-    max-width:1200px;
-    margin:auto;
-    box-shadow:0 10px 30px rgba(0,0,0,.06);
+.btn-load:active {
+    transform: translateY(0);
 }
 
-.table{
-    width:100%;
-    border-collapse:collapse;
-    overflow:hidden;
-    border-radius:14px;
+.btn-load svg {
+    width: 16px;
+    height: 16px;
 }
 
-.table thead{
-    background:#f8fafc;
+/* ── Hint banner ── */
+.small-note {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 12px;
+    padding: 12px 18px;
+    margin-bottom: 16px;
+    color: #3b82f6;
+    font-size: 13px;
+    font-weight: 500;
 }
 
-.table th{
-    padding:14px;
-    font-size:14px;
-    text-transform:uppercase;
-    letter-spacing:.5px;
-    color:#475569;
+.small-note svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    color: #3b82f6;
 }
 
-.table td{
-    padding:14px;
-    border-top:1px solid #f1f5f9;
+/* ── Transactions card ── */
+#tx-list-wrap {
+    padding: 0;
+    overflow: hidden;
+    margin-bottom: 0;
 }
 
-.table tbody tr:hover{
-    background:#f8fafc;
+.tx-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid #f1f5f9;
 }
 
-.edit-tx-btn{
-    background:#f59e0b;
-    color:white;
-    border:none;
-    padding:8px 16px;
-    border-radius:8px;
-    cursor:pointer;
-    font-weight:600;
+.tx-card-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    color: #0f172a;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
-.edit-tx-btn:hover{
-    background:#d97706;
+.tx-card-header h3 svg {
+    width: 18px;
+    height: 18px;
+    color: #0d9488;
 }
 
-#edit-panel{
-    background:#ffffff !important;
-    border:none !important;
-    border-radius:18px !important;
-    padding:24px !important;
-    box-shadow:0 10px 30px rgba(0,0,0,.08);
-    margin-top:25px !important;
+#tx-count-badge {
+    display: none;
+    background: #f0fdfa;
+    color: #0d9488;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+    border: 1px solid #99f6e4;
 }
 
-#edit-panel h4{
-    margin-bottom:20px;
-    color:#1e293b;
+#tx-list {
+    padding: 20px 24px;
+    color: #64748b;
+    font-size: 14px;
 }
 
-#edit-panel input{
-    height:50px;
-    border:2px solid #e5e7eb;
-    border-radius:12px;
-    padding:0 14px;
+/* Table */
+.table {
+    width: 100%;
+    border-collapse: collapse;
 }
 
-#save-edit{
-    background:#10b981;
-    border:none;
-    color:white;
-    padding:10px 20px;
-    border-radius:10px;
-    font-weight:600;
+.table thead tr {
+    background: #f8fafc;
+    border-top: none;
 }
 
-#cancel-edit{
-    background:#ef4444;
-    border:none;
-    color:white;
-    padding:10px 20px;
-    border-radius:10px;
-    font-weight:600;
+.table thead th {
+    padding: 11px 14px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    color: #94a3b8;
+    text-align: left;
+    white-space: nowrap;
 }
 
-#save-edit:hover{
-    background:#059669;
+.table thead th:first-child { padding-left: 24px; }
+.table thead th:last-child { padding-right: 24px; text-align: center; }
+
+.table tbody td {
+    padding: 13px 14px;
+    border-top: 1px solid #f1f5f9;
+    font-size: 14px;
+    color: #334155;
+    vertical-align: middle;
 }
 
-#cancel-edit:hover{
-    background:#dc2626;
+.table tbody td:first-child {
+    padding-left: 24px;
+    font-weight: 600;
+    color: #0f172a;
+    font-variant-numeric: tabular-nums;
 }
 
-h2{
-    font-size:28px;
-    margin-bottom:24px;
-    font-weight:800;
-    color:#111827;
+.table tbody td:last-child {
+    padding-right: 24px;
+    text-align: center;
 }
 
-h3{
-    margin-bottom:18px;
-    color:#111827;
+.table tbody tr {
+    position: relative;
+    transition: background 0.15s;
 }
 
-hr{
-    display:none;
+.table tbody tr:hover {
+    background: #f8fffe;
 }
 
-.page-container{
-    max-width:1280px;
-    margin:auto;
+/* TX ID chip */
+.tx-id-chip {
+    display: inline-flex;
+    align-items: center;
+    background: #f1f5f9;
+    color: #475569;
+    border-radius: 7px;
+    padding: 3px 9px;
+    font-size: 12px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.3px;
 }
 
-body{
-    font-size:15px;
-}
-.autocomplete-wrapper{
-    position:relative;
-    width:100%;
-}
-
-.suggestions-box{
-    position:absolute;
-    top:100%;
-    left:0;
-    right:0;
-    background:#fff;
-    border:1px solid #dbeafe;
-    border-top:none;
-    border-radius:0 0 12px 12px;
-    box-shadow:0 8px 20px rgba(0,0,0,.10);
-    max-height:250px;
-    overflow-y:auto;
-    z-index:9999;
-    display:none;
+/* Amount cell */
+.tx-amount {
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: #0f172a;
+    font-size: 15px;
 }
 
-.suggestion-item{
-    padding:10px 14px;
-    cursor:pointer;
-    font-size:14px;
+/* Date cell */
+.tx-date {
+    color: #64748b;
+    font-size: 13px;
 }
 
-.suggestion-item:hover{
-    background:#eff6ff;
+/* Note cell */
+.tx-note {
+    color: #64748b;
+    font-size: 13px;
+    max-width: 240px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
-    
+
+/* Edit button */
+.edit-tx-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #fff7ed;
+    color: #c2410c;
+    border: 1px solid #fed7aa;
+    padding: 7px 14px;
+    border-radius: 9px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 13px;
+    font-family: inherit;
+    transition: background 0.15s, border-color 0.15s, transform 0.1s;
+}
+
+.edit-tx-btn svg {
+    width: 13px;
+    height: 13px;
+}
+
+.edit-tx-btn:hover {
+    background: #f59e0b;
+    border-color: #f59e0b;
+    color: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(245,158,11,0.3);
+}
+
+/* ── Edit panel ── */
+#edit-panel {
+    display: none;
+    background: #ffffff !important;
+    border: none !important;
+    border-radius: 20px !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.08) !important;
+    overflow: hidden;
+    margin-top: 20px !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+}
+
+.edit-panel-header {
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+    padding: 20px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.edit-panel-header h4 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.edit-panel-header h4 svg {
+    width: 18px;
+    height: 18px;
+    color: #0d9488;
+}
+
+#edit-tx-id {
+    background: rgba(13,148,136,0.25);
+    color: #5eead4;
+    padding: 3px 10px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+}
+
+.edit-panel-body {
+    padding: 28px;
+}
+
+.edit-fields {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.edit-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+    min-width: 160px;
+}
+
+.edit-field.full { flex: 1 1 100%; }
+
+.edit-field label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+
+.edit-field input {
+    height: 48px;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 0 16px;
+    font-size: 15px;
+    font-family: inherit;
+    color: #0f172a;
+    background: #f8fafc;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+.edit-field input:focus {
+    border-color: #0d9488;
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(13,148,136,0.12);
+}
+
+.edit-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+#save-edit {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 46px;
+    padding: 0 24px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #059669, #0d9488);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 4px 14px rgba(5,150,105,0.35);
+}
+
+#save-edit:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(5,150,105,0.45);
+}
+
+#save-edit svg { width: 16px; height: 16px; }
+
+#cancel-edit {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 46px;
+    padding: 0 20px;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 12px;
+    background: #fff;
+    color: #64748b;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+#cancel-edit:hover {
+    background: #fff1f2;
+    border-color: #fecaca;
+    color: #ef4444;
+}
+
+#cancel-edit svg { width: 15px; height: 15px; }
+
+#edit-result {
+    margin-left: auto;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-radius: 9px;
+    display: none;
+}
+
+#edit-result.success {
+    display: block;
+    background: #f0fdf4;
+    color: #15803d;
+    border: 1px solid #bbf7d0;
+}
+
+#edit-result.error {
+    display: block;
+    background: #fff1f2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+}
+
+/* ── Autocomplete ── */
+.autocomplete-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.suggestions-box {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    background: #fff;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 14px;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.12);
+    max-height: 260px;
+    overflow-y: auto;
+    z-index: 9999;
+    display: none;
+    padding: 6px;
+}
+
+.suggestion-item {
+    padding: 9px 12px;
+    cursor: pointer;
+    font-size: 13px;
+    border-radius: 9px;
+    color: #334155;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: background 0.1s;
+}
+
+.suggestion-item::before {
+    content: '';
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #cbd5e1;
+    flex-shrink: 0;
+}
+
+.suggestion-item:hover {
+    background: #f0fdfa;
+    color: #0d9488;
+}
+
+.suggestion-item:hover::before {
+    background: #0d9488;
+}
+
+/* ── Misc ── */
+hr { display: none; }
+
+.empty-state {
+    text-align: center;
+    padding: 48px 24px;
+    color: #94a3b8;
+}
+
+.empty-state svg {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 12px;
+    color: #cbd5e1;
+}
+
+.empty-state p {
+    margin: 0;
+    font-size: 14px;
+}
+
 </style>
 
-<div style="max-width:1200px;margin:0 auto 18px auto;">
-    <h2>Edit Receipts / Payments</h2>
-    <p style="color:#6b7280;margin-top:4px;font-size:15px;">
-        Search, review and modify receipt/payment transactions.
-    </p>
-</div>
+<div class="et-page">
 
-<div class="filter-card">
+  <!-- Header -->
+  <div class="et-header">
+    <div class="et-header-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h1.125c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125H18M9 10.5H7.875c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125H9" />
+      </svg>
+    </div>
+    <div class="et-header-text">
+      <h2>Edit Receipts / Payments</h2>
+      <p>Search, review and modify receipt/payment transactions.</p>
+    </div>
+  </div>
+
+  <!-- Filter card -->
+  <div class="filter-card et-card">
     <div class="filter-row">
 
-        <div class="field">
-            <label><strong>Transaction Type</strong></label>
-            <select id="tx-type" class="input-field">
-                <option value="receipt">Receipt</option>
-                <option value="payment">Payment</option>
-            </select>
-        </div>
-
-        <div class="field">
-            <label><strong>Entity</strong></label>
-            <select id="entity-type" class="input-field">
-                <option value="customer">Customer</option>
-                <option value="supplier">Supplier</option>
-            </select>
-        </div>
-
-        <div class="field person-field">
-            <label><strong>Person (ID / Name)</strong></label>
-        
-            <div class="autocomplete-wrapper">
-        
-                <input
-                    type="text"
-                    id="person-search"
-                    class="input-field"
-                    placeholder="Type customer or supplier name">
-        
-                <div id="person-suggestions" class="suggestions-box"></div>
-        
-            </div>
-        </div>
-        <div class="btn-field">
-            <button id="load-transactions" class="btn btn-primary">
-                Load
-            </button>
-        </div>
-
-    </div>
-</div>
-
-<p class="small-note">
-  Choose the type (receipt/payment), choose customer or supplier,
-  then select person and click Load to show transactions for editing.
-</p>
-
-<hr>
-<hr>
-
-<div id="tx-list-wrap">
-  <h3>Transactions</h3>
-  <div id="tx-list">No transactions loaded.</div>
-</div>
-
-<!-- Edit panel (hidden until editing) -->
-<div id="edit-panel" style="display:none; margin-top:18px; max-width:700px; border:1px solid #ddd; padding:12px; border-radius:8px;">
-  <h4>Edit Transaction <span id="edit-tx-id"></span></h4>
-
-  <form id="edit-form">
-    <input type="hidden" name="tx_id" id="edit-tx-id-input">
-
-    <div style="display:flex; gap:12px; flex-wrap:wrap;">
-      <div style="flex:1">
-        <label>Amount</label><br>
-        <input name="amount" id="edit-amount" type="number" step="0.01" class="input-field" required>
+      <div class="field">
+        <label>Transaction Type</label>
+        <select id="tx-type" class="input-field">
+          <option value="receipt">Receipt</option>
+          <option value="payment">Payment</option>
+        </select>
       </div>
 
-      <div style="flex:1">
-        <label>Date</label><br>
-        <input name="tx_date" id="edit-date" type="datetime-local" class="input-field">
+      <div class="field">
+        <label>Entity</label>
+        <select id="entity-type" class="input-field">
+          <option value="customer">Customer</option>
+          <option value="supplier">Supplier</option>
+        </select>
       </div>
 
-      <div style="flex:1 1 100%">
-        <label>Note</label><br>
-        <input name="note" id="edit-note" type="text" class="input-field">
+      <div class="field person-field">
+        <label>Person (ID / Name)</label>
+        <div class="autocomplete-wrapper">
+          <input
+            type="text"
+            id="person-search"
+            class="input-field"
+            placeholder="Type customer or supplier name…">
+          <div id="person-suggestions" class="suggestions-box"></div>
+        </div>
+      </div>
+
+      <div class="btn-field">
+        <button id="load-transactions" class="btn-load">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+          </svg>
+          Load
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Hint -->
+  <p class="small-note">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+    </svg>
+    Choose the type (receipt/payment), choose customer or supplier, then select person and click Load to show transactions for editing.
+  </p>
+
+  <hr><hr>
+
+  <!-- Transactions card -->
+  <div id="tx-list-wrap" class="et-card">
+    <div class="tx-card-header">
+      <h3>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+        </svg>
+        Transactions
+      </h3>
+      <span id="tx-count-badge"></span>
+    </div>
+    <div id="tx-list">
+      <div class="empty-state">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+        </svg>
+        <p>No transactions loaded. Select a person and click Load.</p>
       </div>
     </div>
+  </div>
 
-    <div style="margin-top:10px;">
-      <button type="button" id="save-edit" class="btn btn-primary">Save</button>
-      <button type="button" id="cancel-edit" class="btn btn-small">Cancel</button>
+  <!-- Edit panel -->
+  <div id="edit-panel" style="display:none; margin-top:18px; max-width:700px; border:1px solid #ddd; padding:12px; border-radius:8px;">
+    <div class="edit-panel-header">
+      <h4>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+        </svg>
+        Edit Transaction <span id="edit-tx-id"></span>
+      </h4>
     </div>
 
-    <div id="edit-result" style="margin-top:10px;"></div>
-  </form>
-</div>
+    <div class="edit-panel-body">
+      <form id="edit-form">
+        <input type="hidden" name="tx_id" id="edit-tx-id-input">
+
+        <div class="edit-fields">
+          <div class="edit-field">
+            <label>Amount</label>
+            <input name="amount" id="edit-amount" type="number" step="0.01" class="input-field" required>
+          </div>
+          <div class="edit-field">
+            <label>Date</label>
+            <input name="tx_date" id="edit-date" type="datetime-local" class="input-field">
+          </div>
+          <div class="edit-field full">
+            <label>Note</label>
+            <input name="note" id="edit-note" type="text" class="input-field">
+          </div>
+        </div>
+
+        <div class="edit-actions">
+          <button type="button" id="save-edit">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+            </svg>
+            Save Changes
+          </button>
+          <button type="button" id="cancel-edit">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+            Cancel
+          </button>
+          <div id="edit-result" style="margin-top:10px;"></div>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+</div><!-- .et-page -->
 
 <script>
   function by(id){ 
@@ -373,7 +790,7 @@ body{
     const entityId = person.id;
 
     const wrap = by('tx-list');
-    wrap.innerHTML = 'Loading...';
+    wrap.innerHTML = '<div class="empty-state"><p>Loading transactions…</p></div>';
 
     const params = new URLSearchParams({
       tx_type: txType,
@@ -393,14 +810,19 @@ body{
         const txs = data.transactions || [];
 
         if (txs.length === 0) {
-          wrap.innerHTML =
-            '<div>No transactions found for this person and type.</div>';
+          wrap.innerHTML = '<div class="empty-state"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg><p>No transactions found for this person and type.</p></div>';
+          const badge = by('tx-count-badge');
+          badge.style.display = 'none';
           return;
         }
 
+        // Show count badge
+        const badge = by('tx-count-badge');
+        badge.style.display = 'inline-block';
+        badge.textContent = txs.length + ' record' + (txs.length !== 1 ? 's' : '');
+
         const tbl = document.createElement('table');
         tbl.className = 'table';
-        tbl.style.width = '100%';
 
         tbl.innerHTML = `
           <thead>
@@ -422,16 +844,16 @@ body{
 
           const date = t.tx_date
             ? new Date(t.tx_date).toLocaleDateString('en-GB')
-            : '';
+            : '—';
 
           tr.innerHTML = `
-            <td>${t.tx_id}</td>
-            <td>${date}</td>
-            <td>${(t.amount || 0).toFixed(2)}</td>
-            <td>${t.note || ''}</td>
+            <td><span class="tx-id-chip">#${t.tx_id}</span></td>
+            <td><span class="tx-date">${date}</span></td>
+            <td><span class="tx-amount">${(t.amount || 0).toFixed(2)}</span></td>
+            <td><span class="tx-note">${t.note || '<em style="color:#cbd5e1">—</em>'}</span></td>
             <td>
-              <button data-tx="${t.tx_id}"
-                      class="btn btn-small edit-tx-btn">
+              <button data-tx="${t.tx_id}" class="btn btn-small edit-tx-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z" /></svg>
                 Edit
               </button>
             </td>
@@ -443,6 +865,7 @@ body{
         tbl.appendChild(tb);
 
         wrap.innerHTML = '';
+        wrap.style.padding = '0';
         wrap.appendChild(tbl);
 
         document.querySelectorAll('.edit-tx-btn').forEach(btn => {
@@ -456,68 +879,46 @@ body{
         wrap.innerText = 'Request failed: ' + err;
       });
   });
-  
 
-  
-by('person-search').addEventListener('input', function(){
+  by('person-search').addEventListener('input', function(){
     populatePersonList(this.value);
-});
+  });
 
-by('entity-type').addEventListener('change', function(){
-
+  by('entity-type').addEventListener('change', function(){
     by('person-search').value = '';
-
     suggestionsBox.innerHTML = '';
-
     suggestionsBox.style.display = 'none';
-});
-const suggestionsBox = by('person-suggestions');
+  });
 
-by('person-search').addEventListener('input', function(){
+  const suggestionsBox = by('person-suggestions');
 
+  by('person-search').addEventListener('input', function(){
     const search = this.value.trim().toLowerCase();
-
     suggestionsBox.innerHTML = '';
-
     if(search.length < 1){
-        suggestionsBox.style.display = 'none';
-        return;
+      suggestionsBox.style.display = 'none';
+      return;
     }
-
     const data =
-        by('entity-type').value === 'customer'
-            ? allCustomers
-            : allSuppliers;
-
+      by('entity-type').value === 'customer'
+        ? allCustomers
+        : allSuppliers;
     const matches = data.filter(item =>
-        item.name.toLowerCase().includes(search)
+      item.name.toLowerCase().includes(search)
     );
-
     matches.slice(0,15).forEach(item => {
-
-        const div = document.createElement('div');
-
-        div.className = 'suggestion-item';
-
-        div.textContent =
-            `${item.name} (ID: ${item.id})`;
-
-        div.addEventListener('click', function(){
-
-            by('person-search').value =
-                `${item.name} (ID: ${item.id})`;
-
-            suggestionsBox.style.display = 'none';
-        });
-
-        suggestionsBox.appendChild(div);
+      const div = document.createElement('div');
+      div.className = 'suggestion-item';
+      div.textContent = `${item.name} (ID: ${item.id})`;
+      div.addEventListener('click', function(){
+        by('person-search').value = `${item.name} (ID: ${item.id})`;
+        suggestionsBox.style.display = 'none';
+      });
+      suggestionsBox.appendChild(div);
     });
+    suggestionsBox.style.display = matches.length ? 'block' : 'none';
+  });
 
-    suggestionsBox.style.display =
-        matches.length ? 'block' : 'none';
-});  
-  
-  // open edit form for a tx id: fetch tx row and populate form
   function openEditForm(txid) {
     fetch('/transactions/edit/' + txid)
       .then(r => r.json())
@@ -528,39 +929,34 @@ by('person-search').addEventListener('input', function(){
         by('edit-tx-id').innerText = '#' + tx.tx_id;
         by('edit-tx-id-input').value = tx.tx_id;
         by('edit-amount').value = (tx.amount || 0).toFixed(2);
-
-        // parse ISO date to datetime-local format for input if present
         if (tx.tx_date) {
           const d = new Date(tx.tx_date);
-          // format to yyyy-MM-ddTHH:mm (seconds optional)
           const pad = n => (n<10?'0':'')+n;
           const isoLocal = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
           by('edit-date').value = isoLocal;
         } else {
           by('edit-date').value = '';
         }
-
         by('edit-note').value = tx.note || '';
-        by('edit-result').innerText = '';
+        const r = by('edit-result');
+        r.innerText = '';
+        r.className = '';
+        r.style.display = 'none';
         window.scrollTo({ top: by('edit-panel').offsetTop - 20, behavior: 'smooth' });
       })
       .catch(err => { alert('Failed to load tx: '+err); });
   }
 
-  // Cancel edit
   by('cancel-edit').addEventListener('click', function(){
     by('edit-panel').style.display = 'none';
   });
 
-  // Save edit -> call POST JSON
   by('save-edit').addEventListener('click', function(){
     const txid = by('edit-tx-id-input').value;
     const amount = parseFloat(by('edit-amount').value || 0);
     const note = by('edit-note').value || '';
-    const dateVal = by('edit-date').value; // in datetime-local format -> 'yyyy-MM-ddTHH:mm'
-    // convert to ISO if present
+    const dateVal = by('edit-date').value;
     const tx_date = dateVal ? new Date(dateVal).toISOString() : null;
-
     const payload = { amount: amount, note: note, tx_date: tx_date };
 
     fetch('/transactions/edit/' + txid, {
@@ -570,29 +966,31 @@ by('person-search').addEventListener('input', function(){
     })
     .then(r => r.json())
     .then(j => {
+      const r = by('edit-result');
       if (j.error) {
-        by('edit-result').innerText = 'Error: ' + j.message || j.error;
-        by('edit-result').style.color = 'red';
+        r.innerText = 'Error: ' + (j.message || j.error);
+        r.className = 'error';
+        r.style.display = 'block';
       } else {
-        by('edit-result').innerText = 'Saved successfully.';
-        by('edit-result').style.color = 'green';
-        // reload transaction list for the same person to reflect changes
+        r.innerText = '✓ Saved successfully.';
+        r.className = 'success';
+        r.style.display = 'block';
         setTimeout(()=> by('load-transactions').click(), 400);
       }
     })
     .catch(err=>{
-      by('edit-result').innerText = 'Save failed: ' + err;
-      by('edit-result').style.color = 'red';
+      const r = by('edit-result');
+      r.innerText = 'Save failed: ' + err;
+      r.className = 'error';
+      r.style.display = 'block';
     });
   });
-document.addEventListener('click', function(e){
 
+  document.addEventListener('click', function(e){
     if(!e.target.closest('.autocomplete-wrapper')){
-
-        suggestionsBox.style.display = 'none';
+      suggestionsBox.style.display = 'none';
     }
-});
-
+  });
 </script>
 
 {% endblock %}
