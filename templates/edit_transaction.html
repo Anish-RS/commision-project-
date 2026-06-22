@@ -57,22 +57,19 @@
     </div>
 
     <div>
-      <label><strong>Search Person</strong></label><br>
+      <label><strong>Person</strong></label><br>
       <input
           type="text"
           id="person-search"
           class="input-field"
-          style="min-width:300px;"
-          placeholder="Search by ID or Name">
+          list="person-list"
+          placeholder="Type ID or Name"
+          style="min-width:300px;">
+    
+      <datalist id="person-list"></datalist>
     </div>
     
-    <div>
-      <label><strong>Person</strong></label><br>
-      <select id="entity-id" class="input-field" style="min-width:300px;">
-          <option value=""></option>
-      </select>
-    </div>
-    
+   
 
     <div>
       <button id="load-transactions" class="btn btn-primary" style="height:44px; margin-top:18px;">Load</button>
@@ -123,71 +120,40 @@
 </div>
 
 <script>
-  // helpers
-  function by(id){ return document.getElementById(id); }
+  function by(id){ 
+    return document.getElementById(id); 
+  }
 
-  // Populate suppliers into the person dropdown when entity_type changes
   const allCustomers = JSON.parse('{{ customers|tojson|safe }}');
   const allSuppliers = JSON.parse('{{ suppliers|tojson|safe }}');
 
-  function rebuildPersonList(entityType) {
-    const sel = by('entity-id');
-    // remember selection
-    const prev = sel.value;
-    sel.innerHTML = '<option value=""></option>';
-
-    if (entityType === 'customer') {
-      allCustomers.forEach(c=>{
-        const opt = document.createElement('option');
-        opt.value = c.id;
-        opt.text = `${c.name} (ID: ${c.id})`;
-        opt.setAttribute('data-name', c.name);
-        sel.appendChild(opt);
-      });
-    } else { // supplier
-      allSuppliers.forEach(s=>{
-        const opt = document.createElement('option');
-        opt.value = s.id;
-        opt.text = `${s.name} (ID: ${s.id})`;
-        opt.setAttribute('data-name', s.name);
-        sel.appendChild(opt);
-      });
-    }
-
-    // try restore
-    if (prev) sel.value = prev;
-  }
-
-  // init supplier list from server-side suppliers (we only rendered customers earlier)
-  (function initSuppliers(){
-    const sel = by('entity-id');
-    if (!sel) return;
-    // load suppliers after page load
-    // server provided suppliers array in template? We passed suppliers variable.
-    // but to avoid duplication we used tojson: below we reconstruct supplier dropdown when needed.
-  })();
-
-  // When entity-type changes -> rebuild person list
-  by('entity-type').addEventListener('change', function(){
-        by('person-search').value = '';
-        rebuildPersonList(this.value);
-    });
-  
-
-  // initial build (default customer)
-  rebuildPersonList(by('entity-type').value);
-  by('person-search').addEventListener('input', function(){
-    filterPersonList();
-  });
-  // When Load clicked -> fetch transactions via /transactions/list
+  // Load transactions
   by('load-transactions').addEventListener('click', function(){
+
     const txType = by('tx-type').value;
     const entityType = by('entity-type').value;
-    const entityId = by('entity-id').value;
-    if (!entityId) {
-      alert('Choose a person first');
-      return;
+    const searchValue = by('person-search').value.trim();
+
+    if (!searchValue) {
+        alert('Choose a person');
+        return;
     }
+    
+    const data =
+        entityType === 'customer'
+            ? allCustomers
+            : allSuppliers;
+    
+    const person = data.find(item =>
+        searchValue === `${item.name} (ID: ${item.id})`
+    );
+    
+    if (!person) {
+        alert('Please select a valid person from the list');
+        return;
+    }
+    
+    const entityId = person.id;
 
     const wrap = by('tx-list');
     wrap.innerHTML = 'Loading...';
@@ -201,79 +167,104 @@
     fetch('/transactions/list?' + params.toString())
       .then(r => r.json())
       .then(data => {
-        if (data.error) { wrap.innerText = 'Error: ' + data.error; return; }
-        const txs = data.transactions || [];
-        if (txs.length === 0) {
-          wrap.innerHTML = '<div>No transactions found for this person and type.</div>';
+
+        if (data.error) {
+          wrap.innerText = 'Error: ' + data.error;
           return;
         }
 
-        // build table
+        const txs = data.transactions || [];
+
+        if (txs.length === 0) {
+          wrap.innerHTML =
+            '<div>No transactions found for this person and type.</div>';
+          return;
+        }
+
         const tbl = document.createElement('table');
         tbl.className = 'table';
         tbl.style.width = '100%';
-        tbl.innerHTML = `<thead><tr>
-          <th>ID</th><th>Date</th><th>Amount</th><th>Note</th><th>Action</th>
-        </tr></thead>`;
+
+        tbl.innerHTML = `
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Date</th>
+              <th>Amount</th>
+              <th>Note</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+        `;
+
         const tb = document.createElement('tbody');
+
         txs.forEach(t => {
+
           const tr = document.createElement('tr');
+
           const date = t.tx_date
             ? new Date(t.tx_date).toLocaleDateString('en-GB')
             : '';
-          tr.innerHTML = `<td>${t.tx_id}</td>
-                          <td>${date}</td>
-                          <td>${(t.amount||0).toFixed(2)}</td>
-                          <td>${t.note || ''}</td>
-                          <td><button data-tx="${t.tx_id}" class="btn btn-small edit-tx-btn">Edit</button></td>`;
+
+          tr.innerHTML = `
+            <td>${t.tx_id}</td>
+            <td>${date}</td>
+            <td>${(t.amount || 0).toFixed(2)}</td>
+            <td>${t.note || ''}</td>
+            <td>
+              <button data-tx="${t.tx_id}"
+                      class="btn btn-small edit-tx-btn">
+                Edit
+              </button>
+            </td>
+          `;
+
           tb.appendChild(tr);
         });
+
         tbl.appendChild(tb);
+
         wrap.innerHTML = '';
         wrap.appendChild(tbl);
 
-        // attach edit handlers
-        document.querySelectorAll('.edit-tx-btn').forEach(btn=>{
+        document.querySelectorAll('.edit-tx-btn').forEach(btn => {
           btn.addEventListener('click', function(){
-            const txid = this.dataset.tx;
-            openEditForm(txid);
+            openEditForm(this.dataset.tx);
           });
         });
+
       })
-      .catch(err=>{
+      .catch(err => {
         wrap.innerText = 'Request failed: ' + err;
       });
   });
-  function filterPersonList() {
-    const search = by('person-search').value.toLowerCase().trim();
-    const entityType = by('entity-type').value;
-    const sel = by('entity-id');
+  
 
-    sel.innerHTML = '<option value=""></option>';
+  function populatePersonList() {
+      const entityType = by('entity-type').value;
+      const list = by('person-list');
 
-    const data =
-        entityType === 'customer'
-            ? allCustomers
-            : allSuppliers;
+      list.innerHTML = '';
 
-    data.forEach(item => {
-        const idMatch =
-            String(item.id).toLowerCase().includes(search);
+      const data =
+          entityType === 'customer'
+              ? allCustomers
+              : allSuppliers;
 
-        const nameMatch =
-            (item.name || '')
-                .toLowerCase()
-                .includes(search);
-
-        if (!search || idMatch || nameMatch) {
-            const opt = document.createElement('option');
-            opt.value = item.id;
-            opt.text = `${item.name} (ID: ${item.id})`;
-            opt.setAttribute('data-name', item.name);
-            sel.appendChild(opt);
-        }
-    });
+      data.forEach(item => {
+          const option = document.createElement('option');
+          option.value = `${item.name} (ID: ${item.id})`;
+          list.appendChild(option);
+      });
   }
+
+  by('entity-type').addEventListener('change', function(){
+      by('person-search').value = '';
+      populatePersonList();
+  });
+
+  populatePersonList();
   // open edit form for a tx id: fetch tx row and populate form
   function openEditForm(txid) {
     fetch('/transactions/edit/' + txid)
