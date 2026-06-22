@@ -57,17 +57,22 @@
     </div>
 
     <div>
+      <label><strong>Search Person</strong></label><br>
+      <input
+          type="text"
+          id="person-search"
+          class="input-field"
+          style="min-width:300px;"
+          placeholder="Search by ID or Name">
+    </div>
+    
+    <div>
       <label><strong>Person</strong></label><br>
       <select id="entity-id" class="input-field" style="min-width:300px;">
-        <option value=""></option>
-        {% for c in customers %}
-          <option data-name="{{ c.name }}" value="{{ c.id }}">{{ c.name }} (ID: {{ c.id }})</option>
-        {% endfor %}
-        {% for s in suppliers %}
-          {# suppliers also exist but we only display the relevant list based on entity-type via JS #}
-        {% endfor %}
+          <option value=""></option>
       </select>
     </div>
+    
 
     <div>
       <button id="load-transactions" class="btn btn-primary" style="height:44px; margin-top:18px;">Load</button>
@@ -164,12 +169,16 @@
 
   // When entity-type changes -> rebuild person list
   by('entity-type').addEventListener('change', function(){
-    rebuildPersonList(this.value);
-  });
+        by('person-search').value = '';
+        rebuildPersonList(this.value);
+    });
+  
 
   // initial build (default customer)
   rebuildPersonList(by('entity-type').value);
-
+  by('person-search').addEventListener('input', function(){
+    filterPersonList();
+  });
   // When Load clicked -> fetch transactions via /transactions/list
   by('load-transactions').addEventListener('click', function(){
     const txType = by('tx-type').value;
@@ -235,7 +244,36 @@
         wrap.innerText = 'Request failed: ' + err;
       });
   });
+  function filterPersonList() {
+    const search = by('person-search').value.toLowerCase().trim();
+    const entityType = by('entity-type').value;
+    const sel = by('entity-id');
 
+    sel.innerHTML = '<option value=""></option>';
+
+    const data =
+        entityType === 'customer'
+            ? allCustomers
+            : allSuppliers;
+
+    data.forEach(item => {
+        const idMatch =
+            String(item.id).toLowerCase().includes(search);
+
+        const nameMatch =
+            (item.name || '')
+                .toLowerCase()
+                .includes(search);
+
+        if (!search || idMatch || nameMatch) {
+            const opt = document.createElement('option');
+            opt.value = item.id;
+            opt.text = `${item.name} (ID: ${item.id})`;
+            opt.setAttribute('data-name', item.name);
+            sel.appendChild(opt);
+        }
+    });
+  }
   // open edit form for a tx id: fetch tx row and populate form
   function openEditForm(txid) {
     fetch('/transactions/edit/' + txid)
