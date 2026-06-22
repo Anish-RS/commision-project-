@@ -1,208 +1,529 @@
 {% extends "base.html" %}
 {% block title %}Account Summary{% endblock %}
 {% block content %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
 <style>
-  /* (same CSS as you provided) */
-  .acct-wrap { max-width:1100px; margin:20px auto; }
-  .card { background: #ffffff; border-radius:12px; padding:18px; box-shadow:0 8px 30px rgba(18,38,63,0.06); }
-  .controls { display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
-  .control-field { display:flex; flex-direction:column; gap:6px; }
-  label.small { font-size:13px; color:#556; font-weight:600; }
-  select.input, input.input { min-width:180px; padding:10px 12px; border-radius:10px; border:1px solid #e6eefb; background:#fbfeff; font-size:14px; }
-  .actions { margin-left:auto; display:flex; gap:8px; }
-  .btn { background:linear-gradient(90deg,#42a5f5,#1976d2); color:#fff; padding:10px 14px; border-radius:10px; border:none; cursor:pointer; font-weight:700; }
-  .btn.ghost { background:transparent; color:#1976d2; border:1px solid #dbeafc; }
-  .grid { display:grid; grid-template-columns: 1fr 420px; gap:18px; margin-top:16px; }
-  @media (max-width:980px) { .grid { grid-template-columns: 1fr; } }
+  *, *::before, *::after { box-sizing: border-box; }
 
-  .list-box { background:#fbfdff; border:1px solid #f0f4fb; border-radius:10px; overflow:auto; max-height:420px; }
-  table.summary { width:100%; border-collapse:collapse; font-size:13px; }
-  table.summary thead th { text-align:left; padding:12px 16px; color:#223; font-weight:700; border-bottom:1px solid #eef4fb; }
-  table.summary tbody td { padding:10px 16px; border-bottom:1px solid #f6f9fc; }
-  .muted { color:#667; font-size:13px }
-  .right { text-align:right }
+  /* ── Tokens ── */
+  :root {
+    --navy:        #0f1c2e;
+    --navy-mid:    #1e3352;
+    --blue:        #2563eb;
+    --blue-light:  #eff6ff;
+    --blue-border: #bfdbfe;
+    --bg:          #f0f4f8;
+    --surface:     #ffffff;
+    --surface-2:   #f8fafc;
+    --border:      #e2e8f0;
+    --border-2:    #f1f5f9;
+    --text-primary:#0f172a;
+    --text-mid:    #334155;
+    --text-muted:  #64748b;
+    --green:       #059669;
+    --green-bg:    #ecfdf5;
+    --green-border:#a7f3d0;
+    --red:         #dc2626;
+    --red-bg:      #fef2f2;
+    --red-border:  #fecaca;
+    --radius-sm:   8px;
+    --radius-md:   12px;
+    --radius-lg:   16px;
+    --shadow-sm:   0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+    --shadow-md:   0 4px 16px rgba(15,28,46,.08);
+    --shadow-lg:   0 8px 32px rgba(15,28,46,.12);
+  }
 
-  .totals-stack { display:flex; flex-direction:column; gap:12px; }
-  .total-card { padding:14px; border-radius:10px; background:linear-gradient(180deg,#fff,#fbfdff); border:1px solid #eef4fb; }
-  .total-label { font-size:13px; color:#556; }
-  .total-value { font-size:20px; font-weight:800; margin-top:6px; }
-  .positive { color:#1b9e5b }
-  .negative { color:#d9534f }
+  /* ── Page shell ── */
+  body { background: var(--bg); font-family: 'Inter', sans-serif; color: var(--text-primary); }
 
-  .net-box { margin-top:18px; padding:18px; border-radius:12px; background:linear-gradient(90deg,#eef9f3,#fff); border:1px solid #e6f3ea; text-align:center; }
-  .net-title { font-weight:800; color:#263238 }
-  .net-amount { font-size:28px; margin-top:8px }
+  .acct-wrap { max-width: 1140px; margin: 0 auto; padding: 28px 20px 48px; }
 
-  .small-note { color:#6b7280; font-size:13px; margin-top:10px }
+  /* ── Page header ── */
+  .page-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+  .page-header-icon {
+    width: 44px; height: 44px;
+    background: var(--navy);
+    border-radius: var(--radius-md);
+    display: grid; place-items: center;
+    flex-shrink: 0;
+  }
+  .page-header-icon svg { color: #fff; }
+  .page-header h1 {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 22px; font-weight: 700;
+    color: var(--navy);
+    margin: 0 0 2px 0;
+    letter-spacing: -.3px;
+  }
+  .page-header p { margin: 0; font-size: 13px; color: var(--text-muted); }
+
+  /* ── Card ── */
+  .card {
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+
+  /* ── Controls bar ── */
+  .controls-bar {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border-2);
+    background: var(--surface-2);
+  }
+  .controls {
+    display: flex;
+    gap: 14px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+  }
+  .control-field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  label.small {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .input {
+    height: 40px;
+    min-width: 180px;
+    padding: 0 12px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    color: var(--text-primary);
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .input:focus {
+    outline: none;
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(37,99,235,.12);
+  }
+  select.input { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
+  .actions { margin-left: auto; display: flex; gap: 8px; align-items: flex-end; }
+  .btn {
+    height: 40px;
+    padding: 0 18px;
+    border-radius: var(--radius-sm);
+    border: none;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    display: inline-flex; align-items: center; gap: 6px;
+    transition: background .15s, transform .1s, box-shadow .15s;
+    text-decoration: none;
+  }
+  .btn:active { transform: translateY(1px); }
+  .btn-primary { background: var(--blue); color: #fff; box-shadow: 0 2px 8px rgba(37,99,235,.3); }
+  .btn-primary:hover { background: #1d4ed8; box-shadow: 0 4px 12px rgba(37,99,235,.4); }
+  .btn-ghost { background: transparent; color: var(--text-mid); border: 1px solid var(--border); }
+  .btn-ghost:hover { background: var(--bg); }
+
+  /* ── Content area ── */
+  .content-area { padding: 24px; }
+
+  /* ── Grid ── */
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 20px;
+  }
+  @media (max-width: 960px) { .grid { grid-template-columns: 1fr; } }
+
+  /* ── Tables ── */
+  .section-label {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .6px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+  }
+  .list-box {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    overflow: auto;
+    max-height: 380px;
+  }
+  table.summary {
+    width: 100%; border-collapse: collapse;
+    font-size: 13px;
+  }
+  table.summary thead th {
+    position: sticky; top: 0; z-index: 1;
+    background: var(--surface-2);
+    padding: 10px 14px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .4px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+  }
+  table.summary tbody tr { transition: background .1s; }
+  table.summary tbody tr:nth-child(even) { background: var(--surface-2); }
+  table.summary tbody tr:hover { background: var(--blue-light); }
+  table.summary tbody td {
+    padding: 9px 14px;
+    border-bottom: 1px solid var(--border-2);
+    color: var(--text-mid);
+    font-variant-numeric: tabular-nums;
+  }
+  table.summary tbody tr:last-child td { border-bottom: none; }
+  .muted { color: var(--text-muted); font-size: 13px; }
+  .right { text-align: right; }
+  .mono { font-family: 'Inter', monospace; }
+
+  /* ── Sub totals ── */
+  .sub-total {
+    margin-top: 10px;
+    padding: 12px 14px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .sub-total-label { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: .4px; }
+  .sub-total-value { font-size: 15px; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+  /* ── Two-column purchase/receipt layout ── */
+  .data-cols { display: flex; gap: 16px; }
+  .data-col-wide { flex: 1; min-width: 0; }
+  .data-col-narrow { width: 240px; flex-shrink: 0; }
+  @media (max-width: 700px) { .data-cols { flex-direction: column; } .data-col-narrow { width: 100%; } }
+
+  /* ── Right panel (net + balance) ── */
+  .totals-stack { display: flex; flex-direction: column; gap: 16px; }
+
+  /* Signature element: big net box */
+  .net-box {
+    border-radius: var(--radius-lg);
+    padding: 28px 24px;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .net-box.net-positive { background: var(--green-bg); border-color: var(--green-border); }
+  .net-box.net-negative { background: var(--red-bg); border-color: var(--red-border); }
+  .net-box.net-zero { background: var(--surface-2); }
+  .net-box::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 5px;
+  }
+  .net-box.net-positive::before { background: var(--green); }
+  .net-box.net-negative::before { background: var(--red); }
+  .net-box.net-zero::before { background: var(--text-muted); }
+  .net-eyebrow {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .6px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+  .net-amount {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 42px;
+    font-weight: 700;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -1px;
+  }
+  .net-amount.positive { color: var(--green); }
+  .net-amount.negative { color: var(--red); }
+  .net-subtitle {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 8px;
+  }
+
+  .balance-card {
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    padding: 18px 20px;
+    box-shadow: var(--shadow-sm);
+  }
+  .balance-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+  }
+  .balance-value {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+  .balance-badge {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .badge-green { background: var(--green-bg); color: var(--green); }
+  .badge-red   { background: var(--red-bg);   color: var(--red); }
+  .badge-gray  { background: var(--surface-2); color: var(--text-muted); }
+
+  /* ── Result context note ── */
+  .result-note {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--blue-light);
+    border: 1px solid var(--blue-border);
+    border-radius: var(--radius-sm);
+    padding: 8px 14px;
+    font-size: 13px;
+    color: var(--navy-mid);
+    margin-bottom: 20px;
+  }
+  .result-note svg { color: var(--blue); flex-shrink: 0; }
+
+  /* ── Empty states ── */
+  .empty-state td { padding: 24px 14px !important; color: var(--text-muted); font-style: italic; }
+
+  /* ── Idle prompt ── */
+  .idle-prompt {
+    padding: 48px 24px;
+    text-align: center;
+  }
+  .idle-prompt svg { color: #cbd5e1; margin-bottom: 16px; }
+  .idle-prompt p { color: var(--text-muted); font-size: 14px; max-width: 340px; margin: 0 auto; }
 </style>
 
 <div class="acct-wrap">
+
+  <!-- Page header -->
+  <div class="page-header">
+    <div class="page-header-icon">
+      <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/><path d="M7 8h.01M12 8h5M7 12h5M14 12h3"/></svg>
+    </div>
+    <div>
+      <h1>Account Summary</h1>
+      <p>Purchases, receipts &amp; net position by customer</p>
+    </div>
+  </div>
+
   <div class="card">
-    <h2 style="margin:0 0 8px 0">Account Summary</h2>
-    <p class="muted" style="margin:0 0 14px 0">Choose a customer and a date range (or select a date only) then click <strong>Show</strong>.</p>
 
-    <!-- form: we submit a hidden 'customer_id' field that JS sets from either the dropdown or manual input -->
-    <form method="GET" action="{{ url_for('account_summary') }}" id="acct-form">
-      <div class="controls">
-        <div class="control-field">
-          <label class="small" for="customer-select">Customer</label>
-          <select id="customer-select" class="input" aria-label="Customer selector">
-            <option value="">— All customers —</option>
-            {% for c in customers %}
-              <option value="{{ c.id }}" {% if selected_customer and (selected_customer|int) == (c.id|int) %}selected{% endif %}>
-                {{ c.name }} (ID: {{ c.id }})
-              </option>
-            {% endfor %}
-          </select>
-        </div>
+    <!-- Controls -->
+    <div class="controls-bar">
+      <form method="GET" action="{{ url_for('account_summary') }}" id="acct-form">
+        <div class="controls">
 
-        <div class="control-field" style="min-width:220px;">
-          <label class="small" for="customer-manual">Or enter ID or Name</label>
-          <input id="customer-manual" name="customer_manual" class="input" placeholder="Type numeric ID (eg. 1) or name" />
-        </div>
-
-        <div class="control-field">
-          <label class="small">From</label>
-          <input type="date" name="from_date" value="{{ from_date }}" class="input">
-        </div>
-
-        <div class="control-field">
-          <label class="small">To</label>
-          <input type="date" name="to_date" value="{{ to_date }}" class="input">
-        </div>
-
-        <!-- hidden canonical customer_id will be populated by JS before submit -->
-        <input type="hidden" name="customer_id" id="customer_id_hidden" value="{{ selected_customer or '' }}">
-
-        <div class="actions">
-          <button class="btn" type="submit">Show</button>
-          <a href="{{ url_for('account_summary') }}" class="btn ghost" role="button">Reset</a>
-        </div>
-      </div>
-    </form>
-
-    {% if selected_customer %}
-      <div class="small-note">Showing results for <strong>{{ selected_customer }}</strong> from <strong>{{ from_date }}</strong> to <strong>{{ to_date }}</strong></div>
-
-      <div class="grid">
-        <!-- Left: Purchases + Receipts -->
-        <div>
-          <div style="display:flex; gap:12px; margin-top:12px;">
-            <div style="flex:1">
-              <div class="muted" style="margin-bottom:8px; font-weight:700">Purchases</div>
-              <div class="list-box" role="region" aria-label="Purchases list">
-                <table class="summary" role="table" aria-label="Purchases table">
-                  <thead>
-                    <tr><th style="width:120px">Date</th><th>Reference</th><th class="right" style="width:120px">Amount</th></tr>
-                  </thead>
-                  <tbody>
-                    {% if purchases %}
-                      {% for p in purchases %}
-                        <tr>
-                          <td>{{ p.date }}</td>
-                          <td>Bill #{{ p.bill_id }} {% if p.supplier_bill_id %} — SB#{{ p.supplier_bill_id }}{% endif %}</td>
-                          <td class="right"> {{ '%.2f'|format(p.amount) }}</td>
-                        </tr>
-                      {% endfor %}
-                    {% else %}
-                      <tr><td colspan="3" class="muted">No purchases in this range.</td></tr>
-                    {% endif %}
-                  </tbody>
-                </table>
-              </div>
-
-              <!-- Purchases total directly below purchases list -->
-              <div style="margin-top:12px;">
-                <div class="total-card" role="status" aria-live="polite">
-                  <div class="total-label">Purchases total</div>
-                  <div class="total-value negative"> {{ '%.2f'|format(sum_purchases) }}</div>
-                </div>
-              </div>
-            </div>
-
-            <div style="width:260px">
-              <div class="muted" style="margin-bottom:8px; font-weight:700">Receipts</div>
-              <div class="list-box" role="region" aria-label="Receipts list">
-                <table class="summary" role="table" aria-label="Receipts table">
-                  <thead>
-                    <tr><th style="width:110px">Date</th><th>Note</th><th class="right" style="width:110px">Amount</th></tr>
-                  </thead>
-                  <tbody>
-                    {% if receipts %}
-                      {% for r in receipts %}
-                        <tr><td>{{ r.date }}</td><td>{{ r.note or '-' }}</td><td class="right"> {{ '%.2f'|format(r.amount) }}</td></tr>
-                      {% endfor %}
-                    {% else %}
-                      <tr><td colspan="3" class="muted">No receipts in this range.</td></tr>
-                    {% endif %}
-                  </tbody>
-                </table>
-              </div>
-
-              <div style="margin-top:12px;">
-                <div class="total-card">
-                  <div class="total-label">Receipts total</div>
-                  <div class="total-value positive"> {{ '%.2f'|format(sum_receipts) }}</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Right column: NET above current balance -->
-        <aside class="totals-stack" role="complementary" aria-label="Summary totals">
-          <div class="net-box" role="note" aria-live="polite">
-            <div class="net-title">Net (Receipts − Purchases)</div>
-            {% if net >= 0 %}
-              <div class="net-amount positive"> {{ '%.2f'|format(net) }}</div>
-            {% else %}
-              <div class="net-amount negative">- {{ '%.2f'|format(-net) }}</div>
-            {% endif %}
+          <div class="control-field">
+            <label class="small" for="customer-select">Customer</label>
+            <select id="customer-select" class="input" aria-label="Customer selector">
+              <option value="">— All customers —</option>
+              {% for c in customers %}
+                <option value="{{ c.id }}" {% if selected_customer and (selected_customer|int) == (c.id|int) %}selected{% endif %}>
+                  {{ c.name }} (ID: {{ c.id }})
+                </option>
+              {% endfor %}
+            </select>
           </div>
 
-          <div class="total-card">
-            <div class="total-label">Current stored balance</div>
-            <div class="total-value">
-              {% if current_balance is not none %}
-                {% if current_balance < 0 %}
-                  <span class="negative"> {{ '%.2f'|format(current_balance) }} (we owe)</span>
-                {% elif current_balance > 0 %}
-                  <span class="positive"> {{ '%.2f'|format(current_balance) }} (credit)</span>
+          <div class="control-field">
+            <label class="small" for="customer-manual">Or enter ID / Name</label>
+            <input id="customer-manual" name="customer_manual" class="input" placeholder="e.g. 1 or Acme Corp" style="min-width:200px;" />
+          </div>
+
+          <div class="control-field">
+            <label class="small">From</label>
+            <input type="date" name="from_date" value="{{ from_date }}" class="input" style="min-width:150px;">
+          </div>
+
+          <div class="control-field">
+            <label class="small">To</label>
+            <input type="date" name="to_date" value="{{ to_date }}" class="input" style="min-width:150px;">
+          </div>
+
+          <input type="hidden" name="customer_id" id="customer_id_hidden" value="{{ selected_customer or '' }}">
+
+          <div class="actions">
+            <button class="btn btn-primary" type="submit">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+              Show
+            </button>
+            <a href="{{ url_for('account_summary') }}" class="btn btn-ghost" role="button">Reset</a>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Content -->
+    <div class="content-area">
+      {% if selected_customer %}
+
+        <div class="result-note">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+          Showing <strong>&nbsp;{{ selected_customer }}&nbsp;</strong> from <strong>&nbsp;{{ from_date }}&nbsp;</strong> to <strong>&nbsp;{{ to_date }}</strong>
+        </div>
+
+        <div class="grid">
+          <!-- Left: purchases + receipts -->
+          <div>
+            <div class="data-cols">
+
+              <!-- Purchases -->
+              <div class="data-col-wide">
+                <div class="section-label">Purchases</div>
+                <div class="list-box" role="region" aria-label="Purchases list">
+                  <table class="summary" role="table" aria-label="Purchases table">
+                    <thead>
+                      <tr>
+                        <th style="width:110px">Date</th>
+                        <th>Reference</th>
+                        <th class="right" style="width:110px">Amount</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% if purchases %}
+                        {% for p in purchases %}
+                          <tr>
+                            <td class="mono" style="color:var(--text-muted);font-size:12px;">{{ p.date }}</td>
+                            <td>Bill #{{ p.bill_id }}{% if p.supplier_bill_id %} <span style="color:var(--text-muted)">— SB#{{ p.supplier_bill_id }}</span>{% endif %}</td>
+                            <td class="right mono" style="color:var(--red);font-weight:600;">{{ '%.2f'|format(p.amount) }}</td>
+                          </tr>
+                        {% endfor %}
+                      {% else %}
+                        <tr class="empty-state"><td colspan="3">No purchases in this range.</td></tr>
+                      {% endif %}
+                    </tbody>
+                  </table>
+                </div>
+                <div class="sub-total">
+                  <span class="sub-total-label">Purchases total</span>
+                  <span class="sub-total-value" style="color:var(--red);">{{ '%.2f'|format(sum_purchases) }}</span>
+                </div>
+              </div>
+
+              <!-- Receipts -->
+              <div class="data-col-narrow">
+                <div class="section-label">Receipts</div>
+                <div class="list-box" role="region" aria-label="Receipts list">
+                  <table class="summary" role="table" aria-label="Receipts table">
+                    <thead>
+                      <tr>
+                        <th style="width:100px">Date</th>
+                        <th>Note</th>
+                        <th class="right" style="width:100px">Amount</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% if receipts %}
+                        {% for r in receipts %}
+                          <tr>
+                            <td class="mono" style="color:var(--text-muted);font-size:12px;">{{ r.date }}</td>
+                            <td style="color:var(--text-muted)">{{ r.note or '—' }}</td>
+                            <td class="right mono" style="color:var(--green);font-weight:600;">{{ '%.2f'|format(r.amount) }}</td>
+                          </tr>
+                        {% endfor %}
+                      {% else %}
+                        <tr class="empty-state"><td colspan="3">No receipts in this range.</td></tr>
+                      {% endif %}
+                    </tbody>
+                  </table>
+                </div>
+                <div class="sub-total">
+                  <span class="sub-total-label">Receipts total</span>
+                  <span class="sub-total-value" style="color:var(--green);">{{ '%.2f'|format(sum_receipts) }}</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Right: net + balance -->
+          <aside class="totals-stack" role="complementary" aria-label="Summary totals">
+
+            <div class="net-box {% if net > 0 %}net-positive{% elif net < 0 %}net-negative{% else %}net-zero{% endif %}" role="note" aria-live="polite">
+              <div class="net-eyebrow">Net position (Receipts − Purchases)</div>
+              <div class="net-amount {% if net >= 0 %}positive{% else %}negative{% endif %}" id="net-display">
+                {% if net >= 0 %}
+                  {{ '%.2f'|format(net) }}
                 {% else %}
-                  <span> 0.00</span>
+                  −{{ '%.2f'|format(-net) }}
+                {% endif %}
+              </div>
+              <div class="net-subtitle">
+                {% if net > 0 %}Customer is in credit for this period{% elif net < 0 %}Outstanding balance owed{% else %}Balanced — no net position{% endif %}
+              </div>
+            </div>
+
+            <div class="balance-card">
+              <div class="balance-label">Current stored balance</div>
+              {% if current_balance is not none %}
+                <div class="balance-value {% if current_balance < 0 %}negative{% elif current_balance > 0 %}positive{% endif %}" style="{% if current_balance < 0 %}color:var(--red){% elif current_balance > 0 %}color:var(--green){% endif %}">
+                  {% if current_balance < 0 %}−{{ '%.2f'|format(-current_balance) }}{% else %}{{ '%.2f'|format(current_balance) }}{% endif %}
+                </div>
+                {% if current_balance < 0 %}
+                  <div><span class="balance-badge badge-red">We owe</span></div>
+                {% elif current_balance > 0 %}
+                  <div><span class="balance-badge badge-green">Credit</span></div>
+                {% else %}
+                  <div><span class="balance-badge badge-gray">Settled</span></div>
                 {% endif %}
               {% else %}
-                n/a
+                <div class="balance-value" style="color:var(--text-muted)">n/a</div>
               {% endif %}
             </div>
-          </div>
-        </aside>
-      </div>
 
-    {% else %}
-      <div class="muted" style="margin-top:12px">Select a customer and date range and click <strong>Show</strong> to view the account summary.</div>
-    {% endif %}
+          </aside>
+        </div>
+
+      {% else %}
+
+        <div class="idle-prompt">
+          <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <p>Select a customer and date range above, then click <strong>Show</strong> to view the account summary.</p>
+        </div>
+
+      {% endif %}
+    </div>
   </div>
 </div>
 
 <script>
-  // Populate the hidden customer_id before submitting the form.
-  // Priority: manual input (if present) -> dropdown value -> empty (means all customers).
   (function(){
-    var form = document.getElementById('acct-form');
+    var form   = document.getElementById('acct-form');
     var hidden = document.getElementById('customer_id_hidden');
     var select = document.getElementById('customer-select');
     var manual = document.getElementById('customer-manual');
 
-    form.addEventListener('submit', function(e){
+    form.addEventListener('submit', function(){
       var m = manual.value && manual.value.trim();
-      if (m) {
-        hidden.value = m;
-      } else {
-        // use selected option value (may be empty string)
-        hidden.value = select.value || '';
-      }
-      // allow form to submit normally
+      hidden.value = m ? m : (select.value || '');
     });
   })();
 </script>
