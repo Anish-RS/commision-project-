@@ -72,7 +72,10 @@
 
     /* Reduce table density if many rows — adjust if printer chops text */
     .no-items { padding:6px 4px; color:#555; }
-
+    .paid-row {
+        font-size: 18px;
+        font-weight: 700;
+    }
   </style>
 </head>
 
@@ -172,7 +175,10 @@
     <div class="row"><div>Commission</div><div>{{ "%.2f"|format(bill.get('commission', 0) or 0) }}</div></div>
     <div class="row"><div>Labour</div><div>{{ "%.2f"|format(bill.get('labour', 0) or 0) }}</div></div>
     <div class="row"><div>Transport</div><div>{{ "%.2f"|format(bill.get('transport', 0) or 0) }}</div></div>
-    <div class="row"><div>Paid / Cash</div><div>{{ "%.2f"|format(bill.get('paid', 0) or 0) }}</div></div>
+    <div class="row paid-row">
+        <div>Paid / Cash</div>
+        <div>{{ "%.2f"|format(bill.get('paid', 0) or 0) }}</div>
+    </div>
 
     <div class="row bold" style="border-top:1px dashed #999; padding-top:6px;">
       <div>Bill Balance (net)</div>
