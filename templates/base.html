@@ -5,34 +5,27 @@
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>{% block title %}Banana Commission System{% endblock %}</title>
 
-  <!-- Google fonts: Cormorant Garamond (display) + Inter (UI) -->
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/pastel_theme.css') }}">
 
   <style>
     :root {
-      /* Luxury palette */
-      --navy:        #0D1B2A;
-      --navy-mid:    #162336;
-      --navy-light:  #1E2F45;
-      --gold:        #C9A84C;
-      --gold-light:  #E2C97E;
-      --gold-glow:   rgba(201,168,76,0.18);
-      --ivory:       #F7F3EE;
-      --ivory-dark:  #EDE8E1;
-      --platinum:    #8A9BB0;
-      --white:       #FFFFFF;
-      --text-body:   #2C3A4A;
-      --text-muted:  #6B7A8D;
-
-      /* Legacy aliases kept for child templates */
-      --pastel-blue:   #90CAF9;
+      --cream:       #FFFDF9;
+      --cream-mid:   #FDFAF4;
+      --cream-dark:  #F5EFE0;
+      --border:      #E8DFC8;
+      --border-mid:  #DDD0B0;
+      --gold:        #B8922A;
+      --gold-light:  #D4AA4A;
+      --gold-glow:   rgba(184,146,42,0.08);
+      --text-head:   #3A2E1C;
+      --text-body:   #4A4035;
+      --text-nav:    #6B6258;
+      --text-muted:  #9A8F7E;
+      --text-gold:   #7A5C1E;
       --pastel-indigo: var(--gold);
-      --pastel-red:    #ff8a80;
-      --pastel-green:  #81C784;
-      --muted:         var(--text-muted);
-      --card-bg:       rgba(255,255,255,0.97);
+      --muted: var(--text-muted);
+      --card-bg: rgba(255,253,249,0.98);
     }
 
     *, *::before, *::after { box-sizing: border-box; }
@@ -41,169 +34,138 @@
       height: 100%;
       margin: 0;
       font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      background-color: var(--ivory);
+      background: var(--cream-mid);
       color: var(--text-body);
       -webkit-font-smoothing: antialiased;
     }
 
-    /* ─── NAV ─────────────────────────────────────────────── */
+    /* ── NAV ── */
     nav.main-nav {
       display: flex;
       align-items: center;
       flex-wrap: wrap;
       gap: 0;
       padding: 0 32px;
-      background: var(--navy);
-      border-bottom: 1px solid rgba(201,168,76,0.25);
-      box-shadow: 0 4px 24px rgba(0,0,0,0.35);
+      background: var(--cream);
+      border-bottom: 1px solid var(--border);
+      box-shadow: 0 2px 12px rgba(184,146,42,0.06);
       position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
+      top: 0; left: 0; right: 0;
       z-index: 1000;
       min-height: 58px;
       transition: top 0.35s cubic-bezier(0.4,0,0.2,1);
     }
 
-    /* Thin gold rule along the very bottom of the nav */
     nav.main-nav::after {
       content: '';
       position: absolute;
       bottom: 0; left: 0; right: 0;
-      height: 1.5px;
-      background: linear-gradient(90deg, transparent, var(--gold) 30%, var(--gold-light) 50%, var(--gold) 70%, transparent);
-      opacity: 0.6;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold) 25%, var(--gold-light) 50%, var(--gold) 75%, transparent);
+      opacity: 0.5;
     }
 
-    /* Logo / Brand */
     nav.main-nav .logo {
       font-family: 'Cormorant Garamond', Georgia, serif;
-      font-weight: 600;
+      font-weight: 700;
       font-size: 18px;
-      letter-spacing: 0.04em;
-      color: var(--gold-light);
-      margin-right: 28px;
-      padding-right: 28px;
-      border-right: 1px solid rgba(201,168,76,0.25);
+      letter-spacing: 0.05em;
+      color: var(--text-gold);
+      margin-right: 24px;
+      padding-right: 24px;
+      border-right: 1px solid var(--border-mid);
       white-space: nowrap;
       line-height: 58px;
       flex-shrink: 0;
     }
 
-    /* Nav links */
     nav.main-nav a {
       display: inline-flex;
       align-items: center;
       height: 58px;
-      padding: 0 14px;
-      color: var(--platinum);
+      padding: 0 13px;
+      color: var(--text-nav);
       text-decoration: none;
-      font-size: 10.5px;
-      font-weight: 500;
-      letter-spacing: 0.1em;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.11em;
       text-transform: uppercase;
       white-space: nowrap;
       position: relative;
       transition: color 0.2s ease;
     }
 
-    /* Animated gold underline */
     nav.main-nav a::after {
       content: '';
       position: absolute;
-      bottom: 0; left: 14px; right: 14px;
-      height: 1.5px;
+      bottom: 0; left: 13px; right: 13px;
+      height: 2px;
       background: var(--gold);
       transform: scaleX(0);
       transform-origin: center;
-      transition: transform 0.25s cubic-bezier(0.4,0,0.2,1);
+      transition: transform 0.22s cubic-bezier(0.4,0,0.2,1);
     }
 
-    nav.main-nav a:hover {
-      color: var(--gold-light);
-    }
-
-    nav.main-nav a:hover::after {
-      transform: scaleX(1);
-    }
+    nav.main-nav a:hover { color: var(--text-gold); }
+    nav.main-nav a:hover::after { transform: scaleX(1); }
 
     nav.main-nav a.active {
-      color: var(--gold-light);
+      color: var(--text-gold);
       background: var(--gold-glow);
     }
+    nav.main-nav a.active::after { transform: scaleX(1); }
 
-    nav.main-nav a.active::after {
-      transform: scaleX(1);
-      background: var(--gold-light);
-    }
-
-    /* ─── CONTAINER ───────────────────────────────────────── */
+    /* ── CONTAINER ── */
     .container {
       max-width: 1240px;
       margin: 80px auto 60px auto;
       padding: 0 28px;
     }
 
-    /* ─── FLASH MESSAGES ──────────────────────────────────── */
-    .flashes {
-      list-style: none;
-      padding: 0;
-      margin: 20px 0 24px;
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .flashes li {
-      padding: 12px 18px;
-      border-radius: 6px;
-      font-weight: 500;
-      font-size: 13px;
-      letter-spacing: 0.01em;
-      border-left: 3px solid;
-    }
-
+    /* ── FLASH MESSAGES ── */
+    .flashes { list-style: none; padding: 0; margin: 20px 0 24px; display: flex; gap: 12px; flex-wrap: wrap; }
+    .flashes li { padding: 12px 18px; border-radius: 6px; font-weight: 500; font-size: 13px; letter-spacing: 0.01em; border-left: 3px solid; }
     .flashes li.success { background: #d4edda; color: #155724; border-left-color: #28a745; }
     .flashes li.danger  { background: #f8d7da; color: #721c24; border-left-color: #dc3545; }
     .flashes li.info    { background: #d1ecf1; color: #0c5460; border-left-color: #17a2b8; }
     .flashes li.warning { background: #fff3cd; color: #856404; border-left-color: #e8a900; }
 
-    /* ─── PAGE HEADER ─────────────────────────────────────── */
+    /* ── PAGE HEADER ── */
     header.page-header {
       margin: 12px 0 28px;
       padding-bottom: 16px;
-      border-bottom: 1px solid var(--ivory-dark);
+      border-bottom: 1px solid var(--border);
     }
 
     header.page-header h1 {
-      margin: 0 0 6px 0;
+      margin: 0 0 4px 0;
       font-family: 'Cormorant Garamond', Georgia, serif;
-      font-size: 32px;
-      font-weight: 600;
+      font-size: 34px;
+      font-weight: 700;
       letter-spacing: 0.01em;
-      color: var(--navy);
+      color: var(--text-head);
     }
 
-    /* ─── FOOTER ──────────────────────────────────────────── */
+    /* ── FOOTER ── */
     footer.site-footer {
       text-align: center;
       color: var(--text-muted);
       padding: 28px 0 0;
       font-size: 11px;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.09em;
       text-transform: uppercase;
       margin-top: 48px;
-      border-top: 1px solid var(--ivory-dark);
+      border-top: 1px solid var(--border);
     }
 
     footer.site-footer::before {
       content: '';
       display: block;
-      width: 40px;
+      width: 36px;
       height: 1px;
       background: var(--gold);
-      margin: 0 auto 16px;
-      opacity: 0.5;
+      margin: 0 auto 14px;
+      opacity: 0.45;
     }
   </style>
 </head>
@@ -211,18 +173,15 @@
 <script>
   let prevScrollPos = window.pageYOffset;
   window.addEventListener("scroll", function () {
-    let currentScrollPos = window.pageYOffset;
-    const nav = document.querySelector(".main-nav");
-    nav.style.top = prevScrollPos > currentScrollPos ? "0" : "-150px";
-    prevScrollPos = currentScrollPos;
+    let cur = window.pageYOffset;
+    document.querySelector(".main-nav").style.top = prevScrollPos > cur ? "0" : "-150px";
+    prevScrollPos = cur;
   });
 </script>
 
 <body>
-  <!-- NAV -->
   <nav class="main-nav" role="navigation" aria-label="Main navigation">
     <span class="logo">Banana Commission</span>
-
     <a href="/customers/add">Add Customer</a>
     <a href="/suppliers/add">Add Supplier</a>
     <a href="/bills/supplier/add">Supplier &amp; Customer Bill</a>
@@ -241,7 +200,6 @@
     <a href="/transactions/edit">Edit Receipt / Payment</a>
   </nav>
 
-  <!-- container -->
   <div class="container">
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
@@ -266,7 +224,6 @@
     </footer>
   </div>
 
-  <!-- Active link highlight -->
   <script>
     (() => {
       try {
@@ -275,7 +232,7 @@
           const href = a.getAttribute('href').replace(/\/+$/, '') || '/';
           a.classList.toggle('active', href === path);
         });
-      } catch(e) { /* ignore */ }
+      } catch(e) {}
     })();
   </script>
 </body>
