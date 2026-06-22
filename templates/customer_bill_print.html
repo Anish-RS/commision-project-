@@ -211,6 +211,15 @@
 <div class="totals">
 
   <div class="box">
+    <div style="
+        display:flex;
+        justify-content:space-between;
+        font-size:16px;
+        margin-bottom:6px;
+    ">
+      <div>Total Quantity</div>
+      <div>{{ "%.2f"|format(bill.quantity or 0) }}</div>
+    </div>
 
     <div class="grand-total"
          style="display:flex;justify-content:space-between;">
@@ -259,4 +268,4 @@ window.onafterprint = function(){
 </script>
 
 </body>
-</html> what isdiff bewten subtatatal and total
+</html> 
