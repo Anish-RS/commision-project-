@@ -6,9 +6,11 @@
     background:#ffffff;
     border:none;
     border-radius:18px;
-    padding:24px;
+    padding:18px 20px;
     margin-bottom:20px;
     box-shadow:0 10px 30px rgba(0,0,0,0.08);
+    max-width:1200px;
+    margin:0 auto 16px auto;
 }
 
 .filter-row{
@@ -24,7 +26,7 @@
 }
 
 .field label{
-    font-size:15px;
+    font-size:13px;
     font-weight:700;
     color:#374151;
     margin-bottom:8px;
@@ -32,7 +34,7 @@
 
 .field select,
 .field input{
-    height:56px;
+    height:46px;
     border:2px solid #dbeafe;
     border-radius:14px;
     padding:0 16px;
@@ -49,12 +51,13 @@
 
 .person-field{
     flex:1;
-    min-width:350px;
+    min-width:280px;
 }
 
 .btn-field button{
-    height:56px;
-    min-width:140px;
+    height:46px;
+    min-width:100px;
+    padding:0 24px;
     border:none;
     border-radius:14px;
     background:linear-gradient(135deg,#6366f1,#8b5cf6);
@@ -73,7 +76,9 @@
 .small-note{
     background:#eff6ff;
     border-left:5px solid #3b82f6;
-    padding:14px 18px;
+    padding:10px 14px;
+    max-width:1200px;
+    margin:0 auto 16px auto;
     border-radius:10px;
     margin-bottom:20px;
     color:#374151;
@@ -82,7 +87,9 @@
 #tx-list-wrap{
     background:#ffffff;
     border-radius:18px;
-    padding:24px;
+    padding:18px 20px;
+    max-width:1200px;
+    margin:auto;
     box-shadow:0 10px 30px rgba(0,0,0,.06);
 }
 
@@ -176,7 +183,7 @@
 }
 
 h2{
-    font-size:42px;
+    font-size:28px;
     margin-bottom:24px;
     font-weight:800;
     color:#111827;
@@ -190,11 +197,20 @@ h3{
 hr{
     display:none;
 }
+
+.page-container{
+    max-width:1280px;
+    margin:auto;
+}
+
+body{
+    font-size:15px;
+}
 </style>
 
-<div style="margin-bottom:24px;">
+<div style="max-width:1200px;margin:0 auto 18px auto;">
     <h2>Edit Receipts / Payments</h2>
-    <p style="color:#6b7280;margin-top:6px;">
+    <p style="color:#6b7280;margin-top:4px;font-size:15px;">
         Search, review and modify receipt/payment transactions.
     </p>
 </div>
