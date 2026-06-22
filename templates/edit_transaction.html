@@ -54,9 +54,13 @@
     min-width:280px;
 }
 
-.btn-field button{
+.btn-field{
     display:flex;
     align-items:flex-end;
+    padding-top:21px;
+}
+
+.btn-field button{
     height:46px;
     min-width:100px;
     padding:0 24px;
@@ -68,11 +72,6 @@
     font-weight:600;
     cursor:pointer;
     transition:.25s;
-}
-
-.btn-field button:hover{
-    transform:translateY(-2px);
-    box-shadow:0 8px 20px rgba(99,102,241,.25);
 }
 
 .small-note{
@@ -208,6 +207,37 @@ hr{
 body{
     font-size:15px;
 }
+.autocomplete-wrapper{
+    position:relative;
+    width:100%;
+}
+
+.suggestions-box{
+    position:absolute;
+    top:100%;
+    left:0;
+    right:0;
+    background:#fff;
+    border:1px solid #dbeafe;
+    border-top:none;
+    border-radius:0 0 12px 12px;
+    box-shadow:0 8px 20px rgba(0,0,0,.10);
+    max-height:250px;
+    overflow-y:auto;
+    z-index:9999;
+    display:none;
+}
+
+.suggestion-item{
+    padding:10px 14px;
+    cursor:pointer;
+    font-size:14px;
+}
+
+.suggestion-item:hover{
+    background:#eff6ff;
+}
+    
 </style>
 
 <div style="max-width:1200px;margin:0 auto 18px auto;">
@@ -238,16 +268,19 @@ body{
 
         <div class="field person-field">
             <label><strong>Person (ID / Name)</strong></label>
-            <input
-                type="text"
-                id="person-search"
-                class="input-field"
-                list="person-list"
-                placeholder="Search customer or supplier">
-
-            <datalist id="person-list"></datalist>
+        
+            <div class="autocomplete-wrapper">
+        
+                <input
+                    type="text"
+                    id="person-search"
+                    class="input-field"
+                    placeholder="Type customer or supplier name">
+        
+                <div id="person-suggestions" class="suggestions-box"></div>
+        
+            </div>
         </div>
-
         <div class="btn-field">
             <button id="load-transactions" class="btn btn-primary">
                 Load
@@ -425,46 +458,65 @@ body{
   });
   
 
-  function populatePersonList(searchText = '') {
-
-    const entityType = by('entity-type').value;
-    const list = by('person-list');
-
-    list.innerHTML = '';
-
-    if (searchText.length < 1) {
-        return;
-    }
-
-    const data =
-        entityType === 'customer'
-            ? allCustomers
-            : allSuppliers;
-
-    data
-        .filter(item =>
-            item.name.toLowerCase().includes(searchText.toLowerCase())
-        )
-        .slice(0, 15)
-        .forEach(item => {
-
-            const option = document.createElement('option');
-            option.value = `${item.name} (ID: ${item.id})`;
-            list.appendChild(option);
-
-        });
-}
-
+  
 by('person-search').addEventListener('input', function(){
     populatePersonList(this.value);
 });
 
 by('entity-type').addEventListener('change', function(){
+
     by('person-search').value = '';
-    by('person-list').innerHTML = '';
+
+    suggestionsBox.innerHTML = '';
+
+    suggestionsBox.style.display = 'none';
 });
-    
-  populatePersonList();
+const suggestionsBox = by('person-suggestions');
+
+by('person-search').addEventListener('input', function(){
+
+    const search = this.value.trim().toLowerCase();
+
+    suggestionsBox.innerHTML = '';
+
+    if(search.length < 1){
+        suggestionsBox.style.display = 'none';
+        return;
+    }
+
+    const data =
+        by('entity-type').value === 'customer'
+            ? allCustomers
+            : allSuppliers;
+
+    const matches = data.filter(item =>
+        item.name.toLowerCase().includes(search)
+    );
+
+    matches.slice(0,15).forEach(item => {
+
+        const div = document.createElement('div');
+
+        div.className = 'suggestion-item';
+
+        div.textContent =
+            `${item.name} (ID: ${item.id})`;
+
+        div.addEventListener('click', function(){
+
+            by('person-search').value =
+                `${item.name} (ID: ${item.id})`;
+
+            suggestionsBox.style.display = 'none';
+        });
+
+        suggestionsBox.appendChild(div);
+    });
+
+    suggestionsBox.style.display =
+        matches.length ? 'block' : 'none';
+});  
+  
   // open edit form for a tx id: fetch tx row and populate form
   function openEditForm(txid) {
     fetch('/transactions/edit/' + txid)
@@ -533,6 +585,13 @@ by('entity-type').addEventListener('change', function(){
       by('edit-result').style.color = 'red';
     });
   });
+document.addEventListener('click', function(e){
+
+    if(!e.target.closest('.autocomplete-wrapper')){
+
+        suggestionsBox.style.display = 'none';
+    }
+});
 
 </script>
 
