@@ -169,8 +169,14 @@
       {% endif %}
     </tbody>
   </table>
-
+  
   <div class="summary" role="note" aria-label="Bill summary">
+    <div class="row">
+        <div>Total Quantity</div>
+        <div>
+            {{ "%.2f"|format(items|sum(attribute='quantity')) }}
+        </div>
+    </div>
     <div class="row"><div>Subtotal</div><div>{{ "%.2f"|format(bill.get('total_amount', 0) or 0) }}</div></div>
     <div class="row"><div>Commission</div><div>{{ "%.2f"|format(bill.get('commission', 0) or 0) }}</div></div>
     <div class="row"><div>Labour</div><div>{{ "%.2f"|format(bill.get('labour', 0) or 0) }}</div></div>
