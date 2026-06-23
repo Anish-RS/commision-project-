@@ -203,7 +203,15 @@
         <td class="right">₹{{ "%.2f"|format(p.amount or 0) }}</td>
       </tr>
       {% endfor %}
-
+      <tr>
+        <td colspan="5"></td>
+        <td class="right">
+          {{ "%.2f"|format(
+              purchases|sum(attribute='quantity')
+          ) }}
+        </td>
+        <td></td>
+      </tr>
     {% endif %}
 
   </tbody>
@@ -211,14 +219,7 @@
 </table>
 
 <div class="summary">
-  <div class="summary-row">
-    <div>Total Quantity</div>
-    <div>
-        {{ "%.2f"|format(
-            purchases|map(attribute='quantity')|sum
-        ) }}
-    </div>
-  </div>
+  
 
   <div class="summary-row">
     <div>Total Purchases</div>
