@@ -174,6 +174,10 @@ input.addEventListener("input", function () {
       x.type === entityType &&
       x.value.toLowerCase().includes(text)
   );
+  activeIndex = matches.length ? 0 : -1;
+
+  
+  input.dataset.autofilled = "false";
 
   matches.slice(0, 20).forEach(item => {
 
@@ -200,6 +204,14 @@ input.addEventListener("input", function () {
 
   suggestions.style.display =
       matches.length ? "block" : "none";
+  if (activeIndex === 0) {
+    const first =
+        suggestions.querySelector(".suggestion-item");
+
+    if (first) {
+        first.classList.add("active");
+    }
+}
 });
 input.addEventListener("keydown", function(e){
 
@@ -211,31 +223,30 @@ input.addEventListener("keydown", function(e){
     if (e.key === "ArrowDown") {
 
         e.preventDefault();
-        activeIndex = (activeIndex + 1) % items.length;
-
+        if (activeIndex < items.length - 1) {
+            activeIndex++;
+        }
     } else if (e.key === "ArrowUp") {
 
         e.preventDefault();
-        activeIndex =
-            (activeIndex - 1 + items.length) % items.length;
+        if (activeIndex > 0) {
+            activeIndex--;
+        }
 
     } else if (e.key === "Enter") {
 
         e.preventDefault();
     
         if (activeIndex >= 0) {
-    
+
             items[activeIndex].click();
-    
-            activeIndex = -1;
-            suggestions.style.display = "none";
-    
+            return;
+            
         } else if (items.length === 1) {
     
             items[0].click();
-    
-            activeIndex = -1;
-            suggestions.style.display = "none";
+            return;
+            
         }
     
         return;
@@ -303,14 +314,8 @@ document.addEventListener("keydown", function(e){
     const active = document.activeElement;
 
     // Ignore entity search when dropdown is open
-    if (
-        active.id === "entity_search" &&
-        suggestions.style.display === "block"
-    ) {
-        return;
-    }
-
-    // Entity -> Amount
+    
+        // Entity -> Amount
     if (active.id === "entity_search") {
         e.preventDefault();
         document.querySelector("[name='amount']").focus();
