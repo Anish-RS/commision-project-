@@ -14,7 +14,9 @@ body {
   font-weight: 700;
   margin: 20px 0;
 }
-
+.suggestion-item.active{
+    background:#90caf9;
+}
 .card {
   max-width: 560px;
   margin: 0 auto;
@@ -154,9 +156,9 @@ const allEntities = [
 
 const input = document.getElementById("entity_search");
 const suggestions = document.getElementById("suggestions");
-
+let activeIndex = -1;
 input.addEventListener("input", function () {
-
+  activeIndex = -1;
   const text = this.value.toLowerCase().trim();
   const entityType =
       document.getElementById("entity_type").value;
@@ -176,6 +178,7 @@ input.addEventListener("input", function () {
   matches.slice(0, 20).forEach(item => {
 
     const div = document.createElement("div");
+    div.className = "suggestion-item";
 
     div.style.padding = "10px";
     div.style.cursor = "pointer";
@@ -183,8 +186,13 @@ input.addEventListener("input", function () {
     div.innerText = item.value;
 
     div.onclick = function () {
-      input.value = item.value;
-      suggestions.style.display = "none";
+
+        input.value = item.value;
+        suggestions.style.display = "none";
+    
+        setTimeout(() => {
+            document.querySelector("[name='amount']").focus();
+        }, 0);
     };
 
     suggestions.appendChild(div);
@@ -193,7 +201,54 @@ input.addEventListener("input", function () {
   suggestions.style.display =
       matches.length ? "block" : "none";
 });
+input.addEventListener("keydown", function(e){
 
+    const items =
+        suggestions.querySelectorAll(".suggestion-item");
+
+    if (!items.length) return;
+
+    if (e.key === "ArrowDown") {
+
+        e.preventDefault();
+        activeIndex = (activeIndex + 1) % items.length;
+
+    } else if (e.key === "ArrowUp") {
+
+        e.preventDefault();
+        activeIndex =
+            (activeIndex - 1 + items.length) % items.length;
+
+    } else if (e.key === "Enter") {
+
+        e.preventDefault();
+    
+        if (activeIndex >= 0) {
+    
+            items[activeIndex].click();
+    
+            activeIndex = -1;
+            suggestions.style.display = "none";
+    
+        } else if (items.length === 1) {
+    
+            items[0].click();
+    
+            activeIndex = -1;
+            suggestions.style.display = "none";
+        }
+    
+        return;
+    }
+    items.forEach(i => i.classList.remove("active"));
+
+    if (activeIndex >= 0) {
+        items[activeIndex].classList.add("active");
+        items[activeIndex].scrollIntoView({
+            block: "nearest"
+        });
+    }
+});
 document.addEventListener("click", function(e){
   if (!suggestions.contains(e.target) &&
       e.target !== input) {
@@ -227,12 +282,70 @@ document.getElementById("receiptForm").addEventListener("submit", function(e) {
 });
 // init on page load
 document.addEventListener("DOMContentLoaded", function() {
-  // --- NEW: Auto-set today's date ---
-  const dateInput = document.getElementById("tx_date");
-  if (!dateInput.value) {
-    const today = new Date().toISOString().split("T")[0];
-    dateInput.value = today;
-  }
+
+    const dateInput = document.getElementById("tx_date");
+
+    if (!dateInput.value) {
+        const today = new Date().toISOString().split("T")[0];
+        dateInput.value = today;
+    }
+
+    setTimeout(() => {
+        const search = document.getElementById("entity_search");
+        search.focus();
+        search.select();
+    }, 100);
+});
+document.addEventListener("keydown", function(e){
+
+    if (e.key !== "Enter") return;
+
+    const active = document.activeElement;
+
+    // Ignore entity search when dropdown is open
+    if (
+        active.id === "entity_search" &&
+        suggestions.style.display === "block"
+    ) {
+        return;
+    }
+
+    // Entity -> Amount
+    if (active.id === "entity_search") {
+        e.preventDefault();
+        document.querySelector("[name='amount']").focus();
+        return;
+    }
+
+    // Amount -> Note
+    if (active.name === "amount") {
+        e.preventDefault();
+        document.querySelector("[name='note']").focus();
+        return;
+    }
+
+    // Note -> Submit
+    if (active.name === "note") {
+        e.preventDefault();
+
+        if (receiptSubmitting) return;
+
+        document.getElementById("receiptForm")
+            .requestSubmit();
+
+        return;
+    }
+});
+document.getElementById("entity_type")
+.addEventListener("change", function(){
+
+    activeIndex = -1;
+
+    input.value = "";
+    suggestions.innerHTML = "";
+    suggestions.style.display = "none";
+
+    setTimeout(() => input.focus(), 0);
 });
 </script>
 
