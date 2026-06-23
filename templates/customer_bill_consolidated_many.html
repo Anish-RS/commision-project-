@@ -221,42 +221,38 @@
 
         <tbody>
 
-        {% if block.purchases %}
+       {% if block.purchases %}
 
             {% for p in block.purchases %}
             <tr>
-
                 <td>{{ loop.index }}</td>
-
                 <td>{{ p.bill_id }}</td>
-
                 <td>{{ p.supplier_bill_id or "-" }}</td>
-
-                <td class="right">
-                    {{ "%.2f"|format(p.rate or 0) }}
-                </td>
-
-                <td class="right">
-                    {{ "%.2f"|format(p.quantity or 0) }}
-                </td>
-
-                <td class="right">
-                    {{ "%.2f"|format(p.amount or 0) }}
-                </td>
-
+                <td class="right">{{ "%.2f"|format(p.rate or 0) }}</td>
+                <td class="right">{{ "%.2f"|format(p.quantity or 0) }}</td>
+                <td class="right">{{ "%.2f"|format(p.amount or 0) }}</td>
             </tr>
             {% endfor %}
-
+        
+            <tr style="border-top:2px solid #000;">
+                <td colspan="4"></td>
+                <td class="right">
+                    {{ "%.2f"|format(
+                        block.purchases|sum(attribute='quantity')
+                    ) }}
+                </td>
+                <td></td>
+            </tr>
+        
         {% else %}
-
+        
             <tr>
                 <td colspan="6">
                     No purchases found.
                 </td>
             </tr>
-
+        
         {% endif %}
-
         </tbody>
 
     </table>
@@ -264,15 +260,7 @@
     <!-- SUMMARY -->
 
     <div class="summary">
-        <div class="row">
-            <div>Total Quantity</div>
-            <div>
-                {{ "%.2f"|format(
-                    block.purchases|sum(attribute='quantity')
-                ) }}
-            </div>
-        </div>
-
+        
         <div class="row">
             <div>Opening Balance</div>
             <div>{{ "%.2f"|format(block.opening) }}</div>
