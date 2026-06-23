@@ -1,3 +1,8 @@
+Here is the complete, ready-to-use code for the **Payment (Money Paid)** page. It fully adapts the sleek UI, the intelligent autocomplete suggestion dropdown, and the "Enter" key tab-through dynamics exactly as they function in your Receipt page.
+
+I kept the distinct pink/red gradient button from your original Payment page so users can easily distinguish between receiving and paying money.
+
+```html
 {% extends "base.html" %}
 {% block content %}
 <style>
@@ -13,6 +18,10 @@ body {
   font-size: 26px;
   font-weight: 700;
   margin: 20px 0;
+}
+
+.suggestion-item.active{
+    background:#90caf9;
 }
 
 .card {
@@ -77,64 +86,45 @@ button:hover {
 
 <form method="POST" style="max-width:560px;" id="paymentForm">
 
-  <!-- DATE -->
   <div>
     <label>Date:</label>
     <input type="date" name="tx_date" id="tx_date" required>
-
   </div>
 
-  <!-- ENTITY TYPE -->
   <div>
     <label>Entity Type:</label>
-    <select name="entity_type" id="entity_type" onchange="filterNames()" required>
+    <select name="entity_type" id="entity_type" required>
       <option value="supplier">Supplier</option>
       <option value="customer">Customer</option>
     </select>
   </div>
 
-  <!-- SEARCH BY -->
   <div>
-    <label>Search By:</label>
-    <select name="search_by" id="search_by" onchange="toggleInputs()">
-      <option value="name" selected>Name</option>
-      <option value="id">ID</option>
-    </select>
-
+    <label>Customer / Supplier:</label>
+    <input type="text"
+           id="entity_search"
+           name="entity_name"
+           placeholder="Type ID or Name..."
+           autocomplete="off"
+           required>
+    
+    <div id="suggestions"
+         style="
+            display:none;
+            background:#fff;
+            border:1px solid #ddd;
+            border-radius:10px;
+            max-height:220px;
+            overflow-y:auto;
+            margin-top:4px;">
+    </div>
   </div>
 
-  <!-- ID INPUT -->
-  <div id="id_block" style="display:none;">
-
-    <label>Entity ID:</label>
-    <input type="number" name="entity_id" id="entity_id">
-  </div>
-
-  <!-- NAME SELECT -->
-  <div id="name_block">
-    <label>Select Name:</label>
-    <select name="entity_name" id="entity_name">
-      <option value="">-- Select --</option>
-
-      <!-- Customers -->
-      {% for c in customers %}
-        <option value="{{ c.id }}" data-type="customer">{{ c.name }}</option>
-      {% endfor %}
-
-      <!-- Suppliers -->
-      {% for s in suppliers %}
-        <option value="{{ s.id }}" data-type="supplier">{{ s.name }}</option>
-      {% endfor %}
-    </select>
-  </div>
-
-  <!-- AMOUNT -->
   <div>
     <label>Amount:</label>
     <input type="number" step="0.01" name="amount" required>
   </div>
 
-  <!-- NOTE -->
   <div>
     <label>Note (optional):</label>
     <input type="text" name="note">
@@ -147,68 +137,124 @@ button:hover {
 </form>
 
 <script>
-function toggleInputs() {
-  const mode = document.getElementById("search_by").value;
+const allEntities = [
+{% for c in customers %}
+{
+  type: "customer",
+  value: "{{ c.id }} - {{ c.name }}"
+},
+{% endfor %}
 
-  const idBlock = document.getElementById("id_block");
-  const nameBlock = document.getElementById("name_block");
-  const idInput = document.getElementById("entity_id");
-  const nameSelect = document.getElementById("entity_name");
+{% for s in suppliers %}
+{
+  type: "supplier",
+  value: "{{ s.id }} - {{ s.name }}"
+},
+{% endfor %}
+];
 
-  if (mode === "id") {
-    idBlock.style.display = "block";
-    nameBlock.style.display = "none";
-    idInput.required = true;
-    nameSelect.required = false;
-  } else {
-    idBlock.style.display = "none";
-    nameBlock.style.display = "block";
-    idInput.required = false;
-    nameSelect.required = true;
-  }
-}
+const input = document.getElementById("entity_search");
+const suggestions = document.getElementById("suggestions");
+let activeIndex = -1;
 
-function filterNames() {
+input.addEventListener("input", function () {
+  activeIndex = -1;
+  const text = this.value.toLowerCase().trim();
   const entityType = document.getElementById("entity_type").value;
-  const options = document.getElementById("entity_name").options;
 
-  for (let i = 0; i < options.length; i++) {
-    const opt = options[i];
-    const type = opt.getAttribute("data-type");
+  suggestions.innerHTML = "";
 
-    if (!type) { 
-      opt.style.display = ""; 
-      continue;
-    }
-
-    opt.style.display = (type === entityType) ? "" : "none";
+  if (text.length < 1) {
+    suggestions.style.display = "none";
+    return;
   }
 
-  document.getElementById("entity_name").value = "";
-}
+  const matches = allEntities.filter(x =>
+      x.type === entityType &&
+      x.value.toLowerCase().includes(text)
+  );
+  
+  activeIndex = matches.length ? 0 : -1;
+  input.dataset.autofilled = "false";
 
+  matches.slice(0, 20).forEach(item => {
+    const div = document.createElement("div");
+    div.className = "suggestion-item";
+    div.style.padding = "10px";
+    div.style.cursor = "pointer";
+    div.innerText = item.value;
+
+    div.onclick = function () {
+        input.value = item.value;
+        suggestions.style.display = "none";
+        setTimeout(() => {
+            document.querySelector("[name='amount']").focus();
+        }, 0);
+    };
+
+    suggestions.appendChild(div);
+  });
+
+  suggestions.style.display = matches.length ? "block" : "none";
+  
+  if (activeIndex === 0) {
+    const first = suggestions.querySelector(".suggestion-item");
+    if (first) {
+        first.classList.add("active");
+    }
+  }
+});
+
+input.addEventListener("keydown", function(e){
+    const items = suggestions.querySelectorAll(".suggestion-item");
+    if (!items.length) return;
+
+    if (e.key === "ArrowDown") {
+        e.preventDefault();
+        if (activeIndex < items.length - 1) {
+            activeIndex++;
+        }
+    } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        if (activeIndex > 0) {
+            activeIndex--;
+        }
+    } else if (e.key === "Enter") {
+        e.preventDefault();
+        if (activeIndex >= 0) {
+            items[activeIndex].click();
+            return;
+        } else if (items.length === 1) {
+            items[0].click();
+            return;
+        }
+        return;
+    }
+    
+    items.forEach(i => i.classList.remove("active"));
+
+    if (activeIndex >= 0) {
+        items[activeIndex].classList.add("active");
+        items[activeIndex].scrollIntoView({
+            block: "nearest"
+        });
+    }
+});
+
+document.addEventListener("click", function(e){
+  if (!suggestions.contains(e.target) && e.target !== input) {
+      suggestions.style.display = "none";
+  }
+});
+
+// prevent empty submissions and double clicks
 let paymentSubmitting = false;
 
 document.getElementById("paymentForm").addEventListener("submit", function(e) {
-
-    const mode = document.getElementById("search_by").value;
-
-    if (mode === "name") {
-        const nameVal = document.getElementById("entity_name").value;
-
-        if (!nameVal) {
-            e.preventDefault();
-            alert("Please select a name.");
-            return false;
-        }
-    } else {
-        const idVal = document.getElementById("entity_id").value;
-
-        if (!idVal) {
-            e.preventDefault();
-            alert("Please enter an ID.");
-            return false;
-        }
+    if (!document.getElementById("entity_search").value.trim()) {
+        e.preventDefault();
+        alert("Please select a customer/supplier.");
+        return false;
     }
 
     if (paymentSubmitting) {
@@ -223,9 +269,8 @@ document.getElementById("paymentForm").addEventListener("submit", function(e) {
     btn.innerText = "Saving Payment...";
 });
 
-// Initialize on load
+// init on page load
 document.addEventListener("DOMContentLoaded", function() {
-
     const dateInput = document.getElementById("tx_date");
 
     if (!dateInput.value) {
@@ -233,50 +278,21 @@ document.addEventListener("DOMContentLoaded", function() {
         dateInput.value = today;
     }
 
-    toggleInputs();
-    filterNames();
-
     setTimeout(() => {
-        document.getElementById("entity_type").focus();
+        const search = document.getElementById("entity_search");
+        search.focus();
+        search.select();
     }, 100);
 });
-document.addEventListener("keydown", function(e){
 
+// Enter key dynamics to jump between inputs
+document.addEventListener("keydown", function(e){
     if (e.key !== "Enter") return;
 
     const active = document.activeElement;
 
-    // Entity Type -> Search By
-    if (active.id === "entity_type") {
-        e.preventDefault();
-        document.getElementById("search_by").focus();
-        return;
-    }
-
-    // Search By -> Name or ID field
-    if (active.id === "search_by") {
-        e.preventDefault();
-
-        const mode = document.getElementById("search_by").value;
-
-        if (mode === "name") {
-            document.getElementById("entity_name").focus();
-        } else {
-            document.getElementById("entity_id").focus();
-        }
-
-        return;
-    }
-
-    // Name dropdown -> Amount
-    if (active.id === "entity_name") {
-        e.preventDefault();
-        document.querySelector("[name='amount']").focus();
-        return;
-    }
-
-    // ID field -> Amount
-    if (active.id === "entity_id") {
+    // Entity -> Amount
+    if (active.id === "entity_search") {
         e.preventDefault();
         document.querySelector("[name='amount']").focus();
         return;
@@ -298,9 +314,17 @@ document.addEventListener("keydown", function(e){
         document.getElementById("paymentForm").requestSubmit();
         return;
     }
+});
 
-}); 
+// Clear input and focus when changing entity type
+document.getElementById("entity_type").addEventListener("change", function(){
+    activeIndex = -1;
+    input.value = "";
+    suggestions.innerHTML = "";
+    suggestions.style.display = "none";
+    setTimeout(() => input.focus(), 0);
+});
 </script>
-
-
 {% endblock %}
+
+```
