@@ -1,3 +1,4 @@
+
 {% extends "base.html" %}
 {% block content %}
 
@@ -17,6 +18,11 @@
     font-weight: 700;
     margin: 18px 0;
     text-align: center;
+  }
+
+  /* Autocomplete suggestion active state */
+  .suggestion-item.active {
+    background: #90caf9;
   }
 
   /* Card container */
@@ -105,6 +111,12 @@
     background: linear-gradient(90deg,#ff9a9a,#ff6b6b);
     color: white;
     box-shadow: 0 6px 18px rgba(255,107,107,0.18);
+    transition: 0.15s;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 22px rgba(255,107,107,0.28);
   }
 
   /* responsive: stack on small screens */
@@ -119,7 +131,6 @@
 <div class="card">
   <form method="POST" id="adjust-form" novalidate>
 
-    <!-- Entity type -->
     <div class="form-row" style="margin-bottom:14px;">
       <div class="col-full">
         <label for="entity_type">Entity Type</label>
@@ -130,7 +141,6 @@
       </div>
     </div>
 
-    <!-- Search -->
     <div class="form-row" style="margin-bottom:14px;">
       <div class="col-full">
         <label for="searchBox">Search Supplier / Customer</label>
@@ -164,7 +174,7 @@
         </div>
       </div>
     </div>
-    <!-- Amount and Note aligned -->
+
     <div class="grid-amount-note" style="margin-top:10px;">
       <div>
         <label for="amount">Amount (₹)</label>
@@ -188,141 +198,192 @@
   const supplierListData = JSON.parse('{{ suppliers | tojson | safe }}');
   const customerListData = JSON.parse('{{ customers | tojson | safe }}');
 
+  let activeIndex = -1;
+  const searchBox = document.getElementById("searchBox");
+  const suggestionBox = document.getElementById("suggestions");
+  const entityIdField = document.getElementById("entity_id");
+
   function setupAutocomplete() {
 
-      const searchBox = document.getElementById("searchBox");
-      const suggestionBox = document.getElementById("suggestions");
-  
       searchBox.addEventListener("input", function () {
-  
+          activeIndex = -1;
           const query = this.value.trim().toLowerCase();
-  
           suggestionBox.innerHTML = "";
-  
+
           if (query.length < 1) {
               suggestionBox.style.display = "none";
-              document.getElementById("entity_id").value = "";
+              entityIdField.value = "";
               return;
           }
-  
+
           const mode = document.getElementById("entity_type").value;
-  
-          const data =
-              mode === "supplier"
-                  ? supplierListData
-                  : customerListData;
-  
+          const data = mode === "supplier" ? supplierListData : customerListData;
+
           const matches = data.filter(item =>
               (item.name || "").toLowerCase().includes(query) ||
               String(item.id).includes(query)
           );
-  
+
+          activeIndex = matches.length ? 0 : -1;
+
           if (matches.length === 0) {
               suggestionBox.style.display = "none";
               return;
           }
-  
-          matches.forEach(item => {
-  
+
+          matches.slice(0, 20).forEach((item) => {
               const row = document.createElement("div");
-  
+              row.className = "suggestion-item";
               row.style.padding = "10px";
               row.style.cursor = "pointer";
               row.style.borderBottom = "1px solid #eee";
-  
-              row.innerHTML =
-                  `<strong>${item.name}</strong> (ID: ${item.id})`;
-  
+
+              row.innerHTML = `<strong>${item.name}</strong> (ID: ${item.id})`;
+
               row.onclick = function () {
-  
-                  searchBox.value =
-                      `${item.name} (ID: ${item.id})`;
-  
-                  document.getElementById("entity_id").value =
-                      item.id;
-  
+                  searchBox.value = `${item.name} (ID: ${item.id})`;
+                  entityIdField.value = item.id;
                   suggestionBox.style.display = "none";
+
+                  setTimeout(() => {
+                      document.getElementById("amount").focus();
+                  }, 0);
               };
-  
+
               suggestionBox.appendChild(row);
           });
-  
+
           suggestionBox.style.display = "block";
+
+          if (activeIndex === 0) {
+            const first = suggestionBox.querySelector(".suggestion-item");
+            if (first) first.classList.add("active");
+          }
       });
-  
+
+      // Suggestion box keyboard navigation
+      searchBox.addEventListener("keydown", function(e) {
+          const items = suggestionBox.querySelectorAll(".suggestion-item");
+          if (!items.length) return;
+
+          if (e.key === "ArrowDown") {
+              e.preventDefault();
+              if (activeIndex < items.length - 1) activeIndex++;
+          } else if (e.key === "ArrowUp") {
+              e.preventDefault();
+              if (activeIndex > 0) activeIndex--;
+          } else if (e.key === "Enter") {
+              e.preventDefault();
+              if (activeIndex >= 0) {
+                  items[activeIndex].click();
+                  return;
+              } else if (items.length === 1) {
+                  items[0].click();
+                  return;
+              }
+              return;
+          }
+          
+          items.forEach(i => i.classList.remove("active"));
+          if (activeIndex >= 0) {
+              items[activeIndex].classList.add("active");
+              items[activeIndex].scrollIntoView({ block: "nearest" });
+          }
+      });
+
       document.addEventListener("click", function(e){
-  
-          if (
-              !searchBox.contains(e.target) &&
-              !suggestionBox.contains(e.target)
-          ) {
+          if (!searchBox.contains(e.target) && !suggestionBox.contains(e.target)) {
               suggestionBox.style.display = "none";
           }
-  
       });
   }
   
   function onModeChange() {
+      activeIndex = -1;
+      searchBox.value = "";
+      entityIdField.value = "";
+      suggestionBox.innerHTML = "";
+      suggestionBox.style.display = "none";
 
-      document.getElementById("searchBox").value = "";
-  
-      document.getElementById("entity_id").value = "";
-  
-      document.getElementById("suggestions").innerHTML = "";
-  
-      document.getElementById("suggestions").style.display = "none";
+      setTimeout(() => searchBox.focus(), 0);
   }
 
-  // Enter key navigation: only submit when focused on submit button
+  // Enter key global navigation jumping between inputs
   document.addEventListener("keydown", function (e) {
-    if (e.key !== "Enter") return;
-    const active = document.activeElement;
-    if (active.tagName === "BUTTON" && active.type === "submit") return;
-    e.preventDefault();
-    const focusable = Array.from(document.querySelectorAll("input:not([type=hidden]), select, textarea, button"))
-                           .filter(el => !el.disabled && el.offsetParent !== null);
-    const idx = focusable.indexOf(active);
-    if (idx > -1 && idx < focusable.length - 1) focusable[idx + 1].focus();
+      if (e.key !== "Enter") return;
+
+      const active = document.activeElement;
+
+      // Type -> Search
+      if (active.id === "entity_type") {
+          e.preventDefault();
+          searchBox.focus();
+          return;
+      }
+
+      // Search -> Amount (only triggers if dropdown is closed/empty so it doesn't conflict with selection)
+      if (active.id === "searchBox") {
+          if (suggestionBox.style.display === "none" || suggestionBox.innerHTML === "") {
+              e.preventDefault();
+              document.getElementById("amount").focus();
+          }
+          return;
+      }
+
+      // Amount -> Note
+      if (active.id === "amount") {
+          e.preventDefault();
+          document.getElementById("note").focus();
+          return;
+      }
+
+      // Note -> Submit
+      if (active.id === "note") {
+          e.preventDefault();
+          if (adjustmentSubmitting) return;
+          document.getElementById("adjust-form").requestSubmit();
+          return;
+      }
   });
 
-  // Prevent submission without selection
+  // Prevent submission without selection or double submissions
   let adjustmentSubmitting = false;
 
-document.getElementById("adjust-form").addEventListener("submit", function(e) {
+  document.getElementById("adjust-form").addEventListener("submit", function(e) {
+      const selectedId = document.getElementById("entity_id").value;
+      
+      if (!selectedId) {
+          e.preventDefault();
+          alert("Please select a supplier or customer from the list before submitting.");
+          searchBox.focus();
+          return false;
+      }
 
-    const selectedId =
-        document.getElementById("entity_id").value;
-    
-    if (!selectedId) {
-        e.preventDefault();
-        alert("Please select a supplier or customer from the list before submitting.");
-        document.getElementById("searchBox").focus();
-        return false;
-    }
+      if (adjustmentSubmitting) {
+          e.preventDefault();
+          return false;
+      }
 
-    if (adjustmentSubmitting) {
-        e.preventDefault();
-        return false;
-    }
+      adjustmentSubmitting = true;
 
-    adjustmentSubmitting = true;
+      const btn = document.getElementById("submitBtn");
+      btn.disabled = true;
+      btn.innerText = "Applying...";
 
-    const btn = document.getElementById("submitBtn");
-    btn.disabled = true;
-    btn.innerText = "Applying...";
-
-    return true;
-});
+      return true;
+  });
 
   document.addEventListener("DOMContentLoaded", function() {
-
-      document.getElementById("entity_type").value = "customer";
-  
+      document.getElementById("entity_type").value = "custom
       onModeChange();
-  
       setupAutocomplete();
-  
+
+      // Automatically focus on the search box on load
+      setTimeout(() => {
+          searchBox.focus();
+      }, 100);
   });
 </script>
 
 {% endblock %}
+
