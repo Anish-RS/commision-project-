@@ -225,16 +225,81 @@ document.getElementById("paymentForm").addEventListener("submit", function(e) {
 
 // Initialize on load
 document.addEventListener("DOMContentLoaded", function() {
-  // --- NEW FEATURE: Auto-set today's date ---
-  const dateInput = document.getElementById("tx_date");
-  if (!dateInput.value) {
-    const today = new Date().toISOString().split("T")[0];
-    dateInput.value = today;
-  }
 
-  toggleInputs();
-  filterNames();
+    const dateInput = document.getElementById("tx_date");
+
+    if (!dateInput.value) {
+        const today = new Date().toISOString().split("T")[0];
+        dateInput.value = today;
+    }
+
+    toggleInputs();
+    filterNames();
+
+    setTimeout(() => {
+        document.getElementById("entity_type").focus();
+    }, 100);
 });
+document.addEventListener("keydown", function(e){
+
+    if (e.key !== "Enter") return;
+
+    const active = document.activeElement;
+
+    // Entity Type -> Search By
+    if (active.id === "entity_type") {
+        e.preventDefault();
+        document.getElementById("search_by").focus();
+        return;
+    }
+
+    // Search By -> Name or ID field
+    if (active.id === "search_by") {
+        e.preventDefault();
+
+        const mode = document.getElementById("search_by").value;
+
+        if (mode === "name") {
+            document.getElementById("entity_name").focus();
+        } else {
+            document.getElementById("entity_id").focus();
+        }
+
+        return;
+    }
+
+    // Name dropdown -> Amount
+    if (active.id === "entity_name") {
+        e.preventDefault();
+        document.querySelector("[name='amount']").focus();
+        return;
+    }
+
+    // ID field -> Amount
+    if (active.id === "entity_id") {
+        e.preventDefault();
+        document.querySelector("[name='amount']").focus();
+        return;
+    }
+
+    // Amount -> Note
+    if (active.name === "amount") {
+        e.preventDefault();
+        document.querySelector("[name='note']").focus();
+        return;
+    }
+
+    // Note -> Submit
+    if (active.name === "note") {
+        e.preventDefault();
+
+        if (paymentSubmitting) return;
+
+        document.getElementById("paymentForm").requestSubmit();
+        return;
+    }
+
+}); 
 </script>
 
 
