@@ -6,7 +6,7 @@
   /* Reset useful defaults for the form */
   * { box-sizing: border-box; }
 
-  /* Pastel background (kept) */
+  /* Pastel background */
   body {
     background: linear-gradient(135deg, #ffeaf0, #fff0f1);
     background-attachment: fixed;
@@ -30,7 +30,7 @@
     background: #ffffffef;
     padding: 22px;
     border-radius: 14px;
-    max-width: 860px;            /* slightly wider for alignment */
+    max-width: 860px;
     margin: 18px auto;
     box-shadow: 0 10px 30px rgba(28,37,70,0.06);
     border-left: 6px solid #90CAF9;
@@ -54,7 +54,7 @@
     outline: none;
     transition: 0.16s ease;
     font-size: 15px;
-    height: 44px;               /* FIXED HEIGHT to align everything */
+    height: 44px;
     line-height: 20px;
   }
 
@@ -79,13 +79,9 @@
 
   /* Layout rows */
   .form-row { display: flex; gap: 12px; align-items: flex-start; flex-wrap: wrap; }
-
-  /* fixed column widths for alignment */
   .col-full { width: 100%; min-width: 0; }
-  .col-1 { flex: 1 1 220px; min-width: 180px; }  /* narrow column */
-  .col-2 { flex: 2 1 420px; min-width: 220px; }  /* wider column */
 
-  /* amount/note grid ensures label line up and equal heights */
+  /* Amount/note grid ensures labels line up and equal heights */
   .grid-amount-note {
     display: grid;
     grid-template-columns: 1fr 2fr;
@@ -93,10 +89,10 @@
     align-items: start;
   }
 
-  /* keep small helper text */
+  /* Helper text */
   .small-note { font-size: 13px; color: #666; margin-top: 8px; }
 
-  /* button row aligned right */
+  /* Button row */
   .actions { display:flex; justify-content:flex-end; margin-top: 14px; }
 
   .btn {
@@ -119,10 +115,8 @@
     box-shadow: 0 8px 22px rgba(255,107,107,0.28);
   }
 
-  /* responsive: stack on small screens */
   @media (max-width: 720px) {
     .grid-amount-note { grid-template-columns: 1fr; }
-    .col-1, .col-2 { flex: 1 1 100%; }
   }
 </style>
 
@@ -195,19 +189,29 @@
 </div>
 
 <script>
-  const supplierListData = JSON.parse('{{ suppliers | tojson | safe }}');
-  const customerListData = JSON.parse('{{ customers | tojson | safe }}');
+  // Safely looping through backend data to prevent javascript syntax errors
+  const allEntities = [
+    {% for c in customers %}
+    { type: "customer", id: "{{ c.id }}", name: "{{ c.name }}" },
+    {% endfor %}
+
+    {% for s in suppliers %}
+    { type: "supplier", id: "{{ s.id }}", name: "{{ s.name }}" },
+    {% endfor %}
+  ];
 
   let activeIndex = -1;
   const searchBox = document.getElementById("searchBox");
   const suggestionBox = document.getElementById("suggestions");
   const entityIdField = document.getElementById("entity_id");
+  const entityTypeField = document.getElementById("entity_type");
 
   function setupAutocomplete() {
-
       searchBox.addEventListener("input", function () {
           activeIndex = -1;
           const query = this.value.trim().toLowerCase();
+          const mode = entityTypeField.value;
+
           suggestionBox.innerHTML = "";
 
           if (query.length < 1) {
@@ -216,12 +220,11 @@
               return;
           }
 
-          const mode = document.getElementById("entity_type").value;
-          const data = mode === "supplier" ? supplierListData : customerListData;
-
-          const matches = data.filter(item =>
-              (item.name || "").toLowerCase().includes(query) ||
-              String(item.id).includes(query)
+          // Filter by the selected entity type, and match query to ID or Name
+          const matches = allEntities.filter(item =>
+              item.type === mode &&
+              ((item.name || "").toLowerCase().includes(query) ||
+               String(item.id).includes(query))
           );
 
           activeIndex = matches.length ? 0 : -1;
@@ -321,7 +324,7 @@
           return;
       }
 
-      // Search -> Amount (only triggers if dropdown is closed/empty so it doesn't conflict with selection)
+      // Search -> Amount (only triggers if dropdown is closed/empty so it doesn't bypass selection)
       if (active.id === "searchBox") {
           if (suggestionBox.style.display === "none" || suggestionBox.innerHTML === "") {
               e.preventDefault();
@@ -374,11 +377,13 @@
   });
 
   document.addEventListener("DOMContentLoaded", function() {
-      document.getElementById("entity_type").value = "custom
-      onModeChange();
+      // Ensure defaults are set securely on load
+      entityTypeField.value = "customer";
+      
       setupAutocomplete();
 
-      // Automatically focus on the search box on load
+      // Clear search and ensure initial pointer goes to search box
+      searchBox.value = "";
       setTimeout(() => {
           searchBox.focus();
       }, 100);
