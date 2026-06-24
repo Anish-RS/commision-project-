@@ -34,11 +34,13 @@
         }
 
         .customer-page {
+            break-after: page;
             page-break-after: always;
-            margin-bottom: 10px;
+            margin-bottom: 50mm;
         }
-
+        
         .customer-page:last-child {
+            break-after: auto;
             page-break-after: auto;
         }
 
@@ -204,7 +206,7 @@
     <table>
 
         <thead>
-            <tr style="border-top:2px solid #000;>
+            <tr style="border-top:2px solid #000;">
                 <th>#</th>
                 <th>Bill ID</th>
                 <th>Supplier Ref</th>
@@ -271,7 +273,7 @@
             <div>{{ "%.2f"|format(block.sum_receipts) }}</div>
         </div>
 
-        <div class="row current-balance-row" style="border-top:2px solid #000;>
+        <div class="row current-balance-row" style="border-top:2px solid #000;">
             <div>Current Balance</div>
             <div>{{ "%.2f"|format(block.current_balance) }}</div>
         </div>
