@@ -139,7 +139,7 @@
 
   <table aria-label="Bill items">
     <thead>
-      <tr>
+      <tr style="border-top:2px solid #000;">
         <th style="width:6%;">#</th>
         <th class="desc">Description / Customer</th>
         <th style="width:12%" class="right">Rate</th>
@@ -195,7 +195,7 @@
     <div class="row"><div>Opening</div><div>{{ "%.2f"|format(bill.get('old_balance', 0) or 0) }}</div></div>
     <div class="row"><div>Final</div><div>{{ "%.2f"|format(bill.get('final_balance') if bill.get('final_balance') is not none else bill.get('old_balance', 0)) }}</div></div>
 
-    <div class="row" style="border-top:1px dashed #ccc; padding-top:6px;"><div><strong>Stored Balance</strong></div><div><strong>{{ "%.2f"|format(current_balance or 0) }}</strong></div></div>
+    <div class="row" style="border-top:2px solid #000; padding-top:6px;"><div><strong>Stored Balance</strong></div><div><strong>{{ "%.2f"|format(current_balance or 0) }}</strong></div></div>
   </div>
 
   <div class="footer">
