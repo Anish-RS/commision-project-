@@ -117,12 +117,11 @@
         <hr style="border:0; border-top:1px solid #000; margin:6px 0;">
     </div>
 
-    <h1>Supplier Bill #{{ bill.get('bill_id') }}</h1>
+    <h1>Supplier: {{ bill.get('supplier_name') or '-' }}</h1>
 
     <div class="meta" style="text-align:left;">
         <div>
-            <strong>Supplier:</strong>
-            {{ bill.get('supplier_name') or '-' }}
+            <strong>Supplier Bill #{{ bill.get('bill_id') }}</strong>
         </div>
         
         <div>
@@ -133,7 +132,7 @@
             <strong>Date:</strong>
             {{ bill.get('bill_date').strftime('%d %B %Y') if bill.get('bill_date') else '-' }}
         </div>
-        <div><strong>Total:</strong> {{ "%.2f"|format(bill.get('total_amount', 0) or 0) }}</div>
+        
     </div>
 
   </header>
