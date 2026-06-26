@@ -117,7 +117,7 @@
       {% endif %}
     {% endwith %}
 
-    <form method="POST">
+    <form method="POST" id="customerForm">
 
         <div class="form-group">
             <label>Name:</label>
@@ -172,12 +172,36 @@ document.addEventListener("keydown", function (e) {
 
     const index = focusable.indexOf(active);
 
-    // Move focus to the next field
+    if (active.name === "opening_balance") {
+        e.preventDefault();
+    
+        if (!customerSubmitting) {
+            document.getElementById("customerForm").requestSubmit();
+        }
+        return;
+    }
+    
     if (index > -1 && index < focusable.length - 1) {
+        e.preventDefault();
         focusable[index + 1].focus();
     }
 });
+let customerSubmitting = false;
 
+document.getElementById("customerForm").addEventListener("submit", function(e) {
+
+    // Prevent duplicate submission
+    if (customerSubmitting) {
+        e.preventDefault();
+        return false;
+    }
+
+    customerSubmitting = true;
+
+    const btn = document.getElementById("saveBtn");
+    btn.disabled = true;
+    btn.innerHTML = "Saving...";
+});
 const customerName = document.getElementById("customer_name");
 const duplicateMsg = document.getElementById("duplicate-msg");
 const saveBtn = document.getElementById("saveBtn");
