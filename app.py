@@ -281,7 +281,26 @@ def check_customer():
 
     return jsonify({"exists": exists})
 
+@app.route("/api/check_supplier")
+def check_supplier():
 
+    name = request.args.get("name", "").strip().title()
+
+    conn = get_connection()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
+
+    cursor.execute("""
+        SELECT supplier_id
+        FROM suppliers
+        WHERE LOWER(TRIM(name)) = LOWER(TRIM(%s))
+    """, (name,))
+
+    exists = cursor.fetchone() is not None
+
+    cursor.close()
+    conn.close()
+
+    return jsonify({"exists": exists})
 @app.route("/api/supplier/<int:supplier_id>/balance")
 def get_supplier_balance(supplier_id):
     conn   = get_connection()
