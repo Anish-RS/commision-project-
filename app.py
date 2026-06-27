@@ -2143,7 +2143,55 @@ def adjust_account():
 
     return render_template("adjust_account.html", suppliers=suppliers, customers=customers)
 
+@app.route("/account-adjustment-history")
+def account_adjustment_history():
 
+    conn = get_connection()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
+
+    selected_date = request.args.get("date")
+
+    if not selected_date:
+        selected_date = date.today().isoformat()
+
+    cursor.execute("""
+        SELECT
+            adjustment_id,
+            adjustment_date,
+            entity_type,
+            entity_id,
+            amount,
+            created_at
+        FROM account_adjustments
+        WHERE adjustment_date=%s
+        ORDER BY created_at
+    """, (selected_date,))
+
+    rows = cursor.fetchall()
+
+    for row in rows:
+        if row["entity_type"] == "supplier":
+            cursor.execute(
+                "SELECT name FROM suppliers WHERE supplier_id=%s",
+                (row["entity_id"],)
+            )
+        else:
+            cursor.execute(
+                "SELECT name FROM customers WHERE customer_id=%s",
+                (row["entity_id"],)
+            )
+
+        x = cursor.fetchone()
+        row["name"] = x["name"] if x else "Unknown"
+
+    cursor.close()
+    conn.close()
+
+    return render_template(
+        "account_adjustment_history.html",
+        adjustments=rows,
+        selected_date=selected_date
+    )
 # ---------------------------------------------------------------------------
 # Account summary (customer statement)
 # ---------------------------------------------------------------------------
