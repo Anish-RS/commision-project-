@@ -167,7 +167,7 @@ def add_customer():
         name = request.form["name"].strip().title()
         phone           = request.form.get("phone")
         address         = request.form.get("address")
-        opening_balance = request.form.get("opening_balance", 0)
+        opening_balance = float(request.form.get("opening_balance", 0) or 0)
 
         conn   = get_connection()
         cursor = conn.cursor(cursor_factory=RealDictCursor)
@@ -189,16 +189,28 @@ def add_customer():
             conn.close()
             flash("Customer already present. Cannot add duplicate customer.", "danger")
             return redirect(url_for("add_customer"))
-
+        
         cursor.execute(
             """
             INSERT INTO customers
             (name, phone, address, opening_balance)
             VALUES (%s, %s, %s, %s)
+            RETURNING customer_id
             """,
             (name, phone, address, opening_balance)
         )
-
+        
+        customer_id = cursor.fetchone()["customer_id"]
+        if opening_balance > 0:
+            cursor.execute("""
+                INSERT INTO account_adjustments
+                (entity_type, entity_id, amount, adjustment_date)
+                VALUES (%s, %s, %s, CURRENT_DATE)
+            """, (
+                "customer",
+                customer_id,
+                opening_balance
+            ))
         conn.commit()
         cursor.close()
         conn.close()
@@ -219,7 +231,7 @@ def add_supplier():
         name = request.form["name"].strip().title()
         phone = request.form.get("phone")
         address = request.form.get("address")
-        opening_balance = request.form.get("opening_balance", 0)
+        opening_balance = float(request.form.get("opening_balance", 0) or 0)
 
         conn = get_connection()
         cursor = conn.cursor(cursor_factory=RealDictCursor)
@@ -242,16 +254,28 @@ def add_supplier():
 
             flash("Supplier already present. Cannot add duplicate supplier.", "danger")
             return redirect(url_for("add_supplier"))
-
+      
         cursor.execute(
             """
             INSERT INTO suppliers
             (name, phone, address, opening_balance)
             VALUES (%s, %s, %s, %s)
+            RETURNING supplier_id
             """,
             (name, phone, address, opening_balance)
         )
-
+        
+        supplier_id = cursor.fetchone()["supplier_id"]
+        if opening_balance > 0:
+            cursor.execute("""
+                INSERT INTO account_adjustments
+                (entity_type, entity_id, amount, adjustment_date)
+                VALUES (%s, %s, %s, CURRENT_DATE)
+            """, (
+                "supplier",
+                supplier_id,
+                opening_balance
+            ))
         conn.commit()
         cursor.close()
         conn.close()
