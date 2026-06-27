@@ -1,1 +1,110 @@
+{% extends "base.html" %}
+{% block content %}
 
+<style>
+
+body{
+    background:linear-gradient(135deg,#eaf6ff,#fff0f4);
+}
+
+.card{
+    max-width:1000px;
+    margin:auto;
+    background:#fff;
+    padding:20px;
+    border-radius:12px;
+    box-shadow:0 5px 15px rgba(0,0,0,.08);
+}
+
+.input-field{
+    padding:10px;
+    border-radius:10px;
+    border:2px solid #dbefff;
+    background:#eaf6ff;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:20px;
+}
+
+th,td{
+    border:1px solid #ddd;
+    padding:10px;
+}
+
+th{
+    background:#1E3A8A;
+    color:white;
+}
+
+</style>
+
+<h2 style="text-align:center;">Old Balance Adjustment History</h2>
+
+<div class="card">
+
+<form method="GET">
+
+<label>Select Date</label>
+
+<input
+type="date"
+name="date"
+class="input-field"
+value="{{ selected_date }}"
+onchange="this.form.submit()">
+
+</form>
+
+<table>
+
+<thead>
+
+<tr>
+<th>Time</th>
+<th>Type</th>
+<th>Name</th>
+<th>Amount Added</th>
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for row in adjustments %}
+
+<tr>
+
+<td>{{ row.created_at.strftime("%H:%M:%S") }}</td>
+
+<td>{{ row.entity_type|title }}</td>
+
+<td>{{ row.name }}</td>
+
+<td>₹ {{ "%.2f"|format(row.amount) }}</td>
+
+</tr>
+
+{% endfor %}
+
+{% if adjustments|length==0 %}
+
+<tr>
+
+<td colspan="4" style="text-align:center;">
+No adjustments found.
+</td>
+
+</tr>
+
+{% endif %}
+
+</tbody>
+
+</table>
+
+</div>
+
+{% endblock %}
