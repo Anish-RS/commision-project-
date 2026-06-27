@@ -2129,7 +2129,15 @@ def adjust_account():
             flash("Invalid entity type.", "danger")
             cursor.close(); conn.close()
             return redirect(url_for("adjust_account"))
-
+        cursor.execute("""
+            INSERT INTO account_adjustments
+            (entity_type, entity_id, amount, adjustment_date)
+            VALUES (%s, %s, %s, CURRENT_DATE)
+        """, (
+            entity_type,
+            entity_id,
+            amount
+        ))
         conn.commit()
         cursor.close(); conn.close()
         flash(f"Account updated for {entity_type} #{entity_id} (₹{amount:.2f}).", "success")
