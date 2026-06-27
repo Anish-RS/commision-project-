@@ -1986,7 +1986,92 @@ def ledger():
         customer_credit_total=customer_credit_total, customer_debit_total=customer_debit_total
     )
 
+from psycopg2.extras import RealDictCursor
 
+@app.route("/ledger/print")
+def ledger_print():
+
+    conn = get_connection()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
+
+    # Supplier Credit
+    cursor.execute("""
+        SELECT supplier_id AS id,
+               name,
+               balance AS amount
+        FROM suppliers
+        WHERE balance > 0
+        ORDER BY name
+    """)
+    supplier_credit = cursor.fetchall()
+
+    supplier_credit_total = sum(
+        float(x["amount"]) for x in supplier_credit
+    )
+
+    # Supplier Debit
+    cursor.execute("""
+        SELECT supplier_id AS id,
+               name,
+               ABS(balance) AS amount
+        FROM suppliers
+        WHERE balance < 0
+        ORDER BY name
+    """)
+    supplier_debit = cursor.fetchall()
+
+    supplier_debit_total = sum(
+        float(x["amount"]) for x in supplier_debit
+    )
+
+    # Customer Credit
+    cursor.execute("""
+        SELECT customer_id AS id,
+               name,
+               balance AS amount
+        FROM customers
+        WHERE balance > 0
+        ORDER BY name
+    """)
+    customer_credit = cursor.fetchall()
+
+    customer_credit_total = sum(
+        float(x["amount"]) for x in customer_credit
+    )
+
+    # Customer Debit
+    cursor.execute("""
+        SELECT customer_id AS id,
+               name,
+               ABS(balance) AS amount
+        FROM customers
+        WHERE balance < 0
+        ORDER BY name
+    """)
+    customer_debit = cursor.fetchall()
+
+    customer_debit_total = sum(
+        float(x["amount"]) for x in customer_debit
+    )
+
+    cursor.close()
+    conn.close()
+
+    return render_template(
+        "ledger_print.html",
+
+        supplier_credit=supplier_credit,
+        supplier_credit_total=supplier_credit_total,
+
+        supplier_debit=supplier_debit,
+        supplier_debit_total=supplier_debit_total,
+
+        customer_credit=customer_credit,
+        customer_credit_total=customer_credit_total,
+
+        customer_debit=customer_debit,
+        customer_debit_total=customer_debit_total
+    )
 # ---------------------------------------------------------------------------
 # Find (search customers / suppliers)
 # ---------------------------------------------------------------------------
