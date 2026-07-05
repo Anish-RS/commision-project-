@@ -2,7 +2,6 @@
 {% block content %}
 
 <style>
-
 body{
     background:linear-gradient(135deg,#eaf6ff,#fff0f4);
 }
@@ -38,71 +37,71 @@ th{
     background:#1E3A8A;
     color:white;
 }
-
 </style>
 
 <h2 style="text-align:center;">Old Balance Adjustment History</h2>
 
 <div class="card">
+    <form method="GET">
+        <label>Select Date</label>
+        <input
+            type="date"
+            name="date"
+            class="input-field"
+            value="{{ selected_date }}"
+            onchange="this.form.submit()"
+        >
+    </form>
 
-<form method="GET">
+    <table>
+        <thead>
+            <tr>
+                <th>Type</th>
+                <th>Name</th>
+                <th>Amount Added</th>
+            </tr>
+        </thead>
+        <tbody>
+            
+            <!-- 1. Suppliers Grouped at the Top -->
+            {% for row in adjustments if row.entity_type|lower == 'supplier' %}
+            <tr>
+                <td>{{ row.entity_type|title }}</td>
+                <td>{{ row.name }}</td>
+                <td>₹ {{ "%.2f"|format(row.amount) }}</td>
+            </tr>
+            {% endfor %}
 
-<label>Select Date</label>
+            <!-- 2. Any other entity types (if applicable) in the middle -->
+            {% for row in adjustments if row.entity_type|lower != 'supplier' and row.entity_type|lower != 'customer' %}
+            <tr>
+                <td>{{ row.entity_type|title }}</td>
+                <td>{{ row.name }}</td>
+                <td>₹ {{ "%.2f"|format(row.amount) }}</td>
+            </tr>
+            {% endfor %}
 
-<input
-type="date"
-name="date"
-class="input-field"
-value="{{ selected_date }}"
-onchange="this.form.submit()">
+            <!-- 3. Customers Grouped at the Bottom -->
+            {% for row in adjustments if row.entity_type|lower == 'customer' %}
+            <tr>
+                <td>{{ row.entity_type|title }}</td>
+                <td>{{ row.name }}</td>
+                <td>₹ {{ "%.2f"|format(row.amount) }}</td>
+            </tr>
+            {% endfor %}
 
-</form>
+            <!-- Empty State Handling -->
+            {% if adjustments|length == 0 %}
+            <tr>
+                <!-- Changed colspan from 4 to 3 to match your header count -->
+                <td colspan="3" style="text-align:center;">
+                    No adjustments found.
+                </td>
+            </tr>
+            {% endif %}
 
-<table>
-
-<thead>
-
-<tr>
-<th>Type</th>
-<th>Name</th>
-<th>Amount Added</th>
-</tr>
-
-</thead>
-
-<tbody>
-
-{% for row in adjustments %}
-
-<tr>
-
-
-<td>{{ row.entity_type|title }}</td>
-
-<td>{{ row.name }}</td>
-
-<td>₹ {{ "%.2f"|format(row.amount) }}</td>
-
-</tr>
-
-{% endfor %}
-
-{% if adjustments|length==0 %}
-
-<tr>
-
-<td colspan="4" style="text-align:center;">
-No adjustments found.
-</td>
-
-</tr>
-
-{% endif %}
-
-</tbody>
-
-</table>
-
+        </tbody>
+    </table>
 </div>
 
 {% endblock %}
