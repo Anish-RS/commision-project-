@@ -1,9 +1,6 @@
 {% extends "base.html" %}
 {% block title %}Add Labour Entry{% endblock %}
 {% block content %}
-{% extends "base.html" %}
-{% block title %}Add Labour Entry{% endblock %}
-{% block content %}
 
 <style>
   .page-wrap {
@@ -218,127 +215,6 @@
 
 </div>
 
-<script>
-let labourSubmitting = false;
-
-document.getElementById("labourForm").addEventListener("submit", function(e) {
-
-    const amount =
-        document.querySelector('input[name="amount"]').value;
-
-    if (!amount || parseFloat(amount) <= 0) {
-        e.preventDefault();
-        alert("Please enter a valid labour amount.");
-        return false;
-    }
-
-    if (labourSubmitting) {
-        e.preventDefault();
-        return false;
-    }
-
-    labourSubmitting = true;
-
-    const btn = document.getElementById("saveLabourBtn");
-    btn.disabled = true;
-    btn.innerText = "Saving Labour...";
-
-    return true;
-});
-</script>
-{% endblock %}
-<style>
-  .labour-card {
-    max-width: 500px;
-    margin: 28px auto;
-    background: #ffffff;
-    padding: 24px 28px;
-    border-radius: 14px;
-    box-shadow: 0 8px 26px rgba(0,0,0,0.06);
-  }
-
-  .labour-title {
-    font-size: 22px;
-    font-weight: 700;
-    margin-bottom: 16px;
-    color: #374151;
-  }
-
-  .form-field {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 14px;
-  }
-
-  .form-field label {
-    font-size: 14px;
-    font-weight: 600;
-    color: #4b5563;
-    margin-bottom: 6px;
-  }
-
-  .form-field input {
-    padding: 10px 12px;
-    border-radius: 10px;
-    border: 1px solid #e3e8f5;
-    background: #f9fcff;
-    font-size: 15px;
-  }
-
-  .btn-primary {
-    background: linear-gradient(90deg,#42a5f5,#1976d2);
-    color: #fff;
-    padding: 10px 16px;
-    border-radius: 10px;
-    font-weight: 700;
-    border: none;
-    cursor: pointer;
-  }
-
-  .btn-primary:hover {
-    opacity: 0.92;
-  }
-
-  .btn-secondary {
-    margin-left: 10px;
-    padding: 10px 16px;
-    border-radius: 10px;
-    color: #1976d2;
-    border: 1px solid #d0e3ff;
-    background: #f3f8ff;
-    font-weight: 700;
-    text-decoration: none;
-  }
-
-  .btn-secondary:hover {
-    background: #e8f1ff;
-  }
-</style>
-
-<div class="labour-card">
-  <div class="labour-title">Add Labour Entry</div>
-
-  <form method="POST" id="labourForm">
-
-    <div class="form-field">
-      <label>Amount (₹)</label>
-      <input type="number" step="0.01" name="amount" required placeholder="Enter labour amount">
-    </div>
-
-    <div class="form-field">
-      <label>Note (optional)</label>
-      <input type="text" name="note" placeholder="Add description (optional)">
-    </div>
-
-    <div style="margin-top:18px;">
-      <button class="btn-primary" type="submit" id="saveLabourBtn">
-          Save Labour
-      </button>
-      <a href="{{ url_for('cash_in_hand') }}" class="btn-secondary">Back to Cash In Hand</a>
-    </div>
-
-  </form>
-</div>
 <script>
 let labourSubmitting = false;
 
