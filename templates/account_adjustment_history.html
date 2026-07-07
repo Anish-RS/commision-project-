@@ -1,107 +1,424 @@
 {% extends "base.html" %}
 {% block content %}
 
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+
 <style>
-body{
-    background:linear-gradient(135deg,#eaf6ff,#fff0f4);
-}
+  :root{
+    --ink:#152238;
+    --ink-soft:#5b6b85;
+    --paper:#eef3f8;
+    --card:#ffffff;
+    --line:#e3e9f2;
+    --line-soft:#edf1f7;
+    --supplier:#a6620d;
+    --supplier-bg:#fdf3e6;
+    --customer:#0f766e;
+    --customer-bg:#e9f6f4;
+    --other:#4f5b76;
+    --other-bg:#eef0f5;
+    --focus:#2b57d9;
+    --shadow: 0 1px 2px rgba(21,34,56,.04), 0 10px 30px -12px rgba(21,34,56,.15);
+  }
 
-.card{
-    max-width:1000px;
-    margin:auto;
-    background:#fff;
-    padding:20px;
+  body{
+    background:
+      radial-gradient(1200px 500px at 10% -10%, #f4f8fc 0%, transparent 60%),
+      var(--paper);
+  }
+
+  .aah-wrap{
+    max-width:1040px;
+    margin:40px auto;
+    padding:0 20px 60px;
+    font-family:'Inter', system-ui, sans-serif;
+    color:var(--ink);
+  }
+
+  .aah-header{
+    display:flex;
+    align-items:flex-end;
+    justify-content:space-between;
+    gap:16px;
+    flex-wrap:wrap;
+    margin-bottom:22px;
+  }
+
+  .aah-eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin:0 0 6px;
+  }
+
+  .aah-title{
+    font-family:'Sora', sans-serif;
+    font-weight:700;
+    font-size:28px;
+    letter-spacing:-.01em;
+    margin:0;
+    color:var(--ink);
+  }
+
+  .aah-subtitle{
+    font-size:14px;
+    color:var(--ink-soft);
+    margin:6px 0 0;
+    max-width:480px;
+  }
+
+  /* ---------- date filter ---------- */
+  .aah-filter{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:var(--card);
+    border:1px solid var(--line);
     border-radius:12px;
-    box-shadow:0 5px 15px rgba(0,0,0,.08);
-}
+    padding:8px 8px 8px 14px;
+    box-shadow:var(--shadow);
+  }
 
-.input-field{
-    padding:10px;
-    border-radius:10px;
-    border:2px solid #dbefff;
-    background:#eaf6ff;
-}
+  .aah-filter label{
+    font-size:12px;
+    font-weight:600;
+    color:var(--ink-soft);
+    white-space:nowrap;
+  }
 
-table{
+  .aah-filter input[type="date"]{
+    padding:8px 10px;
+    border-radius:8px;
+    border:1px solid var(--line);
+    background:var(--paper);
+    font-family:'Inter', sans-serif;
+    font-size:14px;
+    color:var(--ink);
+    outline-offset:2px;
+  }
+
+  .aah-filter input[type="date"]:focus-visible{
+    outline:2px solid var(--focus);
+  }
+
+  .aah-clear{
+    font-size:12px;
+    font-weight:600;
+    color:var(--ink-soft);
+    text-decoration:none;
+    padding:6px 8px;
+    border-radius:8px;
+    white-space:nowrap;
+  }
+  .aah-clear:hover{ color:var(--ink); background:var(--line-soft); }
+
+  /* ---------- summary strip ---------- */
+  .aah-stats{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:14px;
+    margin:24px 0 26px;
+  }
+
+  .aah-stat{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:16px 18px;
+    box-shadow:var(--shadow);
+    position:relative;
+    overflow:hidden;
+  }
+
+  .aah-stat::before{
+    content:"";
+    position:absolute;
+    left:0; top:0; bottom:0;
+    width:4px;
+  }
+  .aah-stat.supplier::before{ background:var(--supplier); }
+  .aah-stat.customer::before{ background:var(--customer); }
+  .aah-stat.total::before{ background:var(--ink); }
+
+  .aah-stat-label{
+    font-size:12px;
+    font-weight:600;
+    color:var(--ink-soft);
+    text-transform:uppercase;
+    letter-spacing:.04em;
+    margin:0 0 8px;
+  }
+
+  .aah-stat-value{
+    font-family:'IBM Plex Mono', monospace;
+    font-weight:600;
+    font-size:22px;
+    font-variant-numeric:tabular-nums;
+    margin:0;
+  }
+
+  .aah-stat-count{
+    font-size:12px;
+    color:var(--ink-soft);
+    margin:4px 0 0;
+  }
+
+  /* ---------- table card ---------- */
+  .aah-card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:16px;
+    box-shadow:var(--shadow);
+    overflow:hidden;
+  }
+
+  .aah-scroll{
+    overflow-x:auto;
+  }
+
+  table.aah-table{
     width:100%;
     border-collapse:collapse;
-    margin-top:20px;
-}
+    min-width:520px;
+  }
 
-th,td{
-    border:1px solid #ddd;
-    padding:10px;
-}
+  .aah-table thead th{
+    position:sticky;
+    top:0;
+    background:var(--ink);
+    color:#fff;
+    font-family:'Sora', sans-serif;
+    font-weight:600;
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:.05em;
+    text-align:left;
+    padding:14px 18px;
+    border:none;
+  }
 
-th{
-    background:#1E3A8A;
-    color:white;
-}
+  .aah-table thead th.amount-col{ text-align:right; }
+
+  .aah-table tbody tr{
+    border-bottom:1px solid var(--line-soft);
+    transition:background .12s ease;
+  }
+  .aah-table tbody tr:last-child{ border-bottom:none; }
+  .aah-table tbody tr:hover{ background:#f8fafc; }
+  .aah-table tbody tr:nth-child(even){ background:#fbfcfe; }
+  .aah-table tbody tr:nth-child(even):hover{ background:#f4f7fb; }
+
+  .aah-table td{
+    padding:13px 18px;
+    font-size:14px;
+    border:none;
+    vertical-align:middle;
+  }
+
+  .aah-table td.name-col{ font-weight:500; color:var(--ink); }
+
+  .aah-table td.amount-col{
+    text-align:right;
+    font-family:'IBM Plex Mono', monospace;
+    font-weight:600;
+    font-variant-numeric:tabular-nums;
+    color:var(--ink);
+  }
+
+  /* type badges */
+  .aah-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    padding:4px 10px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:600;
+  }
+  .aah-badge::before{
+    content:"";
+    width:6px; height:6px;
+    border-radius:50%;
+  }
+  .aah-badge.supplier{ color:var(--supplier); background:var(--supplier-bg); }
+  .aah-badge.supplier::before{ background:var(--supplier); }
+  .aah-badge.customer{ color:var(--customer); background:var(--customer-bg); }
+  .aah-badge.customer::before{ background:var(--customer); }
+  .aah-badge.other{ color:var(--other); background:var(--other-bg); }
+  .aah-badge.other::before{ background:var(--other); }
+
+  /* group divider label inside body */
+  .aah-group-row td{
+    padding:10px 18px 6px;
+    font-size:11px;
+    font-weight:600;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    background:var(--paper);
+    border-bottom:1px solid var(--line-soft);
+  }
+
+  /* empty state */
+  .aah-empty{
+    padding:56px 24px;
+    text-align:center;
+  }
+  .aah-empty svg{ margin-bottom:14px; opacity:.55; }
+  .aah-empty h3{
+    font-family:'Sora', sans-serif;
+    font-size:16px;
+    margin:0 0 4px;
+    color:var(--ink);
+  }
+  .aah-empty p{
+    font-size:13px;
+    color:var(--ink-soft);
+    margin:0;
+  }
+
+  @media (max-width: 720px){
+    .aah-stats{ grid-template-columns:1fr; }
+    .aah-header{ align-items:flex-start; }
+    .aah-filter{ width:100%; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .aah-table tbody tr{ transition:none; }
+  }
 </style>
 
-<h2 style="text-align:center;">Old Balance Adjustment History</h2>
+{# ---- precompute group totals without altering the original grouped display loops ---- #}
+{% set ns = namespace(supplier_total=0, supplier_count=0, customer_total=0, customer_count=0, other_total=0, other_count=0) %}
+{% for row in adjustments %}
+  {% if row.entity_type|lower == 'supplier' %}
+    {% set ns.supplier_total = ns.supplier_total + row.amount %}
+    {% set ns.supplier_count = ns.supplier_count + 1 %}
+  {% elif row.entity_type|lower == 'customer' %}
+    {% set ns.customer_total = ns.customer_total + row.amount %}
+    {% set ns.customer_count = ns.customer_count + 1 %}
+  {% else %}
+    {% set ns.other_total = ns.other_total + row.amount %}
+    {% set ns.other_count = ns.other_count + 1 %}
+  {% endif %}
+{% endfor %}
 
-<div class="card">
-    <form method="GET">
-        <label>Select Date</label>
-        <input
-            type="date"
-            name="date"
-            class="input-field"
-            value="{{ selected_date }}"
-            onchange="this.form.submit()"
-        >
+<div class="aah-wrap">
+
+  <div class="aah-header">
+    <div>
+      <p class="aah-eyebrow">Ledger &middot; Balance Adjustments</p>
+      <h2 class="aah-title">Old Balance Adjustment History</h2>
+      <p class="aah-subtitle">Every adjustment applied to supplier and customer opening balances, grouped by account type.</p>
+    </div>
+
+    <form method="GET" class="aah-filter">
+      <label for="aah-date">Date</label>
+      <input
+        id="aah-date"
+        type="date"
+        name="date"
+        value="{{ selected_date }}"
+        onchange="this.form.submit()"
+      >
+      {% if selected_date %}
+      <a class="aah-clear" href="{{ request.path }}">Clear</a>
+      {% endif %}
     </form>
+  </div>
 
-    <table>
+  <div class="aah-stats">
+    <div class="aah-stat supplier">
+      <p class="aah-stat-label">Supplier adjustments</p>
+      <p class="aah-stat-value">&#8377; {{ "%.2f"|format(ns.supplier_total) }}</p>
+      <p class="aah-stat-count">{{ ns.supplier_count }} {{ "entry" if ns.supplier_count == 1 else "entries" }}</p>
+    </div>
+    <div class="aah-stat customer">
+      <p class="aah-stat-label">Customer adjustments</p>
+      <p class="aah-stat-value">&#8377; {{ "%.2f"|format(ns.customer_total) }}</p>
+      <p class="aah-stat-count">{{ ns.customer_count }} {{ "entry" if ns.customer_count == 1 else "entries" }}</p>
+    </div>
+    <div class="aah-stat total">
+      <p class="aah-stat-label">Total adjusted</p>
+      <p class="aah-stat-value">&#8377; {{ "%.2f"|format(ns.supplier_total + ns.customer_total + ns.other_total) }}</p>
+      <p class="aah-stat-count">{{ adjustments|length }} {{ "entry" if adjustments|length == 1 else "entries" }} total</p>
+    </div>
+  </div>
+
+  <div class="aah-card">
+    <div class="aah-scroll">
+      <table class="aah-table">
         <thead>
-            <tr>
-                <th>Type</th>
-                <th>Name</th>
-                <th>Amount Added</th>
-            </tr>
+          <tr>
+            <th>Type</th>
+            <th>Name</th>
+            <th class="amount-col">Amount added</th>
+          </tr>
         </thead>
         <tbody>
-            
-            <!-- 1. Suppliers Grouped at the Top -->
-            {% for row in adjustments if row.entity_type|lower == 'supplier' %}
-            <tr>
-                <td>{{ row.entity_type|title }}</td>
-                <td>{{ row.name }}</td>
-                <td>₹ {{ "%.2f"|format(row.amount) }}</td>
-            </tr>
-            {% endfor %}
 
-            <!-- 2. Any other entity types (if applicable) in the middle -->
-            {% for row in adjustments if row.entity_type|lower != 'supplier' and row.entity_type|lower != 'customer' %}
-            <tr>
-                <td>{{ row.entity_type|title }}</td>
-                <td>{{ row.name }}</td>
-                <td>₹ {{ "%.2f"|format(row.amount) }}</td>
-            </tr>
-            {% endfor %}
+          {% if adjustments|length > 0 %}
 
-            <!-- 3. Customers Grouped at the Bottom -->
-            {% for row in adjustments if row.entity_type|lower == 'customer' %}
-            <tr>
-                <td>{{ row.entity_type|title }}</td>
-                <td>{{ row.name }}</td>
-                <td>₹ {{ "%.2f"|format(row.amount) }}</td>
-            </tr>
-            {% endfor %}
+          {% if ns.supplier_count > 0 %}
+          <tr class="aah-group-row"><td colspan="3">Suppliers</td></tr>
+          {% for row in adjustments if row.entity_type|lower == 'supplier' %}
+          <tr>
+            <td><span class="aah-badge supplier">{{ row.entity_type|title }}</span></td>
+            <td class="name-col">{{ row.name }}</td>
+            <td class="amount-col">&#8377; {{ "%.2f"|format(row.amount) }}</td>
+          </tr>
+          {% endfor %}
+          {% endif %}
 
-            <!-- Empty State Handling -->
-            {% if adjustments|length == 0 %}
-            <tr>
-                <!-- Changed colspan from 4 to 3 to match your header count -->
-                <td colspan="3" style="text-align:center;">
-                    No adjustments found.
-                </td>
-            </tr>
-            {% endif %}
+          {% if ns.other_count > 0 %}
+          <tr class="aah-group-row"><td colspan="3">Other</td></tr>
+          {% for row in adjustments if row.entity_type|lower != 'supplier' and row.entity_type|lower != 'customer' %}
+          <tr>
+            <td><span class="aah-badge other">{{ row.entity_type|title }}</span></td>
+            <td class="name-col">{{ row.name }}</td>
+            <td class="amount-col">&#8377; {{ "%.2f"|format(row.amount) }}</td>
+          </tr>
+          {% endfor %}
+          {% endif %}
+
+          {% if ns.customer_count > 0 %}
+          <tr class="aah-group-row"><td colspan="3">Customers</td></tr>
+          {% for row in adjustments if row.entity_type|lower == 'customer' %}
+          <tr>
+            <td><span class="aah-badge customer">{{ row.entity_type|title }}</span></td>
+            <td class="name-col">{{ row.name }}</td>
+            <td class="amount-col">&#8377; {{ "%.2f"|format(row.amount) }}</td>
+          </tr>
+          {% endfor %}
+          {% endif %}
+
+          {% else %}
+          <tr>
+            <td colspan="3">
+              <div class="aah-empty">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="3" y="5" width="18" height="16" rx="2" stroke="#5b6b85" stroke-width="1.5"/>
+                  <path d="M3 9H21" stroke="#5b6b85" stroke-width="1.5"/>
+                  <path d="M8 3V6" stroke="#5b6b85" stroke-width="1.5" stroke-linecap="round"/>
+                  <path d="M16 3V6" stroke="#5b6b85" stroke-width="1.5" stroke-linecap="round"/>
+                  <path d="M8 13.5L10.5 16L15.5 11" stroke="#5b6b85" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <h3>No adjustments found</h3>
+                <p>{{ "There are no balance adjustments recorded for " + selected_date + "." if selected_date else "There are no balance adjustments recorded yet." }}</p>
+              </div>
+            </td>
+          </tr>
+          {% endif %}
 
         </tbody>
-    </table>
+      </table>
+    </div>
+  </div>
+
 </div>
 
 {% endblock %}
