@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% block title %}Old Balance Adjustment History{% endblock %}
 {% block content %}
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -43,108 +44,91 @@
     color:var(--ink);
   }
 
-  /* ---------- page heading, icon-badge style like other tool pages ---------- */
+  /* ---------- page heading row: title block left, date filter pinned top-right ---------- */
   .aah-heading{
     display:flex;
-    align-items:center;
-    gap:16px;
-    margin-bottom:22px;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:20px;
+    flex-wrap:wrap;
+    margin-bottom:26px;
   }
 
-  .aah-icon-badge{
-    flex:none;
-    width:52px;
-    height:52px;
-    border-radius:14px;
-    background:linear-gradient(160deg, var(--teal), var(--teal-dark));
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    box-shadow:0 8px 18px -6px rgba(20,145,138,.55);
+  .aah-eyebrow{
+    font-family:'Inter', sans-serif;
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin:0 0 8px;
   }
 
   .aah-title{
     font-family:'Sora', sans-serif;
-    font-weight:700;
-    font-size:26px;
+    font-weight:800;
+    font-size:30px;
     letter-spacing:-.01em;
     margin:0;
     color:var(--ink);
   }
 
   .aah-subtitle{
-    font-size:14px;
+    font-size:14.5px;
     color:var(--ink-soft);
-    margin:4px 0 0;
+    margin:8px 0 0;
+    max-width:480px;
+    line-height:1.5;
   }
 
-  /* ---------- filter card ---------- */
-  .aah-filter-card{
+  /* ---------- corner date filter ---------- */
+  .aah-filter-corner{
+    flex:none;
+    display:flex;
+    align-items:center;
+    gap:10px;
     background:var(--card);
     border:1px solid var(--border);
-    border-radius:16px;
+    border-radius:14px;
     box-shadow:var(--shadow);
-    padding:20px 22px;
-    margin-bottom:18px;
+    padding:10px 14px;
   }
 
-  .aah-filter-card form{
+  .aah-filter-corner form{
     display:flex;
-    align-items:flex-end;
-    gap:14px;
-    flex-wrap:wrap;
+    align-items:center;
+    gap:10px;
   }
 
-  .aah-field{ display:flex; flex-direction:column; gap:8px; }
-
-  .aah-field label{
-    font-size:11.5px;
-    font-weight:700;
-    letter-spacing:.06em;
-    text-transform:uppercase;
-    color:var(--label);
+  .aah-filter-corner label{
+    font-size:13px;
+    font-weight:600;
+    color:var(--ink-soft);
+    white-space:nowrap;
   }
 
-  .aah-field input[type="date"]{
-    padding:11px 14px;
-    border-radius:10px;
+  .aah-filter-corner input[type="date"]{
+    padding:9px 12px;
+    border-radius:9px;
     border:1px solid var(--border);
     background:#f8fafc;
-    font-family:'Inter', sans-serif;
-    font-size:14px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13.5px;
     color:var(--ink);
-    min-width:200px;
   }
-  .aah-field input[type="date"]:focus-visible{
+  .aah-filter-corner input[type="date"]:focus-visible{
     outline:2px solid var(--teal);
     outline-offset:1px;
   }
 
-  .aah-apply{
-    display:inline-flex;
-    align-items:center;
-    gap:8px;
-    background:var(--teal);
-    color:#fff;
-    border:none;
-    padding:11px 20px;
-    border-radius:10px;
-    font-size:14px;
-    font-weight:700;
-    cursor:pointer;
-    box-shadow:0 6px 14px -6px rgba(20,145,138,.6);
-  }
-  .aah-apply:hover{ background:var(--teal-dark); }
-
   .aah-clear{
     font-size:13px;
-    font-weight:600;
-    color:var(--ink-soft);
+    font-weight:700;
+    color:var(--teal-dark);
     text-decoration:none;
-    padding:11px 6px;
     white-space:nowrap;
   }
-  .aah-clear:hover{ color:var(--ink); text-decoration:underline; }
+  .aah-clear:hover{ text-decoration:underline; }
 
   /* ---------- info banner ---------- */
   .aah-info{
@@ -299,8 +283,10 @@
 
   @media (max-width: 720px){
     .aah-stats{ grid-template-columns:1fr; }
-    .aah-filter-card form{ align-items:stretch; }
-    .aah-field input[type="date"]{ min-width:0; width:100%; }
+    .aah-heading{ flex-direction:column; }
+    .aah-filter-corner{ width:100%; }
+    .aah-filter-corner form{ width:100%; }
+    .aah-filter-corner input[type="date"]{ flex:1; }
   }
 
   @media (prefers-reduced-motion: reduce){
@@ -326,23 +312,15 @@
 <div class="aah-wrap">
 
   <div class="aah-heading">
-    <div class="aah-icon-badge">
-      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 7V12L15 14" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M4.6 9A8 8 0 1 1 4 13" stroke="#fff" stroke-width="1.7" stroke-linecap="round"/>
-        <path d="M4 5V9H8" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-    </div>
     <div>
+      <p class="aah-eyebrow">Ledger &middot; Balance Adjustments</p>
       <h2 class="aah-title">Old Balance Adjustment History</h2>
-      <p class="aah-subtitle">Search and review balance adjustments applied to supplier and customer accounts.</p>
+      <p class="aah-subtitle">Every adjustment applied to supplier and customer opening balances, grouped by account type.</p>
     </div>
-  </div>
 
-  <div class="aah-filter-card">
-    <form method="GET">
-      <div class="aah-field">
-        <label for="aah-date">Select date</label>
+    <div class="aah-filter-corner">
+      <form method="GET">
+        <label for="aah-date">Date</label>
         <input
           id="aah-date"
           type="date"
@@ -350,18 +328,11 @@
           value="{{ selected_date }}"
           onchange="this.form.submit()"
         >
-      </div>
-      <button type="submit" class="aah-apply">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 4V16M12 16L7 11.5M12 16L17 11.5" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M5 20H19" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-        Load
-      </button>
-      {% if selected_date %}
-      <a class="aah-clear" href="{{ request.path }}">Clear filter</a>
-      {% endif %}
-    </form>
+        {% if selected_date %}
+        <a class="aah-clear" href="{{ request.path }}">Clear</a>
+        {% endif %}
+      </form>
+    </div>
   </div>
 
   <div class="aah-info">
