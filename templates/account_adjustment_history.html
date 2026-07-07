@@ -44,91 +44,116 @@
     color:var(--ink);
   }
 
-  /* ---------- page heading row: title block left, date filter pinned top-right ---------- */
-  .aah-heading{
+  /* ---------- unified toolbar card: icon+title left, date filter right ---------- */
+  .aah-toolbar{
     display:flex;
-    align-items:flex-start;
+    align-items:center;
     justify-content:space-between;
-    gap:20px;
+    gap:28px;
     flex-wrap:wrap;
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:20px;
+    box-shadow:var(--shadow);
+    padding:22px 26px;
     margin-bottom:26px;
   }
 
-  .aah-eyebrow{
-    font-family:'Inter', sans-serif;
-    font-size:12px;
-    font-weight:700;
-    letter-spacing:.1em;
-    text-transform:uppercase;
-    color:var(--ink-soft);
-    margin:0 0 8px;
+  .aah-toolbar-left{
+    display:flex;
+    align-items:center;
+    gap:16px;
+  }
+
+  .aah-icon-badge{
+    flex:none;
+    width:50px;
+    height:50px;
+    border-radius:13px;
+    background:linear-gradient(160deg, var(--teal), var(--teal-dark));
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow:0 8px 18px -6px rgba(20,145,138,.55);
   }
 
   .aah-title{
     font-family:'Sora', sans-serif;
     font-weight:800;
-    font-size:30px;
+    font-size:24px;
     letter-spacing:-.01em;
     margin:0;
     color:var(--ink);
   }
 
   .aah-subtitle{
-    font-size:14.5px;
+    font-size:14px;
     color:var(--ink-soft);
-    margin:8px 0 0;
-    max-width:480px;
-    line-height:1.5;
+    margin:5px 0 0;
+    line-height:1.4;
   }
 
-  /* ---------- corner date filter ---------- */
-  .aah-filter-corner{
-    flex:none;
+  .aah-toolbar-right{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    padding-left:28px;
+    border-left:1px solid var(--border);
+  }
+
+  .aah-toolbar-right label{
+    font-size:11.5px;
+    font-weight:700;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:var(--label);
+  }
+
+  .aah-toolbar-right form{
     display:flex;
     align-items:center;
-    gap:10px;
-    background:var(--card);
-    border:1px solid var(--border);
-    border-radius:14px;
-    box-shadow:var(--shadow);
+    gap:12px;
+  }
+
+  .aah-toolbar-right input[type="date"]{
     padding:10px 14px;
-  }
-
-  .aah-filter-corner form{
-    display:flex;
-    align-items:center;
-    gap:10px;
-  }
-
-  .aah-filter-corner label{
-    font-size:13px;
-    font-weight:600;
-    color:var(--ink-soft);
-    white-space:nowrap;
-  }
-
-  .aah-filter-corner input[type="date"]{
-    padding:9px 12px;
-    border-radius:9px;
+    border-radius:10px;
     border:1px solid var(--border);
     background:#f8fafc;
     font-family:'IBM Plex Mono', monospace;
     font-size:13.5px;
     color:var(--ink);
   }
-  .aah-filter-corner input[type="date"]:focus-visible{
+  .aah-toolbar-right input[type="date"]:focus-visible{
     outline:2px solid var(--teal);
     outline-offset:1px;
   }
 
+  .aah-apply{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:var(--teal);
+    color:#fff;
+    border:none;
+    padding:10px 18px;
+    border-radius:10px;
+    font-size:14px;
+    font-weight:700;
+    cursor:pointer;
+    box-shadow:0 6px 14px -6px rgba(20,145,138,.6);
+    white-space:nowrap;
+  }
+  .aah-apply:hover{ background:var(--teal-dark); }
+
   .aah-clear{
     font-size:13px;
-    font-weight:700;
-    color:var(--teal-dark);
+    font-weight:600;
+    color:var(--ink-soft);
     text-decoration:none;
     white-space:nowrap;
   }
-  .aah-clear:hover{ text-decoration:underline; }
+  .aah-clear:hover{ color:var(--ink); text-decoration:underline; }
 
   /* ---------- info banner ---------- */
   .aah-info{
@@ -283,10 +308,10 @@
 
   @media (max-width: 720px){
     .aah-stats{ grid-template-columns:1fr; }
-    .aah-heading{ flex-direction:column; }
-    .aah-filter-corner{ width:100%; }
-    .aah-filter-corner form{ width:100%; }
-    .aah-filter-corner input[type="date"]{ flex:1; }
+    .aah-toolbar{ flex-direction:column; align-items:stretch; }
+    .aah-toolbar-right{ border-left:none; border-top:1px solid var(--border); padding-left:0; padding-top:16px; }
+    .aah-toolbar-right form{ flex-wrap:wrap; }
+    .aah-toolbar-right input[type="date"]{ flex:1; min-width:0; }
   }
 
   @media (prefers-reduced-motion: reduce){
@@ -311,25 +336,39 @@
 
 <div class="aah-wrap">
 
-  <div class="aah-heading">
-    <div>
-      <p class="aah-eyebrow">Ledger &middot; Balance Adjustments</p>
-      <h2 class="aah-title">Old Balance Adjustment History</h2>
-      <p class="aah-subtitle">Every adjustment applied to supplier and customer opening balances, grouped by account type.</p>
+  <div class="aah-toolbar">
+    <div class="aah-toolbar-left">
+      <div class="aah-icon-badge">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 7V12L15 14" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M4.6 9A8 8 0 1 1 4 13" stroke="#fff" stroke-width="1.7" stroke-linecap="round"/>
+          <path d="M4 5V9H8" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div>
+        <h2 class="aah-title">Old Balance Adjustment History</h2>
+        <p class="aah-subtitle">Search and review balance adjustments applied to supplier and customer accounts.</p>
+      </div>
     </div>
 
-    <div class="aah-filter-corner">
+    <div class="aah-toolbar-right">
+      <label for="aah-date">Select date</label>
       <form method="GET">
-        <label for="aah-date">Date</label>
         <input
           id="aah-date"
           type="date"
           name="date"
           value="{{ selected_date }}"
-          onchange="this.form.submit()"
         >
+        <button type="submit" class="aah-apply">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 4V16M12 16L7 11.5M12 16L17 11.5" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M5 20H19" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          Load
+        </button>
         {% if selected_date %}
-        <a class="aah-clear" href="{{ request.path }}">Clear</a>
+        <a class="aah-clear" href="{{ request.path }}">Clear filter</a>
         {% endif %}
       </form>
     </div>
