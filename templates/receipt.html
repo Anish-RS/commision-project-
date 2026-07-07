@@ -4,137 +4,382 @@
 * { box-sizing: border-box; }
 
 body {
-  background: linear-gradient(135deg, #fff0f4, #ffd6e7);
+  background:
+    radial-gradient(1100px 500px at 15% -10%, rgba(20,184,166,0.08), transparent 60%),
+    radial-gradient(900px 500px at 100% 0%, rgba(99,102,241,0.05), transparent 55%),
+    #eef1f6;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
 }
 
-.page-title {
-  text-align: center;
-  color: #6C63FF;
-  font-size: 26px;
-  font-weight: 700;
-  margin: 20px 0;
+@keyframes riseIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
-.suggestion-item.active{
-    background:#90caf9;
+
+.page-header {
+  max-width: 640px;
+  margin: 32px auto 20px;
+  padding: 0 4px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  animation: riseIn 0.45s ease both;
 }
+
+.page-header .icon {
+  width: 54px;
+  height: 54px;
+  flex-shrink: 0;
+  border-radius: 15px;
+  background: linear-gradient(145deg, #17c4b0, #0d9488 65%, #0b7d73);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    0 10px 22px rgba(13,148,136,0.30),
+    inset 0 1px 0 rgba(255,255,255,0.25);
+  position: relative;
+}
+
+.page-header .icon::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 15px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.18), transparent 55%);
+}
+
+.page-header .icon svg {
+  width: 26px;
+  height: 26px;
+  stroke: #fff;
+  fill: none;
+  position: relative;
+  z-index: 1;
+}
+
+.page-header h2 {
+  margin: 0;
+  font-size: 25px;
+  font-weight: 800;
+  color: #0f1728;
+  letter-spacing: -0.03em;
+}
+
+.page-header p {
+  margin: 4px 0 0;
+  font-size: 13.5px;
+  color: #667085;
+  letter-spacing: 0.01em;
+}
+
 .card {
-  max-width: 560px;
-  margin: 0 auto;
-  background: rgba(255,255,255,0.96);
-  padding: 22px;
-  border-radius: 14px;
-  border-left: 6px solid #90CAF9;
-  box-shadow: 0 10px 30px rgba(28,37,70,0.08);
+  max-width: 640px;
+  margin: 0 auto 22px;
+  background: #ffffff;
+  padding: 30px 30px 30px;
+  border-radius: 18px;
+  position: relative;
+  box-shadow:
+    0 1px 2px rgba(16,24,40,0.04),
+    0 2px 8px rgba(16,24,40,0.05),
+    0 18px 40px -12px rgba(16,24,40,0.14);
+  border: 1px solid #eef0f3;
+  animation: riseIn 0.5s ease 0.05s both;
+  overflow: hidden;
+}
+
+.card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #17c4b0, #0d9488, #6366f1);
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
 }
 
 .form-group {
-  margin-bottom: 14px;
+  margin-bottom: 18px;
 }
 
 label {
-  display: block;
-  font-weight: 600;
-  margin-bottom: 6px;
-  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  color: #8792a2;
+}
+
+.input-wrap {
+  position: relative;
+}
+
+.input-wrap svg.field-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 17px;
+  height: 17px;
+  stroke: #98a2b3;
+  fill: none;
+  pointer-events: none;
+  transition: stroke 0.15s;
+}
+
+.input-wrap input:focus + svg.field-icon,
+.input-wrap:focus-within svg.field-icon {
+  stroke: #0d9488;
 }
 
 input, select {
   width: 100%;
-  height: 44px;
-  padding: 10px 14px;
-  border-radius: 12px;
-  border: 2px solid #dbefff;
-  background: #eaf6ff;
+  height: 47px;
+  padding: 10px 14px 10px 42px;
+  border-radius: 11px;
+  border: 1.5px solid #e4e7ec;
+  background: #f9fafb;
   font-size: 15px;
+  color: #101828;
   outline: none;
-  transition: 0.15s;
+  transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+  font-family: inherit;
+}
+
+select {
+  padding-left: 14px;
+  appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2398a2b3' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  cursor: pointer;
+}
+
+input::placeholder {
+  color: #a2aab5;
 }
 
 input:focus, select:focus {
   background: #fff;
-  border-color: #64b5f6;
-  box-shadow: 0 4px 12px rgba(100,181,246,0.15);
+  border-color: #0d9488;
+  box-shadow: 0 0 0 4px rgba(13,148,136,0.12);
+}
+
+.helper-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  max-width: 640px;
+  margin: 0 auto 22px;
+  padding: 13px 16px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(20,184,166,0.08), rgba(99,102,241,0.06));
+  border: 1px solid rgba(13,148,136,0.18);
+  font-size: 13.5px;
+  color: #0b6b62;
+  line-height: 1.5;
+  animation: riseIn 0.55s ease 0.1s both;
+}
+
+.helper-note svg {
+  width: 16px;
+  height: 16px;
+  stroke: #0d9488;
+  fill: none;
+  flex-shrink: 0;
+  margin-top: 2px;
 }
 
 button {
   width: 100%;
-  padding: 12px;
-  border-radius: 12px;
+  padding: 14px;
+  border-radius: 11px;
   border: none;
-  background: linear-gradient(90deg, #81c784, #4caf50);
+  background: linear-gradient(90deg, #17c4b0, #0d9488);
   color: white;
   font-weight: 700;
-  font-size: 16px;
+  font-size: 15px;
   cursor: pointer;
-  box-shadow: 0 6px 18px rgba(76,175,80,0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  letter-spacing: 0.01em;
+  box-shadow:
+    0 8px 18px rgba(13,148,136,0.30),
+    inset 0 1px 0 rgba(255,255,255,0.25);
+  transition: transform 0.15s, box-shadow 0.15s, filter 0.15s;
+}
+
+button svg {
+  width: 17px;
+  height: 17px;
+  stroke: #fff;
+  fill: none;
 }
 
 button:hover {
   transform: translateY(-1px);
-  box-shadow: 0 8px 22px rgba(76,175,80,0.35);
+  box-shadow:
+    0 10px 22px rgba(13,148,136,0.38),
+    inset 0 1px 0 rgba(255,255,255,0.3);
+  filter: brightness(1.03);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+  filter: none;
+}
+
+.suggestion-item.active{
+    background:#e6fbf7;
+}
+
+#suggestions {
+  border-color: #e4e7ec !important;
+}
+
+.suggestion-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.suggestion-item:hover {
+  background: #f2fdfb;
+}
+
+.suggestion-item .avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #17c4b0, #0d9488);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 </style>
 
-<h2>Receipt (Money Received)</h2>
-
-<form method="POST" style="max-width:560px;" id="receiptForm">
-
-  <!-- DATE -->
+<div class="page-header">
+  <div class="icon">
+    <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M6 3h12a1 1 0 0 1 1 1v16l-2-1.2-2 1.2-2-1.2-2 1.2-2-1.2-2 1.2-2-1.2V4a1 1 0 0 1 1-1z"/>
+      <path d="M8 8h8"/>
+      <path d="M8 12h8"/>
+      <path d="M8 16h5"/>
+    </svg>
+  </div>
   <div>
-    <label>Date:</label>
-    <input type="date" name="tx_date" id="tx_date" required>
+    <h2>Receipt (Money Received)</h2>
+    <p>Record a payment received from a customer or supplier.</p>
+  </div>
+</div>
+
+<div class="helper-note">
+  <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 16v-5"/><path d="M12 8h.01"/></svg>
+  <span>Choose the entity type, search for the customer or supplier, then fill in the amount to save the receipt.</span>
+</div>
+
+<div class="card">
+<form method="POST" id="receiptForm">
+
+  <div class="field-row">
+    <!-- DATE -->
+    <div class="form-group">
+      <label>Date</label>
+      <div class="input-wrap">
+        <input type="date" name="tx_date" id="tx_date" required style="padding-left:14px;">
+      </div>
+    </div>
+
+    <!-- ENTITY TYPE -->
+    <div class="form-group">
+      <label>Entity Type</label>
+      <select name="entity_type"
+          id="entity_type"
+          required>
+        <option value="customer">Customer</option>
+        <option value="supplier">Supplier</option>
+      </select>
+    </div>
   </div>
 
-  <!-- ENTITY TYPE -->
-  <div>
-    <label>Entity Type:</label>
-    <select name="entity_type"
-        id="entity_type"
-        required>
-      <option value="customer">Customer</option>
-      <option value="supplier">Supplier</option>
-    </select>
-  </div>
+  <div class="form-group" style="position:relative;">
+    <label>Customer / Supplier</label>
+    <div class="input-wrap">
+      <svg class="field-icon" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.2"/><path d="M5 20c1.4-3.6 4.2-5.4 7-5.4s5.6 1.8 7 5.4"/></svg>
+      <input type="text"
+             id="entity_search"
+             name="entity_name"
+             placeholder="Type ID or Name..."
+             autocomplete="off"
+             required>
+    </div>
 
-  
-  <div>
-    <label>Customer / Supplier:</label>
-  
-    <input type="text"
-           id="entity_search"
-           name="entity_name"
-           placeholder="Type ID or Name..."
-           autocomplete="off"
-           required>
-    
     <div id="suggestions"
          style="
             display:none;
+            position:absolute;
+            left:0; right:0;
+            z-index:20;
             background:#fff;
             border:1px solid #ddd;
-            border-radius:10px;
+            border-radius:12px;
             max-height:220px;
             overflow-y:auto;
-            margin-top:4px;">
+            margin-top:6px;
+            box-shadow: 0 12px 28px rgba(16,24,40,0.12);">
     </div>
   </div>
-  <!-- AMOUNT -->
-  <div>
-    <label>Amount:</label>
-    <input type="number" step="0.01" name="amount" required>
+
+  <div class="field-row">
+    <!-- AMOUNT -->
+    <div class="form-group">
+      <label>Amount</label>
+      <div class="input-wrap">
+        <svg class="field-icon" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="M17 5.5H9.5a3 3 0 0 0 0 6h5a3 3 0 0 1 0 6H6.5"/></svg>
+        <input type="number" step="0.01" name="amount" required>
+      </div>
+    </div>
+
+    <!-- NOTE -->
+    <div class="form-group">
+      <label>Note (optional)</label>
+      <div class="input-wrap">
+        <svg class="field-icon" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5V6a2 2 0 0 1 2-2h9l5 5v10.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 19.5z"/><path d="M8 12h8"/><path d="M8 16h5"/></svg>
+        <input type="text" name="note">
+      </div>
+    </div>
   </div>
 
-  <!-- NOTE -->
-  <div>
-    <label>Note (optional):</label>
-    <input type="text" name="note">
-  </div>
-
-  <div style="margin-top:10px;">
-    <button type="submit">Save Receipt</button>
+  <div style="margin-top:8px;">
+    <button type="submit">
+      <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>
+      Save Receipt
+    </button>
   </div>
 
 </form>
+</div>
 
 <script>
 
@@ -157,6 +402,14 @@ const allEntities = [
 const input = document.getElementById("entity_search");
 const suggestions = document.getElementById("suggestions");
 let activeIndex = -1;
+
+function initials(value) {
+  const namePart = value.includes("-") ? value.split("-").slice(1).join("-").trim() : value;
+  const parts = namePart.trim().split(/\s+/).filter(Boolean);
+  if (!parts.length) return "?";
+  return (parts[0][0] + (parts[1] ? parts[1][0] : "")).toUpperCase();
+}
+
 input.addEventListener("input", function () {
   activeIndex = -1;
   const text = this.value.toLowerCase().trim();
@@ -184,10 +437,18 @@ input.addEventListener("input", function () {
     const div = document.createElement("div");
     div.className = "suggestion-item";
 
-    div.style.padding = "10px";
+    div.style.padding = "9px 10px";
     div.style.cursor = "pointer";
 
-    div.innerText = item.value;
+    const avatar = document.createElement("div");
+    avatar.className = "avatar";
+    avatar.innerText = initials(item.value);
+
+    const label = document.createElement("span");
+    label.innerText = item.value;
+
+    div.appendChild(avatar);
+    div.appendChild(label);
 
     div.onclick = function () {
 
@@ -289,7 +550,7 @@ document.getElementById("receiptForm").addEventListener("submit", function(e) {
 
     const btn = document.querySelector("#receiptForm button[type='submit']");
     btn.disabled = true;
-    btn.innerText = "Saving Receipt...";
+    btn.innerHTML = "Saving Receipt...";
 });
 // init on page load
 document.addEventListener("DOMContentLoaded", function() {
