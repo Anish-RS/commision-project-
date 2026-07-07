@@ -3,62 +3,70 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 
 <style>
   :root{
-    --ink:#152238;
-    --ink-soft:#5b6b85;
-    --paper:#eef3f8;
+    --ink:#101826;
+    --ink-soft:#64748b;
+    --label:#94a3b8;
+    --page-bg:#eef1f6;
     --card:#ffffff;
-    --line:#e3e9f2;
-    --line-soft:#edf1f7;
-    --supplier:#a6620d;
-    --supplier-bg:#fdf3e6;
-    --customer:#0f766e;
-    --customer-bg:#e9f6f4;
-    --other:#4f5b76;
-    --other-bg:#eef0f5;
-    --focus:#2b57d9;
-    --shadow: 0 1px 2px rgba(21,34,56,.04), 0 10px 30px -12px rgba(21,34,56,.15);
+    --border:#e5e9f0;
+    --border-soft:#eef1f6;
+
+    --teal:#14918a;
+    --teal-dark:#0f7a73;
+    --teal-bg:#e6f5f3;
+
+    --gold:#c9a227;
+    --gold-bg:#fbf3df;
+
+    --slate:#55607a;
+    --slate-bg:#eef0f5;
+
+    --info-bg:#eaf0fe;
+    --info-border:#d7e3fd;
+    --info-text:#3454d1;
+
+    --nav-dark:#101826;
+    --shadow: 0 1px 2px rgba(16,24,38,.04), 0 10px 28px -14px rgba(16,24,38,.18);
   }
 
-  body{
-    background:
-      radial-gradient(1200px 500px at 10% -10%, #f4f8fc 0%, transparent 60%),
-      var(--paper);
-  }
+  body{ background:var(--page-bg); }
 
   .aah-wrap{
-    max-width:1040px;
-    margin:40px auto;
+    max-width:1080px;
+    margin:36px auto;
     padding:0 20px 60px;
     font-family:'Inter', system-ui, sans-serif;
     color:var(--ink);
   }
 
-  .aah-header{
+  /* ---------- page heading, icon-badge style like other tool pages ---------- */
+  .aah-heading{
     display:flex;
-    align-items:flex-end;
-    justify-content:space-between;
+    align-items:center;
     gap:16px;
-    flex-wrap:wrap;
     margin-bottom:22px;
   }
 
-  .aah-eyebrow{
-    font-family:'IBM Plex Mono', monospace;
-    font-size:12px;
-    letter-spacing:.08em;
-    text-transform:uppercase;
-    color:var(--ink-soft);
-    margin:0 0 6px;
+  .aah-icon-badge{
+    flex:none;
+    width:52px;
+    height:52px;
+    border-radius:14px;
+    background:linear-gradient(160deg, var(--teal), var(--teal-dark));
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow:0 8px 18px -6px rgba(20,145,138,.55);
   }
 
   .aah-title{
     font-family:'Sora', sans-serif;
     font-weight:700;
-    font-size:28px;
+    font-size:26px;
     letter-spacing:-.01em;
     margin:0;
     color:var(--ink);
@@ -67,160 +75,187 @@
   .aah-subtitle{
     font-size:14px;
     color:var(--ink-soft);
-    margin:6px 0 0;
-    max-width:480px;
+    margin:4px 0 0;
   }
 
-  /* ---------- date filter ---------- */
-  .aah-filter{
-    display:flex;
-    align-items:center;
-    gap:10px;
+  /* ---------- filter card ---------- */
+  .aah-filter-card{
     background:var(--card);
-    border:1px solid var(--line);
-    border-radius:12px;
-    padding:8px 8px 8px 14px;
+    border:1px solid var(--border);
+    border-radius:16px;
     box-shadow:var(--shadow);
+    padding:20px 22px;
+    margin-bottom:18px;
   }
 
-  .aah-filter label{
-    font-size:12px;
-    font-weight:600;
-    color:var(--ink-soft);
-    white-space:nowrap;
+  .aah-filter-card form{
+    display:flex;
+    align-items:flex-end;
+    gap:14px;
+    flex-wrap:wrap;
   }
 
-  .aah-filter input[type="date"]{
-    padding:8px 10px;
-    border-radius:8px;
-    border:1px solid var(--line);
-    background:var(--paper);
+  .aah-field{ display:flex; flex-direction:column; gap:8px; }
+
+  .aah-field label{
+    font-size:11.5px;
+    font-weight:700;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    color:var(--label);
+  }
+
+  .aah-field input[type="date"]{
+    padding:11px 14px;
+    border-radius:10px;
+    border:1px solid var(--border);
+    background:#f8fafc;
     font-family:'Inter', sans-serif;
     font-size:14px;
     color:var(--ink);
-    outline-offset:2px;
+    min-width:200px;
+  }
+  .aah-field input[type="date"]:focus-visible{
+    outline:2px solid var(--teal);
+    outline-offset:1px;
   }
 
-  .aah-filter input[type="date"]:focus-visible{
-    outline:2px solid var(--focus);
+  .aah-apply{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:var(--teal);
+    color:#fff;
+    border:none;
+    padding:11px 20px;
+    border-radius:10px;
+    font-size:14px;
+    font-weight:700;
+    cursor:pointer;
+    box-shadow:0 6px 14px -6px rgba(20,145,138,.6);
   }
+  .aah-apply:hover{ background:var(--teal-dark); }
 
   .aah-clear{
-    font-size:12px;
+    font-size:13px;
     font-weight:600;
     color:var(--ink-soft);
     text-decoration:none;
-    padding:6px 8px;
-    border-radius:8px;
+    padding:11px 6px;
     white-space:nowrap;
   }
-  .aah-clear:hover{ color:var(--ink); background:var(--line-soft); }
+  .aah-clear:hover{ color:var(--ink); text-decoration:underline; }
+
+  /* ---------- info banner ---------- */
+  .aah-info{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:var(--info-bg);
+    border:1px solid var(--info-border);
+    color:var(--info-text);
+    border-radius:12px;
+    padding:12px 16px;
+    font-size:13.5px;
+    margin-bottom:22px;
+  }
+  .aah-info svg{ flex:none; }
 
   /* ---------- summary strip ---------- */
   .aah-stats{
     display:grid;
     grid-template-columns:repeat(3, 1fr);
     gap:14px;
-    margin:24px 0 26px;
+    margin-bottom:22px;
   }
 
   .aah-stat{
     background:var(--card);
-    border:1px solid var(--line);
+    border:1px solid var(--border);
     border-radius:14px;
     padding:16px 18px;
     box-shadow:var(--shadow);
     position:relative;
     overflow:hidden;
   }
-
-  .aah-stat::before{
-    content:"";
-    position:absolute;
-    left:0; top:0; bottom:0;
-    width:4px;
-  }
-  .aah-stat.supplier::before{ background:var(--supplier); }
-  .aah-stat.customer::before{ background:var(--customer); }
+  .aah-stat::before{ content:""; position:absolute; left:0; top:0; bottom:0; width:4px; }
+  .aah-stat.supplier::before{ background:var(--gold); }
+  .aah-stat.customer::before{ background:var(--teal); }
   .aah-stat.total::before{ background:var(--ink); }
 
   .aah-stat-label{
-    font-size:12px;
-    font-weight:600;
-    color:var(--ink-soft);
+    font-size:11.5px;
+    font-weight:700;
+    color:var(--label);
     text-transform:uppercase;
-    letter-spacing:.04em;
+    letter-spacing:.06em;
     margin:0 0 8px;
   }
 
   .aah-stat-value{
     font-family:'IBM Plex Mono', monospace;
     font-weight:600;
-    font-size:22px;
+    font-size:21px;
     font-variant-numeric:tabular-nums;
     margin:0;
+    color:var(--ink);
   }
 
-  .aah-stat-count{
-    font-size:12px;
-    color:var(--ink-soft);
-    margin:4px 0 0;
+  .aah-stat-count{ font-size:12px; color:var(--ink-soft); margin:4px 0 0; }
+
+  /* ---------- section header (matches "Transactions" pattern) ---------- */
+  .aah-section-header{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin:0 0 12px;
+  }
+  .aah-section-header svg{ flex:none; }
+  .aah-section-header h3{
+    font-family:'Sora', sans-serif;
+    font-size:16px;
+    font-weight:700;
+    color:var(--ink);
+    margin:0;
   }
 
   /* ---------- table card ---------- */
   .aah-card{
     background:var(--card);
-    border:1px solid var(--line);
+    border:1px solid var(--border);
     border-radius:16px;
     box-shadow:var(--shadow);
     overflow:hidden;
   }
 
-  .aah-scroll{
-    overflow-x:auto;
-  }
+  .aah-scroll{ overflow-x:auto; }
 
-  table.aah-table{
-    width:100%;
-    border-collapse:collapse;
-    min-width:520px;
-  }
+  table.aah-table{ width:100%; border-collapse:collapse; min-width:520px; }
 
   .aah-table thead th{
     position:sticky;
     top:0;
-    background:var(--ink);
+    background:var(--nav-dark);
     color:#fff;
-    font-family:'Sora', sans-serif;
+    font-family:'Inter', sans-serif;
     font-weight:600;
-    font-size:12px;
+    font-size:11.5px;
     text-transform:uppercase;
-    letter-spacing:.05em;
+    letter-spacing:.06em;
     text-align:left;
     padding:14px 18px;
     border:none;
   }
-
   .aah-table thead th.amount-col{ text-align:right; }
 
-  .aah-table tbody tr{
-    border-bottom:1px solid var(--line-soft);
-    transition:background .12s ease;
-  }
+  .aah-table tbody tr{ border-bottom:1px solid var(--border-soft); transition:background .12s ease; }
   .aah-table tbody tr:last-child{ border-bottom:none; }
-  .aah-table tbody tr:hover{ background:#f8fafc; }
+  .aah-table tbody tr:hover{ background:#f6f9fb; }
   .aah-table tbody tr:nth-child(even){ background:#fbfcfe; }
-  .aah-table tbody tr:nth-child(even):hover{ background:#f4f7fb; }
+  .aah-table tbody tr:nth-child(even):hover{ background:#f2f6f9; }
 
-  .aah-table td{
-    padding:13px 18px;
-    font-size:14px;
-    border:none;
-    vertical-align:middle;
-  }
-
+  .aah-table td{ padding:13px 18px; font-size:14px; border:none; vertical-align:middle; }
   .aah-table td.name-col{ font-weight:500; color:var(--ink); }
-
   .aah-table td.amount-col{
     text-align:right;
     font-family:'IBM Plex Mono', monospace;
@@ -229,7 +264,6 @@
     color:var(--ink);
   }
 
-  /* type badges */
   .aah-badge{
     display:inline-flex;
     align-items:center;
@@ -239,52 +273,34 @@
     font-size:12px;
     font-weight:600;
   }
-  .aah-badge::before{
-    content:"";
-    width:6px; height:6px;
-    border-radius:50%;
-  }
-  .aah-badge.supplier{ color:var(--supplier); background:var(--supplier-bg); }
-  .aah-badge.supplier::before{ background:var(--supplier); }
-  .aah-badge.customer{ color:var(--customer); background:var(--customer-bg); }
-  .aah-badge.customer::before{ background:var(--customer); }
-  .aah-badge.other{ color:var(--other); background:var(--other-bg); }
-  .aah-badge.other::before{ background:var(--other); }
+  .aah-badge::before{ content:""; width:6px; height:6px; border-radius:50%; }
+  .aah-badge.supplier{ color:#8a6b12; background:var(--gold-bg); }
+  .aah-badge.supplier::before{ background:var(--gold); }
+  .aah-badge.customer{ color:var(--teal-dark); background:var(--teal-bg); }
+  .aah-badge.customer::before{ background:var(--teal); }
+  .aah-badge.other{ color:var(--slate); background:var(--slate-bg); }
+  .aah-badge.other::before{ background:var(--slate); }
 
-  /* group divider label inside body */
   .aah-group-row td{
     padding:10px 18px 6px;
     font-size:11px;
-    font-weight:600;
+    font-weight:700;
     letter-spacing:.06em;
     text-transform:uppercase;
     color:var(--ink-soft);
-    background:var(--paper);
-    border-bottom:1px solid var(--line-soft);
+    background:var(--page-bg);
+    border-bottom:1px solid var(--border-soft);
   }
 
-  /* empty state */
-  .aah-empty{
-    padding:56px 24px;
-    text-align:center;
-  }
+  .aah-empty{ padding:56px 24px; text-align:center; }
   .aah-empty svg{ margin-bottom:14px; opacity:.55; }
-  .aah-empty h3{
-    font-family:'Sora', sans-serif;
-    font-size:16px;
-    margin:0 0 4px;
-    color:var(--ink);
-  }
-  .aah-empty p{
-    font-size:13px;
-    color:var(--ink-soft);
-    margin:0;
-  }
+  .aah-empty h3{ font-family:'Sora', sans-serif; font-size:16px; margin:0 0 4px; color:var(--ink); }
+  .aah-empty p{ font-size:13px; color:var(--ink-soft); margin:0; }
 
   @media (max-width: 720px){
     .aah-stats{ grid-template-columns:1fr; }
-    .aah-header{ align-items:flex-start; }
-    .aah-filter{ width:100%; }
+    .aah-filter-card form{ align-items:stretch; }
+    .aah-field input[type="date"]{ min-width:0; width:100%; }
   }
 
   @media (prefers-reduced-motion: reduce){
@@ -309,26 +325,52 @@
 
 <div class="aah-wrap">
 
-  <div class="aah-header">
-    <div>
-      <p class="aah-eyebrow">Ledger &middot; Balance Adjustments</p>
-      <h2 class="aah-title">Old Balance Adjustment History</h2>
-      <p class="aah-subtitle">Every adjustment applied to supplier and customer opening balances, grouped by account type.</p>
+  <div class="aah-heading">
+    <div class="aah-icon-badge">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 7V12L15 14" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M4.6 9A8 8 0 1 1 4 13" stroke="#fff" stroke-width="1.7" stroke-linecap="round"/>
+        <path d="M4 5V9H8" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
     </div>
+    <div>
+      <h2 class="aah-title">Old Balance Adjustment History</h2>
+      <p class="aah-subtitle">Search and review balance adjustments applied to supplier and customer accounts.</p>
+    </div>
+  </div>
 
-    <form method="GET" class="aah-filter">
-      <label for="aah-date">Date</label>
-      <input
-        id="aah-date"
-        type="date"
-        name="date"
-        value="{{ selected_date }}"
-        onchange="this.form.submit()"
-      >
+  <div class="aah-filter-card">
+    <form method="GET">
+      <div class="aah-field">
+        <label for="aah-date">Select date</label>
+        <input
+          id="aah-date"
+          type="date"
+          name="date"
+          value="{{ selected_date }}"
+          onchange="this.form.submit()"
+        >
+      </div>
+      <button type="submit" class="aah-apply">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 4V16M12 16L7 11.5M12 16L17 11.5" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M5 20H19" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        Load
+      </button>
       {% if selected_date %}
-      <a class="aah-clear" href="{{ request.path }}">Clear</a>
+      <a class="aah-clear" href="{{ request.path }}">Clear filter</a>
       {% endif %}
     </form>
+  </div>
+
+  <div class="aah-info">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/>
+      <path d="M12 11V16.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+      <circle cx="12" cy="8" r="0.9" fill="currentColor"/>
+    </svg>
+    Pick a date to see adjustments made that day, or leave it blank to view the full history.
   </div>
 
   <div class="aah-stats">
@@ -347,6 +389,16 @@
       <p class="aah-stat-value">&#8377; {{ "%.2f"|format(ns.supplier_total + ns.customer_total + ns.other_total) }}</p>
       <p class="aah-stat-count">{{ adjustments|length }} {{ "entry" if adjustments|length == 1 else "entries" }} total</p>
     </div>
+  </div>
+
+  <div class="aah-section-header">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="4" y="3" width="16" height="18" rx="2" stroke="#14918a" stroke-width="1.6"/>
+      <path d="M8 8H16" stroke="#14918a" stroke-width="1.6" stroke-linecap="round"/>
+      <path d="M8 12H16" stroke="#14918a" stroke-width="1.6" stroke-linecap="round"/>
+      <path d="M8 16H12.5" stroke="#14918a" stroke-width="1.6" stroke-linecap="round"/>
+    </svg>
+    <h3>Adjustment records</h3>
   </div>
 
   <div class="aah-card">
@@ -401,11 +453,11 @@
             <td colspan="3">
               <div class="aah-empty">
                 <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <rect x="3" y="5" width="18" height="16" rx="2" stroke="#5b6b85" stroke-width="1.5"/>
-                  <path d="M3 9H21" stroke="#5b6b85" stroke-width="1.5"/>
-                  <path d="M8 3V6" stroke="#5b6b85" stroke-width="1.5" stroke-linecap="round"/>
-                  <path d="M16 3V6" stroke="#5b6b85" stroke-width="1.5" stroke-linecap="round"/>
-                  <path d="M8 13.5L10.5 16L15.5 11" stroke="#5b6b85" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  <rect x="3" y="5" width="18" height="16" rx="2" stroke="#94a3b8" stroke-width="1.5"/>
+                  <path d="M3 9H21" stroke="#94a3b8" stroke-width="1.5"/>
+                  <path d="M8 3V6" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round"/>
+                  <path d="M16 3V6" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round"/>
+                  <path d="M8 13.5L10.5 16L15.5 11" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
                 <h3>No adjustments found</h3>
                 <p>{{ "There are no balance adjustments recorded for " + selected_date + "." if selected_date else "There are no balance adjustments recorded yet." }}</p>
