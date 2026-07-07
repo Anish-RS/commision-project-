@@ -3,259 +3,424 @@
 {% block content %}
 
 <style>
-.find-card{
-    background: rgba(255,255,255,0.95);
-    border-radius: 18px;
-    padding: 24px;
-    box-shadow: 0 10px 30px rgba(108,99,255,0.08);
-    border: 1px solid rgba(0,0,0,0.05);
+:root{
+    --navy:#10192b;
+    --teal:#14a89a;
+    --teal-dark:#0d8a7f;
+    --teal-light:#e5f7f5;
+    --ink:#1a2233;
+    --muted:#7a8699;
+    --line:#e7ecf3;
+    --bg:#f5f8fb;
 }
 
-.page-title{
-    margin-top:0;
-    color:#444;
-    font-weight:700;
+.find-wrap{
+    display:flex;
+    flex-direction:column;
+    gap:22px;
+}
+
+/* ---------- Header ---------- */
+.page-header{
+    display:flex;
+    align-items:flex-start;
+    gap:16px;
+}
+
+.page-icon{
+    flex-shrink:0;
+    width:52px;
+    height:52px;
+    border-radius:14px;
+    background:linear-gradient(135deg,var(--teal),var(--teal-dark));
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow:0 8px 18px rgba(20,168,154,0.28);
+}
+
+.page-icon svg{
+    width:26px;
+    height:26px;
+    stroke:#fff;
+}
+
+.page-heading h2.page-title{
+    margin:0;
+    font-size:24px;
+    font-weight:800;
+    color:var(--ink);
+    letter-spacing:-0.2px;
+}
+
+.page-heading p.page-subtitle{
+    margin:4px 0 0;
+    color:var(--muted);
+    font-size:14.5px;
+}
+
+/* ---------- Search card ---------- */
+.find-card{
+    background:#ffffff;
+    border-radius:18px;
+    padding:26px 28px;
+    box-shadow:0 10px 30px rgba(16,25,43,0.06);
+    border:1px solid var(--line);
 }
 
 .search-bar{
     display:flex;
     flex-wrap:wrap;
-    gap:12px;
-    align-items:center;
-    margin-bottom:20px;
+    gap:18px;
+    align-items:flex-end;
 }
 
-.search-bar label{
-    font-weight:600;
-    color:#555;
+.field-group{
+    display:flex;
+    flex-direction:column;
+    gap:7px;
+}
+
+.field-group label{
+    font-size:11.5px;
+    font-weight:700;
+    letter-spacing:0.6px;
+    text-transform:uppercase;
+    color:var(--muted);
+}
+
+.field-group.grow{
+    flex:1;
+    min-width:260px;
 }
 
 .search-bar select,
 .search-bar input{
-    padding:10px 14px;
-    border:1px solid #dbeafc;
+    padding:12px 15px;
+    border:1px solid var(--line);
     border-radius:10px;
-    font-size:14px;
+    font-size:14.5px;
     outline:none;
     min-width:180px;
-    background:#fff;
+    background:var(--bg);
+    color:var(--ink);
+    transition:0.15s;
 }
 
 .search-bar input{
-    flex:1;
-    min-width:250px;
+    width:100%;
 }
 
 .search-bar select:focus,
 .search-bar input:focus{
-    border-color:#90CAF9;
-    box-shadow:0 0 0 4px rgba(144,202,249,0.15);
+    border-color:var(--teal);
+    background:#fff;
+    box-shadow:0 0 0 4px rgba(20,168,154,0.14);
 }
 
 .search-btn{
-    padding:10px 18px;
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:12px 22px;
     border:none;
     border-radius:10px;
     cursor:pointer;
     font-weight:700;
-    color:white;
-    background:linear-gradient(90deg,#64B5F6,#6C63FF);
+    font-size:14.5px;
+    color:#fff;
+    background:linear-gradient(90deg,var(--teal),var(--teal-dark));
     transition:0.2s;
+    white-space:nowrap;
+}
+
+.search-btn svg{
+    width:16px;
+    height:16px;
+    stroke:#fff;
 }
 
 .search-btn:hover{
     transform:translateY(-2px);
-    box-shadow:0 8px 20px rgba(108,99,255,0.18);
+    box-shadow:0 10px 22px rgba(20,168,154,0.28);
+}
+
+/* ---------- Info banner ---------- */
+.info-banner{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:var(--teal-light);
+    border:1px solid rgba(20,168,154,0.18);
+    color:#0d766c;
+    font-size:14px;
+    padding:14px 18px;
+    border-radius:12px;
+}
+
+.info-banner svg{
+    width:18px;
+    height:18px;
+    stroke:#0d9c8e;
+    flex-shrink:0;
+}
+
+/* ---------- Results card ---------- */
+.results-card{
+    background:#fff;
+    border-radius:18px;
+    padding:6px;
+    box-shadow:0 10px 30px rgba(16,25,43,0.06);
+    border:1px solid var(--line);
+    overflow:hidden;
+}
+
+.results-heading{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:18px 20px 6px;
+    font-weight:800;
+    color:var(--ink);
+    font-size:15.5px;
+}
+
+.results-heading svg{
+    width:18px;
+    height:18px;
+    stroke:var(--teal-dark);
 }
 
 .result-table{
     width:100%;
     border-collapse:collapse;
-    overflow:hidden;
-    border-radius:14px;
 }
 
 .result-table thead{
-    background:linear-gradient(90deg,#eaf4ff,#f6efff);
+    background:linear-gradient(90deg,#eef8f7,#f3f0fb);
 }
 
 .result-table th{
-    padding:14px;
+    padding:14px 20px;
     text-align:left;
-    color:#444;
+    color:var(--muted);
     font-weight:700;
+    font-size:12px;
+    letter-spacing:0.5px;
+    text-transform:uppercase;
 }
 
 .result-table td{
-    padding:12px 14px;
-    border-top:1px solid #edf2f7;
+    padding:14px 20px;
+    border-top:1px solid var(--line);
+    font-size:14.5px;
+    color:var(--ink);
+}
+
+.result-table tbody tr{
+    transition:0.15s;
 }
 
 .result-table tbody tr:hover{
-    background:#fafcff;
+    background:#fafcfe;
 }
 
 .balance-positive{
-    color:#2e7d32;
+    color:#1f9d55;
     font-weight:700;
 }
 
 .balance-negative{
-    color:#d32f2f;
+    color:#d64545;
     font-weight:700;
 }
 
 .empty-state{
     text-align:center;
-    padding:40px;
-    color:#777;
-    background:#fafcff;
+    padding:56px 20px;
+    color:var(--muted);
+    background:var(--bg);
     border-radius:14px;
-    border:1px dashed #dbeafc;
+    margin:6px;
+}
+
+.empty-state svg{
+    width:38px;
+    height:38px;
+    stroke:#b7c2d0;
+    margin-bottom:10px;
+}
+
+.empty-state p{
+    margin:0;
+    font-size:14.5px;
 }
 
 .badge{
     display:inline-block;
-    padding:4px 10px;
+    padding:4px 12px;
     border-radius:999px;
     font-size:12px;
-    font-weight:600;
-    background:#eef5ff;
-    color:#5a5a5a;
+    font-weight:700;
+    background:var(--teal-light);
+    color:#0d766c;
 }
 
 .edit-btn{
-    display:inline-block;
-    padding:6px 12px;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    padding:7px 14px;
     font-size:13px;
-    font-weight:600;
+    font-weight:700;
     text-decoration:none;
-    color:white;
-    background:#64B5F6;
+    color:#fff;
+    background:linear-gradient(90deg,var(--teal),var(--teal-dark));
     border-radius:8px;
     transition:0.2s;
 }
 
+.edit-btn svg{
+    width:13px;
+    height:13px;
+    stroke:#fff;
+}
+
 .edit-btn:hover{
-    background:#42A5F5;
     transform:translateY(-1px);
+    box-shadow:0 6px 16px rgba(20,168,154,0.28);
+}
+
+@media (max-width:640px){
+    .search-bar{ flex-direction:column; align-items:stretch; }
+    .field-group.grow{ min-width:0; }
+    .search-btn{ justify-content:center; }
+    .result-table th:nth-child(2), .result-table td:nth-child(2){ display:none; }
 }
 </style>
 
-<div class="find-card">
+<div class="find-wrap">
 
-<h2 class="page-title"> Find Supplier / Customer</h2>
+    <div class="page-header">
+        <div class="page-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="7"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+        </div>
+        <div class="page-heading">
+            <h2 class="page-title">Find Supplier / Customer</h2>
+            <p class="page-subtitle">Search records by name, view balances at a glance, and jump straight into editing.</p>
+        </div>
+    </div>
 
-<form method="GET" action="/find" class="search-bar">
+    <div class="find-card">
+        <form method="GET" action="/find" class="search-bar">
 
-    <label>Search In:</label>
+            <div class="field-group">
+                <label>Search In</label>
+                <select name="mode" onchange="this.form.submit()">
+                    <option value="supplier" {% if mode=='supplier' %}selected{% endif %}>Suppliers</option>
+                    <option value="customer" {% if mode=='customer' %}selected{% endif %}>Customers</option>
+                </select>
+            </div>
 
-    <select name="mode" onchange="this.form.submit()">
-        <option value="supplier"
-            {% if mode=='supplier' %}selected{% endif %}>
-            Suppliers
-        </option>
+            <div class="field-group grow">
+                <label>Name</label>
+                <input type="text" name="q" placeholder="Search by name..." value="{{ q }}">
+            </div>
 
-        <option value="customer"
-            {% if mode=='customer' %}selected{% endif %}>
-            Customers
-        </option>
-    </select>
+            <button type="submit" class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="7"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                Search
+            </button>
 
-    <input
-        type="text"
-        name="q"
-        placeholder="Search by name..."
-        value="{{ q }}"
-    >
+        </form>
+    </div>
 
-    <button type="submit" class="search-btn">
-        Search
-    </button>
+    <div class="info-banner">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="16" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+        </svg>
+        Choose whether you're searching suppliers or customers, then type a name to filter results instantly.
+    </div>
 
-</form>
+    <div class="results-card">
 
-{% if results %}
+        <div class="results-heading">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"></path>
+                <rect x="9" y="3" width="6" height="4" rx="1"></rect>
+            </svg>
+            Results
+        </div>
 
-<table class="result-table">
+        {% if results %}
 
-    <thead>
-        <tr>
-            <th>
-                {% if mode == 'supplier' %}
-                    Supplier Name
-                {% else %}
-                    Customer Name
-                {% endif %}
-            </th>
-    
-            <th>
-                {% if mode == 'supplier' %}
-                    Supplier ID
-                {% else %}
-                    Customer ID
-                {% endif %}
-            </th>
-    
-            <th>Amount</th>
-            <th>Action</th>
-        </tr>
-    </thead>
-    <tbody>
+        <table class="result-table">
+            <thead>
+                <tr>
+                    <th>{% if mode == 'supplier' %}Supplier Name{% else %}Customer Name{% endif %}</th>
+                    <th>{% if mode == 'supplier' %}Supplier ID{% else %}Customer ID{% endif %}</th>
+                    <th>Amount</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in results %}
+                <tr>
+                    <td>{{ r.name }}</td>
+                    <td><span class="badge">{{ r.id }}</span></td>
+                    <td>
+                        {% if r.balance < 0 %}
+                            <span class="balance-negative">{{ "%.2f"|format(r.balance) }}</span>
+                        {% else %}
+                            <span class="balance-positive">{{ "%.2f"|format(r.balance) }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if mode == 'supplier' %}
+                            <a href="/supplier/edit/{{ r.id }}" class="edit-btn">
+                                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                </svg>
+                                Edit
+                            </a>
+                        {% else %}
+                            <a href="/customer/edit/{{ r.id }}" class="edit-btn">
+                                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                </svg>
+                                Edit
+                            </a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
 
-    {% for r in results %}
-        <tr>
-            <td>
-                {{ r.name }}
-            </td>
+        {% else %}
 
-            <td>
-                <span class="badge">
-                    {{ r.id }}
-                </span>
-            </td>
+        <div class="empty-state">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="7"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <p>{% if mode == 'supplier' %}No suppliers found.{% else %}No customers found.{% endif %}</p>
+        </div>
 
-            <td>
-                {% if r.balance < 0 %}
-                    <span class="balance-negative">
-                          {{ "%.2f"|format(r.balance) }}
-                    </span>
-                {% else %}
-                    <span class="balance-positive">
-                          {{ "%.2f"|format(r.balance) }}
-                    </span>
-                {% endif %}
-            </td>
-            
-            <td>
-                {% if mode == 'supplier' %}
-                    <a href="/supplier/edit/{{ r.id }}" class="search-btn">
-                         Edit
-                    </a>
-                {% else %}
-                    <a href="/customer/edit/{{ r.id }}" class="search-btn">
-                         Edit
-                    </a>
-                {% endif %}
-            </td>
-        </tr>
-    {% endfor %}
+        {% endif %}
 
-    </tbody>
+    </div>
 
-</table>
-
-{% else %}
-
-<div class="empty-state">
-    {% if mode == 'supplier' %}
-        No suppliers found.
-    {% else %}
-        No customers found.
-    {% endif %}
-</div>
-
-{% endif %}
 </div>
 
 {% endblock %}
