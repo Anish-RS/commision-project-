@@ -169,17 +169,16 @@
 .results-card{
     background:#fff;
     border-radius:18px;
-    padding:6px;
+    padding:8px 18px 18px;
     box-shadow:0 10px 30px rgba(16,25,43,0.06);
     border:1px solid var(--line);
-    overflow:hidden;
 }
 
 .results-heading{
     display:flex;
     align-items:center;
     gap:10px;
-    padding:18px 20px 6px;
+    padding:16px 4px 14px;
     font-weight:800;
     color:var(--ink);
     font-size:15.5px;
@@ -191,48 +190,144 @@
     stroke:var(--teal-dark);
 }
 
+.results-count{
+    margin-left:auto;
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:0.3px;
+    color:var(--teal-dark);
+    background:var(--teal-light);
+    padding:5px 12px;
+    border-radius:999px;
+}
+
+.table-scroll{
+    overflow-x:auto;
+}
+
 .result-table{
     width:100%;
-    border-collapse:collapse;
+    border-collapse:separate;
+    border-spacing:0 10px;
+    min-width:640px;
 }
 
-.result-table thead{
-    background:linear-gradient(90deg,#eef8f7,#f3f0fb);
-}
-
-.result-table th{
-    padding:14px 20px;
+.result-table thead th{
+    position:sticky;
+    top:0;
+    z-index:1;
+    background:#fbfdfd;
+    padding:11px 18px;
     text-align:left;
     color:var(--muted);
     font-weight:700;
-    font-size:12px;
-    letter-spacing:0.5px;
+    font-size:11.5px;
+    letter-spacing:0.6px;
     text-transform:uppercase;
+    border-bottom:2px solid var(--line);
 }
 
-.result-table td{
-    padding:14px 20px;
-    border-top:1px solid var(--line);
-    font-size:14.5px;
-    color:var(--ink);
-}
+.result-table th:first-child{ padding-left:22px; }
+.result-table th:last-child{ text-align:right; padding-right:22px; }
 
 .result-table tbody tr{
-    transition:0.15s;
+    background:#fff;
+    box-shadow:0 1px 2px rgba(16,25,43,0.05), 0 0 0 1px var(--line);
+    transition:transform 0.18s ease, box-shadow 0.18s ease;
 }
 
 .result-table tbody tr:hover{
-    background:#fafcfe;
+    transform:translateY(-3px);
+    box-shadow:0 14px 28px rgba(16,25,43,0.10), 0 0 0 1px rgba(20,168,154,0.25);
 }
 
-.balance-positive{
-    color:#1f9d55;
+.result-table td{
+    padding:15px 18px;
+    font-size:14.5px;
+    color:var(--ink);
+    border-top:1px solid transparent;
+    border-bottom:1px solid transparent;
+}
+
+.result-table td:first-child{
+    border-top-left-radius:12px;
+    border-bottom-left-radius:12px;
+    padding-left:22px;
+}
+
+.result-table td:last-child{
+    border-top-right-radius:12px;
+    border-bottom-right-radius:12px;
+    padding-right:22px;
+    text-align:right;
+}
+
+/* name cell w/ avatar */
+.name-cell{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.avatar{
+    flex-shrink:0;
+    width:36px;
+    height:36px;
+    border-radius:10px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:13px;
+    font-weight:800;
+    color:#fff;
+    letter-spacing:0.2px;
+}
+
+.result-table tbody tr:nth-child(6n+1) .avatar{ background:linear-gradient(135deg,#14a89a,#0d8a7f); }
+.result-table tbody tr:nth-child(6n+2) .avatar{ background:linear-gradient(135deg,#6c7bff,#4a54c9); }
+.result-table tbody tr:nth-child(6n+3) .avatar{ background:linear-gradient(135deg,#ff9f6c,#e0703b); }
+.result-table tbody tr:nth-child(6n+4) .avatar{ background:linear-gradient(135deg,#4aa8e0,#2c74a8); }
+.result-table tbody tr:nth-child(6n+5) .avatar{ background:linear-gradient(135deg,#c96cc9,#8f3f96); }
+.result-table tbody tr:nth-child(6n+6) .avatar{ background:linear-gradient(135deg,#e0567a,#a83a5a); }
+
+.name-text{
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+}
+
+.name-text .full-name{
     font-weight:700;
+    color:var(--ink);
+}
+
+.name-text .sub-id{
+    font-size:12px;
+    color:var(--muted);
+    font-family:'SFMono-Regular',Consolas,monospace;
+}
+
+.amount-chip{
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    padding:6px 13px;
+    border-radius:999px;
+    font-weight:700;
+    font-size:13.5px;
+    font-variant-numeric:tabular-nums;
+}
+
+.amount-chip svg{ width:12px; height:12px; }
+
+.balance-positive{
+    color:#0f8a45;
+    background:#eafaf1;
 }
 
 .balance-negative{
-    color:#d64545;
-    font-weight:700;
+    color:#c23a3a;
+    background:#fdecec;
 }
 
 .empty-state{
@@ -260,23 +355,25 @@
     display:inline-block;
     padding:4px 12px;
     border-radius:999px;
-    font-size:12px;
+    font-size:12.5px;
     font-weight:700;
-    background:var(--teal-light);
-    color:#0d766c;
+    background:#f1f4f9;
+    color:#586275;
+    font-family:'SFMono-Regular',Consolas,monospace;
 }
 
 .edit-btn{
     display:inline-flex;
     align-items:center;
     gap:6px;
-    padding:7px 14px;
+    padding:8px 16px;
     font-size:13px;
     font-weight:700;
     text-decoration:none;
     color:#fff;
     background:linear-gradient(90deg,var(--teal),var(--teal-dark));
-    border-radius:8px;
+    border-radius:9px;
+    box-shadow:0 2px 6px rgba(20,168,154,0.22);
     transition:0.2s;
 }
 
@@ -288,7 +385,7 @@
 
 .edit-btn:hover{
     transform:translateY(-1px);
-    box-shadow:0 6px 16px rgba(20,168,154,0.28);
+    box-shadow:0 8px 18px rgba(20,168,154,0.32);
 }
 
 @media (max-width:640px){
@@ -358,10 +455,14 @@
                 <rect x="9" y="3" width="6" height="4" rx="1"></rect>
             </svg>
             Results
+            {% if results %}
+                <span class="results-count">{{ results|length }} {% if mode == 'supplier' %}suppliers{% else %}customers{% endif %} found</span>
+            {% endif %}
         </div>
 
         {% if results %}
 
+        <div class="table-scroll">
         <table class="result-table">
             <thead>
                 <tr>
@@ -374,13 +475,26 @@
             <tbody>
                 {% for r in results %}
                 <tr>
-                    <td>{{ r.name }}</td>
-                    <td><span class="badge">{{ r.id }}</span></td>
+                    <td>
+                        <div class="name-cell">
+                            <div class="avatar">{{ r.name|first|upper }}</div>
+                            <div class="name-text">
+                                <span class="full-name">{{ r.name }}</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td><span class="badge">#{{ r.id }}</span></td>
                     <td>
                         {% if r.balance < 0 %}
-                            <span class="balance-negative">{{ "%.2f"|format(r.balance) }}</span>
+                            <span class="amount-chip balance-negative">
+                                <svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                {{ "%.2f"|format(r.balance) }}
+                            </span>
                         {% else %}
-                            <span class="balance-positive">{{ "%.2f"|format(r.balance) }}</span>
+                            <span class="amount-chip balance-positive">
+                                <svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                {{ "%.2f"|format(r.balance) }}
+                            </span>
                         {% endif %}
                     </td>
                     <td>
@@ -406,6 +520,7 @@
                 {% endfor %}
             </tbody>
         </table>
+        </div>
 
         {% else %}
 
