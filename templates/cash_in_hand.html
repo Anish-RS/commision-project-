@@ -1,283 +1,273 @@
 {% extends "base.html" %}
 {% block content %}
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-
 <style>
     :root {
-        --paper: #f7f3ea;
-        --paper-line: #e4dcc8;
-        --ink: #23281f;
-        --ink-soft: #5b5748;
-        --forest: #1b4332;
-        --forest-deep: #12302422;
-        --brass: #a9834f;
-        --brass-light: #d9c6a3;
-        --in-green: #2f7d4f;
-        --in-green-bg: #e8f3ec;
-        --out-rust: #a3402c;
-        --out-rust-bg: #f7ebe6;
-        --shadow: 0 18px 40px -22px rgba(27, 67, 50, 0.35);
+        --navy: #0f172a;
+        --slate: #64748b;
+        --label: #94a3b8;
+        --teal: #0d9488;
+        --teal-dark: #0f766e;
+        --teal-bg: #e6f7f5;
+        --rose: #e11d48;
+        --rose-bg: #fdecee;
+        --page-bg: #eef1f6;
+        --card-border: #e6e9f0;
+        --info-bg: #eff6ff;
+        --info-border: #bfdbfe;
+        --info-text: #2563eb;
+    }
+
+    .cih-page {
+        background: var(--page-bg);
+        margin: -24px -24px 0;
+        padding: 32px 32px 48px;
+        font-family: 'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif;
     }
 
     .cih-wrap {
-        max-width: 980px;
-        margin: 32px auto;
-        padding: 0 16px;
-        font-family: 'Inter', system-ui, sans-serif;
-        color: var(--ink);
+        max-width: 1120px;
+        margin: 0 auto;
     }
 
-    .cih-eyebrow {
+    /* ---- Header ---- */
+    .cih-header {
+        display: flex;
+        align-items: flex-start;
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+
+    .cih-icon {
+        width: 52px;
+        height: 52px;
+        min-width: 52px;
+        border-radius: 14px;
+        background: linear-gradient(135deg, #14b8a6, var(--teal-dark));
         display: flex;
         align-items: center;
-        gap: 10px;
-        font-family: 'IBM Plex Mono', monospace;
-        font-size: 12px;
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
-        color: var(--brass);
-        margin-bottom: 6px;
+        justify-content: center;
+        box-shadow: 0 8px 16px -6px rgba(13, 148, 136, 0.5);
     }
 
-    .cih-eyebrow::before {
-        content: "";
-        width: 22px;
-        height: 1px;
-        background: var(--brass);
-        display: inline-block;
-    }
+    .cih-icon svg { width: 26px; height: 26px; }
 
-    h2.cih-title {
-        font-family: 'Fraunces', serif;
-        font-weight: 600;
-        font-size: 34px;
-        margin: 0 0 22px 0;
-        color: var(--forest);
+    .cih-header h2 {
+        font-size: 26px;
+        font-weight: 700;
+        color: var(--navy);
+        margin: 4px 0 4px;
         letter-spacing: -0.01em;
     }
 
-    /* ---- Summary strip ---- */
-    .cih-summary {
+    .cih-header p {
+        font-size: 14.5px;
+        color: var(--slate);
+        margin: 0;
+    }
+
+    /* ---- Info banner ---- */
+    .cih-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: var(--info-bg);
+        border: 1px solid var(--info-border);
+        color: var(--info-text);
+        font-size: 14px;
+        border-radius: 10px;
+        padding: 12px 16px;
+        margin-bottom: 20px;
+    }
+
+    .cih-info svg { width: 17px; height: 17px; flex: none; }
+
+    /* ---- Stat cards ---- */
+    .cih-stats {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
-        background: var(--forest);
-        border-radius: 14px;
-        overflow: hidden;
-        box-shadow: var(--shadow);
-        margin-bottom: 28px;
+        gap: 16px;
+        margin-bottom: 20px;
     }
 
     .cih-stat {
-        padding: 20px 18px;
-        border-right: 1px solid rgba(255,255,255,0.12);
-        position: relative;
+        background: #fff;
+        border: 1px solid var(--card-border);
+        border-radius: 14px;
+        padding: 18px 18px;
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
     }
 
-    .cih-stat:last-child { border-right: none; }
-
     .cih-stat-label {
-        font-family: 'IBM Plex Mono', monospace;
-        font-size: 11px;
-        letter-spacing: 0.08em;
+        font-size: 11.5px;
+        font-weight: 700;
+        letter-spacing: 0.06em;
         text-transform: uppercase;
-        color: var(--brass-light);
+        color: var(--label);
         margin-bottom: 8px;
     }
 
     .cih-stat-value {
-        font-family: 'IBM Plex Mono', monospace;
         font-size: 22px;
-        font-weight: 600;
-        color: #fdfbf6;
-        font-variant-numeric: tabular-nums;
+        font-weight: 700;
+        color: var(--navy);
     }
 
-    .cih-stat-value.in { color: #8fd9ac; }
-    .cih-stat-value.out { color: #ecab97; }
-    .cih-stat.closing { background: rgba(255,255,255,0.06); }
+    .cih-stat-value.in { color: var(--teal-dark); }
+    .cih-stat-value.out { color: var(--rose); }
 
-    /* ---- Ledger book ---- */
-    .cih-ledger {
-        position: relative;
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        background: var(--paper);
-        border: 1px solid var(--paper-line);
-        border-radius: 10px;
-        box-shadow: var(--shadow);
+    /* ---- Main card ---- */
+    .cih-card {
+        background: #fff;
+        border: 1px solid var(--card-border);
+        border-radius: 16px;
+        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
         overflow: hidden;
     }
 
-    .cih-ledger::before {
-        /* center spine */
-        content: "";
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 50%;
-        width: 0;
-        border-left: 2px dashed var(--brass-light);
-        transform: translateX(-1px);
+    .cih-card-head {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 20px 24px;
+        border-bottom: 1px solid var(--card-border);
+    }
+
+    .cih-card-head svg { width: 19px; height: 19px; color: var(--teal); }
+
+    .cih-card-head h3 {
+        font-size: 17px;
+        font-weight: 700;
+        color: var(--navy);
+        margin: 0;
+    }
+
+    .cih-columns {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
     }
 
     .cih-col {
-        padding: 26px 28px 22px;
+        padding: 22px 24px;
     }
 
-    .cih-col-head {
-        display: flex;
-        align-items: baseline;
-        justify-content: space-between;
-        margin-bottom: 14px;
-        padding-bottom: 12px;
-        border-bottom: 2px solid var(--forest);
-    }
+    .cih-col.receipts { border-right: 1px solid var(--card-border); }
 
-    .cih-col-head h3 {
-        font-family: 'Fraunces', serif;
-        font-size: 19px;
-        font-weight: 600;
-        margin: 0;
-        color: var(--forest);
-    }
-
-    .cih-col-head span.tag {
-        font-family: 'IBM Plex Mono', monospace;
-        font-size: 10.5px;
-        letter-spacing: 0.06em;
-        text-transform: uppercase;
-        padding: 3px 8px;
-        border-radius: 20px;
-    }
-
-    .tag.in { background: var(--in-green-bg); color: var(--in-green); }
-    .tag.out { background: var(--out-rust-bg); color: var(--out-rust); }
-
-    .cih-line {
-        display: flex;
-        justify-content: space-between;
-        gap: 12px;
-        padding: 8px 2px;
-        margin-bottom: 8px;
-        border-radius: 6px;
-        background: #fffdf8;
-        border: 1px solid var(--paper-line);
-    }
-
-    .cih-line.opening,
-    .cih-line.total {
-        background: transparent;
-        border: none;
-        padding: 10px 2px;
-        margin: 4px 0 0;
-    }
-
-    .cih-line .name {
-        font-size: 14.5px;
-        color: var(--ink);
-    }
-
-    .cih-line .amount {
-        font-family: 'IBM Plex Mono', monospace;
-        font-size: 14.5px;
-        font-weight: 500;
-        font-variant-numeric: tabular-nums;
-        white-space: nowrap;
-    }
-
-    .cih-line.opening .name,
-    .cih-line.total .name {
-        font-weight: 600;
-        color: var(--ink-soft);
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-        font-size: 12px;
-        font-family: 'IBM Plex Mono', monospace;
-    }
-
-    .cih-line.opening .amount,
-    .cih-line.total .amount {
+    .cih-col-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 11.5px;
         font-weight: 700;
-        font-size: 16px;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        padding: 5px 12px;
+        border-radius: 999px;
+        margin-bottom: 16px;
     }
 
-    .cih-col.receipts .amount { color: var(--in-green); }
-    .cih-col.payments .amount { color: var(--out-rust); }
+    .cih-col-tag.in { background: var(--teal-bg); color: var(--teal-dark); }
+    .cih-col-tag.out { background: var(--rose-bg); color: var(--rose); }
 
-    .cih-divider {
-        border: none;
-        border-top: 1px dashed var(--brass-light);
-        margin: 12px 0;
+    .cih-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        padding: 11px 4px;
+        border-bottom: 1px solid #f1f4f9;
+        font-size: 14.5px;
     }
+
+    .cih-row:last-of-type { border-bottom: none; }
+
+    .cih-row .name { color: var(--navy); }
+    .cih-row .amount { font-weight: 600; white-space: nowrap; }
+    .cih-col.receipts .amount { color: var(--teal-dark); }
+    .cih-col.payments .amount { color: var(--rose); }
+
+    .cih-row.subtotal {
+        margin-top: 10px;
+        padding-top: 14px;
+        border-top: 2px solid var(--card-border);
+        border-bottom: none;
+    }
+
+    .cih-row.subtotal .name {
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--label);
+    }
+
+    .cih-row.subtotal .amount { font-size: 16px; }
 
     .cih-empty {
-        font-size: 13.5px;
-        color: var(--ink-soft);
-        font-style: italic;
-        padding: 14px 2px;
-        text-align: center;
-        border: 1px dashed var(--paper-line);
-        border-radius: 6px;
-        background: #fffdf8;
-    }
-
-    .cih-closing-badge {
-        margin: 16px auto 0;
-        width: fit-content;
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 2px;
-        padding: 10px 18px;
-        border-radius: 999px;
-        background: var(--forest);
-        color: #fdfbf6;
-        box-shadow: 0 10px 22px -10px rgba(27,67,50,0.55);
-        grid-column: 1 / -1;
-    }
-
-    .cih-closing-badge .label {
-        font-family: 'IBM Plex Mono', monospace;
-        font-size: 10px;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-        color: var(--brass-light);
-    }
-
-    .cih-closing-badge .value {
-        font-family: 'IBM Plex Mono', monospace;
-        font-size: 20px;
-        font-weight: 700;
-    }
-
-    .cih-footer-note {
-        grid-column: 1 / -1;
+        gap: 8px;
+        padding: 28px 10px;
+        color: var(--slate);
+        font-size: 13.5px;
         text-align: center;
-        padding: 16px 20px 22px;
-        font-family: 'IBM Plex Mono', monospace;
-        font-size: 11px;
-        color: var(--ink-soft);
-        letter-spacing: 0.03em;
     }
 
-    @media (max-width: 720px) {
-        .cih-summary { grid-template-columns: repeat(2, 1fr); }
-        .cih-stat:nth-child(2) { border-right: none; }
-        .cih-stat { border-bottom: 1px solid rgba(255,255,255,0.12); }
-        .cih-ledger { grid-template-columns: 1fr; }
-        .cih-ledger::before { display: none; }
-        .cih-col.receipts { border-bottom: 2px dashed var(--brass-light); }
-        h2.cih-title { font-size: 27px; }
+    .cih-empty svg { width: 30px; height: 30px; color: #cbd5e1; }
+
+    .cih-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 16px 24px;
+        background: #fafbfd;
+        border-top: 1px solid var(--card-border);
+        font-size: 13px;
+        color: var(--slate);
+    }
+
+    .cih-footer strong {
+        color: var(--navy);
+        font-size: 15px;
+    }
+
+    @media (max-width: 760px) {
+        .cih-page { margin: -16px -16px 0; padding: 20px 16px 32px; }
+        .cih-stats { grid-template-columns: repeat(2, 1fr); }
+        .cih-columns { grid-template-columns: 1fr; }
+        .cih-col.receipts { border-right: none; border-bottom: 1px solid var(--card-border); }
     }
 </style>
 
+<div class="cih-page">
 <div class="cih-wrap">
-    <div class="cih-eyebrow">Daily Cash Book</div>
-    <h2 class="cih-title">Cash In Hand — Today</h2>
 
-    <div class="cih-summary">
+    <div class="cih-header">
+        <div class="cih-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="6" width="20" height="12" rx="2"></rect>
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M6 6v.01M18 18v.01"></path>
+            </svg>
+        </div>
+        <div>
+            <h2>Cash In Hand</h2>
+            <p>Today's opening balance, receipts, payments and closing cash at a glance.</p>
+        </div>
+    </div>
+
+    <div class="cih-info">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M12 16v-4M12 8h.01"></path>
+        </svg>
+        Opening cash plus today's receipts, minus today's payments, gives the closing cash below.
+    </div>
+
+    <div class="cih-stats">
         <div class="cih-stat">
             <div class="cih-stat-label">Opening Cash</div>
             <div class="cih-stat-value">{{ "%.2f"|format(opening) }}</div>
@@ -290,78 +280,82 @@
             <div class="cih-stat-label">Total Out</div>
             <div class="cih-stat-value out">-{{ "%.2f"|format(total_payments) }}</div>
         </div>
-        <div class="cih-stat closing">
+        <div class="cih-stat">
             <div class="cih-stat-label">Closing Cash</div>
             <div class="cih-stat-value">{{ "%.2f"|format(closing) }}</div>
         </div>
     </div>
 
-    <div class="cih-ledger">
-        <div class="cih-col receipts">
-            <div class="cih-col-head">
-                <h3>Receipts</h3>
-                <span class="tag in">Money In</span>
-            </div>
+    <div class="cih-card">
+        <div class="cih-card-head">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 2H7a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2h-2"></path>
+                <rect x="9" y="1" width="6" height="4" rx="1"></rect>
+            </svg>
+            <h3>Transactions</h3>
+        </div>
 
-            <div class="cih-line opening">
-                <span class="name">Opening Cash</span>
-                <span class="amount">{{ "%.2f"|format(opening) }}</span>
-            </div>
-            <hr class="cih-divider">
+        <div class="cih-columns">
+            <div class="cih-col receipts">
+                <span class="cih-col-tag in">Money In</span>
 
-            {% if todays_receipts %}
-                {% for r in todays_receipts %}
-                <div class="cih-line">
-                    <span class="name">{{ r.name }}</span>
-                    <span class="amount">+{{ "%.2f"|format(r.amount) }}</span>
+                {% if todays_receipts %}
+                    {% for r in todays_receipts %}
+                    <div class="cih-row">
+                        <span class="name">{{ r.name }}</span>
+                        <span class="amount">+{{ "%.2f"|format(r.amount) }}</span>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="cih-empty">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <path d="M14 2v6h6"></path>
+                        </svg>
+                        No receipts recorded today.
+                    </div>
+                {% endif %}
+
+                <div class="cih-row subtotal">
+                    <span class="name">Total Receipts</span>
+                    <span class="amount">{{ "%.2f"|format(total_receipts) }}</span>
                 </div>
-                {% endfor %}
-            {% else %}
-                <div class="cih-empty">No receipts recorded today.</div>
-            {% endif %}
-
-            <hr class="cih-divider">
-            <div class="cih-line total">
-                <span class="name">Total Receipts</span>
-                <span class="amount">{{ "%.2f"|format(total_receipts) }}</span>
-            </div>
-            <div class="cih-line total">
-                <span class="name">Closing Cash</span>
-                <span class="amount">{{ "%.2f"|format(closing) }}</span>
-            </div>
-        </div>
-
-        <div class="cih-col payments">
-            <div class="cih-col-head">
-                <h3>Payments</h3>
-                <span class="tag out">Money Out</span>
             </div>
 
-            {% if all_payments %}
-                {% for p in all_payments %}
-                <div class="cih-line">
-                    <span class="name">{{ p.name }}</span>
-                    <span class="amount">-{{ "%.2f"|format(p.amount) }}</span>
+            <div class="cih-col payments">
+                <span class="cih-col-tag out">Money Out</span>
+
+                {% if all_payments %}
+                    {% for p in all_payments %}
+                    <div class="cih-row">
+                        <span class="name">{{ p.name }}</span>
+                        <span class="amount">-{{ "%.2f"|format(p.amount) }}</span>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="cih-empty">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <path d="M14 2v6h6"></path>
+                        </svg>
+                        No payments recorded today.
+                    </div>
+                {% endif %}
+
+                <div class="cih-row subtotal">
+                    <span class="name">Total Payments</span>
+                    <span class="amount">{{ "%.2f"|format(total_payments) }}</span>
                 </div>
-                {% endfor %}
-            {% else %}
-                <div class="cih-empty">No payments recorded today.</div>
-            {% endif %}
-
-            <hr class="cih-divider">
-            <div class="cih-line total">
-                <span class="name">Total Payments</span>
-                <span class="amount">{{ "%.2f"|format(total_payments) }}</span>
             </div>
         </div>
 
-        <div class="cih-closing-badge">
-            <span class="label">Net Movement Today</span>
-            <span class="value">{{ "%.2f"|format(total_receipts - total_payments) }}</span>
+        <div class="cih-footer">
+            <span>Opening {{ "%.2f"|format(opening) }} + In {{ "%.2f"|format(total_receipts) }} &minus; Out {{ "%.2f"|format(total_payments) }}</span>
+            <span>Closing Cash: <strong>{{ "%.2f"|format(closing) }}</strong></span>
         </div>
-
-        <div class="cih-footer-note">Opening {{ "%.2f"|format(opening) }} + In {{ "%.2f"|format(total_receipts) }} − Out {{ "%.2f"|format(total_payments) }} = Closing {{ "%.2f"|format(closing) }}</div>
     </div>
+
+</div>
 </div>
 
 {% endblock %}
