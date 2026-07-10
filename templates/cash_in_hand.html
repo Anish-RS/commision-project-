@@ -1,102 +1,367 @@
 {% extends "base.html" %}
 {% block content %}
 
-<h2>Cash In Hand - Today</h2>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
 <style>
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        background: #ffffff;
-        border: 2px solid #555;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    :root {
+        --paper: #f7f3ea;
+        --paper-line: #e4dcc8;
+        --ink: #23281f;
+        --ink-soft: #5b5748;
+        --forest: #1b4332;
+        --forest-deep: #12302422;
+        --brass: #a9834f;
+        --brass-light: #d9c6a3;
+        --in-green: #2f7d4f;
+        --in-green-bg: #e8f3ec;
+        --out-rust: #a3402c;
+        --out-rust-bg: #f7ebe6;
+        --shadow: 0 18px 40px -22px rgba(27, 67, 50, 0.35);
     }
 
-    th, td {
-        border: 1.5px solid #666;
-        padding: 10px;
+    .cih-wrap {
+        max-width: 980px;
+        margin: 32px auto;
+        padding: 0 16px;
+        font-family: 'Inter', system-ui, sans-serif;
+        color: var(--ink);
     }
 
-    th {
-        background: #dbeafe; /* brighter blue */
-        color: #1e3a8a;      /* dark blue text */
-        font-size: 16px;
-        font-weight: 700;
-        text-align: center;
+    .cih-eyebrow {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 12px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--brass);
+        margin-bottom: 6px;
     }
 
-    td {
-        background: #fafcff;
-        color: #222;
+    .cih-eyebrow::before {
+        content: "";
+        width: 22px;
+        height: 1px;
+        background: var(--brass);
+        display: inline-block;
     }
 
-    .col {
-        width: 50%;
-        vertical-align: top;
+    h2.cih-title {
+        font-family: 'Fraunces', serif;
+        font-weight: 600;
+        font-size: 34px;
+        margin: 0 0 22px 0;
+        color: var(--forest);
+        letter-spacing: -0.01em;
     }
 
-    hr {
-        border: none;
-        border-top: 1px solid #888;
-        margin: 10px 0;
+    /* ---- Summary strip ---- */
+    .cih-summary {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        background: var(--forest);
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: var(--shadow);
+        margin-bottom: 28px;
     }
 
-    ul {
+    .cih-stat {
+        padding: 20px 18px;
+        border-right: 1px solid rgba(255,255,255,0.12);
+        position: relative;
+    }
+
+    .cih-stat:last-child { border-right: none; }
+
+    .cih-stat-label {
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--brass-light);
+        margin-bottom: 8px;
+    }
+
+    .cih-stat-value {
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 22px;
+        font-weight: 600;
+        color: #fdfbf6;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .cih-stat-value.in { color: #8fd9ac; }
+    .cih-stat-value.out { color: #ecab97; }
+    .cih-stat.closing { background: rgba(255,255,255,0.06); }
+
+    /* ---- Ledger book ---- */
+    .cih-ledger {
+        position: relative;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        background: var(--paper);
+        border: 1px solid var(--paper-line);
+        border-radius: 10px;
+        box-shadow: var(--shadow);
+        overflow: hidden;
+    }
+
+    .cih-ledger::before {
+        /* center spine */
+        content: "";
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 50%;
+        width: 0;
+        border-left: 2px dashed var(--brass-light);
+        transform: translateX(-1px);
+    }
+
+    .cih-col {
+        padding: 26px 28px 22px;
+    }
+
+    .cih-col-head {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        margin-bottom: 14px;
+        padding-bottom: 12px;
+        border-bottom: 2px solid var(--forest);
+    }
+
+    .cih-col-head h3 {
+        font-family: 'Fraunces', serif;
+        font-size: 19px;
+        font-weight: 600;
         margin: 0;
-        padding: 0;
+        color: var(--forest);
     }
 
-    li {
-        padding: 4px 0;
-        border-bottom: 1px dashed #ccc;
+    .cih-col-head span.tag {
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 10.5px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        padding: 3px 8px;
+        border-radius: 20px;
     }
 
-    strong {
-        color: #111;
+    .tag.in { background: var(--in-green-bg); color: var(--in-green); }
+    .tag.out { background: var(--out-rust-bg); color: var(--out-rust); }
+
+    .cih-line {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 8px 2px;
+        margin-bottom: 8px;
+        border-radius: 6px;
+        background: #fffdf8;
+        border: 1px solid var(--paper-line);
+    }
+
+    .cih-line.opening,
+    .cih-line.total {
+        background: transparent;
+        border: none;
+        padding: 10px 2px;
+        margin: 4px 0 0;
+    }
+
+    .cih-line .name {
+        font-size: 14.5px;
+        color: var(--ink);
+    }
+
+    .cih-line .amount {
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 14.5px;
+        font-weight: 500;
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+    }
+
+    .cih-line.opening .name,
+    .cih-line.total .name {
+        font-weight: 600;
+        color: var(--ink-soft);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        font-size: 12px;
+        font-family: 'IBM Plex Mono', monospace;
+    }
+
+    .cih-line.opening .amount,
+    .cih-line.total .amount {
+        font-weight: 700;
+        font-size: 16px;
+    }
+
+    .cih-col.receipts .amount { color: var(--in-green); }
+    .cih-col.payments .amount { color: var(--out-rust); }
+
+    .cih-divider {
+        border: none;
+        border-top: 1px dashed var(--brass-light);
+        margin: 12px 0;
+    }
+
+    .cih-empty {
+        font-size: 13.5px;
+        color: var(--ink-soft);
+        font-style: italic;
+        padding: 14px 2px;
+        text-align: center;
+        border: 1px dashed var(--paper-line);
+        border-radius: 6px;
+        background: #fffdf8;
+    }
+
+    .cih-closing-badge {
+        margin: 16px auto 0;
+        width: fit-content;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2px;
+        padding: 10px 18px;
+        border-radius: 999px;
+        background: var(--forest);
+        color: #fdfbf6;
+        box-shadow: 0 10px 22px -10px rgba(27,67,50,0.55);
+        grid-column: 1 / -1;
+    }
+
+    .cih-closing-badge .label {
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 10px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--brass-light);
+    }
+
+    .cih-closing-badge .value {
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 20px;
+        font-weight: 700;
+    }
+
+    .cih-footer-note {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 16px 20px 22px;
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 11px;
+        color: var(--ink-soft);
+        letter-spacing: 0.03em;
+    }
+
+    @media (max-width: 720px) {
+        .cih-summary { grid-template-columns: repeat(2, 1fr); }
+        .cih-stat:nth-child(2) { border-right: none; }
+        .cih-stat { border-bottom: 1px solid rgba(255,255,255,0.12); }
+        .cih-ledger { grid-template-columns: 1fr; }
+        .cih-ledger::before { display: none; }
+        .cih-col.receipts { border-bottom: 2px dashed var(--brass-light); }
+        h2.cih-title { font-size: 27px; }
     }
 </style>
 
-<table>
-    <tr>
-        <th class="col">Receipt (Money IN)</th>
-        <th class="col">Payment (Money OUT)</th>
-    </tr>
-    <tr>
-            <td>
-            <div><strong>Opening Cash:</strong> {{ "%.2f"|format(opening) }}</div>
-            <hr>
-        
+<div class="cih-wrap">
+    <div class="cih-eyebrow">Daily Cash Book</div>
+    <h2 class="cih-title">Cash In Hand — Today</h2>
+
+    <div class="cih-summary">
+        <div class="cih-stat">
+            <div class="cih-stat-label">Opening Cash</div>
+            <div class="cih-stat-value">{{ "%.2f"|format(opening) }}</div>
+        </div>
+        <div class="cih-stat">
+            <div class="cih-stat-label">Total In</div>
+            <div class="cih-stat-value in">+{{ "%.2f"|format(total_receipts) }}</div>
+        </div>
+        <div class="cih-stat">
+            <div class="cih-stat-label">Total Out</div>
+            <div class="cih-stat-value out">-{{ "%.2f"|format(total_payments) }}</div>
+        </div>
+        <div class="cih-stat closing">
+            <div class="cih-stat-label">Closing Cash</div>
+            <div class="cih-stat-value">{{ "%.2f"|format(closing) }}</div>
+        </div>
+    </div>
+
+    <div class="cih-ledger">
+        <div class="cih-col receipts">
+            <div class="cih-col-head">
+                <h3>Receipts</h3>
+                <span class="tag in">Money In</span>
+            </div>
+
+            <div class="cih-line opening">
+                <span class="name">Opening Cash</span>
+                <span class="amount">{{ "%.2f"|format(opening) }}</span>
+            </div>
+            <hr class="cih-divider">
+
             {% if todays_receipts %}
-                <ul style="list-style:none; padding-left:0;">
                 {% for r in todays_receipts %}
-                    <li>{{ r.name }} — {{ "%.2f"|format(r.amount) }}</li>
+                <div class="cih-line">
+                    <span class="name">{{ r.name }}</span>
+                    <span class="amount">+{{ "%.2f"|format(r.amount) }}</span>
+                </div>
                 {% endfor %}
-                </ul>
             {% else %}
-                <p>No receipts today.</p>
+                <div class="cih-empty">No receipts recorded today.</div>
             {% endif %}
-        
-            <hr>
-            <div><strong>Total Receipts:</strong> {{ "%.2f"|format(total_receipts) }}</div>
-            <div><strong>Closing Cash:</strong> {{ "%.2f"|format(closing) }}</div>
-        </td>
 
+            <hr class="cih-divider">
+            <div class="cih-line total">
+                <span class="name">Total Receipts</span>
+                <span class="amount">{{ "%.2f"|format(total_receipts) }}</span>
+            </div>
+            <div class="cih-line total">
+                <span class="name">Closing Cash</span>
+                <span class="amount">{{ "%.2f"|format(closing) }}</span>
+            </div>
+        </div>
 
-        <td>
+        <div class="cih-col payments">
+            <div class="cih-col-head">
+                <h3>Payments</h3>
+                <span class="tag out">Money Out</span>
+            </div>
+
             {% if all_payments %}
-                <ul style="list-style:none; padding-left:0;">
                 {% for p in all_payments %}
-                    <li>{{ p.name }} — {{ "%.2f"|format(p.amount) }}</li>
+                <div class="cih-line">
+                    <span class="name">{{ p.name }}</span>
+                    <span class="amount">-{{ "%.2f"|format(p.amount) }}</span>
+                </div>
                 {% endfor %}
-                </ul>
             {% else %}
-                <p>No payments today.</p>
+                <div class="cih-empty">No payments recorded today.</div>
             {% endif %}
-        
-            <hr>
-            <div><strong>Total Payments:</strong> {{ "%.2f"|format(total_payments) }}</div>
-        </td>
-    </tr>
-</table>
+
+            <hr class="cih-divider">
+            <div class="cih-line total">
+                <span class="name">Total Payments</span>
+                <span class="amount">{{ "%.2f"|format(total_payments) }}</span>
+            </div>
+        </div>
+
+        <div class="cih-closing-badge">
+            <span class="label">Net Movement Today</span>
+            <span class="value">{{ "%.2f"|format(total_receipts - total_payments) }}</span>
+        </div>
+
+        <div class="cih-footer-note">Opening {{ "%.2f"|format(opening) }} + In {{ "%.2f"|format(total_receipts) }} − Out {{ "%.2f"|format(total_payments) }} = Closing {{ "%.2f"|format(closing) }}</div>
+    </div>
+</div>
 
 {% endblock %}
