@@ -101,8 +101,10 @@ body {
   max-width:1100px;
   margin:18px auto 60px;
   background:var(--paper-3);
-  padding:36px 40px 36px 68px;
+  padding:36px 40px 36px 66px;
   border-radius:16px;
+  border:none;
+  outline:none;
   box-shadow:
     0 34px 70px -24px rgba(24,37,68,0.30),
     0 2px 10px rgba(24,37,68,0.07),
@@ -111,13 +113,18 @@ body {
   overflow:hidden;
 }
 .card::before{
-  /* bound-ledger spine */
+  /* bound-ledger spine: brass-capped, blended rather than a flat dark block */
   content:"";
   position:absolute;
   top:0; left:0; bottom:0;
-  width:34px;
-  background:linear-gradient(180deg,var(--ink),var(--ink-2) 55%,var(--ink));
-  box-shadow: inset -6px 0 14px rgba(0,0,0,0.25), 2px 0 0 var(--brass);
+  width:30px;
+  background:linear-gradient(180deg,
+    var(--brass-light) 0%,
+    var(--ink-2) 14%,
+    var(--ink) 50%,
+    var(--ink-2) 86%,
+    var(--brass-light) 100%);
+  box-shadow: inset -5px 0 12px rgba(24,37,68,0.20), 1.5px 0 0 rgba(207,159,79,0.55);
 }
 .card::after{
   /* stitched brass dots down the spine */
@@ -227,7 +234,7 @@ body {
 .table tbody tr:last-child td { border-bottom:none; }
 
 .table th {
-  background:linear-gradient(180deg,var(--ink),#131d38);
+  background:linear-gradient(180deg,var(--ink-2),var(--ink));
   color:#f0e2b8;
   font-weight:600;
   font-size:12px;
@@ -260,7 +267,7 @@ body {
   font-family:'Inter',sans-serif;
 }
 .btn-primary {
-  background:linear-gradient(135deg,var(--ink-2),var(--ink) 65%,#0e1830);
+  background:linear-gradient(135deg,var(--ink-2),var(--ink) 80%);
   color:#f3e6bf;
   box-shadow:0 12px 28px rgba(14,24,48,0.38);
   letter-spacing:0.4px;
