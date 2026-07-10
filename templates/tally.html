@@ -3,213 +3,681 @@
 {% block content %}
 
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap');
+
+.tally-scope{
+    --ink:#1B2A45;
+    --ink-soft:#3C4B67;
+    --paper:#FBF8F2;
+    --paper-dim:#F3EEE3;
+    --gold:#B8892B;
+    --gold-soft:#E4CFA0;
+    --green:#1F7A54;
+    --green-bg:#E7F3EC;
+    --red:#B3392C;
+    --red-bg:#FBEAE7;
+    --line:#DCD3C0;
+    --muted:#847C6B;
+    --shadow:0 10px 30px rgba(27,42,69,0.08);
+    font-family:'IBM Plex Sans', -apple-system, sans-serif;
+    color:var(--ink);
+}
+
+.tally-scope *{ box-sizing:border-box; }
+
+.tally-header{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-bottom:6px;
+}
+
+.tally-header h2{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:30px;
+    letter-spacing:-0.01em;
+    color:var(--ink);
+    margin:0;
+}
+
+.tally-eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--gold);
+    font-weight:600;
+}
+
+/* --- Toolbar --- */
+.tally-toolbar{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:16px 20px;
+    margin:18px 0 26px;
+    box-shadow:var(--shadow);
+}
+
 .tally-form{
     display:flex;
-    align-items:center;
-    gap:12px;
-    margin-bottom:25px;
+    align-items:flex-end;
+    gap:16px;
     flex-wrap:wrap;
 }
 
+.field-group{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+}
+
+.field-group label{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--muted);
+}
+
+.field-group input[type="date"]{
+    border:1px solid var(--line);
+    background:#fff;
+    border-radius:8px;
+    padding:9px 12px;
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size:14px;
+    color:var(--ink);
+    min-width:160px;
+}
+
+.field-group input[type="date"]:focus-visible{
+    outline:2px solid var(--gold);
+    outline-offset:2px;
+}
+
+.preset-row{
+    display:flex;
+    gap:6px;
+    flex-wrap:wrap;
+}
+
+.preset-btn{
+    border:1px solid var(--line);
+    background:#fff;
+    color:var(--ink-soft);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    letter-spacing:0.04em;
+    padding:7px 11px;
+    border-radius:7px;
+    cursor:pointer;
+    transition:all .15s ease;
+}
+
+.preset-btn:hover{
+    border-color:var(--gold);
+    color:var(--ink);
+    background:var(--gold-soft);
+}
+
+.tally-actions{
+    display:flex;
+    gap:10px;
+    margin-left:auto;
+}
+
+.btn-primary{
+    padding:10px 22px;
+    background:var(--ink);
+    color:var(--paper);
+    border:none;
+    border-radius:8px;
+    font-family:'IBM Plex Sans', sans-serif;
+    font-weight:600;
+    font-size:14px;
+    cursor:pointer;
+    transition:background .15s ease, transform .1s ease;
+}
+
+.btn-primary:hover{ background:#101c33; }
+.btn-primary:active{ transform:translateY(1px); }
+.btn-primary:focus-visible{ outline:2px solid var(--gold); outline-offset:2px; }
+
+.btn-ghost{
+    padding:10px 18px;
+    background:transparent;
+    color:var(--ink-soft);
+    border:1px solid var(--line);
+    border-radius:8px;
+    font-family:'IBM Plex Sans', sans-serif;
+    font-weight:500;
+    font-size:14px;
+    cursor:pointer;
+}
+
+.btn-ghost:hover{ border-color:var(--ink-soft); color:var(--ink); }
+
+/* --- Ledger wrapper w/ stitched binding --- */
 .tally-wrapper{
     display:flex;
-    gap:25px;
-    flex-wrap:nowrap;
-    margin-top:20px;
-    align-items:flex-start;
+    align-items:stretch;
+    gap:0;
+    margin-top:6px;
+    position:relative;
 }
 
 .tally-card{
     flex:1;
     min-width:0;
-    background:rgba(255,255,255,0.85);
-    backdrop-filter:blur(8px);
-    border-radius:18px;
-    padding:20px;
-    box-shadow:0 6px 20px rgba(0,0,0,0.08);
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:14px;
+    box-shadow:var(--shadow);
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
 }
 
-.tally-card h3{
-    margin-top:0;
-    margin-bottom:15px;
-    color:#333;
+.tally-binding{
+    width:34px;
+    flex:0 0 34px;
+    position:relative;
+    align-self:stretch;
+}
+
+.tally-binding::before{
+    content:"";
+    position:absolute;
+    left:50%;
+    top:10px;
+    bottom:10px;
+    border-left:2px dashed var(--gold-soft);
+}
+
+.tally-binding .grommet{
+    position:absolute;
+    left:50%;
+    width:9px;
+    height:9px;
+    border-radius:50%;
+    background:var(--paper);
+    border:2px solid var(--gold);
+    transform:translateX(-50%);
+}
+
+.card-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:16px 20px 12px;
+    border-bottom:1px solid var(--line);
+    gap:12px;
+    flex-wrap:wrap;
+}
+
+.card-head h3{
+    margin:0;
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:18px;
+    color:var(--ink);
+}
+
+.card-count{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    color:var(--muted);
+    background:var(--paper-dim);
+    border:1px solid var(--line);
+    padding:3px 9px;
+    border-radius:100px;
+}
+
+.card-search{
+    padding:12px 20px;
+}
+
+.card-search input{
+    width:100%;
+    border:1px solid var(--line);
+    background:#fff;
+    border-radius:8px;
+    padding:8px 12px;
+    font-size:13px;
+    font-family:'IBM Plex Sans', sans-serif;
+}
+
+.card-search input:focus-visible{
+    outline:2px solid var(--gold);
+    outline-offset:1px;
+}
+
+.table-scroll{
+    max-height:420px;
+    overflow-y:auto;
+    padding:0 4px 4px;
 }
 
 .tally-table{
     width:100%;
     border-collapse:collapse;
-    overflow:hidden;
-    border-radius:12px;
 }
 
-.tally-table th{
-    background:#90CAF9;
-    color:#222;
-    padding:12px;
+.tally-table thead th{
+    position:sticky;
+    top:0;
+    background:var(--paper-dim);
+    color:var(--ink-soft);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
     text-align:left;
-    font-weight:600;
+    padding:10px 16px;
+    z-index:1;
+    border-bottom:1px solid var(--line);
 }
 
 .tally-table td{
-    padding:12px;
-    border-bottom:1px solid #e5e5e5;
+    padding:11px 16px;
+    border-bottom:1px solid var(--line);
+    font-size:14px;
 }
 
-.tally-table tr:nth-child(even){
-    background:#f8fbff;
-}
-
-.tally-table tr:hover{
-    background:#eef7ff;
-}
+.tally-table tbody tr:hover{ background:var(--paper-dim); }
+.tally-table tbody tr.is-hidden{ display:none; }
 
 .id-col{
     width:90px;
-    text-align:center;
+    color:var(--muted);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
 }
 
 .amount-col{
     text-align:right;
+    font-family:'IBM Plex Mono', monospace;
     font-weight:600;
     white-space:nowrap;
 }
 
+.table-empty-row td{
+    text-align:center;
+    color:var(--muted);
+    padding:26px 16px;
+    font-style:italic;
+}
+
+.card-foot{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:13px 20px;
+    background:var(--paper-dim);
+    border-top:1px solid var(--gold-soft);
+    font-family:'IBM Plex Mono', monospace;
+}
+
+.card-foot .label{
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:0.08em;
+    color:var(--muted);
+}
+
+.card-foot .value{
+    font-size:16px;
+    font-weight:600;
+    color:var(--ink);
+}
+
+/* --- Summary / seal --- */
 .summary-card{
-    margin-top:25px;
-    background:rgba(255,255,255,0.85);
-    backdrop-filter:blur(8px);
-    border-radius:18px;
-    padding:20px;
-    box-shadow:0 6px 20px rgba(0,0,0,0.08);
+    margin-top:26px;
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:24px 28px;
+    box-shadow:var(--shadow);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:24px;
+    flex-wrap:wrap;
 }
 
-.summary-card h3{
-    margin-top:0;
+.summary-figures{
+    display:flex;
+    gap:36px;
+    flex-wrap:wrap;
 }
 
-.summary-row{
-    font-size:17px;
+.summary-figures .fig-label{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:0.08em;
+    color:var(--muted);
+    margin-bottom:4px;
+}
+
+.summary-figures .fig-value{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:22px;
+    font-weight:600;
+    color:var(--ink);
+}
+
+.fig-diff.is-mismatch .fig-value{ color:var(--red); }
+.fig-diff.is-match .fig-value{ color:var(--green); }
+
+.seal{
+    font-family:'IBM Plex Mono', monospace;
+    font-weight:700;
+    font-size:15px;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    padding:12px 22px;
+    border-radius:10px;
+    border:2px solid currentColor;
+    transform:rotate(-3deg);
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    white-space:nowrap;
+}
+
+.seal.is-match{ color:var(--green); background:var(--green-bg); }
+.seal.is-mismatch{ color:var(--red); background:var(--red-bg); }
+
+/* --- States --- */
+.tally-state{
+    margin-top:26px;
+    background:var(--paper);
+    border:1px dashed var(--line);
+    border-radius:14px;
+    padding:48px 24px;
+    text-align:center;
+    color:var(--muted);
+}
+
+.tally-state .glyph{
+    font-size:30px;
     margin-bottom:10px;
+    color:var(--gold);
 }
 
-.match{
-    color:#2e7d32;
-    font-weight:bold;
-    font-size:18px;
+.tally-state h4{
+    font-family:'Fraunces', serif;
+    font-size:19px;
+    color:var(--ink);
+    margin:0 0 6px;
 }
 
-.mismatch{
-    color:#d32f2f;
-    font-weight:bold;
-    font-size:18px;
+.tally-state p{
+    margin:0;
+    font-size:14px;
+}
+
+/* --- Responsive --- */
+@media (max-width: 860px){
+    .tally-wrapper{ flex-direction:column; }
+    .tally-binding{ display:none; }
+    .tally-actions{ margin-left:0; width:100%; }
+    .tally-actions .btn-primary,
+    .tally-actions .btn-ghost{ flex:1; }
+    .summary-card{ flex-direction:column; align-items:flex-start; }
+}
+
+@media print{
+    .tally-toolbar, .card-search, .print-hide{ display:none !important; }
+    .tally-wrapper{ flex-direction:row; }
+    .table-scroll{ max-height:none; overflow:visible; }
 }
 </style>
 
-<h2>Daily / Range Tally</h2>
+<div class="tally-scope">
 
-<form method="POST" class="tally-form">
-
-    <label style="display:inline-block;margin-bottom:0;">
-        <b>From Date:</b>
-    </label>
-
-    <input type="date" name="from_date" value="{{ from_date }}" required>
-
-    <label style="display:inline-block;margin-bottom:0;margin-left:10px;">
-        <b>To Date:</b>
-    </label>
-
-    <input type="date" name="to_date" value="{{ to_date }}" required>
-
-    <button type="submit" style="padding:8px 18px;">
-        Get Tally
-    </button>
-
-</form>
-
-{% if supplierData %}
-
-<div class="tally-wrapper">
-
-    <!-- Supplier Bills -->
-    <div class="tally-card">
-        <h3>Supplier Bills</h3>
-
-        <table class="tally-table">
-            <tr>
-                <th>Supplier ID</th>
-                <th>Supplier Name</th>
-                <th>Amount</th>
-            </tr>
-
-            {% for row in supplierData %}
-            <tr>
-                <td class="id-col">{{ row.supplier_id }}</td>
-                <td>{{ row.supplier_name }}</td>
-                <td class="amount-col">
-                     {{ "%.2f"|format(row.amount) }}
-                </td>
-            </tr>
-            {% endfor %}
-        </table>
-    </div>
-
-    <!-- Customer Bills -->
-    <div class="tally-card">
-        <h3>Customer Bills</h3>
-
-        <table class="tally-table">
-            <tr>
-                <th>Customer ID</th>
-                <th>Customer Name</th>
-                <th>Amount</th>
-            </tr>
-
-            {% for row in customerData %}
-            <tr>
-                <td class="id-col">{{ row.customer_id }}</td>
-                <td>{{ row.customer_name }}</td>
-                <td class="amount-col">
-                     {{ "%.2f"|format(row.amount) }}
-                </td>
-            </tr>
-            {% endfor %}
-        </table>
-    </div>
-
-</div>
-
-<div class="summary-card">
-
-    <h3>Summary</h3>
-
-    <div class="summary-row">
-        <b>Total Supplier Amount:</b>
-         {{ "%.2f"|format(totalSupplier) }}
-    </div>
-
-    <div class="summary-row">
-        <b>Total Customer Amount:</b>
-         {{ "%.2f"|format(totalCustomer) }}
-    </div>
-
-    <div class="summary-row">
-        <b>Difference:</b>
-         {{ "%.2f"|format(difference) }}
-    </div>
-
-    {% if difference == 0 %}
-        <div class="match">
-            ✔ Tally Matched
+    <div class="tally-header">
+        <div>
+            <div class="tally-eyebrow">Reconciliation</div>
+            <h2>Daily / Range Tally</h2>
         </div>
+    </div>
+
+    <div class="tally-toolbar">
+        <form method="POST" class="tally-form" id="tally-form">
+
+            <div class="field-group">
+                <label for="from_date">From date</label>
+                <input type="date" id="from_date" name="from_date" value="{{ from_date }}" required>
+            </div>
+
+            <div class="field-group">
+                <label for="to_date">To date</label>
+                <input type="date" id="to_date" name="to_date" value="{{ to_date }}" required>
+            </div>
+
+            <div class="field-group">
+                <label>Quick select</label>
+                <div class="preset-row">
+                    <button type="button" class="preset-btn" data-preset="today">Today</button>
+                    <button type="button" class="preset-btn" data-preset="yesterday">Yesterday</button>
+                    <button type="button" class="preset-btn" data-preset="week">This week</button>
+                    <button type="button" class="preset-btn" data-preset="month">This month</button>
+                </div>
+            </div>
+
+            <div class="tally-actions">
+                {% if supplierData %}
+                <button type="button" class="btn-ghost print-hide" id="print-btn">Print</button>
+                {% endif %}
+                <button type="submit" class="btn-primary">Get Tally</button>
+            </div>
+
+        </form>
+    </div>
+
+    {% if supplierData %}
+
+    <div class="tally-wrapper">
+
+        <!-- Supplier Bills -->
+        <div class="tally-card">
+            <div class="card-head">
+                <h3>Supplier Bills</h3>
+                <span class="card-count" data-count-for="supplier">{{ supplierData|length }} entries</span>
+            </div>
+            <div class="card-search">
+                <input type="text" placeholder="Filter by supplier name…" data-filter-for="supplier">
+            </div>
+            <div class="table-scroll">
+                <table class="tally-table" data-table="supplier">
+                    <thead>
+                        <tr>
+                            <th>Supplier ID</th>
+                            <th>Supplier Name</th>
+                            <th style="text-align:right;">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in supplierData %}
+                        <tr data-name="{{ row.supplier_name|lower }}">
+                            <td class="id-col">{{ row.supplier_id }}</td>
+                            <td>{{ row.supplier_name }}</td>
+                            <td class="amount-col" data-value="{{ row.amount }}">{{ "%.2f"|format(row.amount) }}</td>
+                        </tr>
+                        {% else %}
+                        <tr class="table-empty-row"><td colspan="3">No supplier bills in this range.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-foot">
+                <span class="label">Subtotal</span>
+                <span class="value" data-value="{{ totalSupplier }}">{{ "%.2f"|format(totalSupplier) }}</span>
+            </div>
+        </div>
+
+        <div class="tally-binding" aria-hidden="true">
+            <span class="grommet" style="top:22px;"></span>
+            <span class="grommet" style="top:50%;"></span>
+            <span class="grommet" style="bottom:22px;"></span>
+        </div>
+
+        <!-- Customer Bills -->
+        <div class="tally-card">
+            <div class="card-head">
+                <h3>Customer Bills</h3>
+                <span class="card-count" data-count-for="customer">{{ customerData|length }} entries</span>
+            </div>
+            <div class="card-search">
+                <input type="text" placeholder="Filter by customer name…" data-filter-for="customer">
+            </div>
+            <div class="table-scroll">
+                <table class="tally-table" data-table="customer">
+                    <thead>
+                        <tr>
+                            <th>Customer ID</th>
+                            <th>Customer Name</th>
+                            <th style="text-align:right;">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in customerData %}
+                        <tr data-name="{{ row.customer_name|lower }}">
+                            <td class="id-col">{{ row.customer_id }}</td>
+                            <td>{{ row.customer_name }}</td>
+                            <td class="amount-col" data-value="{{ row.amount }}">{{ "%.2f"|format(row.amount) }}</td>
+                        </tr>
+                        {% else %}
+                        <tr class="table-empty-row"><td colspan="3">No customer bills in this range.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-foot">
+                <span class="label">Subtotal</span>
+                <span class="value" data-value="{{ totalCustomer }}">{{ "%.2f"|format(totalCustomer) }}</span>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="summary-card">
+
+        <div class="summary-figures">
+            <div class="fig">
+                <div class="fig-label">Total Supplier</div>
+                <div class="fig-value" data-value="{{ totalSupplier }}">{{ "%.2f"|format(totalSupplier) }}</div>
+            </div>
+            <div class="fig">
+                <div class="fig-label">Total Customer</div>
+                <div class="fig-value" data-value="{{ totalCustomer }}">{{ "%.2f"|format(totalCustomer) }}</div>
+            </div>
+            <div class="fig fig-diff {{ 'is-match' if difference == 0 else 'is-mismatch' }}">
+                <div class="fig-label">Difference</div>
+                <div class="fig-value" data-value="{{ difference }}">{{ "%.2f"|format(difference) }}</div>
+            </div>
+        </div>
+
+        {% if difference == 0 %}
+            <div class="seal is-match">✔ Balanced</div>
+        {% else %}
+            <div class="seal is-mismatch">✘ Discrepancy</div>
+        {% endif %}
+
+    </div>
+
+    {% elif from_date %}
+
+    <div class="tally-state">
+        <div class="glyph">☰</div>
+        <h4>No records found</h4>
+        <p>There are no supplier or customer bills between {{ from_date }} and {{ to_date }}.</p>
+    </div>
+
     {% else %}
-        <div class="mismatch">
-            ✘ Tally Mismatched
-        </div>
+
+    <div class="tally-state">
+        <div class="glyph">📖</div>
+        <h4>Select a date range to begin</h4>
+        <p>Choose a from and to date above, or use a quick-select option, to pull the ledger for that period.</p>
+    </div>
+
     {% endif %}
 
 </div>
 
-{% endif %}
+<script>
+(function(){
+    var scope = document.currentScript.previousElementSibling;
+
+    // Currency formatting
+    var fmt = new Intl.NumberFormat('en-IN', { style:'currency', currency:'INR', minimumFractionDigits:2 });
+    document.querySelectorAll('.tally-scope [data-value]').forEach(function(el){
+        var raw = parseFloat(el.getAttribute('data-value'));
+        if(!isNaN(raw)){ el.textContent = fmt.format(raw); }
+    });
+
+    // Date presets
+    var todayEl = document.getElementById('from_date');
+    var toEl = document.getElementById('to_date');
+    function pad(n){ return n < 10 ? '0'+n : n; }
+    function iso(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+
+    document.querySelectorAll('.preset-btn').forEach(function(btn){
+        btn.addEventListener('click', function(){
+            var now = new Date();
+            var from, to;
+            switch(btn.dataset.preset){
+                case 'today':
+                    from = to = now;
+                    break;
+                case 'yesterday':
+                    var y = new Date(now); y.setDate(y.getDate()-1);
+                    from = to = y;
+                    break;
+                case 'week':
+                    var start = new Date(now);
+                    start.setDate(now.getDate() - now.getDay());
+                    from = start; to = now;
+                    break;
+                case 'month':
+                    from = new Date(now.getFullYear(), now.getMonth(), 1);
+                    to = now;
+                    break;
+            }
+            todayEl.value = iso(from);
+            toEl.value = iso(to);
+        });
+    });
+
+    // Table filters
+    document.querySelectorAll('[data-filter-for]').forEach(function(input){
+        input.addEventListener('input', function(){
+            var key = input.dataset.filterFor;
+            var q = input.value.trim().toLowerCase();
+            var rows = document.querySelectorAll('table[data-table="'+key+'"] tbody tr[data-name]');
+            var visible = 0;
+            rows.forEach(function(row){
+                var match = row.dataset.name.indexOf(q) !== -1;
+                row.classList.toggle('is-hidden', !match);
+                if(match) visible++;
+            });
+            var counter = document.querySelector('[data-count-for="'+key+'"]');
+            if(counter){ counter.textContent = visible + ' entries'; }
+        });
+    });
+
+    // Print
+    var printBtn = document.getElementById('print-btn');
+    if(printBtn){ printBtn.addEventListener('click', function(){ window.print(); }); }
+})();
+</script>
 
 {% endblock %}
