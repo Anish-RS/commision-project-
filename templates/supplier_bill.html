@@ -2,60 +2,87 @@
 {% block content %}
 
 <style>
-/* ============ Premium theme (visual-only, no structural changes) ============ */
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap');
+/* ============================================================
+   "Bound Ledger" theme — ink, brass & paper.
+   Visual language borrowed from a well-kept accounts ledger:
+   a bound spine, warm paper, brass hardware, tabular figures.
+   All field IDs / names / order are untouched — styling only,
+   plus a few purely-decorative markup additions (icons, eyebrow
+   labels) that don't move or rename any existing field.
+   ============================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap');
+
+:root{
+  --ink:#182544;
+  --ink-2:#24345c;
+  --paper:#f7f2e6;
+  --paper-2:#efe6d0;
+  --paper-3:#fffdf7;
+  --brass:#a97b2f;
+  --brass-light:#cf9f4f;
+  --brass-dark:#7c5920;
+  --text:#242b3a;
+  --text-mute:#736c5b;
+  --emerald:#1f7a4d;
+  --burgundy:#9c2b2b;
+  --line:#e4dabd;
+}
 
 * { box-sizing: border-box; }
 
+@media (prefers-reduced-motion: no-preference){
+  @keyframes riseIn { from{ opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
+  .card{ animation: riseIn .5s cubic-bezier(.2,.7,.2,1) both; }
+}
+
 body {
   background:
-    radial-gradient(1200px 600px at 10% -10%, rgba(198,166,100,0.10), transparent 60%),
-    radial-gradient(1000px 600px at 100% 0%, rgba(28,37,70,0.06), transparent 55%),
-    linear-gradient(180deg,#f4f2ec,#ece8de 40%,#f4f2ec);
+    radial-gradient(900px 500px at 8% -8%, rgba(169,123,47,0.10), transparent 60%),
+    radial-gradient(900px 600px at 105% 8%, rgba(24,37,68,0.07), transparent 55%),
+    linear-gradient(180deg,#ece3ce,#e7ddc4 45%,#ece3ce);
   font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
-  color:#20242c;
+  color:var(--text);
 }
 
 .page-title {
-  font-family:'Playfair Display', serif;
-  color:#1b1f2b;
-  font-size:32px;
-  font-weight:700;
+  font-family:'Fraunces', serif;
+  font-optical-sizing:auto;
+  color:var(--ink);
+  font-size:33px;
+  font-weight:600;
   text-align:center;
-  margin:26px 0 18px;
-  letter-spacing:0.3px;
-  position:relative;
+  margin:30px 0 6px;
+  letter-spacing:0.2px;
 }
 .page-title::after {
   content:"";
   display:block;
-  width:64px;
-  height:3px;
-  margin:10px auto 0;
-  background:linear-gradient(90deg,#c6a664,#8a6d2f);
-  border-radius:2px;
+  width:46px;
+  height:2px;
+  margin:14px auto 0;
+  background:linear-gradient(90deg,transparent,var(--brass),transparent);
 }
 
 /* Premium dropdown list */
 .dropdown-list {
     display: none;
-    background: #ffffff;
-    border: 1px solid #e4ddc9;
+    background: var(--paper-3);
+    border: 1px solid var(--line);
     border-radius: 10px;
     margin-top: 6px;
-    max-height: 200px;
+    max-height: 210px;
     overflow-y: auto;
-    box-shadow: 0 14px 34px rgba(20,24,38,0.16), 0 2px 6px rgba(20,24,38,0.06);
+    box-shadow: 0 16px 36px rgba(24,37,68,0.18), 0 2px 6px rgba(24,37,68,0.07);
     padding: 6px;
     z-index: 60;
 }
 .dropdown-item.active {
-  background: linear-gradient(90deg,#1b1f2b,#2b3040);
-  color: #f4e9c9;
+  background: linear-gradient(90deg,var(--ink),var(--ink-2));
+  color: #f3e6bf;
 }
 
 .dropdown-list::-webkit-scrollbar { width: 6px; }
-.dropdown-list::-webkit-scrollbar-thumb { background: #c6a664; border-radius: 10px; }
+.dropdown-list::-webkit-scrollbar-thumb { background: var(--brass-light); border-radius: 10px; }
 .dropdown-list::-webkit-scrollbar-track { background: transparent; }
 
 .dropdown-item {
@@ -67,106 +94,164 @@ body {
     color:#2a2e38;
 }
 .dropdown-item:last-child { border-bottom: none; }
-.dropdown-item:hover { background: #f6f1e2; }
+.dropdown-item:hover { background: var(--paper-2); }
 
+/* ---------- Card + book-spine signature ---------- */
 .card {
   max-width:1100px;
   margin:18px auto 60px;
-  background:#fffffe;
-  padding:34px 38px;
-  border-radius:18px;
-  border-top:4px solid #c6a664;
+  background:var(--paper-3);
+  padding:36px 40px 36px 68px;
+  border-radius:16px;
   box-shadow:
-    0 30px 60px -20px rgba(20,24,38,0.25),
-    0 2px 10px rgba(20,24,38,0.06),
-    inset 0 1px 0 rgba(255,255,255,0.6);
+    0 34px 70px -24px rgba(24,37,68,0.30),
+    0 2px 10px rgba(24,37,68,0.07),
+    inset 0 1px 0 rgba(255,255,255,0.5);
   position:relative;
+  overflow:hidden;
+}
+.card::before{
+  /* bound-ledger spine */
+  content:"";
+  position:absolute;
+  top:0; left:0; bottom:0;
+  width:34px;
+  background:linear-gradient(180deg,var(--ink),var(--ink-2) 55%,var(--ink));
+  box-shadow: inset -6px 0 14px rgba(0,0,0,0.25), 2px 0 0 var(--brass);
+}
+.card::after{
+  /* stitched brass dots down the spine */
+  content:"";
+  position:absolute;
+  top:26px; bottom:26px; left:16px;
+  width:2px;
+  background-image: radial-gradient(circle, var(--brass-light) 1.6px, transparent 1.8px);
+  background-size: 2px 22px;
+  background-repeat: repeat-y;
+  opacity:0.85;
+}
+
+.section-eyebrow{
+  font-family:'Inter',sans-serif;
+  font-size:11.5px;
+  font-weight:700;
+  letter-spacing:1.6px;
+  text-transform:uppercase;
+  color:var(--brass-dark);
+  margin:26px 0 14px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.section-eyebrow:first-of-type{ margin-top:2px; }
+.section-eyebrow::after{
+  content:"";
+  flex:1;
+  height:1px;
+  background:linear-gradient(90deg,var(--line),transparent);
 }
 
 .label {
   display:block;
   font-weight:600;
   margin-bottom:7px;
-  color:#4a4d55;
-  font-size:12.5px;
-  letter-spacing:0.6px;
+  color:var(--text-mute);
+  font-size:12px;
+  letter-spacing:0.5px;
   text-transform:uppercase;
 }
 
 .input-field {
   width:100%;
   padding:12px 14px;
-  border-radius:10px;
-  border:1.5px solid #e2ded1;
-  background:#fbfaf6;
+  border-radius:9px;
+  border:1.5px solid var(--line);
+  background:var(--paper);
   outline:none;
   transition:all 0.18s ease;
   font-size:15px;
   height:44px; /* fixed height to align all controls */
-  color:#1f222b;
+  color:var(--text);
   font-family:'Inter',sans-serif;
 }
 
-.input-field::placeholder { color:#a7a49a; }
+.input-field::placeholder { color:#a49c86; }
 
 .input-field:focus {
-  border-color:#c6a664;
+  border-color:var(--brass);
   background:#fff;
-  box-shadow:0 0 0 4px rgba(198,166,100,0.15);
+  box-shadow:0 0 0 4px rgba(169,123,47,0.15);
 }
+.input-field:focus-visible{ outline:2px solid var(--brass); outline-offset:1px; }
 
 .input-field[readonly] {
-  background:#f7f5ef !important;
-  border-color:#ece7d7;
-  color:#2a2e38;
+  background:var(--paper-2) !important;
+  border-color:var(--line);
+  color:var(--ink);
   font-weight:600;
+  cursor:default;
+}
+
+/* Ledger figures: quantities / rates / amounts read like a real account book */
+.rate, .qty, .amount,
+#old_balance_display, #bill_amount_display, #new_total_display, #current_amount_display,
+#total_qty_display, #commission, #labour, #transport, #paid {
+  font-family:'IBM Plex Mono', monospace;
+  text-align:right;
+  font-variant-numeric: tabular-nums;
+  letter-spacing:0.2px;
 }
 
 .table {
   width:100%;
   border-collapse:separate;
   border-spacing:0;
-  margin-top:14px;
+  margin-top:6px;
   margin-bottom:10px;
-  border-radius:12px;
+  border-radius:10px;
   overflow:hidden;
-  box-shadow:0 1px 0 rgba(20,24,38,0.06);
+  box-shadow:0 1px 0 rgba(24,37,68,0.06);
+  border:1px solid var(--line);
 }
 
 .table th, .table td {
-  border-bottom:1px solid #ece7d9;
-  padding:12px 10px;
+  border-bottom:1px dashed var(--line);
+  padding:12px 12px;
   text-align:left;
   vertical-align:middle;
 }
-.table td { border-right:1px solid #f1ede2; }
-.table td:last-child { border-right:none; }
+.table th:nth-child(2), .table th:nth-child(3), .table th:nth-child(4),
+.table td:nth-child(2), .table td:nth-child(3), .table td:nth-child(4) { text-align:right; }
+.table td { border-right:1px solid var(--line); }
+.table td:last-child, .table th:last-child { border-right:none; }
+.table tbody tr:last-child td { border-bottom:none; }
 
 .table th {
-  background:linear-gradient(180deg,#1f2330,#161923);
-  color:#f0e6c8;
+  background:linear-gradient(180deg,var(--ink),#131d38);
+  color:#f0e2b8;
   font-weight:600;
-  font-size:12.5px;
-  letter-spacing:0.6px;
+  font-size:12px;
+  letter-spacing:0.7px;
   text-transform:uppercase;
   border-bottom:none;
-  padding:14px 10px;
+  padding:14px 12px;
 }
 
-.table tbody tr { background:#fffffe; transition:background 0.15s; }
-.table tbody tr:nth-child(even) { background:#fbfaf5; }
-.table tbody tr:hover { background:#f8f3e4; }
+.table tbody tr { background:var(--paper-3); transition:background 0.15s; }
+.table tbody tr:nth-child(even) { background:#faf6ea; }
+.table tbody tr:hover { background:var(--paper-2); }
+.table tfoot td { background:var(--paper-2); }
 
-.small-note { font-size:12.5px; color:#8a8778; margin-top:7px; }
+.small-note { font-size:12.5px; color:var(--text-mute); margin-top:7px; }
 
-.controls-row { display:flex; gap:16px; align-items:center; flex-wrap:wrap; margin-top:16px; }
+.controls-row { display:flex; gap:16px; align-items:center; flex-wrap:wrap; margin-top:4px; }
 
 .col-1 { flex:1 1 220px; min-width:160px; }
 .col-2 { flex:2 1 420px; min-width:220px; }
 
 .btn {
   padding:11px 18px;
-  border-radius:10px;
+  border-radius:9px;
   border:none;
   cursor:pointer;
   font-weight:600;
@@ -175,29 +260,94 @@ body {
   font-family:'Inter',sans-serif;
 }
 .btn-primary {
-  background:linear-gradient(135deg,#252a38,#12141c);
-  color:#f0e6c8;
-  box-shadow:0 10px 26px rgba(18,20,28,0.35);
+  background:linear-gradient(135deg,var(--ink-2),var(--ink) 65%,#0e1830);
+  color:#f3e6bf;
+  box-shadow:0 12px 28px rgba(14,24,48,0.38);
   letter-spacing:0.4px;
-  padding:13px 26px;
-  border:1px solid #c6a664;
+  padding:14px 30px;
+  border:1px solid var(--brass);
+  display:inline-flex; align-items:center; gap:9px;
 }
-.btn-primary:hover { transform:translateY(-1px); box-shadow:0 14px 30px rgba(18,20,28,0.42); }
+.btn-primary::before{
+  content:"";
+  width:15px; height:15px;
+  background: linear-gradient(135deg,var(--brass-light),var(--brass));
+  -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'><polyline points='20 6 9 17 4 12'/></svg>") center/contain no-repeat;
+  mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'><polyline points='20 6 9 17 4 12'/></svg>") center/contain no-repeat;
+}
+.btn-primary:hover { transform:translateY(-1px); box-shadow:0 16px 32px rgba(14,24,48,0.46); }
 .btn-primary:active { transform:translateY(0); }
+.btn-primary:disabled{ opacity:0.7; cursor:default; transform:none; }
 
 .btn-small {
   padding:8px 12px;
   border-radius:8px;
-  background:#f2efe4;
-  border:1px solid #e2ded1;
-  color:#5a5748;
+  background:var(--paper);
+  border:1px solid var(--line);
+  color:var(--text-mute);
 }
-.btn-small:hover { background:#e9e3cf; }
+.btn-small:hover { background:var(--paper-2); color:var(--ink); }
+
+#lines-body .btn-small.btn-remove{
+  padding:0; width:32px; height:32px;
+  display:inline-flex; align-items:center; justify-content:center;
+  border-radius:50%;
+  color:var(--burgundy);
+  background:transparent;
+  border:1px solid var(--line);
+}
+#lines-body .btn-remove:hover{ background:rgba(156,43,43,0.08); border-color:var(--burgundy); }
+#lines-body .btn-remove svg{ width:13px; height:13px; }
+
+button[onclick="addLine()"]{
+  border:1.5px dashed var(--brass);
+  background:transparent;
+  color:var(--brass-dark);
+  padding:10px 16px;
+  font-weight:600;
+}
+button[onclick="addLine()"]:hover{ background:rgba(169,123,47,0.08); }
 
 .grid-amount-note { display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-top:12px; align-items:start; }
-@media (max-width:760px) { .grid-amount-note { grid-template-columns: 1fr; } .col-1,.col-2{flex:1 1 100%} .card{padding:18px} }
+@media (max-width:760px) {
+  .grid-amount-note { grid-template-columns: 1fr; }
+  .ledger-summary{ grid-template-columns: 1fr !important; padding:18px 16px !important; }
+  .col-1,.col-2{flex:1 1 100%}
+  .card{padding:26px 20px 26px 46px}
+  .card::before{width:22px;}
+  .card::after{left:10px;}
+  .page-title{font-size:26px;}
+  .btn-primary{ width:100%; justify-content:center; }
+}
 
 .right { text-align:right; }
+
+/* ---------- Settlement summary panel (stamp-like) ---------- */
+.ledger-summary{
+  background:var(--paper);
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:22px 24px !important;
+  margin:6px 0 22px !important;
+  position:relative;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.6);
+}
+.ledger-summary::before{
+  content:"SETTLEMENT";
+  position:absolute;
+  top:-10px; left:20px;
+  background:var(--paper-3);
+  padding:0 8px;
+  font-size:10.5px;
+  font-weight:700;
+  letter-spacing:1.8px;
+  color:var(--brass-dark);
+}
+.ledger-summary #new_total_display{
+  font-size:19px;
+  font-weight:700;
+  height:50px;
+}
 
 /* position for customer box dropdown inside table cell */
 .customer-box { position: relative; }
@@ -208,37 +358,40 @@ body {
   display: inline-flex;
   align-items:center;
   justify-content:center;
-  padding:6px 10px;
-  border-radius:8px;
-  background:#fbfaf6;
-  border:1.5px solid #e2ded1;
+  padding:0;
+  width:44px;
+  border-radius:9px;
+  background:var(--paper);
+  border:1.5px solid var(--line);
   cursor:pointer;
-  height:40px;
+  height:44px;
+  color:var(--brass-dark);
   transition:all 0.16s ease;
 }
+.date-edit-btn svg{ width:18px; height:18px; }
 
-.date-edit-btn:hover { box-shadow:0 8px 20px rgba(198,166,100,0.22); transform:translateY(-1px); border-color:#c6a664; }
+.date-edit-btn:hover { box-shadow:0 8px 20px rgba(169,123,47,0.22); transform:translateY(-1px); border-color:var(--brass); background:#fff; }
 
 /* ---------- Balance color classes ---------- */
 .balance-pos {
-  color: #1e7d46; /* refined emerald */
-  background: rgba(30,125,70,0.07);
-  border-color: rgba(30,125,70,0.28) !important;
+  color: var(--emerald);
+  background: rgba(31,122,77,0.08) !important;
+  border-color: rgba(31,122,77,0.32) !important;
   font-weight:700;
 }
 
 .balance-neg {
-  color: #a3282f; /* refined burgundy */
-  background: rgba(163,40,47,0.06);
-  border-color: rgba(163,40,47,0.28) !important;
+  color: var(--burgundy);
+  background: rgba(156,43,43,0.07) !important;
+  border-color: rgba(156,43,43,0.32) !important;
   font-weight:700;
 }
 
 /* neutral (zero) */
 .balance-zero {
-  color: #444;
-  background: #f7f5ef;
-  border-color: #ece7d7 !important;
+  color: var(--text);
+  background: var(--paper-2) !important;
+  border-color: var(--line) !important;
   font-weight:600;
 }
 </style>
@@ -247,6 +400,7 @@ body {
 
 <div class="card">
   <form method="POST" id="bill-form" oninput="recalcTotals()">
+    <div class="section-eyebrow">Bill Details</div>
     <div style="margin-bottom:15px;">
         <label class="label">Bill Number</label>
         <input type="text"
@@ -284,7 +438,9 @@ body {
         <input type="hidden" id="bill_date_hidden" name="bill_date" value="{{ today if today is defined else '' }}">
 
         <!-- edit button (text or icon) -->
-        <button type="button" id="dateEditBtn" class="date-edit-btn" aria-label="Edit date" title="Click to change date">📅</button>
+        <button type="button" id="dateEditBtn" class="date-edit-btn" aria-label="Edit date" title="Click to change date">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16.5" rx="2.5"/><line x1="16" y1="2.5" x2="16" y2="6.5"/><line x1="8" y1="2.5" x2="8" y2="6.5"/><line x1="3.3" y1="10" x2="20.7" y2="10"/></svg>
+        </button>
       </div>
 
       <div class="small-note">Date defaults to today and is protected. Click the calendar icon to change it when needed.</div>
@@ -292,7 +448,7 @@ body {
 
 
     <!-- Line items -->
-    <h4 style="margin-top:8px;">Line Items</h4>
+    <div class="section-eyebrow">Line Items</div>
     <table class="table" id="lines-table">
       <thead>
         <tr>
@@ -331,7 +487,7 @@ body {
           </td>
 
           <td><input type="number" step="0.01" name="amount[]" class="input-field amount" readonly></td>
-          <td class="right"><button type="button" class="btn btn-small" onclick="removeLine(this)">X</button></td>
+          <td class="right"><button type="button" class="btn btn-small btn-remove" onclick="removeLine(this)" aria-label="Remove line" title="Remove line"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></td>
         </tr>
         
       </tbody>
@@ -353,11 +509,10 @@ body {
       <button type="button" class="btn btn-small" onclick="addLine()">+ Add Line</button>
     </div>
     
-    <div style="
+    <div class="ledger-summary" style="
         display:grid;
         grid-template-columns: 1.3fr 1fr;
         gap:20px 60px;
-        margin:20px 0;
         align-items:end;
     ">
     
@@ -400,6 +555,7 @@ body {
         </div>
     </div>
     
+    <div class="section-eyebrow">Charges &amp; Payment</div>
     <div class="controls-row">
       <div class="col-1">
         <label class="label">Commission</label>
@@ -671,7 +827,7 @@ function addLine() {
     <td><input type="number" step="0.01" name="quantity[]" class="input-field qty" oninput="recalcTotals()"></td>
 
     <td><input type="number" step="0.01" name="amount[]" class="input-field amount" readonly></td>
-    <td><button type="button" class="btn btn-small" onclick="removeLine(this)">X</button></td>
+    <td class="right"><button type="button" class="btn btn-small btn-remove" onclick="removeLine(this)" aria-label="Remove line" title="Remove line"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></td>
     `;
 
     tbody.appendChild(tr);
