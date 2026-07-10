@@ -3,60 +3,83 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
 
 <style>
   :root{
-    --ink:#171B34;
-    --ink-soft:#4A5079;
-    --paper:#F7F7FB;
+    --cream:#F4F1E8;
+    --ink:#1E2233;
+    --ink-soft:#4B5065;
+    --muted:#8A8676;
+    --gold:#B8871E;
+    --gold-deep:#96700F;
+    --gold-soft:#F3E4BE;
+    --navy:#14213D;
+    --navy-deep:#0C1729;
     --card:#FFFFFF;
-    --accent:#5B5FEF;
-    --accent-deep:#4347C4;
-    --accent-soft:#EEF0FF;
-    --success:#1F8A55;
-    --success-soft:#E6F6EC;
-    --danger:#C0392B;
-    --danger-soft:#FBEAEA;
-    --border:#E7E5F1;
-    --muted:#6B7086;
-    --radius:14px;
+    --border:#E7E1CF;
+    --blue-soft:#DCE7F9;
+    --blue-ink:#1D4ED8;
+    --green-soft:#DFF2E4;
+    --green-ink:#1C7A43;
+    --red-soft:#FBE1E0;
+    --red-ink:#B23A32;
+    --radius:16px;
+    --font-serif:'Playfair Display',Georgia,serif;
     --font-ui:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
     --font-mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
   }
 
-  .sbs-wrap{
+  .sbs-page{
+    background:var(--cream);
     font-family:var(--font-ui);
     color:var(--ink);
-    max-width:1080px;
-    margin:0 auto;
+    padding:28px 32px 40px;
+    border-radius:18px;
   }
 
+  .sbs-wrap{ max-width:1180px; margin:0 auto; }
+
+  /* ---- Header ---- */
   .sbs-header{
-    margin-bottom:22px;
+    display:flex;
+    align-items:flex-end;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:12px;
+    margin-bottom:24px;
   }
 
   .sbs-eyebrow{
+    font-family:var(--font-mono);
     font-size:12px;
     font-weight:600;
-    letter-spacing:.12em;
+    letter-spacing:.16em;
     text-transform:uppercase;
-    color:var(--accent-deep);
-    margin:0 0 6px;
+    color:var(--gold-deep);
+    margin:0 0 8px;
   }
 
   .sbs-title{
-    font-size:26px;
+    font-family:var(--font-serif);
+    font-size:34px;
     font-weight:700;
     letter-spacing:-.01em;
-    margin:0 0 4px;
-    color:var(--ink);
+    margin:0;
+    color:var(--navy-deep);
   }
 
-  .sbs-subtitle{
+  .sbs-count{
+    font-family:var(--font-mono);
     font-size:14px;
-    color:var(--muted);
-    margin:0;
+    color:var(--ink-soft);
+    white-space:nowrap;
+    padding-bottom:4px;
+  }
+
+  .sbs-count strong{
+    color:var(--navy-deep);
+    font-size:16px;
   }
 
   /* ---- Filter card ---- */
@@ -64,82 +87,78 @@
     background:var(--card);
     border:1px solid var(--border);
     border-radius:var(--radius);
-    padding:22px 24px;
-    box-shadow:0 1px 2px rgba(23,27,52,0.04), 0 8px 24px rgba(23,27,52,0.05);
-    margin-bottom:22px;
+    padding:22px 26px;
+    box-shadow:0 1px 2px rgba(30,34,51,0.04), 0 10px 28px rgba(30,34,51,0.06);
+    margin-bottom:28px;
   }
 
   .search-card form{
     display:flex;
     flex-wrap:wrap;
     align-items:flex-end;
-    gap:16px;
+    gap:18px;
   }
 
   .field{
     display:flex;
     flex-direction:column;
-    gap:6px;
-    flex:1 1 160px;
-    min-width:150px;
+    gap:7px;
+    flex:1 1 170px;
+    min-width:160px;
   }
 
   .field label{
-    font-size:12px;
-    font-weight:600;
+    font-size:11.5px;
+    font-weight:700;
+    letter-spacing:.08em;
+    text-transform:uppercase;
     color:var(--muted);
-    letter-spacing:.02em;
   }
 
-  .field .input-shell{
-    position:relative;
-  }
+  .field .input-shell{ position:relative; }
 
   .field .input-shell svg{
     position:absolute;
-    left:10px;
+    left:12px;
     top:50%;
     transform:translateY(-50%);
     width:15px;
     height:15px;
-    color:var(--muted);
+    color:var(--gold-deep);
     pointer-events:none;
   }
 
   .search-card input{
     width:100%;
     box-sizing:border-box;
-    padding:9px 12px 9px 32px;
+    padding:10px 14px 10px 34px;
     border:1px solid var(--border);
-    border-radius:9px;
+    border-radius:10px;
     font-family:var(--font-ui);
     font-size:14px;
     color:var(--ink);
-    background:var(--paper);
+    background:var(--cream);
     transition:border-color .15s ease, box-shadow .15s ease, background .15s ease;
   }
 
   .search-card input:focus{
     outline:none;
-    border-color:var(--accent);
+    border-color:var(--gold);
     background:#fff;
-    box-shadow:0 0 0 3px var(--accent-soft);
+    box-shadow:0 0 0 3px var(--gold-soft);
   }
 
-  .field-actions{
-    display:flex;
-    gap:10px;
-  }
+  .field-actions{ display:flex; gap:10px; }
 
   .search-btn{
-    background:var(--accent);
+    background:var(--navy);
     border:none;
     color:#fff;
     font-family:var(--font-ui);
     font-weight:600;
     font-size:14px;
-    padding:10px 20px;
-    border-radius:9px;
+    padding:11px 22px;
+    border-radius:10px;
     cursor:pointer;
     display:inline-flex;
     align-items:center;
@@ -148,12 +167,11 @@
     white-space:nowrap;
   }
 
-  .search-btn:hover{ background:var(--accent-deep); }
+  .search-btn:hover{ background:var(--navy-deep); }
   .search-btn:active{ transform:translateY(1px); }
 
   .search-btn .spinner{
-    width:14px;
-    height:14px;
+    width:14px; height:14px;
     border:2px solid rgba(255,255,255,.4);
     border-top-color:#fff;
     border-radius:50%;
@@ -162,8 +180,6 @@
   }
 
   .search-btn.loading .spinner{ display:inline-block; }
-  .search-btn.loading .btn-label{ opacity:.85; }
-
   @keyframes spin{ to{ transform:rotate(360deg); } }
 
   .clear-btn{
@@ -173,371 +189,330 @@
     font-family:var(--font-ui);
     font-weight:500;
     font-size:14px;
-    padding:10px 16px;
-    border-radius:9px;
+    padding:11px 16px;
+    border-radius:10px;
     cursor:pointer;
     transition:border-color .15s ease, color .15s ease;
   }
 
-  .clear-btn:hover{
-    border-color:var(--ink-soft);
-    color:var(--ink);
-  }
-
-  /* ---- Summary / ledger strip ---- */
-  .summary-bar{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    flex-wrap:wrap;
-    gap:12px;
-    background:var(--card);
-    border:1px solid var(--border);
-    border-radius:var(--radius) var(--radius) 0 0;
-    padding:16px 22px;
-    position:relative;
-  }
-
-  .summary-bar::after{
-    content:"";
-    position:absolute;
-    left:22px;
-    right:22px;
-    bottom:-1px;
-    border-bottom:1px dashed var(--border);
-  }
-
-  .summary-left{
-    display:flex;
-    align-items:baseline;
-    gap:10px;
-  }
-
-  .summary-count{
-    font-size:16px;
-    font-weight:700;
-    color:var(--ink);
-  }
-
-  .summary-count span{
-    color:var(--muted);
-    font-weight:500;
-    font-size:13px;
-  }
-
-  .summary-total{
-    font-family:var(--font-mono);
-    font-size:13px;
-    color:var(--ink-soft);
-    background:var(--accent-soft);
-    padding:5px 10px;
-    border-radius:7px;
-  }
+  .clear-btn:hover{ border-color:var(--ink-soft); color:var(--ink); }
 
   .print-all-btn{
-    background:var(--card);
-    border:1px solid var(--border);
-    color:var(--ink-soft);
+    background:var(--gold-soft);
+    border:1px solid #E7D397;
+    color:var(--gold-deep);
     font-family:var(--font-ui);
-    font-weight:600;
-    font-size:13px;
-    padding:8px 14px;
-    border-radius:8px;
+    font-weight:700;
+    font-size:14px;
+    padding:11px 20px;
+    border-radius:10px;
     cursor:pointer;
     display:inline-flex;
     align-items:center;
-    gap:6px;
-    transition:border-color .15s ease, color .15s ease;
+    gap:8px;
+    white-space:nowrap;
+    transition:background .15s ease;
   }
 
-  .print-all-btn:hover{
-    border-color:var(--accent);
-    color:var(--accent-deep);
-  }
+  .print-all-btn:hover{ background:#EFDDA4; }
 
-  /* ---- Results table ---- */
-  .table-shell{
-    background:var(--card);
-    border:1px solid var(--border);
-    border-top:none;
-    border-radius:0 0 var(--radius) var(--radius);
-    overflow:hidden;
-    box-shadow:0 1px 2px rgba(23,27,52,0.04), 0 8px 24px rgba(23,27,52,0.05);
-    margin-bottom:24px;
-  }
-
-  .bill-table{
-    width:100%;
-    border-collapse:collapse;
-  }
-
-  .bill-table thead th{
-    text-align:left;
-    font-size:11px;
+  /* ---- Column header ---- */
+  .col-header{
+    display:grid;
+    grid-template-columns: 100px 110px 1.4fr 130px 130px 230px;
+    gap:14px;
+    padding:0 20px 12px;
+    font-size:11.5px;
     font-weight:700;
-    letter-spacing:.06em;
+    letter-spacing:.07em;
     text-transform:uppercase;
     color:var(--muted);
-    background:var(--paper);
-    padding:12px 16px;
-    border-bottom:1px solid var(--border);
-    white-space:nowrap;
   }
 
-  .bill-table th.num, .bill-table td.num{ text-align:right; }
-  .bill-table th.actions-col, .bill-table td.actions-col{ text-align:right; }
+  .col-header .num{ text-align:right; }
+  .col-header .actions-col{ text-align:right; }
 
-  .bill-table tbody tr{
-    transition:background .12s ease;
+  /* ---- Results rows (ticket style) ---- */
+  .bill-list{ display:flex; flex-direction:column; gap:12px; }
+
+  .bill-row{
+    position:relative;
+    display:grid;
+    grid-template-columns: 100px 110px 1.4fr 130px 130px 230px;
+    gap:14px;
+    align-items:center;
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:14px 20px;
+    box-shadow:0 1px 2px rgba(30,34,51,0.03), 0 6px 16px rgba(30,34,51,0.045);
   }
 
-  .bill-table tbody tr:hover{
-    background:var(--accent-soft);
+  .bill-row::before,
+  .bill-row::after{
+    content:"";
+    position:absolute;
+    top:50%;
+    transform:translateY(-50%);
+    width:16px;
+    height:16px;
+    border-radius:50%;
+    background:var(--cream);
+    border:1px solid var(--border);
   }
 
-  .bill-table tbody tr:not(:last-child) td{
-    border-bottom:1px solid var(--border);
-  }
+  .bill-row::before{ left:-9px; }
+  .bill-row::after{ right:-9px; }
 
-  .bill-table td{
-    padding:13px 16px;
-    font-size:14px;
-    color:var(--ink);
-    vertical-align:middle;
-  }
-
-  .bill-id{
+  .bill-id-badge{
+    display:inline-flex;
+    justify-content:center;
     font-family:var(--font-mono);
-    font-weight:600;
-    color:var(--accent-deep);
+    font-weight:700;
+    font-size:13.5px;
+    color:var(--gold-deep);
+    background:var(--gold-soft);
+    border:1px solid #E7D397;
+    border-radius:8px;
+    padding:5px 10px;
+    width:fit-content;
   }
 
   .supplier-id{
     font-family:var(--font-mono);
-    color:var(--muted);
-    font-size:13px;
-  }
-
-  .supplier-name{
-    font-weight:600;
-  }
-
-  .bill-date{
     color:var(--ink-soft);
     font-size:13.5px;
   }
 
+  .supplier-name{ font-weight:600; color:var(--ink); }
+
+  .bill-date{
+    font-family:var(--font-mono);
+    color:var(--ink-soft);
+    font-size:13px;
+  }
+
   .amount{
     font-family:var(--font-mono);
-    font-weight:600;
+    font-weight:700;
+    color:var(--navy-deep);
+    text-align:right;
   }
 
-  .action-group{
-    display:flex;
-    gap:6px;
-    justify-content:flex-end;
-  }
+  .action-group{ display:flex; gap:8px; justify-content:flex-end; flex-wrap:wrap; }
 
-  .icon-btn{
+  .pill-btn{
     display:inline-flex;
     align-items:center;
-    justify-content:center;
-    width:32px;
-    height:32px;
-    border-radius:8px;
+    gap:6px;
+    font-family:var(--font-ui);
+    font-weight:600;
+    font-size:13px;
+    padding:7px 13px;
+    border-radius:20px;
     border:1px solid transparent;
     cursor:pointer;
     text-decoration:none;
-    transition:background .15s ease, border-color .15s ease;
+    white-space:nowrap;
+    transition:filter .12s ease, border-color .12s ease;
   }
 
-  .icon-btn svg{ width:16px; height:16px; }
+  .pill-btn svg{ width:14px; height:14px; }
+  .pill-btn:hover{ filter:brightness(0.96); }
 
-  .edit-btn{ background:var(--success-soft); color:var(--success); }
-  .edit-btn:hover{ border-color:var(--success); }
+  .edit-btn{ background:var(--green-soft); color:var(--green-ink); }
+  .print-btn{ background:var(--blue-soft); color:var(--blue-ink); }
+  .delete-btn{ background:var(--red-soft); color:var(--red-ink); }
 
-  .print-btn{ background:var(--accent-soft); color:var(--accent-deep); }
-  .print-btn:hover{ border-color:var(--accent); }
+  /* ---- Summary strip ---- */
+  .summary-note{
+    text-align:center;
+    font-family:var(--font-mono);
+    font-size:12.5px;
+    color:var(--muted);
+    margin-top:14px;
+  }
 
-  .delete-btn{ background:var(--danger-soft); color:var(--danger); }
-  .delete-btn:hover{ border-color:var(--danger); }
+  .summary-note strong{ color:var(--ink-soft); }
 
   /* ---- Empty state ---- */
   .empty-state{
     background:var(--card);
     border:1px dashed var(--border);
     border-radius:var(--radius);
-    padding:48px 24px;
+    padding:52px 24px;
     text-align:center;
     color:var(--muted);
   }
 
-  .empty-state svg{
-    width:40px;
-    height:40px;
-    color:var(--border);
-    margin-bottom:12px;
-  }
+  .empty-state svg{ width:40px; height:40px; color:var(--gold-soft); margin-bottom:12px; stroke:var(--gold); }
 
   .empty-state h4{
+    font-family:var(--font-serif);
     margin:0 0 6px;
-    color:var(--ink-soft);
-    font-size:15px;
-    font-weight:600;
+    color:var(--navy-deep);
+    font-size:19px;
+    font-weight:700;
   }
 
-  .empty-state p{
-    margin:0;
-    font-size:13.5px;
-  }
+  .empty-state p{ margin:0; font-size:13.5px; }
 
-  @media (max-width: 720px){
-    .bill-table thead{ display:none; }
-    .bill-table, .bill-table tbody, .bill-table tr, .bill-table td{ display:block; width:100%; }
-    .bill-table tbody tr{ padding:12px 16px; }
-    .bill-table td{ border-bottom:none !important; padding:4px 0; }
-    .bill-table td.num, .bill-table td.actions-col{ text-align:left; }
-    .bill-table td::before{
+  @media (max-width: 860px){
+    .col-header{ display:none; }
+    .bill-row{ grid-template-columns:1fr; gap:6px; padding:16px 18px; }
+    .bill-row > div, .bill-row > span{ display:flex; align-items:center; gap:8px; }
+    .amount{ text-align:left; }
+    .bill-row::before, .bill-row::after{ display:none; }
+    .action-group{ justify-content:flex-start; margin-top:8px; }
+    .field-item::before{
       content:attr(data-label);
-      display:block;
       font-size:10.5px;
       font-weight:700;
       letter-spacing:.05em;
       text-transform:uppercase;
       color:var(--muted);
-      margin-bottom:2px;
+      min-width:88px;
     }
-    .action-group{ justify-content:flex-start; margin-top:6px; }
   }
 </style>
 
-<div class="sbs-wrap">
+<div class="sbs-page">
+  <div class="sbs-wrap">
 
-  <div class="sbs-header">
-    <p class="sbs-eyebrow">Accounts Payable</p>
-    <h2 class="sbs-title">Search Supplier Bills</h2>
-    <p class="sbs-subtitle">Look up bills by number, supplier name, or date — then edit, print, or remove them.</p>
-  </div>
-
-  <div class="search-card">
-    <form method="POST" id="supplier-search-form">
-
-      <div class="field">
-        <label for="bill_no">Bill No.</label>
-        <div class="input-shell">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12h6M9 16h6M9 8h6M6 3h9l3 3v15a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/></svg>
-          <input id="bill_no" name="bill_no" placeholder="e.g. 1042"
-            value="{{ request.form.bill_no if request.method=='POST' else '' }}" />
-        </div>
+    <div class="sbs-header">
+      <div>
+        <p class="sbs-eyebrow">Billing Ledger</p>
+        <h2 class="sbs-title">Search Supplier Bill</h2>
       </div>
-
-      <div class="field">
-        <label for="name">Supplier Name</label>
-        <div class="input-shell">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a7 7 0 0 1 14 0v1"/></svg>
-          <input id="name" name="name" placeholder="Search by name"
-            value="{{ request.form.name if request.method=='POST' else '' }}" />
-        </div>
-      </div>
-
-      <div class="field">
-        <label for="bill_date">Date</label>
-        <div class="input-shell">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg>
-          <input type="date" id="bill_date" name="bill_date"
-            value="{{ request.form.bill_date if request.method=='POST' else '' }}" />
-        </div>
-      </div>
-
-      <div class="field-actions">
-        <button type="submit" class="search-btn" id="search-submit-btn">
-          <span class="spinner"></span>
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-          <span class="btn-label">Search</span>
-        </button>
-        <button type="button" class="clear-btn" id="clear-filters-btn">Clear</button>
-      </div>
-
-    </form>
-  </div>
-
-  {% if results %}
-
-    <div class="summary-bar">
-      <div class="summary-left">
-        <span class="summary-count">{{ results|length }} <span>bill{{ 's' if results|length != 1 else '' }} found</span></span>
-        <span class="summary-total">Total ₹{{ '%.2f'|format(results|sum(attribute='total_amount') or 0) }}</span>
-      </div>
-      <button type="button" class="print-all-btn" id="print-all-supplier">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>
-        Print all results
-      </button>
-    </div>
-
-    <div class="table-shell">
-      <table class="bill-table">
-        <thead>
-          <tr>
-            <th>Bill ID</th>
-            <th>Supplier ID</th>
-            <th>Supplier</th>
-            <th>Date</th>
-            <th class="num">Amount</th>
-            <th class="actions-col">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for r in results %}
-          <tr>
-            <td data-label="Bill ID" class="bill-id">#{{ r.bill_id }}</td>
-            <td data-label="Supplier ID" class="supplier-id">{{ r.supplier_id }}</td>
-            <td data-label="Supplier" class="supplier-name">{{ r.supplier_name }}</td>
-            <td data-label="Date" class="bill-date">{% if r.bill_date %}{{ r.bill_date.strftime('%d-%m-%Y') }}{% else %}—{% endif %}</td>
-            <td data-label="Amount" class="num amount">₹{{ '%.2f'|format(r.total_amount or 0) }}</td>
-            <td data-label="Actions" class="actions-col">
-              <div class="action-group">
-
-                <a href="{{ url_for('supplier_bill_edit', bill_id=r.bill_id) }}"
-                   class="icon-btn edit-btn" title="Edit bill" aria-label="Edit bill #{{ r.bill_id }}">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
-                </a>
-
-                <button type="button" class="icon-btn print-btn print-single-supplier"
-                        data-bill="{{ r.bill_id }}" title="Print bill" aria-label="Print bill #{{ r.bill_id }}">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>
-                </button>
-
-                <form method="POST" action="{{ url_for('supplier_bill_delete', bill_id=r.bill_id) }}"
-                      style="display:inline;" class="delete-form">
-                  <button type="submit" class="icon-btn delete-btn" title="Delete bill" aria-label="Delete bill #{{ r.bill_id }}">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
-                  </button>
-                </form>
-
-              </div>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-
-  {% else %}
-
-    <div class="empty-state">
-      {% if request.method=='POST' %}
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-        <h4>No matching bills</h4>
-        <p>Try a different bill number, supplier name, or date.</p>
-      {% else %}
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l3 3v15a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/><path d="M9 12h6M9 16h6M9 8h6"/></svg>
-        <h4>Search for a bill</h4>
-        <p>Use the filters above to find supplier bills.</p>
+      {% if results %}
+        <p class="sbs-count"><strong>{{ results|length }}</strong> bill{{ 's' if results|length != 1 else '' }} found</p>
       {% endif %}
     </div>
 
-  {% endif %}
+    <div class="search-card">
+      <form method="POST" id="supplier-search-form">
 
+        <div class="field">
+          <label for="bill_no">Bill Number</label>
+          <div class="input-shell">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12h6M9 16h6M9 8h6M6 3h9l3 3v15a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/></svg>
+            <input id="bill_no" name="bill_no" placeholder="e.g. 10234"
+              value="{{ request.form.bill_no if request.method=='POST' else '' }}" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="name">Supplier Name / ID</label>
+          <div class="input-shell">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a7 7 0 0 1 14 0v1"/></svg>
+            <input id="name" name="name" placeholder="Search by name or ID"
+              value="{{ request.form.name if request.method=='POST' else '' }}" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="bill_date">Bill Date</label>
+          <div class="input-shell">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg>
+            <input type="date" id="bill_date" name="bill_date"
+              value="{{ request.form.bill_date if request.method=='POST' else '' }}" />
+          </div>
+        </div>
+
+        <div class="field-actions">
+          <button type="submit" class="search-btn" id="search-submit-btn">
+            <span class="spinner"></span>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+            Search
+          </button>
+          <button type="button" class="clear-btn" id="clear-filters-btn">Clear</button>
+          {% if results %}
+            <button type="button" class="print-all-btn" id="print-all-supplier">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>
+              Print All Results
+            </button>
+          {% endif %}
+        </div>
+
+      </form>
+    </div>
+
+    {% if results %}
+
+      <div class="col-header">
+        <div>Bill ID</div>
+        <div>Supplier ID</div>
+        <div>Supplier Name</div>
+        <div>Date</div>
+        <div class="num">Amount</div>
+        <div class="actions-col">Actions</div>
+      </div>
+
+      <div class="bill-list">
+        {% for r in results %}
+        <div class="bill-row">
+
+          <div class="field-item" data-label="Bill ID">
+            <span class="bill-id-badge">#{{ r.bill_id }}</span>
+          </div>
+
+          <div class="field-item supplier-id" data-label="Supplier ID">{{ r.supplier_id }}</div>
+
+          <div class="field-item supplier-name" data-label="Supplier">{{ r.supplier_name }}</div>
+
+          <div class="field-item bill-date" data-label="Date">
+            {% if r.bill_date %}{{ r.bill_date.strftime('%d-%m-%Y') }}{% else %}—{% endif %}
+          </div>
+
+          <div class="field-item amount" data-label="Amount">₹{{ '%.2f'|format(r.total_amount or 0) }}</div>
+
+          <div class="field-item actions-col" data-label="Actions">
+            <div class="action-group">
+
+              <a href="{{ url_for('supplier_bill_edit', bill_id=r.bill_id) }}" class="pill-btn edit-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                Edit
+              </a>
+
+              <button type="button" class="pill-btn print-btn print-single-supplier" data-bill="{{ r.bill_id }}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>
+                Print
+              </button>
+
+              <form method="POST" action="{{ url_for('supplier_bill_delete', bill_id=r.bill_id) }}"
+                    style="display:inline;" class="delete-form">
+                <button type="submit" class="pill-btn delete-btn">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+                  Delete
+                </button>
+              </form>
+
+            </div>
+          </div>
+
+        </div>
+        {% endfor %}
+      </div>
+
+      <p class="summary-note">Total across results: <strong>₹{{ '%.2f'|format(results|sum(attribute='total_amount') or 0) }}</strong></p>
+
+    {% else %}
+
+      <div class="empty-state">
+        {% if request.method=='POST' %}
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+          <h4>No matching bills</h4>
+          <p>Try a different bill number, supplier name, or date.</p>
+        {% else %}
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l3 3v15a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/><path d="M9 12h6M9 16h6M9 8h6"/></svg>
+          <h4>Search for a bill</h4>
+          <p>Use the filters above to find supplier bills.</p>
+        {% endif %}
+      </div>
+
+    {% endif %}
+
+  </div>
 </div>
 
 <script>
