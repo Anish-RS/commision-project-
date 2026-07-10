@@ -124,6 +124,12 @@
     background:var(--gold-soft);
 }
 
+.preset-btn.is-active{
+    border-color:var(--gold);
+    background:var(--ink);
+    color:var(--paper);
+}
+
 .tally-actions{
     display:flex;
     gap:10px;
@@ -630,6 +636,8 @@
     function pad(n){ return n < 10 ? '0'+n : n; }
     function iso(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
 
+    var tallyForm = document.getElementById('tally-form');
+
     document.querySelectorAll('.preset-btn').forEach(function(btn){
         btn.addEventListener('click', function(){
             var now = new Date();
@@ -654,6 +662,27 @@
             }
             todayEl.value = iso(from);
             toEl.value = iso(to);
+
+            // remember which preset was chosen so it stays highlighted after reload
+            try { sessionStorage.setItem('tally-active-preset', btn.dataset.preset); } catch(e){}
+
+            tallyForm.submit();
+        });
+    });
+
+    // Re-apply the active highlight after the page reloads with results
+    try {
+        var activePreset = sessionStorage.getItem('tally-active-preset');
+        if(activePreset){
+            var activeBtn = document.querySelector('.preset-btn[data-preset="'+activePreset+'"]');
+            if(activeBtn){ activeBtn.classList.add('is-active'); }
+        }
+    } catch(e){}
+
+    // Any manual date edit or the plain "Get Tally" click clears the preset highlight
+    [todayEl, toEl].forEach(function(el){
+        el.addEventListener('input', function(){
+            try { sessionStorage.removeItem('tally-active-preset'); } catch(e){}
         });
     });
 
