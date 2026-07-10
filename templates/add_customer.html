@@ -3,21 +3,27 @@
 {% block content %}
 
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap');
 
     /* ---------- TOKENS ---------- */
     :root {
-        --ink: #101C28;
+        --ink: #14212E;
         --ink-soft: #5C6672;
-        --paper: #FEFEFD;
-        --bg: #EEEBE3;
-        --green: #16342B;
-        --green-dark: #0D231C;
-        --gold: #8E7133;
-        --hairline: #E4E1D9;
-        --hairline-strong: #D8D4C8;
-        --red: #96382A;
-        --red-soft: #F6ECE9;
+        --paper: #FFFFFF;
+        --bg-1: #EDE7D8;
+        --bg-2: #E2D9C4;
+        --panel-1: #17392E;
+        --panel-2: #0C201A;
+        --gold: #B8923D;
+        --gold-light: #E7CE84;
+        --gold-deep: #8A6B27;
+        --teal: #2E6472;
+        --terracotta: #A6592E;
+        --hairline: #E7E2D4;
+        --hairline-strong: #D9D2BC;
+        --red: #A23B2A;
+        --red-soft: #F7EBE6;
+        --green: #1F5C43;
         --grey-disabled: #C7CAC5;
     }
 
@@ -25,64 +31,109 @@
 
     /* ---------- PAGE BACKDROP ---------- */
     body {
-        background: var(--bg);
+        background:
+            radial-gradient(circle at 20% -10%, rgba(184,146,61,0.16), transparent 45%),
+            radial-gradient(circle at 90% 110%, rgba(23,57,46,0.14), transparent 50%),
+            linear-gradient(180deg, var(--bg-1), var(--bg-2));
         background-attachment: fixed;
         font-family: 'Inter', sans-serif;
-    }
-
-    /* ---------- TITLE ---------- */
-    .ledger-header {
-        text-align: center;
-        margin: 6px auto 30px;
-    }
-
-    .ledger-eyebrow {
-        font-family: 'Inter', sans-serif;
-        font-size: 10.5px;
-        font-weight: 600;
-        letter-spacing: 0.24em;
-        text-transform: uppercase;
-        color: var(--gold);
-        margin-bottom: 10px;
-    }
-
-    .page-title {
-        font-family: 'Fraunces', serif;
-        color: var(--ink);
-        font-size: 28px;
-        font-weight: 500;
-        letter-spacing: -0.01em;
     }
 
     /* ---------- CARD ---------- */
     .customer-card {
         position: relative;
         background: var(--paper);
-        padding: 40px 40px 34px;
-        border-radius: 10px;
         max-width: 480px;
-        margin: auto;
+        margin: 30px auto;
+        border-radius: 16px;
+        overflow: hidden;
         box-shadow:
-            0 1px 0 rgba(16,28,40,0.03),
-            0 20px 40px -18px rgba(16,28,40,0.28);
-        border: 1px solid rgba(16,28,40,0.06);
-        border-top: 3px solid var(--green);
+            0 1px 0 rgba(255,255,255,0.6) inset,
+            0 30px 60px -20px rgba(13,25,20,0.45),
+            0 10px 20px -10px rgba(13,25,20,0.25);
         animation: cardIn 0.45s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     @keyframes cardIn {
-        from { opacity: 0; transform: translateY(10px); }
+        from { opacity: 0; transform: translateY(12px); }
         to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ---------- CARD HEADER (passbook cover) ---------- */
+    .card-header {
+        position: relative;
+        background: linear-gradient(155deg, var(--panel-1), var(--panel-2));
+        padding: 30px 40px 26px;
+        text-align: center;
+        overflow: hidden;
+    }
+
+    .card-header::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+            radial-gradient(circle at 85% -20%, rgba(231,206,132,0.18), transparent 55%),
+            radial-gradient(circle at -10% 120%, rgba(231,206,132,0.10), transparent 50%);
+        pointer-events: none;
+    }
+
+    .crest {
+        width: 34px;
+        height: 34px;
+        margin: 0 auto 14px;
+        border: 1.5px solid rgba(231,206,132,0.55);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--gold-light);
+        font-family: 'Fraunces', serif;
+        font-size: 15px;
+        font-weight: 600;
+        position: relative;
+    }
+
+    .ledger-eyebrow {
+        position: relative;
+        font-size: 10.5px;
+        font-weight: 600;
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+        color: var(--gold-light);
+        margin-bottom: 8px;
+    }
+
+    .page-title {
+        position: relative;
+        font-family: 'Fraunces', serif;
+        color: #FBF8F0;
+        font-size: 26px;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+    }
+
+    .gold-rule {
+        position: relative;
+        width: 56px;
+        height: 2px;
+        margin: 16px auto 0;
+        background: linear-gradient(90deg, transparent, var(--gold-light), transparent);
+    }
+
+    /* ---------- CARD BODY ---------- */
+    .card-body {
+        padding: 34px 40px 32px;
     }
 
     /* ---------- FLASH MESSAGE ---------- */
     .flash-msg {
         background: var(--red-soft);
         color: var(--red);
-        border: 1px solid rgba(150,56,42,0.18);
+        border: 1px solid rgba(162,59,42,0.2);
         padding: 12px 16px;
         margin-bottom: 22px;
-        border-radius: 6px;
+        border-radius: 8px;
         text-align: center;
         font-weight: 600;
         font-size: 13.5px;
@@ -96,25 +147,34 @@
 
     .form-group + .form-group {
         padding-top: 22px;
-        border-top: 1px solid var(--hairline);
+        border-top: 1px dashed var(--hairline-strong);
         margin-top: -22px;
     }
 
     label {
         font-family: 'Inter', sans-serif;
-        font-weight: 600;
+        font-weight: 700;
         font-size: 11.5px;
-        letter-spacing: 0.06em;
+        letter-spacing: 0.07em;
         text-transform: uppercase;
         margin-bottom: 9px;
         color: var(--ink-soft) !important;
         display: flex;
         align-items: center;
-        gap: 5px;
+        gap: 7px;
+    }
+
+    label .dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--accent, var(--gold));
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent, var(--gold)) 18%, transparent);
+        flex-shrink: 0;
     }
 
     label .req {
-        color: var(--gold);
+        color: var(--red);
         font-size: 12px;
     }
 
@@ -127,6 +187,11 @@
         margin-left: 2px;
     }
 
+    .fg-name    { --accent: var(--green); }
+    .fg-phone   { --accent: var(--teal); }
+    .fg-address { --accent: var(--terracotta); }
+    .fg-balance { --accent: var(--gold-deep); }
+
     /* ---------- INPUT FIELD ---------- */
     .input-wrap {
         position: relative;
@@ -134,15 +199,16 @@
 
     .input-field {
         width: 100%;
-        padding: 12px 14px;
-        border-radius: 6px;
-        border: 1px solid var(--hairline-strong);
-        background: #ffffff;
+        padding: 13px 14px;
+        border-radius: 8px;
+        border: 1.5px solid var(--hairline-strong);
+        background: #FCFBF8;
         outline: none;
-        transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
         font-family: 'Inter', sans-serif;
         font-size: 14.5px;
         color: var(--ink);
+        box-shadow: inset 0 1px 2px rgba(20,33,46,0.04);
     }
 
     .input-field::placeholder {
@@ -150,59 +216,76 @@
     }
 
     .input-field:focus {
-        border-color: var(--green);
-        box-shadow: 0 0 0 3px rgba(22,52,43,0.09);
+        border-color: var(--accent, var(--green));
+        background: #ffffff;
+        box-shadow:
+            inset 0 1px 2px rgba(20,33,46,0.03),
+            0 0 0 4px color-mix(in srgb, var(--accent, var(--green)) 16%, transparent);
     }
 
     .input-field.invalid {
         border-color: var(--red);
-        box-shadow: 0 0 0 3px rgba(150,56,42,0.08);
+        box-shadow:
+            inset 0 1px 2px rgba(20,33,46,0.03),
+            0 0 0 4px rgba(162,59,42,0.10);
     }
 
-    /* Opening balance — single seamless field with inline currency mark */
+    /* Opening balance — seamless field with a gold currency badge */
     .amount-wrap {
         position: relative;
     }
 
     .amount-prefix {
         position: absolute;
-        left: 14px;
+        left: 8px;
         top: 50%;
         transform: translateY(-50%);
-        color: var(--gold);
-        font-weight: 600;
-        font-size: 14.5px;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        background: linear-gradient(155deg, var(--gold-light), var(--gold-deep));
+        color: #3A2C0B;
+        font-weight: 700;
+        font-size: 13px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         pointer-events: none;
+        box-shadow: 0 1px 2px rgba(138,107,39,0.35);
     }
 
     .amount-wrap .input-field {
-        padding-left: 28px;
+        padding-left: 42px;
         font-variant-numeric: tabular-nums;
-        font-weight: 600;
+        font-weight: 700;
         letter-spacing: 0.01em;
+        font-size: 15.5px;
     }
 
     /* ---------- DUPLICATE / STATUS MESSAGES ---------- */
     .field-status {
         display: none;
         align-items: center;
-        gap: 6px;
-        margin-top: 8px;
+        gap: 7px;
+        margin-top: 9px;
+        padding: 7px 11px;
+        border-radius: 6px;
         font-size: 12.5px;
         font-weight: 600;
+        width: fit-content;
     }
 
     .field-status.show { display: flex; }
 
-    .field-status.error { color: var(--red); }
-    .field-status.checking { color: var(--ink-soft); font-weight: 500; }
-    .field-status.ok { color: var(--green); }
+    .field-status.error { color: var(--red); background: var(--red-soft); }
+    .field-status.checking { color: var(--ink-soft); font-weight: 500; background: #F1EEE5; }
+    .field-status.ok { color: var(--green); background: #EAF3EE; }
 
     .spinner {
         width: 11px;
         height: 11px;
         border: 2px solid var(--hairline-strong);
-        border-top-color: var(--ink-soft);
+        border-top-color: var(--gold-deep);
         border-radius: 50%;
         animation: spin 0.7s linear infinite;
         flex-shrink: 0;
@@ -212,29 +295,35 @@
 
     /* ---------- BUTTON ---------- */
     .btn-submit {
-        background: var(--green);
-        padding: 13px 18px;
+        background: linear-gradient(155deg, var(--panel-1), var(--panel-2));
+        padding: 14px 18px;
         border: none;
-        color: #fff;
+        border-top: 1px solid rgba(231,206,132,0.4);
+        color: #FBF8F0;
         font-family: 'Inter', sans-serif;
         font-size: 13.5px;
         font-weight: 600;
-        letter-spacing: 0.05em;
+        letter-spacing: 0.06em;
         text-transform: uppercase;
-        border-radius: 6px;
+        border-radius: 8px;
         width: 100%;
         cursor: pointer;
-        transition: background-color 0.15s ease, box-shadow 0.15s ease;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
         margin-top: 28px;
         display: flex;
         align-items: center;
         justify-content: center;
         gap: 9px;
+        box-shadow: 0 10px 24px -8px rgba(12,32,26,0.55);
     }
 
     .btn-submit:hover:not(:disabled) {
-        background: var(--green-dark);
-        box-shadow: 0 4px 14px rgba(13,35,28,0.28);
+        transform: translateY(-1px);
+        box-shadow: 0 14px 30px -8px rgba(12,32,26,0.65);
+    }
+
+    .btn-submit:active:not(:disabled) {
+        transform: translateY(0);
     }
 
     .btn-submit:focus-visible {
@@ -244,6 +333,7 @@
 
     .btn-submit:disabled {
         background: var(--grey-disabled);
+        border-top-color: transparent;
         cursor: not-allowed;
         box-shadow: none;
     }
@@ -266,14 +356,15 @@
         text-align: center;
         font-size: 11.5px;
         color: var(--ink-soft);
-        opacity: 0.65;
+        opacity: 0.6;
         margin-top: 16px;
         letter-spacing: 0.01em;
     }
 
     @media (max-width: 560px) {
-        .customer-card { padding: 30px 24px 26px; }
-        .page-title { font-size: 24px; }
+        .card-header { padding: 26px 26px 22px; }
+        .card-body { padding: 28px 24px 26px; }
+        .page-title { font-size: 22px; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -281,12 +372,16 @@
     }
 </style>
 
-<div class="ledger-header">
-    <div class="ledger-eyebrow">Customer Ledger</div>
-    <h2 class="page-title">New Customer Entry</h2>
-</div>
-
 <div class="customer-card">
+
+    <div class="card-header">
+        <div class="crest">✦</div>
+        <div class="ledger-eyebrow">Customer Ledger</div>
+        <h2 class="page-title">New Customer Entry</h2>
+        <div class="gold-rule"></div>
+    </div>
+
+    <div class="card-body">
 
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
@@ -298,11 +393,11 @@
 
     <form method="POST" id="customerForm" novalidate>
 
-        <div class="form-group">
-            <label for="customer_name">Name <span class="req">*</span></label>
+        <div class="form-group fg-name">
+            <label for="customer_name"><span class="dot"></span>Name <span class="req">*</span></label>
             <div class="input-wrap">
                 <input type="text" id="customer_name" name="name" class="input-field"
-                       placeholder="e.g. Ramesh Traders" autocomplete="off" required>
+                       placeholder="e.g. S M Bananas" autocomplete="off" required>
             </div>
 
             <div id="duplicate-msg" class="field-status error">
@@ -313,24 +408,24 @@
             </div>
         </div>
 
-        <div class="form-group">
-            <label for="phone">Phone <span class="opt">optional</span></label>
+        <div class="form-group fg-phone">
+            <label for="phone"><span class="dot"></span>Phone <span class="opt">optional</span></label>
             <div class="input-wrap">
                 <input type="text" id="phone" name="phone" class="input-field"
                        placeholder="10-digit mobile number" autocomplete="off" inputmode="tel" maxlength="15">
             </div>
         </div>
 
-        <div class="form-group">
-            <label for="address">Address <span class="opt">optional</span></label>
+        <div class="form-group fg-address">
+            <label for="address"><span class="dot"></span>Address <span class="opt">optional</span></label>
             <div class="input-wrap">
                 <input type="text" id="address" name="address" class="input-field"
                        placeholder="Shop / street / city" autocomplete="off">
             </div>
         </div>
 
-        <div class="form-group">
-            <label for="opening_balance">Opening Balance</label>
+        <div class="form-group fg-balance">
+            <label for="opening_balance"><span class="dot"></span>Opening Balance</label>
             <div class="amount-wrap">
                 <span class="amount-prefix">₹</span>
                 <input type="number" step="0.01" id="opening_balance" name="opening_balance"
@@ -346,6 +441,8 @@
         <div class="form-hint">Press Enter to move between fields, or submit from the last one.</div>
 
     </form>
+
+    </div>
 
 </div>
 
