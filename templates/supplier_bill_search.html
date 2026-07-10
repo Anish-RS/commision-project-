@@ -1,214 +1,544 @@
 {% extends "base.html" %}
 {% block content %}
 
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
 <style>
-  .search-card {
-    background: #fdfcff;
-    border: 1px solid #e8e6f2;
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    margin-bottom: 20px;
+  :root{
+    --ink:#171B34;
+    --ink-soft:#4A5079;
+    --paper:#F7F7FB;
+    --card:#FFFFFF;
+    --accent:#5B5FEF;
+    --accent-deep:#4347C4;
+    --accent-soft:#EEF0FF;
+    --success:#1F8A55;
+    --success-soft:#E6F6EC;
+    --danger:#C0392B;
+    --danger-soft:#FBEAEA;
+    --border:#E7E5F1;
+    --muted:#6B7086;
+    --radius:14px;
+    --font-ui:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+    --font-mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
   }
 
-  .search-card input {
-    padding: 8px 10px;
-    border: 1px solid #d8d6e8;
-    border-radius: 8px;
-    margin-right: 8px;
+  .sbs-wrap{
+    font-family:var(--font-ui);
+    color:var(--ink);
+    max-width:1080px;
+    margin:0 auto;
   }
 
-  .search-btn {
-    background: #b8c0ff;
-    border: none;
-    color: #fff;
-    padding: 8px 16px;
-    border-radius: 8px;
-    cursor: pointer;
+  .sbs-header{
+    margin-bottom:22px;
   }
 
-  .search-btn:hover {
-    background: #9ea8ff;
+  .sbs-eyebrow{
+    font-size:12px;
+    font-weight:600;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:var(--accent-deep);
+    margin:0 0 6px;
   }
 
-  .result-card {
-    background: #fffdfc;
-    border: 1px solid #eee4dc;
-    border-radius: 10px;
-    padding: 12px 15px;
-    margin-bottom: 10px;
+  .sbs-title{
+    font-size:26px;
+    font-weight:700;
+    letter-spacing:-.01em;
+    margin:0 0 4px;
+    color:var(--ink);
   }
 
-  .action-btn {
-    text-decoration: none;
-    padding: 5px 10px;
-    border-radius: 6px;
-    font-size: 14px;
-    display: inline-block;
+  .sbs-subtitle{
+    font-size:14px;
+    color:var(--muted);
+    margin:0;
   }
 
-  .edit-btn {
-    background: #cdeac0;
-    color: #234;
+  /* ---- Filter card ---- */
+  .search-card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:22px 24px;
+    box-shadow:0 1px 2px rgba(23,27,52,0.04), 0 8px 24px rgba(23,27,52,0.05);
+    margin-bottom:22px;
   }
 
-  .print-btn {
-    background: #d6e5fa;
-    color: #234;
-    border: none;
-    cursor: pointer;
-    padding: 5px 10px;
-    border-radius: 6px;
+  .search-card form{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:flex-end;
+    gap:16px;
   }
 
-  .delete-btn {
-    background: #ffd6d6;
-    color: #900;
-    border: none;
-    cursor: pointer;
-    padding: 5px 10px;
-    border-radius: 6px;
+  .field{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    flex:1 1 160px;
+    min-width:150px;
   }
 
-  .result-count {
-    color: #666;
-    margin-bottom: 15px;
+  .field label{
+    font-size:12px;
+    font-weight:600;
+    color:var(--muted);
+    letter-spacing:.02em;
   }
-  .bill-grid{
-      display:grid;
-      grid-template-columns:
-          90px
-          110px
-          180px
-          140px
-          140px
-          220px;
-      align-items:center;
-      gap:12px;
+
+  .field .input-shell{
+    position:relative;
   }
-  
-  .header-row{
-    background:#f4f6ff;
-    padding:12px;
+
+  .field .input-shell svg{
+    position:absolute;
+    left:10px;
+    top:50%;
+    transform:translateY(-50%);
+    width:15px;
+    height:15px;
+    color:var(--muted);
+    pointer-events:none;
+  }
+
+  .search-card input{
+    width:100%;
+    box-sizing:border-box;
+    padding:9px 12px 9px 32px;
+    border:1px solid var(--border);
+    border-radius:9px;
+    font-family:var(--font-ui);
+    font-size:14px;
+    color:var(--ink);
+    background:var(--paper);
+    transition:border-color .15s ease, box-shadow .15s ease, background .15s ease;
+  }
+
+  .search-card input:focus{
+    outline:none;
+    border-color:var(--accent);
+    background:#fff;
+    box-shadow:0 0 0 3px var(--accent-soft);
+  }
+
+  .field-actions{
+    display:flex;
+    gap:10px;
+  }
+
+  .search-btn{
+    background:var(--accent);
+    border:none;
+    color:#fff;
+    font-family:var(--font-ui);
+    font-weight:600;
+    font-size:14px;
+    padding:10px 20px;
+    border-radius:9px;
+    cursor:pointer;
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    transition:background .15s ease, transform .1s ease;
+    white-space:nowrap;
+  }
+
+  .search-btn:hover{ background:var(--accent-deep); }
+  .search-btn:active{ transform:translateY(1px); }
+
+  .search-btn .spinner{
+    width:14px;
+    height:14px;
+    border:2px solid rgba(255,255,255,.4);
+    border-top-color:#fff;
+    border-radius:50%;
+    display:none;
+    animation:spin .7s linear infinite;
+  }
+
+  .search-btn.loading .spinner{ display:inline-block; }
+  .search-btn.loading .btn-label{ opacity:.85; }
+
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+
+  .clear-btn{
+    background:transparent;
+    border:1px solid var(--border);
+    color:var(--ink-soft);
+    font-family:var(--font-ui);
+    font-weight:500;
+    font-size:14px;
+    padding:10px 16px;
+    border-radius:9px;
+    cursor:pointer;
+    transition:border-color .15s ease, color .15s ease;
+  }
+
+  .clear-btn:hover{
+    border-color:var(--ink-soft);
+    color:var(--ink);
+  }
+
+  /* ---- Summary / ledger strip ---- */
+  .summary-bar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:12px;
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:var(--radius) var(--radius) 0 0;
+    padding:16px 22px;
+    position:relative;
+  }
+
+  .summary-bar::after{
+    content:"";
+    position:absolute;
+    left:22px;
+    right:22px;
+    bottom:-1px;
+    border-bottom:1px dashed var(--border);
+  }
+
+  .summary-left{
+    display:flex;
+    align-items:baseline;
+    gap:10px;
+  }
+
+  .summary-count{
+    font-size:16px;
+    font-weight:700;
+    color:var(--ink);
+  }
+
+  .summary-count span{
+    color:var(--muted);
+    font-weight:500;
+    font-size:13px;
+  }
+
+  .summary-total{
+    font-family:var(--font-mono);
+    font-size:13px;
+    color:var(--ink-soft);
+    background:var(--accent-soft);
+    padding:5px 10px;
+    border-radius:7px;
+  }
+
+  .print-all-btn{
+    background:var(--card);
+    border:1px solid var(--border);
+    color:var(--ink-soft);
+    font-family:var(--font-ui);
+    font-weight:600;
+    font-size:13px;
+    padding:8px 14px;
     border-radius:8px;
-    margin-bottom:10px;
+    cursor:pointer;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    transition:border-color .15s ease, color .15s ease;
+  }
+
+  .print-all-btn:hover{
+    border-color:var(--accent);
+    color:var(--accent-deep);
+  }
+
+  /* ---- Results table ---- */
+  .table-shell{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-top:none;
+    border-radius:0 0 var(--radius) var(--radius);
+    overflow:hidden;
+    box-shadow:0 1px 2px rgba(23,27,52,0.04), 0 8px 24px rgba(23,27,52,0.05);
+    margin-bottom:24px;
+  }
+
+  .bill-table{
+    width:100%;
+    border-collapse:collapse;
+  }
+
+  .bill-table thead th{
+    text-align:left;
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    color:var(--muted);
+    background:var(--paper);
+    padding:12px 16px;
+    border-bottom:1px solid var(--border);
+    white-space:nowrap;
+  }
+
+  .bill-table th.num, .bill-table td.num{ text-align:right; }
+  .bill-table th.actions-col, .bill-table td.actions-col{ text-align:right; }
+
+  .bill-table tbody tr{
+    transition:background .12s ease;
+  }
+
+  .bill-table tbody tr:hover{
+    background:var(--accent-soft);
+  }
+
+  .bill-table tbody tr:not(:last-child) td{
+    border-bottom:1px solid var(--border);
+  }
+
+  .bill-table td{
+    padding:13px 16px;
+    font-size:14px;
+    color:var(--ink);
+    vertical-align:middle;
+  }
+
+  .bill-id{
+    font-family:var(--font-mono);
+    font-weight:600;
+    color:var(--accent-deep);
+  }
+
+  .supplier-id{
+    font-family:var(--font-mono);
+    color:var(--muted);
+    font-size:13px;
+  }
+
+  .supplier-name{
     font-weight:600;
   }
+
+  .bill-date{
+    color:var(--ink-soft);
+    font-size:13.5px;
+  }
+
+  .amount{
+    font-family:var(--font-mono);
+    font-weight:600;
+  }
+
   .action-group{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      align-items:center;
+    display:flex;
+    gap:6px;
+    justify-content:flex-end;
   }
-  .bill-row{
-      padding:12px 0;
-      border-bottom:1px solid #e5e5e5;
+
+  .icon-btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:32px;
+    height:32px;
+    border-radius:8px;
+    border:1px solid transparent;
+    cursor:pointer;
+    text-decoration:none;
+    transition:background .15s ease, border-color .15s ease;
   }
-  
-  .bill-row:last-child{
-      border-bottom:none;
+
+  .icon-btn svg{ width:16px; height:16px; }
+
+  .edit-btn{ background:var(--success-soft); color:var(--success); }
+  .edit-btn:hover{ border-color:var(--success); }
+
+  .print-btn{ background:var(--accent-soft); color:var(--accent-deep); }
+  .print-btn:hover{ border-color:var(--accent); }
+
+  .delete-btn{ background:var(--danger-soft); color:var(--danger); }
+  .delete-btn:hover{ border-color:var(--danger); }
+
+  /* ---- Empty state ---- */
+  .empty-state{
+    background:var(--card);
+    border:1px dashed var(--border);
+    border-radius:var(--radius);
+    padding:48px 24px;
+    text-align:center;
+    color:var(--muted);
+  }
+
+  .empty-state svg{
+    width:40px;
+    height:40px;
+    color:var(--border);
+    margin-bottom:12px;
+  }
+
+  .empty-state h4{
+    margin:0 0 6px;
+    color:var(--ink-soft);
+    font-size:15px;
+    font-weight:600;
+  }
+
+  .empty-state p{
+    margin:0;
+    font-size:13.5px;
+  }
+
+  @media (max-width: 720px){
+    .bill-table thead{ display:none; }
+    .bill-table, .bill-table tbody, .bill-table tr, .bill-table td{ display:block; width:100%; }
+    .bill-table tbody tr{ padding:12px 16px; }
+    .bill-table td{ border-bottom:none !important; padding:4px 0; }
+    .bill-table td.num, .bill-table td.actions-col{ text-align:left; }
+    .bill-table td::before{
+      content:attr(data-label);
+      display:block;
+      font-size:10.5px;
+      font-weight:700;
+      letter-spacing:.05em;
+      text-transform:uppercase;
+      color:var(--muted);
+      margin-bottom:2px;
+    }
+    .action-group{ justify-content:flex-start; margin-top:6px; }
   }
 </style>
 
-<h2>Search Supplier Bill</h2>
+<div class="sbs-wrap">
 
-<div class="search-card">
-  <form method="POST" id="supplier-search-form">
-
-    Bill No:
-    <input
-      name="bill_no"
-      value="{{ request.form.bill_no if request.method=='POST' else '' }}"
-    />
-
-    Name:
-    <input
-      name="name"
-      value="{{ request.form.name if request.method=='POST' else '' }}"
-    />
-
-    Date:
-    <input
-      type="date"
-      name="bill_date"
-      value="{{ request.form.bill_date if request.method=='POST' else '' }}"
-    />
-
-    <button type="submit" class="search-btn">
-      Search
-    </button>
-
-  </form>
-</div>
-
-{% if results %}
-
-  <h3 class="result-count">
-    Results ({{ results|length }})
-  </h3>
-
-  <div class="bill-grid header-row">
-    <div><strong>Bill ID</strong></div>
-    <div><strong>Supplier ID</strong></div>
-    <div><strong>Supplier</strong></div>
-    <div><strong>Date</strong></div>
-    <div><strong>Amount</strong></div>
-    <div><strong>Actions</strong></div>
+  <div class="sbs-header">
+    <p class="sbs-eyebrow">Accounts Payable</p>
+    <h2 class="sbs-title">Search Supplier Bills</h2>
+    <p class="sbs-subtitle">Look up bills by number, supplier name, or date — then edit, print, or remove them.</p>
   </div>
-    
-  <div class="result-card">
-    
-    {% for r in results %}
-    
-      <div class="bill-grid bill-row">
-    
-          <div>#{{ r.bill_id }}</div>
-    
-          <div>{{ r.supplier_id }}</div>
-    
-          <div>{{ r.supplier_name }}</div>
-    
-          <div>
-            {% if r.bill_date %}
-              {{ r.bill_date.strftime('%d-%m-%Y') }}
-            {% endif %}
-          </div>
-    
-          <div> {{ '%.2f'|format(r.total_amount or 0) }}</div>
-    
-          <div class="action-group">
-    
-            <a href="{{ url_for('supplier_bill_edit', bill_id=r.bill_id) }}"
-               class="action-btn edit-btn">
-              Edit
-            </a>
-    
-            <form method="POST"
-                  action="{{ url_for('supplier_bill_delete', bill_id=r.bill_id) }}"
-                  style="display:inline;">
-    
-              <button type="submit" class="delete-btn">
-                Delete
-              </button>
-    
-            </form>
-    
-            <button type="button"
-                    class="print-btn print-single-supplier"
-                    data-bill="{{ r.bill_id }}">
-              Print
-            </button>
-    
-          </div>
-    
+
+  <div class="search-card">
+    <form method="POST" id="supplier-search-form">
+
+      <div class="field">
+        <label for="bill_no">Bill No.</label>
+        <div class="input-shell">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12h6M9 16h6M9 8h6M6 3h9l3 3v15a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/></svg>
+          <input id="bill_no" name="bill_no" placeholder="e.g. 1042"
+            value="{{ request.form.bill_no if request.method=='POST' else '' }}" />
+        </div>
       </div>
-    
-    {% endfor %}
-    
+
+      <div class="field">
+        <label for="name">Supplier Name</label>
+        <div class="input-shell">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a7 7 0 0 1 14 0v1"/></svg>
+          <input id="name" name="name" placeholder="Search by name"
+            value="{{ request.form.name if request.method=='POST' else '' }}" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="bill_date">Date</label>
+        <div class="input-shell">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg>
+          <input type="date" id="bill_date" name="bill_date"
+            value="{{ request.form.bill_date if request.method=='POST' else '' }}" />
+        </div>
+      </div>
+
+      <div class="field-actions">
+        <button type="submit" class="search-btn" id="search-submit-btn">
+          <span class="spinner"></span>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+          <span class="btn-label">Search</span>
+        </button>
+        <button type="button" class="clear-btn" id="clear-filters-btn">Clear</button>
+      </div>
+
+    </form>
+  </div>
+
+  {% if results %}
+
+    <div class="summary-bar">
+      <div class="summary-left">
+        <span class="summary-count">{{ results|length }} <span>bill{{ 's' if results|length != 1 else '' }} found</span></span>
+        <span class="summary-total">Total ₹{{ '%.2f'|format(results|sum(attribute='total_amount') or 0) }}</span>
+      </div>
+      <button type="button" class="print-all-btn" id="print-all-supplier">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>
+        Print all results
+      </button>
     </div>
-{% else %}
-  <p>No results (or no search performed yet).</p>
-{% endif %}
+
+    <div class="table-shell">
+      <table class="bill-table">
+        <thead>
+          <tr>
+            <th>Bill ID</th>
+            <th>Supplier ID</th>
+            <th>Supplier</th>
+            <th>Date</th>
+            <th class="num">Amount</th>
+            <th class="actions-col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in results %}
+          <tr>
+            <td data-label="Bill ID" class="bill-id">#{{ r.bill_id }}</td>
+            <td data-label="Supplier ID" class="supplier-id">{{ r.supplier_id }}</td>
+            <td data-label="Supplier" class="supplier-name">{{ r.supplier_name }}</td>
+            <td data-label="Date" class="bill-date">{% if r.bill_date %}{{ r.bill_date.strftime('%d-%m-%Y') }}{% else %}—{% endif %}</td>
+            <td data-label="Amount" class="num amount">₹{{ '%.2f'|format(r.total_amount or 0) }}</td>
+            <td data-label="Actions" class="actions-col">
+              <div class="action-group">
+
+                <a href="{{ url_for('supplier_bill_edit', bill_id=r.bill_id) }}"
+                   class="icon-btn edit-btn" title="Edit bill" aria-label="Edit bill #{{ r.bill_id }}">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                </a>
+
+                <button type="button" class="icon-btn print-btn print-single-supplier"
+                        data-bill="{{ r.bill_id }}" title="Print bill" aria-label="Print bill #{{ r.bill_id }}">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>
+                </button>
+
+                <form method="POST" action="{{ url_for('supplier_bill_delete', bill_id=r.bill_id) }}"
+                      style="display:inline;" class="delete-form">
+                  <button type="submit" class="icon-btn delete-btn" title="Delete bill" aria-label="Delete bill #{{ r.bill_id }}">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+                  </button>
+                </form>
+
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+  {% else %}
+
+    <div class="empty-state">
+      {% if request.method=='POST' %}
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        <h4>No matching bills</h4>
+        <p>Try a different bill number, supplier name, or date.</p>
+      {% else %}
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l3 3v15a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/><path d="M9 12h6M9 16h6M9 8h6"/></svg>
+        <h4>Search for a bill</h4>
+        <p>Use the filters above to find supplier bills.</p>
+      {% endif %}
+    </div>
+
+  {% endif %}
+
+</div>
 
 <script>
   document.querySelectorAll('.print-single-supplier').forEach(function(btn){
@@ -221,6 +551,29 @@
       }
     });
   });
+
+  document.querySelectorAll('.delete-form').forEach(function(form){
+    form.addEventListener('submit', function(e){
+      if (!confirm('Delete this bill? This cannot be undone.')) {
+        e.preventDefault();
+      }
+    });
+  });
+
+  var searchForm = document.getElementById('supplier-search-form');
+  if (searchForm) {
+    searchForm.addEventListener('submit', function(){
+      var btn = document.getElementById('search-submit-btn');
+      if (btn) btn.classList.add('loading');
+    });
+  }
+
+  var clearBtn = document.getElementById('clear-filters-btn');
+  if (clearBtn && searchForm) {
+    clearBtn.addEventListener('click', function(){
+      searchForm.querySelectorAll('input').forEach(function(input){ input.value = ''; });
+    });
+  }
 
   var printAllBtn = document.getElementById('print-all-supplier');
 
