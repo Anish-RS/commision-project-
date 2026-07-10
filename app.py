@@ -2460,7 +2460,6 @@ def account_summary():
 def tally():
     supplier_data, customer_data           = [], []
     total_supplier, total_customer, difference = 0, 0, 0
-    from_date, to_date                     = "", ""
 
     if request.method == "POST":
         from_date = request.form.get("from_date")
@@ -2468,12 +2467,17 @@ def tally():
 
         if not from_date or not to_date:
             flash("Please select both FROM and TO dates.", "danger")
-            return render_template("tally.html")
+            today = date.today().isoformat()
+            return render_template("tally.html", from_date=today, to_date=today)
+    else:
+        # First load (GET) — default to today's tally
+        from_date = to_date = date.today().isoformat()
 
-        from_dt = datetime.strptime(from_date, "%Y-%m-%d")
-        to_dt   = datetime.strptime(to_date,   "%Y-%m-%d") + timedelta(days=1)
+    from_dt = datetime.strptime(from_date, "%Y-%m-%d")
+    to_dt   = datetime.strptime(to_date,   "%Y-%m-%d") + timedelta(days=1)
 
-        conn   = get_connection()
+    conn = get_connection()
+    try:
         cursor = conn.cursor(cursor_factory=RealDictCursor)
         cursor.execute("""
             SELECT
@@ -2487,6 +2491,7 @@ def tally():
               AND sb.bill_date < %s
         """, (from_dt, to_dt))
         supplier_data = cursor.fetchall()
+
         cursor.execute("""
             SELECT
                 cb.customer_id,
@@ -2499,11 +2504,13 @@ def tally():
               AND cb.bill_date < %s
         """, (from_dt, to_dt))
         customer_data = cursor.fetchall()
-        cursor.close(); conn.close()
+        cursor.close()
+    finally:
+        conn.close()
 
-        total_supplier = sum(x["amount"] for x in supplier_data)
-        total_customer = sum(x["amount"] for x in customer_data)
-        difference     = total_customer - total_supplier
+    total_supplier = sum(x["amount"] for x in supplier_data)
+    total_customer = sum(x["amount"] for x in customer_data)
+    difference     = total_customer - total_supplier
 
     return render_template(
         "tally.html",
