@@ -3,288 +3,514 @@
 
 {% block content %}
 
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+
 <style>
-  .page-card{
-    background:#fcfcff;
-    border:1px solid #e6eefb;
+
+  .bqs-wrap{
+    --ink:#16233F;
+    --ink-soft:#5B6B87;
+    --paper:#F4F7FC;
+    --card:#FFFFFF;
+    --hairline:#E3E8F2;
+    --brass:#AD7A22;
+    --brass-deep:#8C6119;
+    --brass-soft:#FBF1DC;
+    --success:#1D7A5C;
+    --success-soft:#E4F5EE;
+    --success-ink:#155C45;
+    --danger-soft:#FEF6E7;
+    --danger-ink:#8A6417;
+    --font-display:'Fraunces', Georgia, serif;
+    --font-body:'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-mono:'IBM Plex Mono', 'SFMono-Regular', Menlo, monospace;
+
+    font-family:var(--font-body);
+    color:var(--ink);
+    background:var(--paper);
+    border-radius:20px;
+    padding:32px;
+    box-shadow:0 1px 2px rgba(22,35,63,.04);
+  }
+
+  .bqs-wrap *{ box-sizing:border-box; }
+
+  /* ---------- Header ---------- */
+
+  .bqs-header{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    gap:16px;
+    margin-bottom:22px;
+    flex-wrap:wrap;
+  }
+
+  .bqs-eyebrow{
+    display:block;
+    font-family:var(--font-mono);
+    font-size:11px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--brass);
+    margin-bottom:6px;
+    font-weight:600;
+  }
+
+  .bqs-title{
+    font-family:var(--font-display);
+    font-weight:600;
+    font-size:30px;
+    color:var(--ink);
+    margin:0;
+    letter-spacing:-.01em;
+  }
+
+  .bqs-count{
+    font-family:var(--font-mono);
+    font-size:13px;
+    color:var(--ink-soft);
+    white-space:nowrap;
+  }
+
+  .bqs-count strong{
+    color:var(--ink);
+    font-weight:600;
+  }
+
+  /* ---------- Search toolbar ---------- */
+
+  .bqs-toolbar{
+    background:var(--card);
+    border:1px solid var(--hairline);
     border-radius:16px;
-    padding:20px;
-    box-shadow:0 4px 12px rgba(0,0,0,.05);
+    padding:18px 20px;
+    box-shadow:0 6px 20px rgba(22,35,63,.05);
   }
 
-  .page-title{
-    margin-bottom:18px;
-    color:#34495e;
+  .bqs-search-row{
+    display:flex;
+    gap:12px;
+    flex-wrap:wrap;
+    align-items:flex-end;
   }
 
-  .search-row{
+  .bqs-field{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    flex:1 1 180px;
+    min-width:160px;
+  }
+
+  .bqs-field label{
+    font-size:11.5px;
+    font-weight:600;
+    letter-spacing:.03em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+  }
+
+  .bqs-input-shell{
+    position:relative;
+    display:flex;
+    align-items:center;
+  }
+
+  .bqs-input-shell svg{
+    position:absolute;
+    left:12px;
+    width:15px;
+    height:15px;
+    color:var(--ink-soft);
+    pointer-events:none;
+  }
+
+  .bqs-search-row input[type=text],
+  .bqs-search-row input[type=date]{
+    width:100%;
+    padding:11px 12px 11px 34px;
+    border-radius:10px;
+    border:1.5px solid var(--hairline);
+    background:var(--paper);
+    font-family:var(--font-body);
+    font-size:14.5px;
+    color:var(--ink);
+    transition:border-color .15s, box-shadow .15s, background .15s;
+  }
+
+  .bqs-search-row input::placeholder{
+    color:#9AA6BC;
+  }
+
+  .bqs-search-row input:focus{
+    outline:none;
+    border-color:var(--brass);
+    background:var(--card);
+    box-shadow:0 0 0 3px rgba(173,122,34,.14);
+  }
+
+  .bqs-actions-row{
     display:flex;
     gap:10px;
-    flex-wrap:wrap;
+    flex:0 0 auto;
+  }
+
+  .bqs-btn{
+    display:inline-flex;
     align-items:center;
-    margin-bottom:16px;
-  }
-
-  .search-row input[type=text],
-  .search-row input[type=date]{
-    padding:10px 12px;
-    border-radius:10px;
-    border:1px solid #dbeafc;
-    background:#fff;
-    min-width:180px;
-  }
-
-  .btn{
-    padding:10px 14px;
+    gap:8px;
+    padding:11px 18px;
     border-radius:10px;
     border:none;
     cursor:pointer;
+    font-family:var(--font-body);
     font-weight:600;
-    transition:.2s;
+    font-size:14.5px;
+    white-space:nowrap;
+    transition:transform .12s ease, box-shadow .12s ease, background .12s ease;
   }
 
-  .btn:hover{
-    transform:translateY(-1px);
-  }
+  .bqs-btn:active{ transform:translateY(1px); }
 
-  .btn-primary{
-    background:#2196f3;
+  .bqs-btn svg{ width:15px; height:15px; flex-shrink:0; }
+
+  .bqs-btn-primary{
+    background:var(--ink);
     color:#fff;
-    box-shadow:0 3px 8px rgba(33,150,243,0.35);
+    box-shadow:0 4px 12px rgba(22,35,63,.25);
   }
-  .btn-primary:hover{
-    background:#0069d9;
+  .bqs-btn-primary:hover{ background:#0F1930; }
+  .bqs-btn-primary:focus-visible{ outline:2px solid var(--brass); outline-offset:2px; }
+
+  .bqs-btn-ghost{
+    background:var(--brass-soft);
+    color:var(--brass-deep);
+    border:1px solid #ECD9AF;
   }
-  .btn-secondary{
-    background:#eef5ff;
-    border:1px solid #dbeafc;
-    color:#1976d2;
+  .bqs-btn-ghost:hover{ background:#F7E9C7; }
+  .bqs-btn-ghost:focus-visible{ outline:2px solid var(--brass); outline-offset:2px; }
+
+  /* ---------- Results ---------- */
+
+  .bqs-results{
+    margin-top:26px;
   }
 
-  .results-container{
-    margin-top:20px;
-  }
-
-
-  .result-header{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:12px 16px;
-    margin-bottom:10px;
-    background:#eef5ff;
-    border:1px solid #dbeafc;
-    border-radius:12px;
+  .bqs-result-header{
+    display:grid;
+    grid-template-columns:110px 120px 1fr 120px 260px;
+    gap:12px;
+    padding:0 20px 10px;
+    font-size:11.5px;
     font-weight:700;
-    color:#34495e;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
   }
 
-  .header-info,
-  .bill-info{
+  .bqs-list{
     display:flex;
-    align-items:center;
-    gap:30px;
-  }
-
-  .col-bill{ width:120px; }
-  .col-customer-id{ width:120px; }
-  .col-name{ width:240px; }
-  .col-date{ width:140px; }
-
-  .header-actions{
-    min-width:280px;
-    text-align:center;
-  }
-
-
-  .result-card{
-    background:#fff;
-    border:1px solid #eef2f8;
-    border-radius:14px;
-    padding:14px 16px;
-    margin-bottom:12px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    flex-wrap:wrap;
+    flex-direction:column;
     gap:12px;
   }
 
-  .bill-info{
-    color:#2c3e50;
+  /* Receipt-stub card: dashed perforation + notch cut-outs */
+
+  .bqs-card{
+    position:relative;
+    display:grid;
+    grid-template-columns:110px 120px 1fr 120px 260px;
+    align-items:center;
+    gap:12px;
+    background:var(--card);
+    border:1px solid var(--hairline);
+    border-radius:14px;
+    padding:16px 20px;
+    box-shadow:0 2px 8px rgba(22,35,63,.04);
+    transition:box-shadow .15s ease, transform .15s ease;
+  }
+
+  .bqs-card:hover{
+    box-shadow:0 10px 24px rgba(22,35,63,.09);
+    transform:translateY(-1px);
+  }
+
+  .bqs-card::before,
+  .bqs-card::after{
+    content:"";
+    position:absolute;
+    top:50%;
+    transform:translateY(-50%);
+    width:16px;
+    height:16px;
+    border-radius:50%;
+    background:var(--paper);
+    border:1px solid var(--hairline);
+    z-index:1;
+  }
+  .bqs-card::before{ left:-8px; }
+  .bqs-card::after{ right:-8px; }
+
+  .bqs-bill-id{
+    font-family:var(--font-mono);
+    font-weight:600;
+    font-size:14px;
+    color:var(--brass-deep);
+    background:var(--brass-soft);
+    border:1px solid #ECD9AF;
+    padding:5px 10px;
+    border-radius:8px;
+    display:inline-block;
+    width:fit-content;
+  }
+
+  .bqs-customer-id{
+    font-family:var(--font-mono);
+    font-size:13.5px;
+    color:var(--ink-soft);
+  }
+
+  .bqs-customer-name{
     font-size:15px;
+    font-weight:600;
+    color:var(--ink);
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
   }
 
-  .bill-info strong{
-    color:#1976d2;
+  .bqs-date{
+    font-family:var(--font-mono);
+    font-size:13.5px;
+    color:var(--ink-soft);
   }
 
-  .actions{
+  .bqs-card-actions{
     display:flex;
     gap:8px;
+    justify-content:flex-end;
     flex-wrap:wrap;
   }
 
-  .action-link{
+  .bqs-print-form{ display:inline-block; }
+
+  .bqs-action-link{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
     text-decoration:none;
-    padding:8px 12px;
-    border-radius:8px;
-    font-size:14px;
+    padding:8px 13px;
+    border-radius:9px;
+    font-size:13.5px;
     font-weight:600;
-  }
-
-  .edit-btn{
-    background:#d4edda;
-    color:#155724;
-  }
-
-  .print-btn{
-    background:#d6eaf8;
-    color:#21618c;
     border:none;
     cursor:pointer;
-    padding:8px 12px;
-    border-radius:8px;
+    font-family:var(--font-body);
+    transition:background .12s ease, transform .12s ease;
+  }
+  .bqs-action-link:active{ transform:translateY(1px); }
+  .bqs-action-link svg{ width:14px; height:14px; }
+
+  .bqs-print-btn{
+    background:#EAF1FB;
+    color:#1E5A96;
+  }
+  .bqs-print-btn:hover{ background:#DCEAFA; }
+
+  .bqs-whatsapp-btn{
+    background:var(--success-soft);
+    color:var(--success-ink);
+  }
+  .bqs-whatsapp-btn:hover{ background:#D3EEE2; }
+
+  /* ---------- Empty state ---------- */
+
+  .bqs-empty{
+    margin-top:26px;
+    padding:36px 24px;
+    background:var(--card);
+    border:1px dashed #E7CE93;
+    border-radius:16px;
+    text-align:center;
+  }
+
+  .bqs-empty svg{
+    width:38px;
+    height:38px;
+    color:var(--brass);
+    margin-bottom:12px;
+  }
+
+  .bqs-empty h3{
+    font-family:var(--font-display);
+    font-size:18px;
     font-weight:600;
+    color:var(--ink);
+    margin:0 0 4px;
   }
 
-  .whatsapp-btn{
-    background:#d8f3dc;
-    color:#1b5e20;
+  .bqs-empty p{
+    font-size:14px;
+    color:var(--ink-soft);
+    margin:0;
   }
 
-  .empty-state{
-    margin-top:20px;
-    padding:18px;
-    background:#fff8e7;
-    border:1px solid #ffe8a1;
-    border-radius:12px;
-    color:#8a6d3b;
+  /* ---------- Responsive ---------- */
+
+  @media (max-width: 860px){
+
+    .bqs-wrap{ padding:20px; }
+
+    .bqs-result-header{ display:none; }
+
+    .bqs-card{
+      grid-template-columns:1fr;
+      gap:8px;
+      padding:16px;
+    }
+
+    .bqs-card-actions{ justify-content:flex-start; margin-top:6px; }
+
+    .bqs-actions-row{ width:100%; }
+    .bqs-btn{ flex:1 1 auto; justify-content:center; }
   }
+
+  @media (max-width: 480px){
+    .bqs-search-row{ flex-direction:column; align-items:stretch; }
+    .bqs-actions-row{ flex-direction:column; }
+  }
+
 </style>
 
-<div class="page-card">
+<div class="bqs-wrap">
 
-  <h2 class="page-title">Search Customer Bill</h2>
+  <div class="bqs-header">
+    <div>
+      <span class="bqs-eyebrow">Billing Ledger</span>
+      <h2 class="bqs-title">Search Customer Bill</h2>
+    </div>
+    {% if results %}
+    <span class="bqs-count"><strong>{{ results|length }}</strong> bill{{ 's' if results|length != 1 else '' }} found</span>
+    {% endif %}
+  </div>
 
-  <form method="POST"
-        id="customer-search-form"
-        action="{{ url_for('customer_bill_search') }}">
+  <div class="bqs-toolbar">
+    <form method="POST"
+          id="customer-search-form"
+          action="{{ url_for('customer_bill_search') }}">
 
+      <div class="bqs-search-row">
 
-<div class="search-row">
+        <div class="bqs-field">
+          <label for="bqs-bill-no">Bill Number</label>
+          <div class="bqs-input-shell">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
+            <input type="text" id="bqs-bill-no" name="bill_no" placeholder="e.g. 10234">
+          </div>
+        </div>
 
-  <input
-    type="text"
-    name="bill_no"
-    placeholder="Bill Number">
+        <div class="bqs-field">
+          <label for="bqs-name">Customer Name / ID</label>
+          <div class="bqs-input-shell">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-6 8-6s8 2 8 6"/></svg>
+            <input type="text" id="bqs-name" name="name" placeholder="Search by name or ID">
+          </div>
+        </div>
 
-  <input
-    type="text"
-    name="name"
-    placeholder="Customer Name / ID">
+        <div class="bqs-field">
+          <label for="bqs-date">Bill Date</label>
+          <div class="bqs-input-shell">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+            <input type="date" id="bqs-date" name="bill_date" value="{{ bill_date }}">
+          </div>
+        </div>
 
-  <input
-    type="date"
-    name="bill_date"
-    value="{{ bill_date }}">
+        <div class="bqs-actions-row">
 
-  <button type="submit" class="btn btn-primary">
-    Search
-  </button>
+          <button type="submit" class="bqs-btn bqs-btn-primary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+            Search
+          </button>
 
-  <button type="button"
-          id="print-all-by-date"
-          class="btn btn-secondary">
-    Print All (By Date)
-  </button>
+          <button type="button" id="print-all-by-date" class="bqs-btn bqs-btn-ghost">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9V3h12v6M6 18H4a1 1 0 0 1-1-1v-5a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1h-2M6 14h12v7H6z"/></svg>
+            Print All (By Date)
+          </button>
 
-  <input
-    type="hidden"
-    id="print_search_url"
-    value="{{ url_for('customer_bill_print_search') }}">
+          <input type="hidden" id="print_search_url" value="{{ url_for('customer_bill_print_search') }}">
 
-</div>
+        </div>
 
+      </div>
 
-  </form>
+    </form>
+  </div>
 
 {% if results %}
 
+  <div class="bqs-results">
 
-<div class="results-container">
-
-  <div class="result-header">
-    <div class="header-info">
-      <span class="col-bill">Bill ID</span>
-      <span class="col-customer-id">Customer ID</span>
-      <span class="col-name">Customer Name</span>
-      <span class="col-date">Date</span>
-    </div>
-    <div class="header-actions">Actions</div>
-  </div>
-
-  {% for r in results %}
-
-  <div class="result-card">
-
-    <div class="bill-info">
-      <span class="col-bill"><strong>Bill #{{ r.bill_id }}</strong></span>
-
-      <span class="col-customer-id">
-          {{ r.customer_id }}
-      </span>
-      
-      <span class="col-name">
-          {{ r.customer_name }}
-      </span>
-      
-      <span class="col-date">
-        {{ r.bill_date.strftime('%d-%m-%Y') if r.bill_date else '' }}
-    </span>
+    <div class="bqs-result-header">
+      <span>Bill ID</span>
+      <span>Customer ID</span>
+      <span>Customer Name</span>
+      <span>Date</span>
+      <span style="text-align:right;">Actions</span>
     </div>
 
-    <div class="actions">
+    <div class="bqs-list">
+      {% for r in results %}
 
+      <div class="bqs-card">
 
-      <form method="POST"
-            action="{{ url_for('customer_bill_print_search') }}"
-            target="_blank"
-            style="display:inline;">
+        <span class="bqs-bill-id">#{{ r.bill_id }}</span>
 
-        <input
-          type="hidden"
-          name="bill_no"
-          value="{{ r.bill_id }}">
+        <span class="bqs-customer-id">{{ r.customer_id }}</span>
 
-        <button type="submit"
-                class="print-btn">
-          Print
-        </button>
+        <span class="bqs-customer-name">{{ r.customer_name }}</span>
 
-      </form>
+        <span class="bqs-date">{{ r.bill_date.strftime('%d-%m-%Y') if r.bill_date else '—' }}</span>
 
-      <a href="{{ url_for('send_whatsapp_bill', bill_id=r.bill_id) }}"
-         class="action-link whatsapp-btn">
-         Send WhatsApp
-      </a>
+        <div class="bqs-card-actions">
 
+          <form method="POST"
+                action="{{ url_for('customer_bill_print_search') }}"
+                target="_blank"
+                class="bqs-print-form">
+
+            <input type="hidden" name="bill_no" value="{{ r.bill_id }}">
+
+            <button type="submit" class="bqs-action-link bqs-print-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9V3h12v6M6 18H4a1 1 0 0 1-1-1v-5a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1h-2M6 14h12v7H6z"/></svg>
+              Print
+            </button>
+
+          </form>
+
+          <a href="{{ url_for('send_whatsapp_bill', bill_id=r.bill_id) }}" class="bqs-action-link bqs-whatsapp-btn">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3.1.8.8-3-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1-.2.2-.7.8-.8 1-.2.2-.3.2-.5.1-.2-.1-1-.4-1.9-1.2-.7-.6-1.2-1.4-1.3-1.6-.1-.2 0-.4.1-.5.1-.1.2-.3.4-.4.1-.2.2-.3.2-.5.1-.2 0-.4 0-.5-.1-.1-.6-1.5-.9-2-.2-.5-.4-.5-.6-.5h-.5c-.2 0-.5.1-.7.3-.2.2-1 1-1 2.4s1 2.8 1.1 3c.1.2 2 3 4.8 4.3.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.5-.6 1.8-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3z"/></svg>
+            WhatsApp
+          </a>
+
+        </div>
+
+      </div>
+
+      {% endfor %}
     </div>
 
   </div>
-
-  {% endfor %}
-
-</div>
-
 
 {% else %}
 
-
-<div class="empty-state">
-  No results found.
-</div>
-
+  <div class="bqs-empty">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="margin-left:auto;margin-right:auto;display:block;"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h3"/><path d="M15 21l2-2 2 2"/></svg>
+    <h3>No bills found</h3>
+    <p>Try a different bill number, customer name or date.</p>
+  </div>
 
 {% endif %}
 
