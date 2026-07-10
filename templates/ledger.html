@@ -171,8 +171,14 @@
 /* ============================================= */
 .ledger-groups {
     display: grid;
+    grid-template-columns: 1fr;
+    gap: 30px;
+}
+
+.pair-row {
+    display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 22px;
+    gap: 16px;
 }
 
 .group-title {
@@ -284,7 +290,7 @@ tbody tr:not(:last-child) td {
 .empty-state svg { width: 26px; height: 26px; margin-bottom: 8px; color: var(--line-strong); }
 
 @media (max-width: 720px) {
-    .summary-strip, .ledger-groups { grid-template-columns: 1fr; }
+    .summary-strip, .ledger-groups, .pair-row { grid-template-columns: 1fr; }
     .screen-header { flex-direction: column-reverse; }
     .stamp { align-self: flex-end; }
 }
@@ -463,6 +469,8 @@ tbody tr:not(:last-child) td {
             Supplier Ledger
         </h2>
 
+        <div class="pair-row">
+
         <!-- SUPPLIER CREDIT -->
         <div class="ledger-section">
             <div class="ledger-card">
@@ -566,6 +574,8 @@ tbody tr:not(:last-child) td {
 
             </div>
         </div>
+
+        </div>
     </div>
 
     <!-- ============ CUSTOMER GROUP ============ -->
@@ -574,6 +584,8 @@ tbody tr:not(:last-child) td {
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>
             Customer Ledger
         </h2>
+
+        <div class="pair-row">
 
         <!-- CUSTOMER CREDIT -->
         <div class="ledger-section">
@@ -677,6 +689,8 @@ tbody tr:not(:last-child) td {
                 {% endif %}
 
             </div>
+        </div>
+
         </div>
     </div>
 
