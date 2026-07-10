@@ -2,154 +2,413 @@
 
 {% block content %}
 
-
 <style>
-    /* ---------- PASTEL BACKGROUND ---------- */
+    @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap');
+
+    /* ---------- TOKENS ---------- */
+    :root {
+        --ink: #1B2A3F;
+        --ink-soft: #4A5A70;
+        --parchment: #FBF7EF;
+        --ledger-green: #1F5C4C;
+        --ledger-green-dark: #163F34;
+        --gold: #B8923D;
+        --gold-soft: #E8D9AF;
+        --rule: #D8CDB4;
+        --terracotta: #A6432C;
+        --terracotta-soft: #FBEBE6;
+    }
+
+    /* ---------- PAGE BACKDROP ---------- */
     body {
-        background: linear-gradient(135deg, #e3f2fd, #fce4ec); /* pastel blue → pastel pink */
+        background:
+            radial-gradient(circle at 15% 10%, rgba(184,146,61,0.10), transparent 40%),
+            radial-gradient(circle at 85% 90%, rgba(31,92,76,0.12), transparent 45%),
+            #EFEAE0;
         background-attachment: fixed;
+        font-family: 'Inter', sans-serif;
     }
 
     /* ---------- TITLE ---------- */
-    .page-title {
-        color: #6C63FF; /* pastel indigo */
-        font-size: 30px;
-        font-weight: 700;
-        margin-bottom: 25px;
+    .ledger-header {
         text-align: center;
+        margin: 10px auto 28px;
     }
 
-    /* ---------- CARD ---------- */
+    .ledger-eyebrow {
+        font-family: 'Inter', sans-serif;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--ledger-green);
+        opacity: 0.75;
+        margin-bottom: 6px;
+    }
+
+    .page-title {
+        font-family: 'Fraunces', serif;
+        color: var(--ink);
+        font-size: 32px;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+    }
+
+    /* ---------- CARD (ledger index card w/ stub) ---------- */
     .customer-card {
-        background: #ffffffcc; /* translucent white */
-        backdrop-filter: blur(6px);
-        padding: 25px;
-        border-radius: 18px;
-        max-width: 520px;
+        position: relative;
+        background: var(--parchment);
+        background-image:
+            linear-gradient(var(--rule) 1px, transparent 1px);
+        background-size: 100% 42px;
+        background-position: 0 118px;
+        padding: 30px 34px 30px 54px;
+        border-radius: 4px;
+        max-width: 540px;
         margin: auto;
-        box-shadow: 0 6px 20px rgba(0,0,0,0.08);
-        border-left: 8px solid #90CAF9; /* pastel blue */
-        animation: fadeIn 0.4s ease;
+        box-shadow:
+            0 1px 2px rgba(27,42,63,0.08),
+            0 12px 30px rgba(27,42,63,0.14);
+        border: 1px solid rgba(27,42,63,0.08);
+        animation: cardIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
+    .customer-card::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 20px;
+        background: var(--ledger-green);
+        background-image: repeating-linear-gradient(
+            180deg,
+            transparent 0,
+            transparent 10px,
+            rgba(255,255,255,0.08) 10px,
+            rgba(255,255,255,0.08) 11px
+        );
+        border-radius: 4px 0 0 4px;
+    }
+
+    .customer-card::after {
+        content: "";
+        position: absolute;
+        left: 9px;
+        top: 22px;
+        bottom: 22px;
+        width: 0;
+        border-left: 2px dashed rgba(255,255,255,0.55);
+    }
+
+    @keyframes cardIn {
+        from { opacity: 0; transform: translateY(14px); }
         to { opacity: 1; transform: translateY(0); }
+    }
+
+    .ledger-stamp {
+        position: absolute;
+        top: 26px;
+        right: 30px;
+        font-family: 'Fraunces', serif;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--gold);
+        border: 1px solid var(--gold-soft);
+        padding: 4px 10px;
+        border-radius: 3px;
+        transform: rotate(2deg);
+        background: rgba(184,146,61,0.06);
+    }
+
+    /* ---------- FLASH MESSAGE ---------- */
+    .flash-msg {
+        background: var(--terracotta-soft);
+        color: var(--terracotta);
+        border: 1px solid rgba(166,67,44,0.25);
+        padding: 12px 16px;
+        margin-bottom: 20px;
+        border-radius: 8px;
+        text-align: center;
+        font-weight: 600;
+        font-size: 14px;
+        animation: shake 0.4s ease;
+    }
+
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-4px); }
+        75% { transform: translateX(4px); }
     }
 
     /* ---------- FORM GROUPS ---------- */
     .form-group {
-        margin-bottom: 18px;
+        margin-bottom: 20px;
+        position: relative;
     }
 
     label {
+        font-family: 'Inter', sans-serif;
         font-weight: 600;
-        margin-bottom: 6px;
-        color: #000000 !important;
-        display: block;
+        font-size: 12.5px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        margin-bottom: 7px;
+        color: var(--ink-soft) !important;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    label .req {
+        color: var(--terracotta);
+        font-size: 13px;
+    }
+
+    label .opt {
+        font-weight: 500;
+        text-transform: none;
+        letter-spacing: 0;
+        color: #A8A192;
+        font-size: 11.5px;
+        margin-left: 2px;
     }
 
     /* ---------- INPUT FIELD ---------- */
+    .input-wrap {
+        position: relative;
+    }
+
     .input-field {
         width: 100%;
-        padding: 12px;
-        border-radius: 12px;
-        border: 2px solid #bbdefb; 
-        background: #e3f2fd; /* pastel blue */
+        padding: 13px 14px;
+        border-radius: 8px;
+        border: 1.5px solid var(--rule);
+        background: #ffffff;
         outline: none;
-        transition: 0.25s ease;
+        transition: 0.2s ease;
+        font-family: 'Inter', sans-serif;
         font-size: 15px;
-        color: #000000; 
+        color: var(--ink);
+        box-sizing: border-box;
+    }
+
+    .input-field::placeholder {
+        color: #B7AF9C;
     }
 
     .input-field:focus {
-        border-color: #64b5f6;
-        background: #ffffff;
-        box-shadow: 0 0 5px rgba(100,181,246,0.5);
+        border-color: var(--ledger-green);
+        box-shadow: 0 0 0 3px rgba(31,92,76,0.12);
     }
 
-    /* ---------- BUTTON ---------- */
-    .btn-submit {
-        background: #EF5350; /* pastel red */
-        padding: 12px 18px;
-        border: none;
-        color: white;
-        font-size: 17px;
-        border-radius: 12px;
-        width: 100%;
-        cursor: pointer;
-        transition: 0.25s ease;
+    .input-field.invalid {
+        border-color: var(--terracotta);
+        box-shadow: 0 0 0 3px rgba(166,67,44,0.10);
+    }
+
+    /* Opening balance styled like a ledger amount entry */
+    .amount-wrap {
+        display: flex;
+        align-items: stretch;
+    }
+
+    .amount-prefix {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 14px;
+        border: 1.5px solid var(--rule);
+        border-right: none;
+        border-radius: 8px 0 0 8px;
+        background: var(--gold-soft);
+        color: var(--ledger-green-dark);
+        font-weight: 700;
+        font-size: 15px;
+    }
+
+    .amount-wrap .input-field {
+        border-radius: 0 8px 8px 0;
+        font-variant-numeric: tabular-nums;
+        text-align: right;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+    }
+
+    .amount-wrap:focus-within .amount-prefix {
+        border-color: var(--ledger-green);
+    }
+
+    /* ---------- DUPLICATE / STATUS MESSAGES ---------- */
+    .field-status {
+        display: none;
+        align-items: center;
+        gap: 6px;
+        margin-top: 7px;
+        font-size: 13px;
         font-weight: 600;
     }
 
-    .btn-submit:hover {
-        background: #ff5252; 
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(255,82,82,0.4);
+    .field-status.show { display: flex; }
+
+    .field-status.error { color: var(--terracotta); }
+    .field-status.checking { color: var(--ink-soft); font-weight: 500; }
+    .field-status.ok { color: var(--ledger-green); }
+
+    .spinner {
+        width: 12px;
+        height: 12px;
+        border: 2px solid var(--rule);
+        border-top-color: var(--ledger-green);
+        border-radius: 50%;
+        animation: spin 0.7s linear infinite;
+        flex-shrink: 0;
     }
 
-    /* ---------- SUCCESS MSG ---------- */
-    .success {
-        color: #81C784; /* pastel green */
-        font-weight: bold;
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ---------- BUTTON ---------- */
+    .btn-submit {
+        background: var(--ledger-green);
+        padding: 14px 18px;
+        border: none;
+        color: #fff;
+        font-family: 'Inter', sans-serif;
+        font-size: 15.5px;
+        border-radius: 8px;
+        width: 100%;
+        cursor: pointer;
+        transition: 0.2s ease;
+        font-weight: 600;
+        letter-spacing: 0.01em;
+        margin-top: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .btn-submit:hover:not(:disabled) {
+        background: var(--ledger-green-dark);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(31,92,76,0.30);
+    }
+
+    .btn-submit:active:not(:disabled) {
+        transform: translateY(0);
+    }
+
+    .btn-submit:disabled {
+        background: #B9C3BE;
+        cursor: not-allowed;
+        box-shadow: none;
+    }
+
+    .btn-submit .btn-spinner {
+        width: 15px;
+        height: 15px;
+        border: 2px solid rgba(255,255,255,0.4);
+        border-top-color: #fff;
+        border-radius: 50%;
+        animation: spin 0.6s linear infinite;
+        display: none;
+    }
+
+    .btn-submit.loading .btn-spinner { display: inline-block; }
+    .btn-submit.loading .btn-label { opacity: 0.85; }
+
+    /* ---------- FOOTNOTE ---------- */
+    .form-hint {
         text-align: center;
-        margin-bottom: 15px;
+        font-size: 12px;
+        color: var(--ink-soft);
+        opacity: 0.7;
+        margin-top: 16px;
+    }
+
+    @media (max-width: 560px) {
+        .customer-card { padding: 26px 20px 26px 42px; }
+        .ledger-stamp { right: 16px; top: 18px; font-size: 10px; padding: 3px 8px; }
+        .page-title { font-size: 26px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .customer-card, .flash-msg, .spinner, .btn-spinner { animation: none !important; }
     }
 </style>
 
-<h2 class="page-title">➕ Add New Customer</h2>
+<div class="ledger-header">
+    <div class="ledger-eyebrow">Customer Ledger</div>
+    <h2 class="page-title">New Customer Entry</h2>
+</div>
 
 <div class="customer-card">
+
+    <div class="ledger-stamp">✦ New</div>
 
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
         {% for category, message in messages %}
-          <div style="
-            background:#ffebee;
-            color:#c62828;
-            padding:10px;
-            margin-bottom:15px;
-            border-radius:8px;
-            text-align:center;
-            font-weight:bold;">
-            {{ message }}
-          </div>
+          <div class="flash-msg">{{ message }}</div>
         {% endfor %}
       {% endif %}
     {% endwith %}
 
-    <form method="POST" id="customerForm">
+    <form method="POST" id="customerForm" novalidate>
 
         <div class="form-group">
-            <label>Name:</label>
-            <input type="text" id="customer_name" name="name" class="input-field" placeholder="Customer Name" required>
+            <label for="customer_name">Name <span class="req">*</span></label>
+            <div class="input-wrap">
+                <input type="text" id="customer_name" name="name" class="input-field"
+                       placeholder="e.g. Ramesh Traders" autocomplete="off" required>
+            </div>
 
-            <div id="duplicate-msg"
-                 style="display:none;color:red;font-weight:bold;margin-top:5px;">
-                Customer already present
+            <div id="duplicate-msg" class="field-status error">
+                <span>⚠</span><span>Customer already present</span>
+            </div>
+            <div id="checking-msg" class="field-status checking">
+                <span class="spinner"></span><span>Checking…</span>
             </div>
         </div>
 
         <div class="form-group">
-            <label>Phone:</label>
-            <input type="text" name="phone" class="input-field" placeholder="Phone Number">
+            <label for="phone">Phone <span class="opt">optional</span></label>
+            <div class="input-wrap">
+                <input type="text" id="phone" name="phone" class="input-field"
+                       placeholder="10-digit mobile number" autocomplete="off" inputmode="tel" maxlength="15">
+            </div>
         </div>
 
         <div class="form-group">
-            <label>Address:</label>
-            <input type="text" name="address" class="input-field" placeholder="Address">
+            <label for="address">Address <span class="opt">optional</span></label>
+            <div class="input-wrap">
+                <input type="text" id="address" name="address" class="input-field"
+                       placeholder="Shop / street / city" autocomplete="off">
+            </div>
         </div>
 
         <div class="form-group">
-            <label>Opening Balance:</label>
-            <input type="number" step="0.01" name="opening_balance" value="0" class="input-field">
+            <label for="opening_balance">Opening Balance</label>
+            <div class="amount-wrap">
+                <span class="amount-prefix">₹</span>
+                <input type="number" step="0.01" id="opening_balance" name="opening_balance"
+                       value="0" class="input-field">
+            </div>
         </div>
 
-        <button type="submit" id="saveBtn" class="btn-submit">💾 Save Customer</button>
+        <button type="submit" id="saveBtn" class="btn-submit">
+            <span class="btn-spinner"></span>
+            <span class="btn-label">💾 Save Customer</span>
+        </button>
+
+        <div class="form-hint">Press Enter to move between fields, or submit from the last one.</div>
 
     </form>
 
 </div>
+
 <script>
 document.addEventListener("keydown", function (e) {
     if (e.key !== "Enter") return;
@@ -175,13 +434,13 @@ document.addEventListener("keydown", function (e) {
 
     if (active.name === "opening_balance") {
         e.preventDefault();
-    
+
         if (!customerSubmitting) {
             document.getElementById("customerForm").requestSubmit();
         }
         return;
     }
-    
+
     if (index > -1 && index < focusable.length - 1) {
         e.preventDefault();
         focusable[index + 1].focus();
@@ -201,41 +460,70 @@ document.getElementById("customerForm").addEventListener("submit", function(e) {
 
     const btn = document.getElementById("saveBtn");
     btn.disabled = true;
-    btn.innerHTML = "Saving...";
+    btn.classList.add("loading");
+    btn.querySelector(".btn-label").textContent = "Saving…";
 });
 const customerName = document.getElementById("customer_name");
 const duplicateMsg = document.getElementById("duplicate-msg");
+const checkingMsg = document.getElementById("checking-msg");
 const saveBtn = document.getElementById("saveBtn");
+let duplicateCheckTimer = null;
+
 customerName.addEventListener("input", function () {
     this.value = this.value.replace(/\b\w/g, c => c.toUpperCase());
-});
 
-customerName.addEventListener("blur", function () {
+    // Hide stale status while the user is still typing
+    duplicateMsg.classList.remove("show");
+    this.classList.remove("invalid");
 
+    clearTimeout(duplicateCheckTimer);
     const name = this.value.trim();
-
     if (!name) {
-        duplicateMsg.style.display = "none";
+        checkingMsg.classList.remove("show");
         saveBtn.disabled = false;
         return;
     }
 
+    duplicateCheckTimer = setTimeout(() => runDuplicateCheck(name), 350);
+});
+
+customerName.addEventListener("blur", function () {
+    clearTimeout(duplicateCheckTimer);
+    const name = this.value.trim();
+
+    if (!name) {
+        duplicateMsg.classList.remove("show");
+        checkingMsg.classList.remove("show");
+        saveBtn.disabled = false;
+        return;
+    }
+
+    runDuplicateCheck(name);
+});
+
+function runDuplicateCheck(name) {
+    checkingMsg.classList.add("show");
+    duplicateMsg.classList.remove("show");
+
     fetch(`/api/check_customer?name=${encodeURIComponent(name)}`)
         .then(response => response.json())
         .then(data => {
+            checkingMsg.classList.remove("show");
 
             if (data.exists) {
-                duplicateMsg.style.display = "block";
+                duplicateMsg.classList.add("show");
+                customerName.classList.add("invalid");
                 saveBtn.disabled = true;
             } else {
-                duplicateMsg.style.display = "none";
+                duplicateMsg.classList.remove("show");
+                customerName.classList.remove("invalid");
                 saveBtn.disabled = false;
             }
-
+        })
+        .catch(() => {
+            checkingMsg.classList.remove("show");
         });
-});
-
+}
 </script>
 
 {% endblock %}
-
