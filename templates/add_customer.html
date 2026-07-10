@@ -43,9 +43,9 @@
     .customer-card {
         position: relative;
         background: var(--paper);
-        max-width: 480px;
-        margin: 30px auto;
-        border-radius: 16px;
+        max-width: 440px;
+        margin: 20px auto;
+        border-radius: 14px;
         overflow: hidden;
         box-shadow:
             0 1px 0 rgba(255,255,255,0.6) inset,
@@ -63,7 +63,7 @@
     .card-header {
         position: relative;
         background: linear-gradient(155deg, var(--panel-1), var(--panel-2));
-        padding: 30px 40px 26px;
+        padding: 20px 32px 16px;
         text-align: center;
         overflow: hidden;
     }
@@ -79,9 +79,9 @@
     }
 
     .crest {
-        width: 34px;
-        height: 34px;
-        margin: 0 auto 14px;
+        width: 24px;
+        height: 24px;
+        margin: 0 auto 8px;
         border: 1.5px solid rgba(231,206,132,0.55);
         border-radius: 50%;
         display: flex;
@@ -89,41 +89,41 @@
         justify-content: center;
         color: var(--gold-light);
         font-family: 'Fraunces', serif;
-        font-size: 15px;
+        font-size: 11px;
         font-weight: 600;
         position: relative;
     }
 
     .ledger-eyebrow {
         position: relative;
-        font-size: 10.5px;
+        font-size: 9.5px;
         font-weight: 600;
-        letter-spacing: 0.28em;
+        letter-spacing: 0.24em;
         text-transform: uppercase;
         color: var(--gold-light);
-        margin-bottom: 8px;
+        margin-bottom: 5px;
     }
 
     .page-title {
         position: relative;
         font-family: 'Fraunces', serif;
         color: #FBF8F0;
-        font-size: 26px;
+        font-size: 20px;
         font-weight: 600;
         letter-spacing: -0.01em;
     }
 
     .gold-rule {
         position: relative;
-        width: 56px;
+        width: 44px;
         height: 2px;
-        margin: 16px auto 0;
+        margin: 10px auto 0;
         background: linear-gradient(90deg, transparent, var(--gold-light), transparent);
     }
 
     /* ---------- CARD BODY ---------- */
     .card-body {
-        padding: 34px 40px 32px;
+        padding: 24px 32px 26px;
     }
 
     /* ---------- FLASH MESSAGE ---------- */
@@ -141,27 +141,27 @@
 
     /* ---------- FORM GROUPS ---------- */
     .form-group {
-        margin-bottom: 22px;
+        margin-bottom: 14px;
         position: relative;
     }
 
     .form-group + .form-group {
-        padding-top: 22px;
+        padding-top: 14px;
         border-top: 1px dashed var(--hairline-strong);
-        margin-top: -22px;
+        margin-top: -14px;
     }
 
     label {
         font-family: 'Inter', sans-serif;
         font-weight: 700;
-        font-size: 11.5px;
-        letter-spacing: 0.07em;
+        font-size: 10.5px;
+        letter-spacing: 0.06em;
         text-transform: uppercase;
-        margin-bottom: 9px;
+        margin-bottom: 6px;
         color: var(--ink-soft) !important;
         display: flex;
         align-items: center;
-        gap: 7px;
+        gap: 6px;
     }
 
     label .dot {
@@ -199,14 +199,14 @@
 
     .input-field {
         width: 100%;
-        padding: 13px 14px;
-        border-radius: 8px;
+        padding: 10px 12px;
+        border-radius: 7px;
         border: 1.5px solid var(--hairline-strong);
         background: #FCFBF8;
         outline: none;
         transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
         font-family: 'Inter', sans-serif;
-        font-size: 14.5px;
+        font-size: 13.5px;
         color: var(--ink);
         box-shadow: inset 0 1px 2px rgba(20,33,46,0.04);
     }
@@ -237,16 +237,16 @@
 
     .amount-prefix {
         position: absolute;
-        left: 8px;
+        left: 7px;
         top: 50%;
         transform: translateY(-50%);
-        width: 26px;
-        height: 26px;
+        width: 22px;
+        height: 22px;
         border-radius: 50%;
         background: linear-gradient(155deg, var(--gold-light), var(--gold-deep));
         color: #3A2C0B;
         font-weight: 700;
-        font-size: 13px;
+        font-size: 12px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -255,22 +255,22 @@
     }
 
     .amount-wrap .input-field {
-        padding-left: 42px;
+        padding-left: 36px;
         font-variant-numeric: tabular-nums;
         font-weight: 700;
         letter-spacing: 0.01em;
-        font-size: 15.5px;
+        font-size: 14px;
     }
 
     /* ---------- DUPLICATE / STATUS MESSAGES ---------- */
     .field-status {
         display: none;
         align-items: center;
-        gap: 7px;
-        margin-top: 9px;
-        padding: 7px 11px;
-        border-radius: 6px;
-        font-size: 12.5px;
+        gap: 6px;
+        margin-top: 7px;
+        padding: 5px 9px;
+        border-radius: 5px;
+        font-size: 11.5px;
         font-weight: 600;
         width: fit-content;
     }
@@ -296,24 +296,24 @@
     /* ---------- BUTTON ---------- */
     .btn-submit {
         background: linear-gradient(155deg, var(--panel-1), var(--panel-2));
-        padding: 14px 18px;
+        padding: 11px 16px;
         border: none;
         border-top: 1px solid rgba(231,206,132,0.4);
         color: #FBF8F0;
         font-family: 'Inter', sans-serif;
-        font-size: 13.5px;
+        font-size: 12.5px;
         font-weight: 600;
-        letter-spacing: 0.06em;
+        letter-spacing: 0.05em;
         text-transform: uppercase;
-        border-radius: 8px;
+        border-radius: 7px;
         width: 100%;
         cursor: pointer;
         transition: transform 0.15s ease, box-shadow 0.15s ease;
-        margin-top: 28px;
+        margin-top: 18px;
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 9px;
+        gap: 8px;
         box-shadow: 0 10px 24px -8px rgba(12,32,26,0.55);
     }
 
@@ -354,17 +354,17 @@
     /* ---------- FOOTNOTE ---------- */
     .form-hint {
         text-align: center;
-        font-size: 11.5px;
+        font-size: 10.5px;
         color: var(--ink-soft);
         opacity: 0.6;
-        margin-top: 16px;
+        margin-top: 12px;
         letter-spacing: 0.01em;
     }
 
     @media (max-width: 560px) {
-        .card-header { padding: 26px 26px 22px; }
-        .card-body { padding: 28px 24px 26px; }
-        .page-title { font-size: 22px; }
+        .card-header { padding: 18px 22px 14px; }
+        .card-body { padding: 20px 20px 22px; }
+        .page-title { font-size: 18px; }
     }
 
     @media (prefers-reduced-motion: reduce) {
