@@ -39,11 +39,20 @@
 
     html, body {
       height: 100%;
+      min-height: 100%;
       margin: 0;
       font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      background-color: var(--ivory);
+      background: var(--ivory) !important;
+      background-image: none !important;
       color: var(--text-body);
       -webkit-font-smoothing: antialiased;
+    }
+
+    /* Kill any leftover gradient/background from pastel_theme.css so the
+       page never shows the blue/pink split behind the cards */
+    .container {
+      background: transparent;
+      min-height: calc(100vh - 140px);
     }
 
     /* ─── NAV ─────────────────────────────────────────────── */
