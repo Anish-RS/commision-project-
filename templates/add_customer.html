@@ -3,28 +3,29 @@
 {% block content %}
 
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap');
 
     /* ---------- TOKENS ---------- */
     :root {
-        --ink: #1B2A3F;
-        --ink-soft: #4A5A70;
-        --parchment: #FBF7EF;
-        --ledger-green: #1F5C4C;
-        --ledger-green-dark: #163F34;
-        --gold: #B8923D;
-        --gold-soft: #E8D9AF;
-        --rule: #D8CDB4;
-        --terracotta: #A6432C;
-        --terracotta-soft: #FBEBE6;
+        --ink: #101C28;
+        --ink-soft: #5C6672;
+        --paper: #FEFEFD;
+        --bg: #EEEBE3;
+        --green: #16342B;
+        --green-dark: #0D231C;
+        --gold: #8E7133;
+        --hairline: #E4E1D9;
+        --hairline-strong: #D8D4C8;
+        --red: #96382A;
+        --red-soft: #F6ECE9;
+        --grey-disabled: #C7CAC5;
     }
+
+    * { box-sizing: border-box; }
 
     /* ---------- PAGE BACKDROP ---------- */
     body {
-        background:
-            radial-gradient(circle at 15% 10%, rgba(184,146,61,0.10), transparent 40%),
-            radial-gradient(circle at 85% 90%, rgba(31,92,76,0.12), transparent 45%),
-            #EFEAE0;
+        background: var(--bg);
         background-attachment: fixed;
         font-family: 'Inter', sans-serif;
     }
@@ -32,147 +33,97 @@
     /* ---------- TITLE ---------- */
     .ledger-header {
         text-align: center;
-        margin: 10px auto 28px;
+        margin: 6px auto 30px;
     }
 
     .ledger-eyebrow {
         font-family: 'Inter', sans-serif;
-        font-size: 11px;
+        font-size: 10.5px;
         font-weight: 600;
-        letter-spacing: 0.22em;
+        letter-spacing: 0.24em;
         text-transform: uppercase;
-        color: var(--ledger-green);
-        opacity: 0.75;
-        margin-bottom: 6px;
+        color: var(--gold);
+        margin-bottom: 10px;
     }
 
     .page-title {
         font-family: 'Fraunces', serif;
         color: var(--ink);
-        font-size: 32px;
-        font-weight: 600;
+        font-size: 28px;
+        font-weight: 500;
         letter-spacing: -0.01em;
     }
 
-    /* ---------- CARD (ledger index card w/ stub) ---------- */
+    /* ---------- CARD ---------- */
     .customer-card {
         position: relative;
-        background: var(--parchment);
-        background-image:
-            linear-gradient(var(--rule) 1px, transparent 1px);
-        background-size: 100% 42px;
-        background-position: 0 118px;
-        padding: 30px 34px 30px 54px;
-        border-radius: 4px;
-        max-width: 540px;
+        background: var(--paper);
+        padding: 40px 40px 34px;
+        border-radius: 10px;
+        max-width: 480px;
         margin: auto;
         box-shadow:
-            0 1px 2px rgba(27,42,63,0.08),
-            0 12px 30px rgba(27,42,63,0.14);
-        border: 1px solid rgba(27,42,63,0.08);
-        animation: cardIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    .customer-card::before {
-        content: "";
-        position: absolute;
-        left: 0;
-        top: 0;
-        bottom: 0;
-        width: 20px;
-        background: var(--ledger-green);
-        background-image: repeating-linear-gradient(
-            180deg,
-            transparent 0,
-            transparent 10px,
-            rgba(255,255,255,0.08) 10px,
-            rgba(255,255,255,0.08) 11px
-        );
-        border-radius: 4px 0 0 4px;
-    }
-
-    .customer-card::after {
-        content: "";
-        position: absolute;
-        left: 9px;
-        top: 22px;
-        bottom: 22px;
-        width: 0;
-        border-left: 2px dashed rgba(255,255,255,0.55);
+            0 1px 0 rgba(16,28,40,0.03),
+            0 20px 40px -18px rgba(16,28,40,0.28);
+        border: 1px solid rgba(16,28,40,0.06);
+        border-top: 3px solid var(--green);
+        animation: cardIn 0.45s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     @keyframes cardIn {
-        from { opacity: 0; transform: translateY(14px); }
+        from { opacity: 0; transform: translateY(10px); }
         to { opacity: 1; transform: translateY(0); }
-    }
-
-    .ledger-stamp {
-        position: absolute;
-        top: 26px;
-        right: 30px;
-        font-family: 'Fraunces', serif;
-        font-size: 11px;
-        font-weight: 600;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        color: var(--gold);
-        border: 1px solid var(--gold-soft);
-        padding: 4px 10px;
-        border-radius: 3px;
-        transform: rotate(2deg);
-        background: rgba(184,146,61,0.06);
     }
 
     /* ---------- FLASH MESSAGE ---------- */
     .flash-msg {
-        background: var(--terracotta-soft);
-        color: var(--terracotta);
-        border: 1px solid rgba(166,67,44,0.25);
+        background: var(--red-soft);
+        color: var(--red);
+        border: 1px solid rgba(150,56,42,0.18);
         padding: 12px 16px;
-        margin-bottom: 20px;
-        border-radius: 8px;
+        margin-bottom: 22px;
+        border-radius: 6px;
         text-align: center;
         font-weight: 600;
-        font-size: 14px;
-        animation: shake 0.4s ease;
-    }
-
-    @keyframes shake {
-        0%, 100% { transform: translateX(0); }
-        25% { transform: translateX(-4px); }
-        75% { transform: translateX(4px); }
+        font-size: 13.5px;
     }
 
     /* ---------- FORM GROUPS ---------- */
     .form-group {
-        margin-bottom: 20px;
+        margin-bottom: 22px;
         position: relative;
+    }
+
+    .form-group + .form-group {
+        padding-top: 22px;
+        border-top: 1px solid var(--hairline);
+        margin-top: -22px;
     }
 
     label {
         font-family: 'Inter', sans-serif;
         font-weight: 600;
-        font-size: 12.5px;
-        letter-spacing: 0.04em;
+        font-size: 11.5px;
+        letter-spacing: 0.06em;
         text-transform: uppercase;
-        margin-bottom: 7px;
+        margin-bottom: 9px;
         color: var(--ink-soft) !important;
         display: flex;
         align-items: center;
-        gap: 6px;
+        gap: 5px;
     }
 
     label .req {
-        color: var(--terracotta);
-        font-size: 13px;
+        color: var(--gold);
+        font-size: 12px;
     }
 
     label .opt {
         font-weight: 500;
         text-transform: none;
         letter-spacing: 0;
-        color: #A8A192;
-        font-size: 11.5px;
+        color: #ADA98F;
+        font-size: 11px;
         margin-left: 2px;
     }
 
@@ -183,62 +134,52 @@
 
     .input-field {
         width: 100%;
-        padding: 13px 14px;
-        border-radius: 8px;
-        border: 1.5px solid var(--rule);
+        padding: 12px 14px;
+        border-radius: 6px;
+        border: 1px solid var(--hairline-strong);
         background: #ffffff;
         outline: none;
-        transition: 0.2s ease;
+        transition: border-color 0.15s ease, box-shadow 0.15s ease;
         font-family: 'Inter', sans-serif;
-        font-size: 15px;
+        font-size: 14.5px;
         color: var(--ink);
-        box-sizing: border-box;
     }
 
     .input-field::placeholder {
-        color: #B7AF9C;
+        color: #B6B2A4;
     }
 
     .input-field:focus {
-        border-color: var(--ledger-green);
-        box-shadow: 0 0 0 3px rgba(31,92,76,0.12);
+        border-color: var(--green);
+        box-shadow: 0 0 0 3px rgba(22,52,43,0.09);
     }
 
     .input-field.invalid {
-        border-color: var(--terracotta);
-        box-shadow: 0 0 0 3px rgba(166,67,44,0.10);
+        border-color: var(--red);
+        box-shadow: 0 0 0 3px rgba(150,56,42,0.08);
     }
 
-    /* Opening balance styled like a ledger amount entry */
+    /* Opening balance — single seamless field with inline currency mark */
     .amount-wrap {
-        display: flex;
-        align-items: stretch;
+        position: relative;
     }
 
     .amount-prefix {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 0 14px;
-        border: 1.5px solid var(--rule);
-        border-right: none;
-        border-radius: 8px 0 0 8px;
-        background: var(--gold-soft);
-        color: var(--ledger-green-dark);
-        font-weight: 700;
-        font-size: 15px;
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--gold);
+        font-weight: 600;
+        font-size: 14.5px;
+        pointer-events: none;
     }
 
     .amount-wrap .input-field {
-        border-radius: 0 8px 8px 0;
+        padding-left: 28px;
         font-variant-numeric: tabular-nums;
-        text-align: right;
         font-weight: 600;
-        letter-spacing: 0.02em;
-    }
-
-    .amount-wrap:focus-within .amount-prefix {
-        border-color: var(--ledger-green);
+        letter-spacing: 0.01em;
     }
 
     /* ---------- DUPLICATE / STATUS MESSAGES ---------- */
@@ -246,22 +187,22 @@
         display: none;
         align-items: center;
         gap: 6px;
-        margin-top: 7px;
-        font-size: 13px;
+        margin-top: 8px;
+        font-size: 12.5px;
         font-weight: 600;
     }
 
     .field-status.show { display: flex; }
 
-    .field-status.error { color: var(--terracotta); }
+    .field-status.error { color: var(--red); }
     .field-status.checking { color: var(--ink-soft); font-weight: 500; }
-    .field-status.ok { color: var(--ledger-green); }
+    .field-status.ok { color: var(--green); }
 
     .spinner {
-        width: 12px;
-        height: 12px;
-        border: 2px solid var(--rule);
-        border-top-color: var(--ledger-green);
+        width: 11px;
+        height: 11px;
+        border: 2px solid var(--hairline-strong);
+        border-top-color: var(--ink-soft);
         border-radius: 50%;
         animation: spin 0.7s linear infinite;
         flex-shrink: 0;
@@ -271,45 +212,46 @@
 
     /* ---------- BUTTON ---------- */
     .btn-submit {
-        background: var(--ledger-green);
-        padding: 14px 18px;
+        background: var(--green);
+        padding: 13px 18px;
         border: none;
         color: #fff;
         font-family: 'Inter', sans-serif;
-        font-size: 15.5px;
-        border-radius: 8px;
+        font-size: 13.5px;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        border-radius: 6px;
         width: 100%;
         cursor: pointer;
-        transition: 0.2s ease;
-        font-weight: 600;
-        letter-spacing: 0.01em;
-        margin-top: 6px;
+        transition: background-color 0.15s ease, box-shadow 0.15s ease;
+        margin-top: 28px;
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 8px;
+        gap: 9px;
     }
 
     .btn-submit:hover:not(:disabled) {
-        background: var(--ledger-green-dark);
-        transform: translateY(-1px);
-        box-shadow: 0 6px 16px rgba(31,92,76,0.30);
+        background: var(--green-dark);
+        box-shadow: 0 4px 14px rgba(13,35,28,0.28);
     }
 
-    .btn-submit:active:not(:disabled) {
-        transform: translateY(0);
+    .btn-submit:focus-visible {
+        outline: 2px solid var(--gold);
+        outline-offset: 2px;
     }
 
     .btn-submit:disabled {
-        background: #B9C3BE;
+        background: var(--grey-disabled);
         cursor: not-allowed;
         box-shadow: none;
     }
 
     .btn-submit .btn-spinner {
-        width: 15px;
-        height: 15px;
-        border: 2px solid rgba(255,255,255,0.4);
+        width: 13px;
+        height: 13px;
+        border: 2px solid rgba(255,255,255,0.35);
         border-top-color: #fff;
         border-radius: 50%;
         animation: spin 0.6s linear infinite;
@@ -322,20 +264,20 @@
     /* ---------- FOOTNOTE ---------- */
     .form-hint {
         text-align: center;
-        font-size: 12px;
+        font-size: 11.5px;
         color: var(--ink-soft);
-        opacity: 0.7;
+        opacity: 0.65;
         margin-top: 16px;
+        letter-spacing: 0.01em;
     }
 
     @media (max-width: 560px) {
-        .customer-card { padding: 26px 20px 26px 42px; }
-        .ledger-stamp { right: 16px; top: 18px; font-size: 10px; padding: 3px 8px; }
-        .page-title { font-size: 26px; }
+        .customer-card { padding: 30px 24px 26px; }
+        .page-title { font-size: 24px; }
     }
 
     @media (prefers-reduced-motion: reduce) {
-        .customer-card, .flash-msg, .spinner, .btn-spinner { animation: none !important; }
+        .customer-card, .spinner, .btn-spinner { animation: none !important; }
     }
 </style>
 
@@ -345,8 +287,6 @@
 </div>
 
 <div class="customer-card">
-
-    <div class="ledger-stamp">✦ New</div>
 
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
@@ -366,7 +306,7 @@
             </div>
 
             <div id="duplicate-msg" class="field-status error">
-                <span>⚠</span><span>Customer already present</span>
+                <span>Customer already present</span>
             </div>
             <div id="checking-msg" class="field-status checking">
                 <span class="spinner"></span><span>Checking…</span>
@@ -400,7 +340,7 @@
 
         <button type="submit" id="saveBtn" class="btn-submit">
             <span class="btn-spinner"></span>
-            <span class="btn-label">💾 Save Customer</span>
+            <span class="btn-label">Save Customer</span>
         </button>
 
         <div class="form-hint">Press Enter to move between fields, or submit from the last one.</div>
