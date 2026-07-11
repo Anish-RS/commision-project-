@@ -3,7 +3,7 @@
 {% block content %}
 
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&display=swap');
 
     /* ---------- TOKENS ---------- */
     :root {
@@ -37,6 +37,19 @@
             linear-gradient(180deg, var(--bg-1), var(--bg-2));
         background-attachment: fixed;
         font-family: 'Inter', sans-serif;
+        position: relative;
+    }
+
+    /* fine paper grain, applied once, very low opacity */
+    body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        opacity: 0.035;
+        mix-blend-mode: multiply;
+        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+        z-index: 0;
     }
 
     /* ---------- CARD ---------- */
@@ -44,26 +57,48 @@
         position: relative;
         background: var(--paper);
         max-width: 440px;
-        margin: 20px auto;
-        border-radius: 14px;
+        margin: 28px auto;
+        border-radius: 6px;
         overflow: hidden;
         box-shadow:
             0 1px 0 rgba(255,255,255,0.6) inset,
-            0 30px 60px -20px rgba(13,25,20,0.45),
-            0 10px 20px -10px rgba(13,25,20,0.25);
-        animation: cardIn 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+            0 26px 54px -24px rgba(13,25,20,0.4),
+            0 8px 16px -10px rgba(13,25,20,0.2);
+        animation: cardIn 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+        transition: box-shadow 0.5s ease, transform 0.5s ease;
+        z-index: 1;
+    }
+
+    /* fine double rule, like an engraved invitation edge */
+    .customer-card::before {
+        content: "";
+        position: absolute;
+        inset: 7px;
+        border: 1px solid rgba(184,146,61,0.16);
+        pointer-events: none;
+        z-index: 5;
+    }
+
+    @media (hover: hover) {
+        .customer-card:hover {
+            box-shadow:
+                0 1px 0 rgba(255,255,255,0.6) inset,
+                0 32px 64px -24px rgba(13,25,20,0.44),
+                0 10px 18px -10px rgba(13,25,20,0.22);
+            transform: translateY(-1px);
+        }
     }
 
     @keyframes cardIn {
-        from { opacity: 0; transform: translateY(12px); }
-        to { opacity: 1; transform: translateY(0); }
+        from { opacity: 0; transform: translateY(14px) scale(0.99); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
     }
 
     /* ---------- CARD HEADER (passbook cover) ---------- */
     .card-header {
         position: relative;
         background: linear-gradient(155deg, var(--panel-1), var(--panel-2));
-        padding: 20px 32px 16px;
+        padding: 30px 32px 22px;
         text-align: center;
         overflow: hidden;
     }
@@ -73,57 +108,119 @@
         position: absolute;
         inset: 0;
         background:
-            radial-gradient(circle at 85% -20%, rgba(231,206,132,0.18), transparent 55%),
-            radial-gradient(circle at -10% 120%, rgba(231,206,132,0.10), transparent 50%);
+            radial-gradient(circle at 85% -20%, rgba(231,206,132,0.20), transparent 55%),
+            radial-gradient(circle at -10% 120%, rgba(231,206,132,0.12), transparent 50%);
         pointer-events: none;
     }
 
-    .crest {
-        width: 24px;
-        height: 24px;
-        margin: 0 auto 8px;
-        border: 1.5px solid rgba(231,206,132,0.55);
+    /* faint engraved guilloche-style ring texture behind the seal */
+    .card-header::after {
+        content: "";
+        position: absolute;
+        top: -60px;
+        left: 50%;
+        width: 260px;
+        height: 260px;
+        transform: translateX(-50%);
+        border-radius: 50%;
+        border: 1px solid rgba(231,206,132,0.08);
+        box-shadow: 0 0 0 18px rgba(231,206,132,0.045), 0 0 0 36px rgba(231,206,132,0.03);
+        pointer-events: none;
+    }
+
+    /* ---------- LIVE MONOGRAM SEAL ---------- */
+    .seal {
+        position: relative;
+        width: 40px;
+        height: 40px;
+        margin: 0 auto 10px;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
+        background: radial-gradient(circle at 32% 28%, rgba(231,206,132,0.28), rgba(231,206,132,0.02) 70%);
+        border: 1.5px solid rgba(231,206,132,0.55);
         color: var(--gold-light);
         font-family: 'Fraunces', serif;
-        font-size: 11px;
         font-weight: 600;
-        position: relative;
+        transition: box-shadow 0.3s ease, border-color 0.3s ease;
+    }
+
+    .seal::before {
+        content: "";
+        position: absolute;
+        inset: -5px;
+        border-radius: 50%;
+        border: 1px dashed rgba(231,206,132,0.30);
+    }
+
+    .seal-glyph {
+        font-size: 12px;
+        letter-spacing: 0.02em;
+        display: inline-block;
+    }
+
+    .seal.has-initials {
+        box-shadow: 0 0 0 5px rgba(231,206,132,0.08);
+        border-color: rgba(231,206,132,0.8);
+    }
+
+    .seal-glyph.swap {
+        animation: sealSwap 0.5s ease;
+    }
+
+    @keyframes sealSwap {
+        from { opacity: 0; }
+        to   { opacity: 1; }
     }
 
     .ledger-eyebrow {
         position: relative;
         font-size: 9.5px;
         font-weight: 600;
-        letter-spacing: 0.24em;
+        letter-spacing: 0.3em;
         text-transform: uppercase;
         color: var(--gold-light);
-        margin-bottom: 5px;
+        margin-bottom: 6px;
+        opacity: 0.9;
     }
 
     .page-title {
         position: relative;
         font-family: 'Fraunces', serif;
         color: #FBF8F0;
-        font-size: 20px;
-        font-weight: 600;
-        letter-spacing: -0.01em;
+        font-size: 21px;
+        font-weight: 500;
+        letter-spacing: 0.003em;
+        transition: opacity 0.15s ease;
     }
 
     .gold-rule {
         position: relative;
-        width: 44px;
-        height: 2px;
-        margin: 10px auto 0;
+        width: 36px;
+        height: 1px;
+        margin: 12px auto 0;
         background: linear-gradient(90deg, transparent, var(--gold-light), transparent);
+        overflow: hidden;
+    }
+
+    /* a single, quiet pass of light on load — not a looping shimmer */
+    .gold-rule::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.75), transparent);
+        transform: translateX(-100%);
+        animation: ruleShimmer 1.4s ease-out 0.5s 1;
+    }
+
+    @keyframes ruleShimmer {
+        to { transform: translateX(100%); }
     }
 
     /* ---------- CARD BODY ---------- */
     .card-body {
-        padding: 24px 32px 26px;
+        padding: 28px 34px 30px;
     }
 
     /* ---------- FLASH MESSAGE ---------- */
@@ -133,10 +230,11 @@
         border: 1px solid rgba(162,59,42,0.2);
         padding: 12px 16px;
         margin-bottom: 22px;
-        border-radius: 8px;
+        border-radius: 5px;
         text-align: center;
         font-weight: 600;
         font-size: 13.5px;
+        animation: cardIn 0.4s cubic-bezier(0.19, 1, 0.22, 1);
     }
 
     /* ---------- FORM GROUPS ---------- */
@@ -171,6 +269,11 @@
         background: var(--accent, var(--gold));
         box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent, var(--gold)) 18%, transparent);
         flex-shrink: 0;
+        transition: box-shadow 0.2s ease;
+    }
+
+    .form-group:focus-within label .dot {
+        box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent, var(--gold)) 28%, transparent);
     }
 
     label .req {
@@ -197,18 +300,37 @@
         position: relative;
     }
 
+    .input-icon {
+        position: absolute;
+        left: 11px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 14px;
+        height: 14px;
+        stroke-width: 1.5;
+        color: var(--ink-soft);
+        opacity: 0.4;
+        pointer-events: none;
+        transition: color 0.2s ease, opacity 0.2s ease;
+    }
+
+    .form-group:focus-within .input-icon {
+        color: var(--accent, var(--green));
+        opacity: 0.75;
+    }
+
     .input-field {
         width: 100%;
-        padding: 10px 12px;
-        border-radius: 7px;
-        border: 1.5px solid var(--hairline-strong);
+        padding: 10px 34px 10px 34px;
+        border-radius: 5px;
+        border: 1px solid var(--hairline-strong);
         background: #FCFBF8;
         outline: none;
-        transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
         font-family: 'Inter', sans-serif;
         font-size: 13.5px;
         color: var(--ink);
-        box-shadow: inset 0 1px 2px rgba(20,33,46,0.04);
+        box-shadow: inset 0 1px 2px rgba(20,33,46,0.03);
     }
 
     .input-field::placeholder {
@@ -220,15 +342,54 @@
         background: #ffffff;
         box-shadow:
             inset 0 1px 2px rgba(20,33,46,0.03),
-            0 0 0 4px color-mix(in srgb, var(--accent, var(--green)) 16%, transparent);
+            0 0 0 3px color-mix(in srgb, var(--accent, var(--green)) 10%, transparent);
     }
 
     .input-field.invalid {
         border-color: var(--red);
         box-shadow:
             inset 0 1px 2px rgba(20,33,46,0.03),
-            0 0 0 4px rgba(162,59,42,0.10);
+            0 0 0 3px rgba(162,59,42,0.08);
+        animation: shake 0.3s ease;
     }
+
+    @keyframes shake {
+        20%, 60% { transform: translateX(-2px); }
+        40%, 80% { transform: translateX(2px); }
+    }
+
+    /* clear (x) button inside text fields */
+    .input-clear {
+        position: absolute;
+        right: 6px;
+        top: 50%;
+        transform: translateY(-50%) scale(0.8);
+        width: 20px;
+        height: 20px;
+        border: none;
+        background: #EAE6D8;
+        color: var(--ink-soft);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.15s ease, transform 0.15s ease, background-color 0.15s ease;
+        font-size: 12px;
+        line-height: 1;
+    }
+
+    .input-clear:hover { background: #DFDACB; }
+
+    .input-wrap.has-value .input-clear {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateY(-50%) scale(1);
+    }
+
+    .input-wrap.has-value .input-field { padding-right: 30px; }
 
     /* Opening balance — seamless field with a gold currency badge */
     .amount-wrap {
@@ -256,10 +417,47 @@
 
     .amount-wrap .input-field {
         padding-left: 36px;
+        padding-right: 12px;
+        font-family: 'Fraunces', serif;
         font-variant-numeric: tabular-nums;
-        font-weight: 700;
+        font-weight: 600;
         letter-spacing: 0.01em;
-        font-size: 14px;
+        font-size: 15px;
+    }
+
+    /* quick balance chips — quiet, ledger-tab styling rather than bright buttons */
+    .amount-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 9px;
+    }
+
+    .amount-chip {
+        border: 1px solid transparent;
+        border-bottom: 1px solid var(--hairline-strong);
+        background: transparent;
+        color: var(--ink-soft);
+        font-family: 'Inter', sans-serif;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.01em;
+        padding: 4px 3px 5px;
+        cursor: pointer;
+        transition: color 0.2s ease, border-color 0.2s ease;
+    }
+
+    .amount-chip + .amount-chip { margin-left: 10px; }
+
+    .amount-chip:hover {
+        color: var(--gold-deep);
+        border-bottom-color: var(--gold-deep);
+    }
+
+    .amount-chip.active {
+        color: var(--ink);
+        border-bottom: 1px solid var(--gold-deep);
+        font-weight: 700;
     }
 
     /* ---------- DUPLICATE / STATUS MESSAGES ---------- */
@@ -273,6 +471,12 @@
         font-size: 11.5px;
         font-weight: 600;
         width: fit-content;
+        animation: statusIn 0.2s ease;
+    }
+
+    @keyframes statusIn {
+        from { opacity: 0; transform: translateY(-2px); }
+        to { opacity: 1; transform: translateY(0); }
     }
 
     .field-status.show { display: flex; }
@@ -280,6 +484,12 @@
     .field-status.error { color: var(--red); background: var(--red-soft); }
     .field-status.checking { color: var(--ink-soft); font-weight: 500; background: #F1EEE5; }
     .field-status.ok { color: var(--green); background: #EAF3EE; }
+
+    .status-check {
+        width: 13px;
+        height: 13px;
+        flex-shrink: 0;
+    }
 
     .spinner {
         width: 11px;
@@ -295,8 +505,9 @@
 
     /* ---------- BUTTON ---------- */
     .btn-submit {
+        position: relative;
         background: linear-gradient(155deg, var(--panel-1), var(--panel-2));
-        padding: 11px 16px;
+        padding: 12px 16px;
         border: none;
         border-top: 1px solid rgba(231,206,132,0.4);
         color: #FBF8F0;
@@ -305,21 +516,38 @@
         font-weight: 600;
         letter-spacing: 0.05em;
         text-transform: uppercase;
-        border-radius: 7px;
+        border-radius: 5px;
         width: 100%;
         cursor: pointer;
-        transition: transform 0.15s ease, box-shadow 0.15s ease;
-        margin-top: 18px;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+        margin-top: 22px;
         display: flex;
         align-items: center;
         justify-content: center;
         gap: 8px;
-        box-shadow: 0 10px 24px -8px rgba(12,32,26,0.55);
+        box-shadow: 0 8px 20px -10px rgba(12,32,26,0.5);
+        overflow: hidden;
+    }
+
+    .btn-submit::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -60%;
+        width: 30%;
+        height: 100%;
+        background: linear-gradient(115deg, transparent, rgba(231,206,132,0.16), transparent);
+        transform: skewX(-20deg);
+        transition: left 0.9s ease;
     }
 
     .btn-submit:hover:not(:disabled) {
-        transform: translateY(-1px);
-        box-shadow: 0 14px 30px -8px rgba(12,32,26,0.65);
+        background: linear-gradient(155deg, #1D4438, var(--panel-2));
+        box-shadow: 0 10px 22px -10px rgba(12,32,26,0.55);
+    }
+
+    .btn-submit:hover:not(:disabled)::after {
+        left: 130%;
     }
 
     .btn-submit:active:not(:disabled) {
@@ -338,6 +566,12 @@
         box-shadow: none;
     }
 
+    .btn-submit .btn-icon {
+        width: 14px;
+        height: 14px;
+        flex-shrink: 0;
+    }
+
     .btn-submit .btn-spinner {
         width: 13px;
         height: 13px;
@@ -349,6 +583,7 @@
     }
 
     .btn-submit.loading .btn-spinner { display: inline-block; }
+    .btn-submit.loading .btn-icon { display: none; }
     .btn-submit.loading .btn-label { opacity: 0.85; }
 
     /* ---------- FOOTNOTE ---------- */
@@ -359,23 +594,44 @@
         opacity: 0.6;
         margin-top: 12px;
         letter-spacing: 0.01em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+    }
+
+    .form-hint kbd {
+        font-family: 'Inter', sans-serif;
+        font-size: 9.5px;
+        font-weight: 700;
+        border: 1px solid var(--hairline-strong);
+        border-radius: 4px;
+        padding: 1px 5px;
+        background: #FCFBF8;
+        color: var(--ink-soft);
     }
 
     @media (max-width: 560px) {
-        .card-header { padding: 18px 22px 14px; }
-        .card-body { padding: 20px 20px 22px; }
+        .card-header { padding: 22px 22px 16px; }
+        .card-body { padding: 22px 20px 24px; }
         .page-title { font-size: 18px; }
     }
 
     @media (prefers-reduced-motion: reduce) {
-        .customer-card, .spinner, .btn-spinner { animation: none !important; }
+        .customer-card, .spinner, .btn-spinner, .gold-rule::after,
+        .seal-glyph.swap, .input-field.invalid, .flash-msg, .field-status {
+            animation: none !important;
+        }
+        .btn-submit::after { transition: none; }
     }
 </style>
 
 <div class="customer-card">
 
     <div class="card-header">
-        <div class="crest">✦</div>
+        <div class="seal" id="seal">
+            <span class="seal-glyph" id="sealGlyph">✦</span>
+        </div>
         <div class="ledger-eyebrow">Customer Ledger</div>
         <h2 class="page-title">New Customer Entry</h2>
         <div class="gold-rule"></div>
@@ -395,32 +651,43 @@
 
         <div class="form-group fg-name">
             <label for="customer_name"><span class="dot"></span>Name <span class="req">*</span></label>
-            <div class="input-wrap">
+            <div class="input-wrap" id="nameWrap">
+                <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                 <input type="text" id="customer_name" name="name" class="input-field"
-                       placeholder="e.g. S M Bananas" autocomplete="off" required>
+                       placeholder="e.g. S M Bananas" autocomplete="off" required
+                       aria-describedby="duplicate-msg checking-msg" style="padding-left:34px;">
+                <button type="button" class="input-clear" id="nameClear" tabindex="-1" aria-label="Clear name">&times;</button>
             </div>
 
-            <div id="duplicate-msg" class="field-status error">
+            <div id="duplicate-msg" class="field-status error" role="alert">
                 <span>Customer already present</span>
             </div>
-            <div id="checking-msg" class="field-status checking">
+            <div id="checking-msg" class="field-status checking" aria-live="polite">
                 <span class="spinner"></span><span>Checking…</span>
+            </div>
+            <div id="ok-msg" class="field-status ok" aria-live="polite">
+                <svg class="status-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                <span>Name is available</span>
             </div>
         </div>
 
         <div class="form-group fg-phone">
             <label for="phone"><span class="dot"></span>Phone <span class="opt">optional</span></label>
-            <div class="input-wrap">
+            <div class="input-wrap" id="phoneWrap">
+                <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
                 <input type="text" id="phone" name="phone" class="input-field"
-                       placeholder="10-digit mobile number" autocomplete="off" inputmode="tel" maxlength="15">
+                       placeholder="10-digit mobile number" autocomplete="off" inputmode="tel" maxlength="15" style="padding-left:34px;">
+                <button type="button" class="input-clear" id="phoneClear" tabindex="-1" aria-label="Clear phone">&times;</button>
             </div>
         </div>
 
         <div class="form-group fg-address">
             <label for="address"><span class="dot"></span>Address <span class="opt">optional</span></label>
-            <div class="input-wrap">
+            <div class="input-wrap" id="addressWrap">
+                <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
                 <input type="text" id="address" name="address" class="input-field"
-                       placeholder="Shop / street / city" autocomplete="off">
+                       placeholder="Shop / street / city" autocomplete="off" style="padding-left:34px;">
+                <button type="button" class="input-clear" id="addressClear" tabindex="-1" aria-label="Clear address">&times;</button>
             </div>
         </div>
 
@@ -431,14 +698,21 @@
                 <input type="number" step="0.01" id="opening_balance" name="opening_balance"
                        value="0" class="input-field">
             </div>
+            <div class="amount-chips" id="amountChips">
+                <button type="button" class="amount-chip active" data-amt="0">₹0</button>
+                <button type="button" class="amount-chip" data-amt="500">₹500</button>
+                <button type="button" class="amount-chip" data-amt="1000">₹1,000</button>
+                <button type="button" class="amount-chip" data-amt="5000">₹5,000</button>
+            </div>
         </div>
 
         <button type="submit" id="saveBtn" class="btn-submit">
+            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
             <span class="btn-spinner"></span>
             <span class="btn-label">Save Customer</span>
         </button>
 
-        <div class="form-hint">Press Enter to move between fields, or submit from the last one.</div>
+        <div class="form-hint">Press <kbd>Enter</kbd> to move between fields, or submit from the last one.</div>
 
     </form>
 
@@ -465,7 +739,7 @@ document.addEventListener("keydown", function (e) {
         document.querySelectorAll(
             "input:not([type=hidden]), select, textarea, button"
         )
-    ).filter(el => !el.disabled && el.offsetParent !== null);
+    ).filter(el => !el.disabled && el.offsetParent !== null && el.tabIndex !== -1);
 
     const index = focusable.indexOf(active);
 
@@ -500,17 +774,95 @@ document.getElementById("customerForm").addEventListener("submit", function(e) {
     btn.classList.add("loading");
     btn.querySelector(".btn-label").textContent = "Saving…";
 });
+
+/* ---------- live monogram seal ---------- */
+const seal = document.getElementById("seal");
+const sealGlyph = document.getElementById("sealGlyph");
+
+function updateSeal(name) {
+    const initials = name
+        .trim()
+        .split(/\s+/)
+        .filter(Boolean)
+        .slice(0, 2)
+        .map(w => w[0].toUpperCase())
+        .join("");
+
+    const next = initials || "✦";
+    if (sealGlyph.textContent === next) return;
+
+    sealGlyph.classList.remove("swap");
+    void sealGlyph.offsetWidth; // restart animation
+    sealGlyph.textContent = next;
+    sealGlyph.classList.add("swap");
+    seal.classList.toggle("has-initials", !!initials);
+}
+
+/* ---------- clear (x) buttons for text inputs ---------- */
+function wireClear(inputId, wrapId, clearId) {
+    const input = document.getElementById(inputId);
+    const wrap = document.getElementById(wrapId);
+    const clearBtn = document.getElementById(clearId);
+
+    function sync() {
+        wrap.classList.toggle("has-value", input.value.length > 0);
+    }
+
+    input.addEventListener("input", sync);
+    clearBtn.addEventListener("click", () => {
+        input.value = "";
+        sync();
+        input.focus();
+        input.dispatchEvent(new Event("input"));
+    });
+    sync();
+}
+
+wireClear("customer_name", "nameWrap", "nameClear");
+wireClear("phone", "phoneWrap", "phoneClear");
+wireClear("address", "addressWrap", "addressClear");
+
+/* ---------- opening balance quick chips ---------- */
+const balanceInput = document.getElementById("opening_balance");
+const chips = document.querySelectorAll(".amount-chip");
+
+function syncChipsToValue() {
+    const current = String(parseFloat(balanceInput.value || "0"));
+    let matched = false;
+    chips.forEach(chip => {
+        const isMatch = chip.dataset.amt === current;
+        chip.classList.toggle("active", isMatch);
+        if (isMatch) matched = true;
+    });
+    if (!matched) chips.forEach(chip => chip.classList.remove("active"));
+}
+
+chips.forEach(chip => {
+    chip.addEventListener("click", () => {
+        balanceInput.value = chip.dataset.amt;
+        chips.forEach(c => c.classList.remove("active"));
+        chip.classList.add("active");
+    });
+});
+
+balanceInput.addEventListener("input", syncChipsToValue);
+
+/* ---------- name input: capitalisation, seal, duplicate check ---------- */
 const customerName = document.getElementById("customer_name");
 const duplicateMsg = document.getElementById("duplicate-msg");
 const checkingMsg = document.getElementById("checking-msg");
+const okMsg = document.getElementById("ok-msg");
 const saveBtn = document.getElementById("saveBtn");
 let duplicateCheckTimer = null;
 
 customerName.addEventListener("input", function () {
     this.value = this.value.replace(/\b\w/g, c => c.toUpperCase());
 
+    updateSeal(this.value);
+
     // Hide stale status while the user is still typing
     duplicateMsg.classList.remove("show");
+    okMsg.classList.remove("show");
     this.classList.remove("invalid");
 
     clearTimeout(duplicateCheckTimer);
@@ -531,6 +883,7 @@ customerName.addEventListener("blur", function () {
     if (!name) {
         duplicateMsg.classList.remove("show");
         checkingMsg.classList.remove("show");
+        okMsg.classList.remove("show");
         saveBtn.disabled = false;
         return;
     }
@@ -541,6 +894,7 @@ customerName.addEventListener("blur", function () {
 function runDuplicateCheck(name) {
     checkingMsg.classList.add("show");
     duplicateMsg.classList.remove("show");
+    okMsg.classList.remove("show");
 
     fetch(`/api/check_customer?name=${encodeURIComponent(name)}`)
         .then(response => response.json())
@@ -549,12 +903,16 @@ function runDuplicateCheck(name) {
 
             if (data.exists) {
                 duplicateMsg.classList.add("show");
+                okMsg.classList.remove("show");
                 customerName.classList.add("invalid");
+                customerName.setAttribute("aria-invalid", "true");
                 saveBtn.disabled = true;
             } else {
                 duplicateMsg.classList.remove("show");
                 customerName.classList.remove("invalid");
+                customerName.removeAttribute("aria-invalid");
                 saveBtn.disabled = false;
+                okMsg.classList.add("show");
             }
         })
         .catch(() => {
