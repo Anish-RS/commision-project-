@@ -6,7 +6,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap');
 
 /* ============================================= */
-/* TOKENS                                         */
+/* TOKENS                                        */
 /* ============================================= */
 .ledger-wrap {
     --ink: #2A241B;
@@ -34,9 +34,10 @@
 .ledger-wrap * { box-sizing: border-box; }
 
 .mono { font-family: 'IBM Plex Mono', 'SFMono-Regular', monospace; font-variant-numeric: tabular-nums; }
+.zero-val { opacity: 0.4; }
 
 /* ============================================= */
-/* SCREEN HEADER (hidden on print)                */
+/* SCREEN HEADER (hidden on print)               */
 /* ============================================= */
 .screen-header {
     display: flex;
@@ -98,7 +99,7 @@
 .print-header { display: none; }
 
 /* ============================================= */
-/* PRINT BUTTON                                   */
+/* PRINT BUTTON                                  */
 /* ============================================= */
 .print-btn {
     display: inline-flex;
@@ -122,7 +123,7 @@
 .print-btn svg { width: 15px; height: 15px; }
 
 /* ============================================= */
-/* SUMMARY STRIP                                  */
+/* SUMMARY STRIP                                 */
 /* ============================================= */
 .summary-strip {
     display: grid;
@@ -167,18 +168,12 @@
 }
 
 /* ============================================= */
-/* LEDGER GROUPS & CARDS                          */
+/* LEDGER GROUPS & CARDS                         */
 /* ============================================= */
 .ledger-groups {
     display: grid;
     grid-template-columns: 1fr;
     gap: 30px;
-}
-
-.pair-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
 }
 
 .group-title {
@@ -224,8 +219,6 @@
     gap: 7px;
 }
 .card-head h3 svg { width: 14px; height: 14px; }
-.card-head h3.credit-tone svg { color: var(--credit); }
-.card-head h3.debit-tone svg { color: var(--debit); }
 
 .pill {
     font-family: 'IBM Plex Mono', monospace;
@@ -256,7 +249,7 @@ th {
     border-bottom: 1px solid var(--line-strong);
 }
 
-tbody tr:not(:last-child) td {
+tbody tr:not(.tot-row):not(.net-row) td {
     border-bottom: 1px dashed var(--line);
 }
 
@@ -275,10 +268,17 @@ tbody tr:not(:last-child) td {
 
 .tot-row td {
     border-top: 2px solid var(--ink);
-    border-bottom: none !important;
     font-weight: 700;
     padding-top: 11px;
     font-size: 13px;
+}
+
+.net-row td {
+    border-top: 1px dashed var(--line-strong);
+    padding-top: 11px;
+    padding-bottom: 12px;
+    font-weight: 700;
+    font-size: 14px;
 }
 
 .empty-state {
@@ -290,7 +290,7 @@ tbody tr:not(:last-child) td {
 .empty-state svg { width: 26px; height: 26px; margin-bottom: 8px; color: var(--line-strong); }
 
 @media (max-width: 720px) {
-    .summary-strip, .ledger-groups, .pair-row { grid-template-columns: 1fr; }
+    .summary-strip, .ledger-groups { grid-template-columns: 1fr; }
     .screen-header { flex-direction: column-reverse; }
     .stamp { align-self: flex-end; }
 }
@@ -410,6 +410,12 @@ tbody tr:not(:last-child) td {
         font-weight: bold;
         border-top: 1px solid #000;
     }
+    
+    .net-row td {
+        background: transparent;
+        font-weight: bold;
+        border-top: 1px dashed #000;
+    }
 }
 
 </style>
@@ -469,29 +475,29 @@ tbody tr:not(:last-child) td {
             Supplier Ledger
         </h2>
 
-        <div class="pair-row">
-
-        <!-- SUPPLIER CREDIT -->
         <div class="ledger-section">
             <div class="ledger-card">
                 <div class="card-head">
-                    <h3 class="credit-tone">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
-                        Supplier Credit
+                    <h3>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h7"/></svg>
+                        Combined Supplier Accounts
                     </h3>
-                    {% if supplier_credit %}<span class="pill">{{ supplier_credit|length }} entries</span>{% endif %}
+                    {% set sup_total_entries = (supplier_credit|length) + (supplier_debit|length) %}
+                    {% if sup_total_entries > 0 %}<span class="pill">{{ sup_total_entries }} entries</span>{% endif %}
                 </div>
 
-                {% if supplier_credit %}
+                {% if sup_total_entries > 0 %}
                 <table>
                     <thead>
                     <tr>
-                        <th>Supplier</th>
-                        <th style="text-align:right;">Amount</th>
+                        <th>Supplier Name</th>
+                        <th style="text-align:right;">Credit</th>
+                        <th style="text-align:right;">Debit</th>
                     </tr>
                     </thead>
                     <tbody>
 
+                    <!-- Render Supplier Credits -->
                     {% for s in supplier_credit %}
                         <tr>
                           <td>
@@ -501,54 +507,21 @@ tbody tr:not(:last-child) td {
                           <td style="text-align:right;" class="credit amount mono">
                                {{ '%.2f'|format(s.amount) }}
                           </td>
+                          <td style="text-align:right;" class="amount mono zero-val">
+                               0.00
+                          </td>
                       </tr>
                     {% endfor %}
 
-                    <tr class="tot-row">
-                        <td>Total Credit</td>
-                        <td style="text-align:right;" class="amount mono">
-                             {{ '%.2f'|format(supplier_credit_total) }}
-                        </td>
-                    </tr>
-
-                    </tbody>
-                </table>
-                {% else %}
-                    <div class="empty-state">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12h6M9 16h6M9 8h6M5 3h14v18l-3-2-3 2-3-2-3 2V3z"/></svg>
-                        <p>No supplier credits.</p>
-                    </div>
-                {% endif %}
-
-            </div>
-        </div>
-
-        <!-- SUPPLIER DEBIT -->
-        <div class="ledger-section">
-            <div class="ledger-card">
-                <div class="card-head">
-                    <h3 class="debit-tone">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
-                        Supplier Debit
-                    </h3>
-                    {% if supplier_debit %}<span class="pill">{{ supplier_debit|length }} entries</span>{% endif %}
-                </div>
-
-                {% if supplier_debit %}
-                <table>
-                    <thead>
-                    <tr>
-                        <th>Supplier</th>
-                        <th style="text-align:right;">Amount</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-
+                    <!-- Render Supplier Debits -->
                     {% for s in supplier_debit %}
                       <tr>
                         <td>
                             <span class="id-tag">{{ s.id }}</span>
                             {{ s.name }}
+                        </td>
+                        <td style="text-align:right;" class="amount mono zero-val">
+                             0.00
                         </td>
                         <td class="debit amount mono" style="text-align:right;">
                              {{ '%.2f'|format(s.amount) }}
@@ -557,9 +530,20 @@ tbody tr:not(:last-child) td {
                     {% endfor %}
 
                     <tr class="tot-row">
-                        <td>Total Debit</td>
-                        <td style="text-align:right;" class="amount mono">
+                        <td>Total</td>
+                        <td style="text-align:right;" class="credit amount mono">
+                             {{ '%.2f'|format(supplier_credit_total) }}
+                        </td>
+                        <td style="text-align:right;" class="debit amount mono">
                              {{ '%.2f'|format(supplier_debit_total) }}
+                        </td>
+                    </tr>
+                    
+                    {% set sup_net = supplier_credit_total - supplier_debit_total %}
+                    <tr class="net-row">
+                        <td>Net Balance</td>
+                        <td colspan="2" style="text-align:right;" class="amount mono {{ 'credit' if sup_net >= 0 else 'debit' }}">
+                             {{ '%.2f'|format(sup_net|abs) }} {{ '(Cr)' if sup_net >= 0 else '(Dr)' }}
                         </td>
                     </tr>
 
@@ -568,13 +552,11 @@ tbody tr:not(:last-child) td {
                 {% else %}
                     <div class="empty-state">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12h6M9 16h6M9 8h6M5 3h14v18l-3-2-3 2-3-2-3 2V3z"/></svg>
-                        <p>No supplier debits.</p>
+                        <p>No supplier records found.</p>
                     </div>
                 {% endif %}
 
             </div>
-        </div>
-
         </div>
     </div>
 
@@ -585,29 +567,29 @@ tbody tr:not(:last-child) td {
             Customer Ledger
         </h2>
 
-        <div class="pair-row">
-
-        <!-- CUSTOMER CREDIT -->
         <div class="ledger-section">
             <div class="ledger-card">
                 <div class="card-head">
-                    <h3 class="credit-tone">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
-                        Customer Credit
+                    <h3>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h7"/></svg>
+                        Combined Customer Accounts
                     </h3>
-                    {% if customer_credit %}<span class="pill">{{ customer_credit|length }} entries</span>{% endif %}
+                    {% set cust_total_entries = (customer_credit|length) + (customer_debit|length) %}
+                    {% if cust_total_entries > 0 %}<span class="pill">{{ cust_total_entries }} entries</span>{% endif %}
                 </div>
 
-                {% if customer_credit %}
+                {% if cust_total_entries > 0 %}
                 <table>
                     <thead>
                     <tr>
-                        <th>Customer</th>
-                        <th style="text-align:right;">Amount</th>
+                        <th>Customer Name</th>
+                        <th style="text-align:right;">Credit</th>
+                        <th style="text-align:right;">Debit</th>
                     </tr>
                     </thead>
                     <tbody>
 
+                    <!-- Render Customer Credits -->
                     {% for c in customer_credit %}
                       <tr>
                         <td>
@@ -617,54 +599,21 @@ tbody tr:not(:last-child) td {
                         <td class="credit amount mono" style="text-align:right;">
                              {{ '%.2f'|format(c.amount) }}
                         </td>
+                        <td style="text-align:right;" class="amount mono zero-val">
+                             0.00
+                        </td>
                       </tr>
                     {% endfor %}
 
-                    <tr class="tot-row">
-                        <td>Total Credit</td>
-                        <td class="credit amount mono" style="text-align:right;">
-                             {{ '%.2f'|format(customer_credit_total) }}
-                        </td>
-                    </tr>
-
-                    </tbody>
-                </table>
-                {% else %}
-                    <div class="empty-state">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12h6M9 16h6M9 8h6M5 3h14v18l-3-2-3 2-3-2-3 2V3z"/></svg>
-                        <p>No customer credits.</p>
-                    </div>
-                {% endif %}
-
-            </div>
-        </div>
-
-        <!-- CUSTOMER DEBIT -->
-        <div class="ledger-section">
-            <div class="ledger-card">
-                <div class="card-head">
-                    <h3 class="debit-tone">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
-                        Customer Debit
-                    </h3>
-                    {% if customer_debit %}<span class="pill">{{ customer_debit|length }} entries</span>{% endif %}
-                </div>
-
-                {% if customer_debit %}
-                <table>
-                    <thead>
-                    <tr>
-                        <th>Customer</th>
-                        <th style="text-align:right;">Amount</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-
+                    <!-- Render Customer Debits -->
                     {% for c in customer_debit %}
                       <tr>
                         <td>
                             <span class="id-tag">{{ c.id }}</span>
                             {{ c.name }}
+                        </td>
+                        <td style="text-align:right;" class="amount mono zero-val">
+                             0.00
                         </td>
                         <td class="debit amount mono" style="text-align:right;">
                              {{ '%.2f'|format(c.amount) }}
@@ -673,9 +622,20 @@ tbody tr:not(:last-child) td {
                     {% endfor %}
 
                     <tr class="tot-row">
-                        <td>Total Debit</td>
-                        <td style="text-align:right;" class="amount mono">
+                        <td>Total</td>
+                        <td class="credit amount mono" style="text-align:right;">
+                             {{ '%.2f'|format(customer_credit_total) }}
+                        </td>
+                        <td style="text-align:right;" class="debit amount mono">
                              {{ '%.2f'|format(customer_debit_total) }}
+                        </td>
+                    </tr>
+
+                    {% set cust_net = customer_credit_total - customer_debit_total %}
+                    <tr class="net-row">
+                        <td>Net Balance</td>
+                        <td colspan="2" style="text-align:right;" class="amount mono {{ 'credit' if cust_net >= 0 else 'debit' }}">
+                             {{ '%.2f'|format(cust_net|abs) }} {{ '(Cr)' if cust_net >= 0 else '(Dr)' }}
                         </td>
                     </tr>
 
@@ -684,13 +644,11 @@ tbody tr:not(:last-child) td {
                 {% else %}
                     <div class="empty-state">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12h6M9 16h6M9 8h6M5 3h14v18l-3-2-3 2-3-2-3 2V3z"/></svg>
-                        <p>No customer debits.</p>
+                        <p>No customer records found.</p>
                     </div>
                 {% endif %}
 
             </div>
-        </div>
-
         </div>
     </div>
 
