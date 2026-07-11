@@ -33,10 +33,18 @@
   .page-header {
     display: flex;
     align-items: flex-start;
+    justify-content: space-between;
     gap: 16px;
-    margin-bottom: 22px;
+    margin-bottom: 18px;
     width: 100%;
     align-self: stretch;
+  }
+
+  .page-header-left {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    min-width: 0;
   }
 
   .page-icon {
@@ -105,6 +113,63 @@
     line-height: 1.5;
   }
 
+  /* Divider line under the header, like the reference ledger header */
+  .header-divider {
+    height: 3px;
+    background: var(--green);
+    border-radius: 2px;
+    margin: 0 0 22px;
+    width: 100%;
+  }
+
+  /* Circular stamp/seal */
+  .seal {
+    flex: none;
+    width: 92px;
+    height: 92px;
+    position: relative;
+  }
+
+  .seal svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .seal circle.ring {
+    fill: none;
+    stroke: var(--gold);
+    stroke-width: 1.4;
+    stroke-dasharray: 3 3;
+  }
+
+  .seal textPath {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-weight: 700;
+    font-size: 9.5px;
+    letter-spacing: 1.5px;
+    fill: var(--gold-dark);
+  }
+
+  .seal-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    width: 60px;
+  }
+
+  .seal-center span {
+    display: block;
+    font-family: Georgia, serif;
+    font-weight: 700;
+    font-size: 9.5px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--gold-dark);
+    line-height: 1.3;
+  }
+
   /* ---------- Card ---------- */
   .card {
     background: var(--card);
@@ -117,6 +182,15 @@
     width: 100%;
     align-self: stretch;
     display: block;
+  }
+
+  #adjustCard.card {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 1 1 100% !important;
+    flex-basis: 100% !important;
+    display: block !important;
+    box-sizing: border-box !important;
   }
 
   #adjust-form {
@@ -295,20 +369,37 @@
 <div class="page-wrap">
 
   <div class="page-header">
-    <div class="page-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M3 10h18M7 15h1m4 0h1M5 6h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z"/>
-      </svg>
-    </div>
-    <div class="page-heading">
-      <div class="eyebrow-row">
-        <span class="eyebrow">Ledger &middot; Balance Adjustments</span>
-        <span class="entry-tag">Opening Balance Entry</span>
+    <div class="page-header-left">
+      <div class="page-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 10h18M7 15h1m4 0h1M5 6h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z"/>
+        </svg>
       </div>
-      <h2>Add Old Balance</h2>
-      <p>Record an opening or carried-forward balance for a supplier or customer.</p>
+      <div class="page-heading">
+        <div class="eyebrow-row">
+          <span class="eyebrow">Ledger &middot; Balance Adjustments</span>
+        </div>
+        <h2>Add Old Balance</h2>
+        <p>Record an opening or carried-forward balance for a supplier or customer.</p>
+      </div>
+    </div>
+
+    <div class="seal">
+      <svg viewBox="0 0 100 100">
+        <circle class="ring" cx="50" cy="50" r="46"/>
+        <path id="sealArcTop" d="M 8,50 A 42,42 0 1,1 92,50" fill="none"/>
+        <text>
+          <textPath href="#sealArcTop" startOffset="50%" text-anchor="middle">OPENING BALANCE</textPath>
+        </text>
+      </svg>
+      <div class="seal-center">
+        <span>Ledger</span>
+        <span>Entry</span>
+      </div>
     </div>
   </div>
+
+  <div class="header-divider"></div>
 
   <div class="info-banner">
     <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -317,7 +408,7 @@
     Choose entity type, search and select the supplier or customer, then enter the amount to apply.
   </div>
 
-  <div class="card">
+  <div class="card" id="adjustCard">
     <form method="POST" id="adjust-form" novalidate>
 
       <div class="form-row" style="margin-bottom:16px;">
