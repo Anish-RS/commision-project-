@@ -3,7 +3,7 @@
 #  Fully fixed + enhanced for Vercel deployment
 # ============================================================
 
-from flask import Flask, jsonify, render_template, request, redirect, url_for, flash
+from flask import Flask, jsonify, render_template, request, redirect, url_for, flash,session
 from db import get_connection
 from psycopg2.extras import RealDictCursor
 from datetime import date, timedelta, datetime, time, timezone
@@ -152,9 +152,28 @@ def recompute_cash_in_hand_from_date(start_date):
 # Home
 # ---------------------------------------------------------------------------
 
-@app.route("/")
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        password = request.form.get('password')
+        if password == 'Students@123':
+            # Password is correct; store login state in session
+            session['logged_in'] = True
+            return redirect(url_for('home'))
+        else:
+            flash('Incorrect password. Please try again.', 'danger')
+            return redirect(url_for('login'))
+            
+    return render_template('login.html')
+
+@app.route('/')
 def home():
-    return render_template("home.html")
+    # Check if the user is logged in
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
+        
+    return render_template('home.html')
+
 
 
 # ---------------------------------------------------------------------------
