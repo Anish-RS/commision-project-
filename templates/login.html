@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Banana Commission System{% endblock %}
+
+{% block content %}
+<style>
+    /* Hide the navigation bar and adjust spacing for the login page */
+    nav.main-nav { display: none !important; }
+    .container { margin-top: 0 !important; }
+    footer.site-footer { display: none !important; }
+
+    /* Full-screen background image */
+    .home-bg {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background-image: url('https://images.unsplash.com/photo-1529933030474-182f3f1e1135?auto=format&fit=crop&w=1500&q=80');
+        background-size: cover;
+        background-position: center;
+        filter: brightness(0.75);
+        z-index: -2;
+    }
+
+    /* Pastel overlay to match theme */
+    .home-overlay {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: linear-gradient(135deg, rgba(227,242,253,0.55), rgba(252,228,236,0.55));
+        z-index: -1;
+    }
+
+    /* Centered login card */
+    .login-card {
+        max-width: 400px;
+        margin: 15vh auto;
+        background: rgba(255,255,255,0.95);
+        backdrop-filter: blur(10px);
+        padding: 40px;
+        text-align: center;
+        border-radius: 18px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        animation: fadeIn 0.6s ease;
+    }
+
+    .login-title {
+        color: var(--navy);
+        font-family: 'Cormorant Garamond', Georgia, serif;
+        font-size: 32px;
+        font-weight: 700;
+        margin-bottom: 24px;
+    }
+
+    .password-input {
+        width: 100%;
+        padding: 14px 16px;
+        margin-bottom: 20px;
+        border: 1px solid var(--platinum);
+        border-radius: 8px;
+        font-size: 16px;
+        outline: none;
+        transition: border-color 0.3s;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .password-input:focus {
+        border-color: var(--gold);
+        box-shadow: 0 0 0 3px var(--gold-glow);
+    }
+
+    .login-btn {
+        width: 100%;
+        padding: 14px;
+        background: var(--navy);
+        color: var(--gold-light);
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        cursor: pointer;
+        transition: background 0.3s;
+        text-transform: uppercase;
+    }
+
+    .login-btn:hover {
+        background: var(--navy-light);
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(15px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+</style>
+
+<div class="home-bg"></div>
+<div class="home-overlay"></div>
+
+<div class="login-card">
+    <h2 class="login-title">System Login</h2>
+    <form method="POST" action="{{ url_for('login') }}">
+        <input type="password" name="password" class="password-input" placeholder="Enter Password" required autofocus>
+        <button type="submit" class="login-btn">Access System</button>
+    </form>
+</div>
+{% endblock %}
