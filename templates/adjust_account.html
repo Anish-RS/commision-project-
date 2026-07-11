@@ -31,15 +31,8 @@
   .page-header {
     display: flex;
     align-items: flex-start;
-    justify-content: space-between;
     gap: 16px;
     margin-bottom: 22px;
-  }
-
-  .page-header-left {
-    display: flex;
-    align-items: flex-start;
-    gap: 16px;
   }
 
   .page-icon {
@@ -61,6 +54,14 @@
     stroke: #f1e6c8;
   }
 
+  .eyebrow-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 3px 0 6px;
+  }
+
   .eyebrow {
     font-family: 'Courier New', monospace;
     font-size: 11.5px;
@@ -68,7 +69,19 @@
     letter-spacing: 0.14em;
     text-transform: uppercase;
     color: var(--gold-dark);
-    margin: 3px 0 6px;
+  }
+
+  .entry-tag {
+    font-family: Georgia, serif;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--gold-dark);
+    border: 1px dashed var(--gold);
+    border-radius: 999px;
+    padding: 3px 10px;
+    white-space: nowrap;
   }
 
   .page-heading h2 {
@@ -86,30 +99,6 @@
     color: var(--muted);
     max-width: 480px;
     line-height: 1.5;
-  }
-
-  /* Signature seal element */
-  .seal {
-    flex: none;
-    width: 84px;
-    height: 84px;
-    border-radius: 50%;
-    border: 1.5px dashed var(--gold);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 8px;
-  }
-
-  .seal span {
-    font-family: Georgia, serif;
-    font-size: 9.5px;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--gold-dark);
-    line-height: 1.35;
   }
 
   /* ---------- Card ---------- */
@@ -286,28 +275,24 @@
     .grid-amount-note { grid-template-columns: 1fr; }
     .card { padding: 20px; }
     .page-header { flex-wrap: wrap; }
-    .seal { display: none; }
   }
 </style>
 
 <div class="page-wrap">
 
   <div class="page-header">
-    <div class="page-header-left">
-      <div class="page-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M3 10h18M7 15h1m4 0h1M5 6h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z"/>
-        </svg>
-      </div>
-      <div class="page-heading">
-        <div class="eyebrow">Ledger &middot; Balance Adjustments</div>
-        <h2>Add Old Balance</h2>
-        <p>Record an opening or carried-forward balance for a supplier or customer.</p>
-      </div>
+    <div class="page-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 10h18M7 15h1m4 0h1M5 6h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z"/>
+      </svg>
     </div>
-
-    <div class="seal">
-      <span>Opening<br>Balance<br>Entry</span>
+    <div class="page-heading">
+      <div class="eyebrow-row">
+        <span class="eyebrow">Ledger &middot; Balance Adjustments</span>
+        <span class="entry-tag">Opening Balance Entry</span>
+      </div>
+      <h2>Add Old Balance</h2>
+      <p>Record an opening or carried-forward balance for a supplier or customer.</p>
     </div>
   </div>
 
