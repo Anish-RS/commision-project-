@@ -334,7 +334,7 @@
     </div>
   </div>
 
-  <hr class="divider">
+  <div class="divider"><span class="diamond"></span></div>
 
   <div class="info-banner">
     <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -346,26 +346,36 @@
   </div>
 
   <div class="labour-card">
-    <form method="POST" id="labourForm">
+    <div class="labour-card-inner">
+      <form method="POST" id="labourForm">
 
-      <div class="form-field">
-        <label>Amount (&#8377;)</label>
-        <input type="number" step="0.01" name="amount" required placeholder="Enter labour amount">
-      </div>
+        <div class="form-field">
+          <label>Amount (&#8377;)</label>
+          <div class="input-wrap">
+            <span class="prefix">&#8377;</span>
+            <input type="number" step="0.01" name="amount" required placeholder="Enter labour amount">
+          </div>
+        </div>
 
-      <div class="form-field">
-        <label>Note (optional)</label>
-        <input type="text" name="note" placeholder="Add description (optional)">
-      </div>
+        <div class="form-field">
+          <label>Note (optional)</label>
+          <input type="text" name="note" placeholder="Add description (optional)">
+        </div>
 
-      <div class="form-actions">
-        <button class="btn-primary" type="submit" id="saveLabourBtn">
+        <div class="form-actions">
+          <button class="btn-primary" type="submit" id="saveLabourBtn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+              <polyline points="17 21 17 13 7 13 7 21"></polyline>
+              <polyline points="7 3 7 8 15 8"></polyline>
+            </svg>
             Save Labour
-        </button>
-        <a href="{{ url_for('cash_in_hand') }}" class="btn-secondary">Back to Cash In Hand</a>
-      </div>
+          </button>
+          <a href="{{ url_for('cash_in_hand') }}" class="btn-secondary">Back to Cash In Hand</a>
+        </div>
 
-    </form>
+      </form>
+    </div>
   </div>
 
 </div>
