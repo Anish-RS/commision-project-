@@ -25,7 +25,9 @@
   }
 
   .pl-page .currency, .pl-page input[type="date"] {
-    font-family: "Courier New", ui-monospace, monospace;
+    font-family: "SFMono-Regular", "Menlo", "Consolas", ui-monospace, monospace;
+    font-weight: 600;
+    letter-spacing: 0.01em;
   }
 
   /* ---- Header banner ---- */
@@ -84,19 +86,6 @@
     line-height: 1.5;
   }
 
-  .pl-range-badge {
-    margin: 12px 0 0 58px;
-    display: inline-block;
-    font-family: "Courier New", monospace;
-    font-size: 12.5px;
-    color: var(--green-deep);
-    background: #eef3ee;
-    border: 1px solid #cfe0d2;
-    border-radius: 7px;
-    padding: 4px 11px;
-    letter-spacing: 0.02em;
-  }
-
   /* stamp badge, top-right circular seal, fully contained inside banner */
   .pl-stamp {
     position: absolute;
@@ -124,7 +113,7 @@
   hr.pl-hr {
     border: none;
     border-top: 1px solid var(--border);
-    margin: 18px 0 16px 58px;
+    margin: 16px 0 16px 58px;
   }
 
   /* ---- Filter / date controls ---- */
@@ -143,20 +132,22 @@
     flex-wrap: wrap;
   }
 
-  .pl-field { display: flex; flex-direction: column; gap: 5px; }
+  .pl-field { display: flex; flex-direction: row; align-items: center; gap: 10px; }
   .pl-field label {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    font-size: 10px;
+    font-size: 12.5px;
     font-weight: 700;
-    letter-spacing: 0.09em;
+    letter-spacing: 0.03em;
     text-transform: uppercase;
-    color: var(--muted);
+    color: var(--green-deep);
+    white-space: nowrap;
   }
   .pl-field input[type="date"] {
     border: 1px solid var(--border);
     border-radius: 8px;
     padding: 8px 12px;
-    font-size: 13.5px;
+    font-size: 14.5px;
+    font-weight: 600;
     color: var(--ink);
     background: var(--parchment);
     transition: border-color .15s ease, box-shadow .15s ease;
@@ -264,7 +255,7 @@
     padding: 0 18px 2px;
     font-size: 27px;
     font-weight: 700;
-    font-family: "Courier New", monospace;
+    font-family: "SFMono-Regular", "Menlo", "Consolas", ui-monospace, monospace;
     color: var(--ink);
   }
   .pl-box.profit .pl-box-value { color: var(--profit-green); }
@@ -331,7 +322,7 @@
   .pl-box.net .net-value {
     font-size: 30px;
     font-weight: 700;
-    font-family: "Courier New", monospace;
+    font-family: "SFMono-Regular", "Menlo", "Consolas", ui-monospace, monospace;
     letter-spacing: -0.01em;
     margin-top: 6px;
   }
@@ -366,7 +357,8 @@
   @media (max-width: 640px) {
     .pl-title-row { padding-right: 0; }
     .pl-stamp { display: none; }
-    .pl-sub, .pl-range-badge, .pl-controls-row, hr.pl-hr { margin-left: 0; }
+    .pl-sub, .pl-controls-row, hr.pl-hr { margin-left: 0; }
+    .pl-field { flex-direction: column; align-items: flex-start; gap: 5px; }
   }
 </style>
 
@@ -388,7 +380,6 @@
       </div>
     </div>
     <p class="pl-sub">Commission earned against supplier and staff costs for the selected period, with the net result summarised at a glance.</p>
-    <span class="pl-range-badge">{{ from_date }} &nbsp;&rarr;&nbsp; {{ to_date }}</span>
 
     <hr class="pl-hr">
 
