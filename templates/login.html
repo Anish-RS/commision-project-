@@ -145,18 +145,17 @@
         position: relative;
         width: 372px;
         max-width: 88vw;
-        background: rgba(255,255,255,0.94);
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
+        background: rgba(255,255,255,0.16);
+        backdrop-filter: blur(22px) saturate(140%);
+        -webkit-backdrop-filter: blur(22px) saturate(140%);
         padding: 38px 34px 30px;
         text-align: center;
         border-radius: 18px;
-        border: 1px solid rgba(255,255,255,0.55);
+        border: 1px solid rgba(255,255,255,0.4);
         box-shadow:
             0 4px 14px rgba(6,10,20,0.18),
-            0 26px 60px rgba(6,10,20,0.42),
-            0 0 0 1px rgba(212,175,55,0.14),
-            inset 0 1px 0 rgba(255,255,255,0.7);
+            0 26px 60px rgba(6,10,20,0.35),
+            inset 0 1px 0 rgba(255,255,255,0.35);
         overflow: hidden;
     }
 
@@ -188,16 +187,17 @@
     .login-icon svg { width: 25px; height: 25px; }
 
     .login-title {
-        color: #1a2744;
+        color: #fdfbf6;
         font-family: 'Cormorant Garamond', Georgia, serif;
         font-size: 25px;
         font-weight: 700;
         margin: 0 0 3px;
         letter-spacing: 0.01em;
+        text-shadow: 0 2px 12px rgba(0,0,0,0.25);
     }
 
     .login-subtitle {
-        color: #8a8f99;
+        color: #e4e1d6;
         font-family: 'IBM Plex Mono', monospace;
         font-size: 10.5px;
         letter-spacing: 0.13em;
@@ -239,28 +239,28 @@
         left: 14px; top: 50%;
         transform: translateY(-50%);
         width: 17px; height: 17px;
-        color: #9aa3b2;
+        color: rgba(253,251,246,0.7);
         pointer-events: none;
     }
 
     .password-input {
         width: 100%;
         padding: 12px 42px 12px 40px;
-        border: 1.5px solid #dfe3ea;
+        border: 1.5px solid rgba(255,255,255,0.4);
         border-radius: 9px;
         font-size: 15px;
         outline: none;
-        transition: border-color 0.25s, box-shadow 0.25s;
+        transition: border-color 0.25s, box-shadow 0.25s, background 0.25s;
         font-family: 'Inter', sans-serif;
         box-sizing: border-box;
-        background: #fbfbfd;
-        color: #222;
+        background: rgba(255,255,255,0.14);
+        color: #fdfbf6;
     }
-    .password-input::placeholder { color: #a7adba; }
+    .password-input::placeholder { color: rgba(253,251,246,0.6); }
     .password-input:focus {
         border-color: #d4af37;
-        box-shadow: 0 0 0 4px rgba(212,175,55,0.16);
-        background: #fff;
+        box-shadow: 0 0 0 4px rgba(212,175,55,0.2);
+        background: rgba(255,255,255,0.22);
     }
     .input-group:focus-within svg.field-icon { color: #d4af37; }
 
@@ -269,9 +269,9 @@
         right: 11px; top: 50%;
         transform: translateY(-50%);
         background: none; border: none; cursor: pointer;
-        padding: 5px; display: flex; color: #9aa3b2;
+        padding: 5px; display: flex; color: rgba(253,251,246,0.7);
     }
-    .toggle-visibility:hover { color: #1a2744; }
+    .toggle-visibility:hover { color: #f0d98c; }
     .toggle-visibility svg { width: 18px; height: 18px; }
 
     .login-btn {
@@ -329,7 +329,7 @@
         margin-top: 18px;
         font-family: 'IBM Plex Mono', monospace;
         font-size: 10.5px;
-        color: #a7adba;
+        color: rgba(253,251,246,0.6);
         letter-spacing: 0.04em;
     }
 
