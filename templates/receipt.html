@@ -1,618 +1,708 @@
 {% extends "base.html" %}
 {% block content %}
+
 <style>
-* { box-sizing: border-box; }
+  * { box-sizing: border-box; }
 
-body {
-  background:
-    radial-gradient(1100px 500px at 15% -10%, rgba(20,184,166,0.08), transparent 60%),
-    radial-gradient(900px 500px at 100% 0%, rgba(99,102,241,0.05), transparent 55%),
-    #eef1f6;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
-}
+  :root {
+    --cream: #f4f0e2;
+    --card: #fffdf7;
+    --gold: #c9a15a;
+    --gold-dark: #a97f36;
+    --gold-line: #e6d7ae;
+    --green: #163c2f;
+    --green-mid: #1f5b46;
+    --ink: #1e2a22;
+    --muted: #7c7566;
+  }
 
-@keyframes riseIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
+  body {
+    background: var(--cream);
+  }
 
-.page-header {
-  max-width: 640px;
-  margin: 32px auto 20px;
-  padding: 0 4px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  animation: riseIn 0.45s ease both;
-}
+  .page-wrap {
+    max-width: 960px;
+    width: 100%;
+    margin: 28px auto;
+    padding: 0 20px;
+    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    align-self: stretch;
+  }
 
-.page-header .icon {
-  width: 54px;
-  height: 54px;
-  flex-shrink: 0;
-  border-radius: 15px;
-  background: linear-gradient(145deg, #17c4b0, #0d9488 65%, #0b7d73);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow:
-    0 10px 22px rgba(13,148,136,0.30),
-    inset 0 1px 0 rgba(255,255,255,0.25);
-  position: relative;
-}
+  /* ---------- Header ---------- */
+  .page-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 18px;
+    width: 100%;
+    align-self: stretch;
+  }
 
-.page-header .icon::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 15px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.18), transparent 55%);
-}
+  .page-header-left {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    min-width: 0;
+  }
 
-.page-header .icon svg {
-  width: 26px;
-  height: 26px;
-  stroke: #fff;
-  fill: none;
-  position: relative;
-  z-index: 1;
-}
+  .page-icon {
+    flex: none;
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background: linear-gradient(155deg, var(--green-mid), var(--green));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 18px rgba(22,60,47,0.30);
+    border: 2px solid #e9dcb8;
+  }
 
-.page-header h2 {
-  margin: 0;
-  font-size: 25px;
-  font-weight: 800;
-  color: #0f1728;
-  letter-spacing: -0.03em;
-}
+  .page-icon svg {
+    width: 24px;
+    height: 24px;
+    stroke: #f1e6c8;
+  }
 
-.page-header p {
-  margin: 4px 0 0;
-  font-size: 13.5px;
-  color: #667085;
-  letter-spacing: 0.01em;
-}
+  .eyebrow-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 3px 0 6px;
+  }
 
-.card {
-  max-width: 640px;
-  margin: 0 auto 22px;
-  background: #ffffff;
-  padding: 30px 30px 30px;
-  border-radius: 18px;
-  position: relative;
-  box-shadow:
-    0 1px 2px rgba(16,24,40,0.04),
-    0 2px 8px rgba(16,24,40,0.05),
-    0 18px 40px -12px rgba(16,24,40,0.14);
-  border: 1px solid #eef0f3;
-  animation: riseIn 0.5s ease 0.05s both;
-  overflow: hidden;
-}
+  .eyebrow {
+    font-family: 'Courier New', monospace;
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold-dark);
+  }
 
-.card::before {
-  content: "";
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, #17c4b0, #0d9488, #6366f1);
-}
+  .page-heading h2 {
+    margin: 0;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 30px;
+    font-weight: 700;
+    color: var(--green);
+    letter-spacing: -0.2px;
+  }
 
-.field-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-}
+  .page-heading p {
+    margin: 8px 0 0;
+    font-size: 14px;
+    color: var(--muted);
+    max-width: 480px;
+    line-height: 1.5;
+  }
 
-.form-group {
-  margin-bottom: 18px;
-}
+  /* Divider line under the header, like the reference ledger header */
+  .header-divider {
+    height: 3px;
+    background: var(--green);
+    border-radius: 2px;
+    margin: 0 0 22px;
+    width: 100%;
+  }
 
-label {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 11.5px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  margin-bottom: 8px;
-  color: #8792a2;
-}
+  /* Circular stamp/seal */
+  .seal {
+    flex: none;
+    width: 92px;
+    height: 92px;
+    position: relative;
+  }
 
-.input-wrap {
-  position: relative;
-}
+  .seal svg {
+    width: 100%;
+    height: 100%;
+  }
 
-.input-wrap svg.field-icon {
-  position: absolute;
-  left: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 17px;
-  height: 17px;
-  stroke: #98a2b3;
-  fill: none;
-  pointer-events: none;
-  transition: stroke 0.15s;
-}
+  .seal circle.ring {
+    fill: none;
+    stroke: var(--gold);
+    stroke-width: 1.4;
+    stroke-dasharray: 3 3;
+  }
 
-.input-wrap input:focus + svg.field-icon,
-.input-wrap:focus-within svg.field-icon {
-  stroke: #0d9488;
-}
+  .seal textPath {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-weight: 700;
+    font-size: 9.5px;
+    letter-spacing: 1.5px;
+    fill: var(--gold-dark);
+  }
 
-input, select {
-  width: 100%;
-  height: 47px;
-  padding: 10px 14px 10px 42px;
-  border-radius: 11px;
-  border: 1.5px solid #e4e7ec;
-  background: #f9fafb;
-  font-size: 15px;
-  color: #101828;
-  outline: none;
-  transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
-  font-family: inherit;
-}
+  .seal-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    width: 60px;
+  }
 
-select {
-  padding-left: 14px;
-  appearance: none;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2398a2b3' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
-  background-repeat: no-repeat;
-  background-position: right 14px center;
-  cursor: pointer;
-}
+  .seal-center span {
+    display: block;
+    font-family: Georgia, serif;
+    font-weight: 700;
+    font-size: 9.5px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--gold-dark);
+    line-height: 1.3;
+  }
 
-input::placeholder {
-  color: #a2aab5;
-}
+  /* ---------- Card ---------- */
+  .card {
+    background: var(--card);
+    padding: 28px 30px;
+    border-radius: 14px;
+    margin: 0 0 18px;
+    box-shadow: 0 10px 26px rgba(22,60,47,0.07);
+    border: 1px solid var(--gold-line);
+    border-top: 3px solid var(--gold);
+    width: 100%;
+    align-self: stretch;
+    display: block;
+  }
 
-input:focus, select:focus {
-  background: #fff;
-  border-color: #0d9488;
-  box-shadow: 0 0 0 4px rgba(13,148,136,0.12);
-}
+  #receiptCard.card {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 1 1 100% !important;
+    flex-basis: 100% !important;
+    display: block !important;
+    box-sizing: border-box !important;
+  }
 
-.helper-note {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  max-width: 640px;
-  margin: 0 auto 22px;
-  padding: 13px 16px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, rgba(20,184,166,0.08), rgba(99,102,241,0.06));
-  border: 1px solid rgba(13,148,136,0.18);
-  font-size: 13.5px;
-  color: #0b6b62;
-  line-height: 1.5;
-  animation: riseIn 0.55s ease 0.1s both;
-}
+  #receiptForm {
+    width: 100%;
+    display: block;
+  }
 
-.helper-note svg {
-  width: 16px;
-  height: 16px;
-  stroke: #0d9488;
-  fill: none;
-  flex-shrink: 0;
-  margin-top: 2px;
-}
+  label {
+    display: block;
+    font-family: 'Courier New', monospace;
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
 
-button {
-  width: 100%;
-  padding: 14px;
-  border-radius: 11px;
-  border: none;
-  background: linear-gradient(90deg, #17c4b0, #0d9488);
-  color: white;
-  font-weight: 700;
-  font-size: 15px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  letter-spacing: 0.01em;
-  box-shadow:
-    0 8px 18px rgba(13,148,136,0.30),
-    inset 0 1px 0 rgba(255,255,255,0.25);
-  transition: transform 0.15s, box-shadow 0.15s, filter 0.15s;
-}
+  .input-field, select.input-field {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid #ddd4bd;
+    background: #fbf9f2;
+    outline: none;
+    transition: 0.16s ease;
+    font-size: 15px;
+    height: 46px;
+    line-height: 20px;
+    color: var(--ink);
+    font-weight: 500;
+    font-family: 'Segoe UI', Arial, sans-serif;
+  }
 
-button svg {
-  width: 17px;
-  height: 17px;
-  stroke: #fff;
-  fill: none;
-}
+  select.input-field {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: linear-gradient(45deg, transparent 50%, rgba(22,60,47,0.45) 50%),
+                      linear-gradient(135deg, rgba(22,60,47,0.45) 50%, transparent 50%);
+    background-position: calc(100% - 18px) calc(1em + 2px), calc(100% - 13px) calc(1em + 2px);
+    background-size: 6px 6px, 6px 6px;
+    background-repeat: no-repeat;
+    padding-right: 36px;
+    cursor: pointer;
+  }
 
-button:hover {
-  transform: translateY(-1px);
-  box-shadow:
-    0 10px 22px rgba(13,148,136,0.38),
-    inset 0 1px 0 rgba(255,255,255,0.3);
-  filter: brightness(1.03);
-}
+  .input-field:focus, select.input-field:focus {
+    border-color: var(--gold);
+    background: #ffffff;
+    box-shadow: 0 0 0 4px rgba(201,161,90,0.16);
+  }
 
-button:active {
-  transform: translateY(0);
-}
+  .input-field::placeholder { color: #a89f8c; }
 
-button:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-  transform: none;
-  filter: none;
-}
+  .form-row { display: flex; gap: 14px; align-items: flex-start; flex-wrap: wrap; }
+  .col-full { width: 100%; min-width: 0; }
 
-.suggestion-item.active{
-    background:#e6fbf7;
-}
+  .grid-two {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    align-items: start;
+  }
 
-#suggestions {
-  border-color: #e4e7ec !important;
-}
+  .grid-amount-note {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 14px;
+    align-items: start;
+  }
 
-.suggestion-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
+  .amount-wrap { position: relative; }
+  .amount-wrap .currency-prefix {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gold-dark);
+    font-weight: 700;
+    font-size: 15px;
+    pointer-events: none;
+    font-family: 'Courier New', monospace;
+  }
+  .amount-wrap input {
+    padding-left: 30px;
+    font-family: 'Courier New', monospace;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
 
-.suggestion-item:hover {
-  background: #f2fdfb;
-}
+  /* Info banner */
+  .info-banner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #faf3df;
+    border: 1px solid var(--gold-line);
+    color: var(--gold-dark);
+    font-size: 13.5px;
+    font-weight: 600;
+    padding: 13px 16px;
+    border-radius: 10px;
+    margin: 0 0 18px;
+    width: 100%;
+    align-self: stretch;
+  }
+  .info-banner svg { flex: none; width: 18px; height: 18px; stroke: var(--gold-dark); }
 
-.suggestion-item .avatar {
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #17c4b0, #0d9488);
-  color: #fff;
-  font-size: 11px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
+  .small-note { font-size: 12.5px; color: var(--muted); margin-top: 8px; }
+
+  .actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+    padding-top: 18px;
+    border-top: 1px solid var(--gold-line);
+  }
+
+  .btn {
+    padding: 12px 24px;
+    border-radius: 10px;
+    border: none;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-transform: uppercase;
+  }
+
+  .btn-primary {
+    background: linear-gradient(155deg, var(--green-mid), var(--green));
+    color: #f4ecd2;
+    box-shadow: 0 8px 18px rgba(22,60,47,0.30);
+    transition: 0.15s ease;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 22px rgba(22,60,47,0.38);
+  }
+
+  .btn-primary:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .btn-primary svg { width: 16px; height: 16px; stroke: #f4ecd2; }
+
+  /* Suggestions dropdown */
+  #suggestions {
+    border: 1px solid var(--gold-line) !important;
+    box-shadow: 0 12px 28px rgba(22,60,47,0.14) !important;
+  }
+
+  .suggestion-item {
+    font-size: 14.5px;
+    color: var(--ink);
+    font-family: 'Segoe UI', Arial, sans-serif;
+  }
+
+  .suggestion-item strong { color: var(--green); }
+
+  .suggestion-item.active {
+    background: #eef6f1;
+  }
+
+  .suggestion-item:hover {
+    background: #faf3df;
+  }
+
+  @media (max-width: 720px) {
+    .grid-amount-note { grid-template-columns: 1fr; }
+    .grid-two { grid-template-columns: 1fr; }
+    .card { padding: 20px; }
+    .page-header { flex-wrap: wrap; }
+  }
 </style>
 
-<div class="page-header">
-  <div class="icon">
-    <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M6 3h12a1 1 0 0 1 1 1v16l-2-1.2-2 1.2-2-1.2-2 1.2-2-1.2-2 1.2-2-1.2V4a1 1 0 0 1 1-1z"/>
-      <path d="M8 8h8"/>
-      <path d="M8 12h8"/>
-      <path d="M8 16h5"/>
+<div class="page-wrap">
+
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="page-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 3h12a1 1 0 0 1 1 1v16l-2-1.2-2 1.2-2-1.2-2 1.2-2-1.2-2 1.2-2-1.2V4a1 1 0 0 1 1-1z"/>
+          <path d="M8 8h8"/>
+          <path d="M8 12h8"/>
+          <path d="M8 16h5"/>
+        </svg>
+      </div>
+      <div class="page-heading">
+        <div class="eyebrow-row">
+          <span class="eyebrow">Ledger &middot; Receipts</span>
+        </div>
+        <h2>Receipt (Money Received)</h2>
+        <p>Record a payment received from a customer or supplier.</p>
+      </div>
+    </div>
+
+    <div class="seal">
+      <svg viewBox="0 0 100 100">
+        <circle class="ring" cx="50" cy="50" r="46"/>
+        <path id="sealArcTop" d="M 8,50 A 42,42 0 1,1 92,50" fill="none"/>
+        <text>
+          <textPath href="#sealArcTop" startOffset="50%" text-anchor="middle">MONEY RECEIVED</textPath>
+        </text>
+      </svg>
+      <div class="seal-center">
+        <span>Ledger</span>
+        <span>Entry</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="header-divider"></div>
+
+  <div class="info-banner">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>
     </svg>
+    Choose the entity type, search for the customer or supplier, then fill in the amount to save the receipt.
   </div>
-  <div>
-    <h2>Receipt (Money Received)</h2>
-    <p>Record a payment received from a customer or supplier.</p>
-  </div>
-</div>
 
-<div class="helper-note">
-  <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 16v-5"/><path d="M12 8h.01"/></svg>
-  <span>Choose the entity type, search for the customer or supplier, then fill in the amount to save the receipt.</span>
-</div>
+  <div class="card" id="receiptCard">
+    <form method="POST" id="receiptForm" novalidate>
 
-<div class="card">
-<form method="POST" id="receiptForm">
+      <div class="grid-two" style="margin-bottom:16px;">
+        <div>
+          <label for="tx_date">Date</label>
+          <input type="date" name="tx_date" id="tx_date" class="input-field" required>
+        </div>
 
-  <div class="field-row">
-    <!-- DATE -->
-    <div class="form-group">
-      <label>Date</label>
-      <div class="input-wrap">
-        <input type="date" name="tx_date" id="tx_date" required style="padding-left:14px;">
+        <div>
+          <label for="entity_type">Entity Type</label>
+          <select id="entity_type" name="entity_type" class="input-field" onchange="onModeChange()" required>
+              <option value="customer" selected>Customer</option>
+              <option value="supplier">Supplier</option>
+          </select>
+        </div>
       </div>
-    </div>
 
-    <!-- ENTITY TYPE -->
-    <div class="form-group">
-      <label>Entity Type</label>
-      <select name="entity_type"
-          id="entity_type"
-          required>
-        <option value="customer">Customer</option>
-        <option value="supplier">Supplier</option>
-      </select>
-    </div>
-  </div>
+      <div class="form-row" style="margin-bottom:16px;">
+        <div class="col-full">
+          <label for="searchBox">Customer / Supplier</label>
 
-  <div class="form-group" style="position:relative;">
-    <label>Customer / Supplier</label>
-    <div class="input-wrap">
-      <svg class="field-icon" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.2"/><path d="M5 20c1.4-3.6 4.2-5.4 7-5.4s5.6 1.8 7 5.4"/></svg>
-      <input type="text"
-             id="entity_search"
-             name="entity_name"
-             placeholder="Type ID or Name..."
-             autocomplete="off"
-             required>
-    </div>
+          <input
+            id="searchBox"
+            type="text"
+            class="input-field"
+            placeholder="Type ID or Name..."
+            autocomplete="off"
+          >
 
-    <div id="suggestions"
-         style="
-            display:none;
-            position:absolute;
-            left:0; right:0;
-            z-index:20;
-            background:#fff;
-            border:1px solid #ddd;
-            border-radius:12px;
-            max-height:220px;
-            overflow-y:auto;
-            margin-top:6px;
-            box-shadow: 0 12px 28px rgba(16,24,40,0.12);">
-    </div>
-  </div>
+          <input type="hidden" id="entity_id" name="entity_id">
+          <input type="hidden" id="entity_name" name="entity_name">
 
-  <div class="field-row">
-    <!-- AMOUNT -->
-    <div class="form-group">
-      <label>Amount</label>
-      <div class="input-wrap">
-        <svg class="field-icon" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="M17 5.5H9.5a3 3 0 0 0 0 6h5a3 3 0 0 1 0 6H6.5"/></svg>
-        <input type="number" step="0.01" name="amount" required>
+          <div id="suggestions"
+               style="
+                  display:none;
+                  background:#fff;
+                  border-radius:12px;
+                  max-height:220px;
+                  overflow-y:auto;
+                  margin-top:6px;
+                  z-index:999;
+                  position:relative;">
+          </div>
+
+          <div class="small-note">
+            Type a name or ID — matching suggestions appear automatically.
+          </div>
+        </div>
       </div>
-    </div>
 
-    <!-- NOTE -->
-    <div class="form-group">
-      <label>Note (optional)</label>
-      <div class="input-wrap">
-        <svg class="field-icon" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5V6a2 2 0 0 1 2-2h9l5 5v10.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 19.5z"/><path d="M8 12h8"/><path d="M8 16h5"/></svg>
-        <input type="text" name="note">
+      <div class="grid-amount-note">
+        <div>
+          <label for="amount">Amount (₹)</label>
+          <div class="amount-wrap">
+            <span class="currency-prefix">₹</span>
+            <input id="amount" name="amount" type="number" min="0" step="0.01" class="input-field" placeholder="0.00" required>
+          </div>
+        </div>
+
+        <div>
+          <label for="note">Note (optional)</label>
+          <input id="note" name="note" type="text" class="input-field" placeholder="Reason / remark">
+        </div>
       </div>
-    </div>
+
+      <div class="actions">
+        <button type="submit" id="submitBtn" class="btn btn-primary">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 6 9 17l-5-5"/>
+          </svg>
+          Save Receipt
+        </button>
+      </div>
+
+    </form>
   </div>
 
-  <div style="margin-top:8px;">
-    <button type="submit">
-      <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>
-      Save Receipt
-    </button>
-  </div>
-
-</form>
 </div>
 
 <script>
+  // Safely looping through backend data to prevent javascript syntax errors
+  const allEntities = [
+    {% for c in customers %}
+    { type: "customer", id: "{{ c.id }}", name: "{{ c.name }}" },
+    {% endfor %}
 
-const allEntities = [
-{% for c in customers %}
-{
-  type: "customer",
-  value: "{{ c.id }} - {{ c.name }}"
-},
-{% endfor %}
+    {% for s in suppliers %}
+    { type: "supplier", id: "{{ s.id }}", name: "{{ s.name }}" },
+    {% endfor %}
+  ];
 
-{% for s in suppliers %}
-{
-  type: "supplier",
-  value: "{{ s.id }} - {{ s.name }}"
-},
-{% endfor %}
-];
+  let activeIndex = -1;
+  const searchBox = document.getElementById("searchBox");
+  const suggestionBox = document.getElementById("suggestions");
+  const entityIdField = document.getElementById("entity_id");
+  const entityNameField = document.getElementById("entity_name");
+  const entityTypeField = document.getElementById("entity_type");
 
-const input = document.getElementById("entity_search");
-const suggestions = document.getElementById("suggestions");
-let activeIndex = -1;
+  function setupAutocomplete() {
+      searchBox.addEventListener("input", function () {
+          activeIndex = -1;
+          const query = this.value.trim().toLowerCase();
+          const mode = entityTypeField.value;
 
-function initials(value) {
-  const namePart = value.includes("-") ? value.split("-").slice(1).join("-").trim() : value;
-  const parts = namePart.trim().split(/\s+/).filter(Boolean);
-  if (!parts.length) return "?";
-  return (parts[0][0] + (parts[1] ? parts[1][0] : "")).toUpperCase();
-}
+          suggestionBox.innerHTML = "";
+          entityIdField.value = "";
+          entityNameField.value = "";
 
-input.addEventListener("input", function () {
-  activeIndex = -1;
-  const text = this.value.toLowerCase().trim();
-  const entityType =
-      document.getElementById("entity_type").value;
+          if (query.length < 1) {
+              suggestionBox.style.display = "none";
+              return;
+          }
 
-  suggestions.innerHTML = "";
+          // Filter by the selected entity type, and match query to ID or Name
+          const matches = allEntities.filter(item =>
+              item.type === mode &&
+              ((item.name || "").toLowerCase().includes(query) ||
+               String(item.id).includes(query))
+          );
 
-  if (text.length < 1) {
-    suggestions.style.display = "none";
-    return;
+          activeIndex = matches.length ? 0 : -1;
+
+          if (matches.length === 0) {
+              suggestionBox.style.display = "none";
+              return;
+          }
+
+          matches.slice(0, 20).forEach((item) => {
+              const row = document.createElement("div");
+              row.className = "suggestion-item";
+              row.style.padding = "10px 14px";
+              row.style.cursor = "pointer";
+              row.style.borderBottom = "1px solid #eef1f5";
+
+              row.innerHTML = `<strong>${item.name}</strong> (ID: ${item.id})`;
+
+              row.onclick = function () {
+                  searchBox.value = `${item.name} (ID: ${item.id})`;
+                  entityIdField.value = item.id;
+                  entityNameField.value = item.name;
+                  suggestionBox.style.display = "none";
+
+                  setTimeout(() => {
+                      document.getElementById("amount").focus();
+                  }, 0);
+              };
+
+              suggestionBox.appendChild(row);
+          });
+
+          suggestionBox.style.display = "block";
+
+          if (activeIndex === 0) {
+            const first = suggestionBox.querySelector(".suggestion-item");
+            if (first) first.classList.add("active");
+          }
+      });
+
+      // Suggestion box keyboard navigation
+      searchBox.addEventListener("keydown", function(e) {
+          const items = suggestionBox.querySelectorAll(".suggestion-item");
+          if (!items.length) return;
+
+          if (e.key === "ArrowDown") {
+              e.preventDefault();
+              if (activeIndex < items.length - 1) activeIndex++;
+          } else if (e.key === "ArrowUp") {
+              e.preventDefault();
+              if (activeIndex > 0) activeIndex--;
+          } else if (e.key === "Enter") {
+              e.preventDefault();
+              if (activeIndex >= 0) {
+                  items[activeIndex].click();
+                  return;
+              } else if (items.length === 1) {
+                  items[0].click();
+                  return;
+              }
+              return;
+          }
+
+          items.forEach(i => i.classList.remove("active"));
+          if (activeIndex >= 0) {
+              items[activeIndex].classList.add("active");
+              items[activeIndex].scrollIntoView({ block: "nearest" });
+          }
+      });
+
+      document.addEventListener("click", function(e){
+          if (!searchBox.contains(e.target) && !suggestionBox.contains(e.target)) {
+              suggestionBox.style.display = "none";
+          }
+      });
   }
 
-  const matches = allEntities.filter(x =>
-      x.type === entityType &&
-      x.value.toLowerCase().includes(text)
-  );
-  activeIndex = matches.length ? 0 : -1;
+  function onModeChange() {
+      activeIndex = -1;
+      searchBox.value = "";
+      entityIdField.value = "";
+      entityNameField.value = "";
+      suggestionBox.innerHTML = "";
+      suggestionBox.style.display = "none";
 
-  
-  input.dataset.autofilled = "false";
+      setTimeout(() => searchBox.focus(), 0);
+  }
 
-  matches.slice(0, 20).forEach(item => {
+  // Enter key global navigation jumping between inputs
+  document.addEventListener("keydown", function (e) {
+      if (e.key !== "Enter") return;
 
-    const div = document.createElement("div");
-    div.className = "suggestion-item";
+      const active = document.activeElement;
 
-    div.style.padding = "9px 10px";
-    div.style.cursor = "pointer";
+      // Date -> Type
+      if (active.id === "tx_date") {
+          e.preventDefault();
+          entityTypeField.focus();
+          return;
+      }
 
-    const avatar = document.createElement("div");
-    avatar.className = "avatar";
-    avatar.innerText = initials(item.value);
+      // Type -> Search
+      if (active.id === "entity_type") {
+          e.preventDefault();
+          searchBox.focus();
+          return;
+      }
 
-    const label = document.createElement("span");
-    label.innerText = item.value;
+      // Search -> Amount (only triggers if dropdown is closed/empty so it doesn't bypass selection)
+      if (active.id === "searchBox") {
+          if (suggestionBox.style.display === "none" || suggestionBox.innerHTML === "") {
+              e.preventDefault();
+              document.getElementById("amount").focus();
+          }
+          return;
+      }
 
-    div.appendChild(avatar);
-    div.appendChild(label);
+      // Amount -> Note
+      if (active.id === "amount") {
+          e.preventDefault();
+          document.getElementById("note").focus();
+          return;
+      }
 
-    div.onclick = function () {
-
-        input.value = item.value;
-        suggestions.style.display = "none";
-    
-        setTimeout(() => {
-            document.querySelector("[name='amount']").focus();
-        }, 0);
-    };
-
-    suggestions.appendChild(div);
+      // Note -> Submit
+      if (active.id === "note") {
+          e.preventDefault();
+          if (receiptSubmitting) return;
+          document.getElementById("receiptForm").requestSubmit();
+          return;
+      }
   });
 
-  suggestions.style.display =
-      matches.length ? "block" : "none";
-  if (activeIndex === 0) {
-    const first =
-        suggestions.querySelector(".suggestion-item");
+  // Prevent submission without selection or double submissions
+  let receiptSubmitting = false;
 
-    if (first) {
-        first.classList.add("active");
-    }
-}
-});
-input.addEventListener("keydown", function(e){
+  document.getElementById("receiptForm").addEventListener("submit", function(e) {
+      const selectedId = document.getElementById("entity_id").value;
 
-    const items =
-        suggestions.querySelectorAll(".suggestion-item");
+      if (!selectedId) {
+          e.preventDefault();
+          alert("Please select a customer or supplier from the list before submitting.");
+          searchBox.focus();
+          return false;
+      }
 
-    if (!items.length) return;
+      if (receiptSubmitting) {
+          e.preventDefault();
+          return false;
+      }
 
-    if (e.key === "ArrowDown") {
+      receiptSubmitting = true;
 
-        e.preventDefault();
-        if (activeIndex < items.length - 1) {
-            activeIndex++;
-        }
-    } else if (e.key === "ArrowUp") {
+      const btn = document.getElementById("submitBtn");
+      btn.disabled = true;
+      btn.innerHTML = "Saving Receipt...";
 
-        e.preventDefault();
-        if (activeIndex > 0) {
-            activeIndex--;
-        }
+      return true;
+  });
 
-    } else if (e.key === "Enter") {
+  document.addEventListener("DOMContentLoaded", function() {
+      // Ensure defaults are set securely on load
+      entityTypeField.value = "customer";
 
-        e.preventDefault();
-    
-        if (activeIndex >= 0) {
+      const dateInput = document.getElementById("tx_date");
+      if (!dateInput.value) {
+          const today = new Date().toISOString().split("T")[0];
+          dateInput.value = today;
+      }
 
-            items[activeIndex].click();
-            return;
-            
-        } else if (items.length === 1) {
-    
-            items[0].click();
-            return;
-            
-        }
-    
-        return;
-    }
-    items.forEach(i => i.classList.remove("active"));
+      setupAutocomplete();
 
-    if (activeIndex >= 0) {
-        items[activeIndex].classList.add("active");
-        items[activeIndex].scrollIntoView({
-            block: "nearest"
-        });
-    }
-});
-document.addEventListener("click", function(e){
-  if (!suggestions.contains(e.target) &&
-      e.target !== input) {
-      suggestions.style.display = "none";
-  }
-});
-
-  
-
-// prevent empty submissions
-let receiptSubmitting = false;
-
-document.getElementById("receiptForm").addEventListener("submit", function(e) {
-
-    if (!document.getElementById("entity_search").value.trim()) {
-        e.preventDefault();
-        alert("Please select a customer/supplier.");
-        return false;
-    }
-
-    if (receiptSubmitting) {
-        e.preventDefault();
-        return false;
-    }
-
-    receiptSubmitting = true;
-
-    const btn = document.querySelector("#receiptForm button[type='submit']");
-    btn.disabled = true;
-    btn.innerHTML = "Saving Receipt...";
-});
-// init on page load
-document.addEventListener("DOMContentLoaded", function() {
-
-    const dateInput = document.getElementById("tx_date");
-
-    if (!dateInput.value) {
-        const today = new Date().toISOString().split("T")[0];
-        dateInput.value = today;
-    }
-
-    setTimeout(() => {
-        const search = document.getElementById("entity_search");
-        search.focus();
-        search.select();
-    }, 100);
-});
-document.addEventListener("keydown", function(e){
-
-    if (e.key !== "Enter") return;
-
-    const active = document.activeElement;
-
-    // Ignore entity search when dropdown is open
-    
-        // Entity -> Amount
-    if (active.id === "entity_search") {
-        e.preventDefault();
-        document.querySelector("[name='amount']").focus();
-        return;
-    }
-
-    // Amount -> Note
-    if (active.name === "amount") {
-        e.preventDefault();
-        document.querySelector("[name='note']").focus();
-        return;
-    }
-
-    // Note -> Submit
-    if (active.name === "note") {
-        e.preventDefault();
-
-        if (receiptSubmitting) return;
-
-        document.getElementById("receiptForm")
-            .requestSubmit();
-
-        return;
-    }
-});
-document.getElementById("entity_type")
-.addEventListener("change", function(){
-
-    activeIndex = -1;
-
-    input.value = "";
-    suggestions.innerHTML = "";
-    suggestions.style.display = "none";
-
-    setTimeout(() => input.focus(), 0);
-});
+      // Clear search and ensure initial pointer goes to search box
+      searchBox.value = "";
+      setTimeout(() => {
+          searchBox.focus();
+      }, 100);
+  });
 </script>
 
 {% endblock %}
