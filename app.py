@@ -152,12 +152,16 @@ def recompute_cash_in_hand_from_date(start_date):
 # Home
 # ---------------------------------------------------------------------------
 
+# Force the session to expire after 10 minutes of inactivity
+app.permanent_session_lifetime = timedelta(minutes=10)
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         password = request.form.get('password')
         if password == 'Students@123':
-            # Password is correct; store login state in session
+            # This tells Flask to apply the 10-minute timer
+            session.permanent = True 
             session['logged_in'] = True
             return redirect(url_for('home'))
         else:
