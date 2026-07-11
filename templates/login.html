@@ -9,46 +9,108 @@
     .container { margin-top: 0 !important; }
     footer.site-footer { display: none !important; }
 
-    html, body { height: 100%; }
+    html, body { height: 100%; overflow-x: hidden; }
 
-    /* Full-screen background image */
-    .home-bg {
+    /* ============ Layered, parallax background ============ */
+    .bg-scene {
         position: fixed;
-        top: 0; left: 0;
-        width: 100%; height: 100%;
-        background-image:
-            linear-gradient(135deg, rgba(10,20,35,0.55), rgba(20,10,25,0.6)),
-            url('https://images.unsplash.com/photo-1529933030474-182f3f1e1135?auto=format&fit=crop&w=1600&q=80');
+        inset: 0;
+        z-index: -5;
+        overflow: hidden;
+        perspective: 1000px;
+    }
+
+    .bg-layer {
+        position: absolute;
+        top: -5%; left: -5%;
+        width: 110%; height: 110%;
         background-size: cover;
         background-position: center;
-        filter: brightness(0.8) saturate(1.05);
-        z-index: -3;
-        animation: bgZoom 18s ease-in-out infinite alternate;
+        will-change: transform;
+        transition: transform 0.2s ease-out;
+    }
+
+    .bg-layer.photo {
+        background-image:
+            linear-gradient(135deg, rgba(8,14,26,0.6), rgba(24,10,22,0.62)),
+            url('https://images.unsplash.com/photo-1529933030474-182f3f1e1135?auto=format&fit=crop&w=1800&q=80');
+        filter: brightness(0.82) saturate(1.08);
+        animation: bgZoom 22s ease-in-out infinite alternate;
     }
 
     @keyframes bgZoom {
-        from { transform: scale(1); }
-        to   { transform: scale(1.06); }
+        from { transform: scale(1) translate(0,0); }
+        to   { transform: scale(1.09) translate(-1%,-1%); }
+    }
+
+    /* Moving gold aurora mesh for a premium glow */
+    .bg-layer.aurora {
+        mix-blend-mode: soft-light;
+        background: radial-gradient(circle at 20% 20%, rgba(212,175,55,0.55), transparent 45%),
+                    radial-gradient(circle at 80% 30%, rgba(240,217,140,0.4), transparent 50%),
+                    radial-gradient(circle at 50% 85%, rgba(180,140,255,0.25), transparent 55%);
+        background-size: 200% 200%;
+        animation: auroraDrift 16s ease-in-out infinite;
+    }
+
+    @keyframes auroraDrift {
+        0%   { background-position: 0% 0%, 100% 0%, 50% 100%; }
+        50%  { background-position: 30% 40%, 70% 30%, 60% 70%; }
+        100% { background-position: 0% 0%, 100% 0%, 50% 100%; }
     }
 
     /* Pastel overlay to match theme */
     .home-overlay {
         position: fixed;
-        top: 0; left: 0;
-        width: 100%; height: 100%;
-        background: linear-gradient(135deg, rgba(227,242,253,0.35), rgba(252,228,236,0.35));
-        z-index: -2;
+        inset: 0;
+        z-index: -4;
+        background: linear-gradient(135deg, rgba(227,242,253,0.28), rgba(252,228,236,0.28));
     }
 
-    /* Subtle noise/texture layer for a premium, tactile feel */
+    /* Subtle noise/texture layer for a tactile, premium feel */
     .home-texture {
         position: fixed;
-        top: 0; left: 0;
-        width: 100%; height: 100%;
+        inset: 0;
+        z-index: -3;
+        pointer-events: none;
+        opacity: 0.45;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.35'/%3E%3C/svg%3E");
+    }
+
+    /* Vignette to focus attention on the card */
+    .home-vignette {
+        position: fixed;
+        inset: 0;
+        z-index: -2;
+        pointer-events: none;
+        background: radial-gradient(circle at 50% 50%, transparent 35%, rgba(5,8,16,0.45) 100%);
+    }
+
+    /* Drifting banana-leaf silhouettes (pure SVG, no external assets) */
+    .leaf-field {
+        position: fixed;
+        inset: 0;
         z-index: -1;
         pointer-events: none;
-        opacity: 0.5;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.35'/%3E%3C/svg%3E");
+        overflow: hidden;
+    }
+    .leaf {
+        position: absolute;
+        opacity: 0.16;
+        filter: drop-shadow(0 8px 10px rgba(0,0,0,0.25));
+        animation: driftLeaf linear infinite;
+    }
+    .leaf svg { width: 100%; height: 100%; }
+    .leaf.l1 { width: 130px; top: -10%; left: 6%;  animation-duration: 26s; animation-delay: 0s; }
+    .leaf.l2 { width: 90px;  top: -10%; left: 78%; animation-duration: 32s; animation-delay: 6s; }
+    .leaf.l3 { width: 160px; top: -10%; left: 40%; animation-duration: 38s; animation-delay: 3s; }
+    .leaf.l4 { width: 70px;  top: -10%; left: 60%; animation-duration: 22s; animation-delay: 9s; }
+    .leaf.l5 { width: 110px; top: -10%; left: 18%; animation-duration: 30s; animation-delay: 13s; }
+
+    @keyframes driftLeaf {
+        0%   { transform: translateY(-15vh) translateX(0) rotate(-8deg); }
+        50%  { transform: translateY(55vh) translateX(30px) rotate(10deg); }
+        100% { transform: translateY(120vh) translateX(-20px) rotate(-6deg); }
     }
 
     /* Soft floating gold particles for ambience */
@@ -65,7 +127,8 @@
         width: 6px; height: 6px;
         border-radius: 50%;
         background: var(--gold, #d4af37);
-        opacity: 0.35;
+        opacity: 0.4;
+        box-shadow: 0 0 8px 1px rgba(212,175,55,0.5);
         animation: rise linear infinite;
     }
     .floaters span:nth-child(1) { left: 8%;  width: 5px; height: 5px; animation-duration: 14s; animation-delay: 0s; }
@@ -78,11 +141,11 @@
 
     @keyframes rise {
         0%   { transform: translateY(0) translateX(0); opacity: 0; }
-        10%  { opacity: 0.45; }
+        10%  { opacity: 0.5; }
         100% { transform: translateY(-110vh) translateX(20px); opacity: 0; }
     }
 
-    /* Page wrapper to vertically center on all viewport sizes */
+    /* ============ Card ============ */
     .login-wrapper {
         min-height: 100vh;
         display: flex;
@@ -92,23 +155,49 @@
         box-sizing: border-box;
     }
 
-    /* Centered login card */
+    .card-stage {
+        perspective: 1200px;
+    }
+
     .login-card {
         position: relative;
         width: 100%;
         max-width: 400px;
         background: rgba(255,255,255,0.94);
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
         padding: 44px 40px 36px;
         text-align: center;
         border-radius: 20px;
         border: 1px solid rgba(255,255,255,0.6);
         box-shadow:
-            0 20px 60px rgba(10,20,40,0.35),
+            0 25px 70px rgba(10,20,40,0.4),
             0 2px 8px rgba(10,20,40,0.12),
             inset 0 1px 0 rgba(255,255,255,0.8);
-        animation: fadeIn 0.7s cubic-bezier(.2,.8,.2,1);
+        transform-style: preserve-3d;
+        transition: transform 0.25s ease-out, box-shadow 0.25s ease-out;
+        animation: cardIn 0.8s cubic-bezier(.2,.8,.2,1);
+        overflow: hidden;
+    }
+
+    /* Sheen sweep across the card, like light catching glass */
+    .login-card::after {
+        content: "";
+        position: absolute;
+        top: 0; left: -60%;
+        width: 40%; height: 100%;
+        background: linear-gradient(75deg, transparent, rgba(255,255,255,0.55), transparent);
+        transform: skewX(-20deg);
+        animation: sheen 6s ease-in-out infinite;
+        animation-delay: 1.2s;
+        pointer-events: none;
+    }
+
+    @keyframes sheen {
+        0%   { left: -60%; opacity: 0; }
+        8%   { opacity: 1; }
+        22%  { left: 120%; opacity: 0; }
+        100% { left: 120%; opacity: 0; }
     }
 
     /* Thin gold accent bar on top of the card */
@@ -120,6 +209,27 @@
         width: 64px; height: 4px;
         border-radius: 0 0 6px 6px;
         background: linear-gradient(90deg, var(--gold, #d4af37), var(--gold-light, #f0d98c));
+        z-index: 2;
+    }
+
+    @keyframes cardIn {
+        from { opacity: 0; transform: translateY(30px) scale(0.96) rotateX(6deg); }
+        to   { opacity: 1; transform: translateY(0) scale(1) rotateX(0); }
+    }
+
+    .reveal {
+        opacity: 0;
+        transform: translateY(12px);
+        animation: revealUp 0.6s ease forwards;
+    }
+    .reveal.r1 { animation-delay: 0.15s; }
+    .reveal.r2 { animation-delay: 0.25s; }
+    .reveal.r3 { animation-delay: 0.35s; }
+    .reveal.r4 { animation-delay: 0.45s; }
+    .reveal.r5 { animation-delay: 0.55s; }
+
+    @keyframes revealUp {
+        to { opacity: 1; transform: translateY(0); }
     }
 
     .login-icon {
@@ -130,12 +240,16 @@
         align-items: center;
         justify-content: center;
         background: linear-gradient(135deg, var(--navy, #1a2744), var(--navy-light, #2c3e5e));
-        box-shadow: 0 6px 18px rgba(26,39,68,0.35);
+        box-shadow: 0 6px 18px rgba(26,39,68,0.35), 0 0 0 6px rgba(212,175,55,0.08);
+        animation: pulseGlow 3.2s ease-in-out infinite;
     }
 
-    .login-icon svg {
-        width: 30px; height: 30px;
+    @keyframes pulseGlow {
+        0%, 100% { box-shadow: 0 6px 18px rgba(26,39,68,0.35), 0 0 0 6px rgba(212,175,55,0.08); }
+        50%      { box-shadow: 0 6px 22px rgba(26,39,68,0.45), 0 0 0 10px rgba(212,175,55,0.14); }
     }
+
+    .login-icon svg { width: 30px; height: 30px; }
 
     .login-title {
         color: var(--navy, #1a2744);
@@ -251,6 +365,7 @@
     .toggle-visibility svg { width: 19px; height: 19px; }
 
     .login-btn {
+        position: relative;
         width: 100%;
         padding: 15px;
         background: linear-gradient(135deg, var(--navy, #1a2744), var(--navy-light, #2c3e5e));
@@ -268,6 +383,7 @@
         justify-content: center;
         gap: 10px;
         box-shadow: 0 8px 20px rgba(26,39,68,0.3);
+        overflow: hidden;
     }
 
     .login-btn:hover {
@@ -275,9 +391,7 @@
         box-shadow: 0 12px 26px rgba(26,39,68,0.4);
     }
 
-    .login-btn:active {
-        transform: translateY(0);
-    }
+    .login-btn:active { transform: translateY(0); }
 
     .login-btn:disabled {
         opacity: 0.75;
@@ -299,6 +413,18 @@
 
     @keyframes spin { to { transform: rotate(360deg); } }
 
+    .ripple {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(240,217,140,0.55);
+        transform: scale(0);
+        animation: rippleAnim 0.6s ease-out;
+        pointer-events: none;
+    }
+    @keyframes rippleAnim {
+        to { transform: scale(3.5); opacity: 0; }
+    }
+
     .login-footer-note {
         margin-top: 22px;
         font-family: 'Inter', sans-serif;
@@ -307,88 +433,106 @@
         letter-spacing: 0.03em;
     }
 
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(18px) scale(0.98); }
-        to   { opacity: 1; transform: translateY(0) scale(1); }
-    }
-
     @media (max-width: 480px) {
         .login-card { padding: 36px 24px 28px; border-radius: 16px; }
         .login-title { font-size: 27px; }
+        .leaf { display: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .bg-layer.photo, .bg-layer.aurora, .leaf, .floaters span, .login-card::after, .login-icon {
+            animation: none !important;
+        }
     }
 </style>
 
-<div class="home-bg"></div>
+<div class="bg-scene" id="bgScene">
+    <div class="bg-layer photo" id="photoLayer"></div>
+    <div class="bg-layer aurora" id="auroraLayer"></div>
+</div>
 <div class="home-overlay"></div>
 <div class="home-texture"></div>
+<div class="home-vignette"></div>
+
+<div class="leaf-field">
+    <div class="leaf l1"><svg viewBox="0 0 100 140" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M50 5C20 30 5 70 20 130C50 120 55 60 50 5Z" fill="#d4af37"/><path d="M50 5C80 30 95 70 80 130C50 120 45 60 50 5Z" fill="#1a2744" opacity="0.5"/></svg></div>
+    <div class="leaf l2"><svg viewBox="0 0 100 140" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M50 5C20 30 5 70 20 130C50 120 55 60 50 5Z" fill="#f0d98c"/><path d="M50 5C80 30 95 70 80 130C50 120 45 60 50 5Z" fill="#1a2744" opacity="0.4"/></svg></div>
+    <div class="leaf l3"><svg viewBox="0 0 100 140" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M50 5C20 30 5 70 20 130C50 120 55 60 50 5Z" fill="#d4af37"/><path d="M50 5C80 30 95 70 80 130C50 120 45 60 50 5Z" fill="#1a2744" opacity="0.45"/></svg></div>
+    <div class="leaf l4"><svg viewBox="0 0 100 140" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M50 5C20 30 5 70 20 130C50 120 55 60 50 5Z" fill="#f0d98c"/><path d="M50 5C80 30 95 70 80 130C50 120 45 60 50 5Z" fill="#1a2744" opacity="0.4"/></svg></div>
+    <div class="leaf l5"><svg viewBox="0 0 100 140" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M50 5C20 30 5 70 20 130C50 120 55 60 50 5Z" fill="#d4af37"/><path d="M50 5C80 30 95 70 80 130C50 120 45 60 50 5Z" fill="#1a2744" opacity="0.5"/></svg></div>
+</div>
+
 <div class="floaters">
     <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
 </div>
 
 <div class="login-wrapper">
-    <div class="login-card">
-        <div class="login-icon">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 2C12 2 7 5 7 11C7 15.4183 9.68629 18 12 18C14.3137 18 17 15.4183 17 11C17 5 12 2 12 2Z" stroke="#f0d98c" stroke-width="1.4" stroke-linejoin="round"/>
-                <path d="M12 18V22" stroke="#f0d98c" stroke-width="1.4" stroke-linecap="round"/>
-                <path d="M9 9C9 9 10 11 12 11C14 11 15 9 15 9" stroke="#f0d98c" stroke-width="1.2" stroke-linecap="round"/>
-            </svg>
-        </div>
-
-        <h2 class="login-title">System Login</h2>
-        <p class="login-subtitle">Banana Commission System</p>
-
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="login-alert {{ category }}">
-                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.6"/>
-                            <path d="M12 8V13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-                            <circle cx="12" cy="16" r="0.9" fill="currentColor"/>
-                        </svg>
-                        <span>{{ message }}</span>
-                    </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-
-        <form method="POST" action="{{ url_for('login') }}" id="loginForm">
-            <div class="input-group">
-                <svg class="field-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="5" y="10" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.6"/>
-                    <path d="M8 10V7a4 4 0 0 1 8 0v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+    <div class="card-stage">
+        <div class="login-card" id="loginCard">
+            <div class="login-icon reveal r1">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2C12 2 7 5 7 11C7 15.4183 9.68629 18 12 18C14.3137 18 17 15.4183 17 11C17 5 12 2 12 2Z" stroke="#f0d98c" stroke-width="1.4" stroke-linejoin="round"/>
+                    <path d="M12 18V22" stroke="#f0d98c" stroke-width="1.4" stroke-linecap="round"/>
+                    <path d="M9 9C9 9 10 11 12 11C14 11 15 9 15 9" stroke="#f0d98c" stroke-width="1.2" stroke-linecap="round"/>
                 </svg>
-                <input
-                    type="password"
-                    name="password"
-                    id="passwordField"
-                    class="password-input"
-                    placeholder="Enter Password"
-                    required
-                    autofocus
-                    autocomplete="current-password"
-                >
-                <button type="button" class="toggle-visibility" id="toggleBtn" aria-label="Show password" tabindex="-1">
-                    <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M2 12C2 12 5.5 5.5 12 5.5C18.5 5.5 22 12 22 12C22 12 18.5 18.5 12 18.5C5.5 18.5 2 12 2 12Z" stroke="currentColor" stroke-width="1.6"/>
-                        <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.6"/>
-                    </svg>
-                </button>
             </div>
 
-            <button type="submit" class="login-btn" id="loginBtn">
-                <span class="spinner"></span>
-                <span class="btn-label">Access System</span>
-            </button>
-        </form>
+            <h2 class="login-title reveal r2">System Login</h2>
+            <p class="login-subtitle reveal r2">Banana Commission System</p>
 
-        <p class="login-footer-note">Authorized personnel only</p>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="login-alert {{ category }}">
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.6"/>
+                                <path d="M12 8V13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                                <circle cx="12" cy="16" r="0.9" fill="currentColor"/>
+                            </svg>
+                            <span>{{ message }}</span>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="{{ url_for('login') }}" id="loginForm">
+                <div class="input-group reveal r3">
+                    <svg class="field-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="5" y="10" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.6"/>
+                        <path d="M8 10V7a4 4 0 0 1 8 0v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                    </svg>
+                    <input
+                        type="password"
+                        name="password"
+                        id="passwordField"
+                        class="password-input"
+                        placeholder="Enter Password"
+                        required
+                        autofocus
+                        autocomplete="current-password"
+                    >
+                    <button type="button" class="toggle-visibility" id="toggleBtn" aria-label="Show password" tabindex="-1">
+                        <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M2 12C2 12 5.5 5.5 12 5.5C18.5 5.5 22 12 22 12C22 12 18.5 18.5 12 18.5C5.5 18.5 2 12 2 12Z" stroke="currentColor" stroke-width="1.6"/>
+                            <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.6"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <button type="submit" class="login-btn reveal r4" id="loginBtn">
+                    <span class="spinner"></span>
+                    <span class="btn-label">Access System</span>
+                </button>
+            </form>
+
+            <p class="login-footer-note reveal r5">Authorized personnel only</p>
+        </div>
     </div>
 </div>
 
 <script>
     (function () {
+        // Password visibility toggle
         var toggleBtn = document.getElementById('toggleBtn');
         var pwField = document.getElementById('passwordField');
         var eyeIcon = document.getElementById('eyeIcon');
@@ -403,6 +547,7 @@
             toggleBtn.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');
         });
 
+        // Submit loading state
         var form = document.getElementById('loginForm');
         var btn = document.getElementById('loginBtn');
         form.addEventListener('submit', function () {
@@ -410,6 +555,43 @@
             btn.classList.add('loading');
             btn.setAttribute('disabled', 'disabled');
         });
+
+        // Button ripple effect
+        btn.addEventListener('click', function (e) {
+            var rect = btn.getBoundingClientRect();
+            var ripple = document.createElement('span');
+            var size = Math.max(rect.width, rect.height);
+            ripple.className = 'ripple';
+            ripple.style.width = ripple.style.height = size + 'px';
+            ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
+            ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
+            btn.appendChild(ripple);
+            setTimeout(function () { ripple.remove(); }, 650);
+        });
+
+        // Parallax background + card tilt on pointer move (disabled on touch / reduced motion)
+        var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        var isTouch = window.matchMedia('(pointer: coarse)').matches;
+        var photoLayer = document.getElementById('photoLayer');
+        var auroraLayer = document.getElementById('auroraLayer');
+        var card = document.getElementById('loginCard');
+
+        if (!prefersReduced && !isTouch) {
+            window.addEventListener('mousemove', function (e) {
+                var xRatio = (e.clientX / window.innerWidth) - 0.5;
+                var yRatio = (e.clientY / window.innerHeight) - 0.5;
+
+                photoLayer.style.transform = 'translate(' + (xRatio * -22) + 'px,' + (yRatio * -22) + 'px) scale(1.06)';
+                auroraLayer.style.transform = 'translate(' + (xRatio * 16) + 'px,' + (yRatio * 16) + 'px)';
+
+                card.style.transform =
+                    'rotateY(' + (xRatio * 5) + 'deg) rotateX(' + (yRatio * -5) + 'deg)';
+            });
+
+            window.addEventListener('mouseleave', function () {
+                card.style.transform = 'rotateY(0) rotateX(0)';
+            });
+        }
     })();
 </script>
 {% endblock %}
