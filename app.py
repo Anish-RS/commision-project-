@@ -17,6 +17,15 @@ from collections import defaultdict
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "secret123")
 
+
+@app.before_request
+def require_login():
+    # Pages that do NOT require a password (login page and static files like CSS)
+    allowed_routes = ['login', 'static']
+    
+    # If the user is NOT logged in, and they are trying to visit a protected page
+    if request.endpoint not in allowed_routes and not session.get('logged_in'):
+        return redirect(url_for('login'))
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
