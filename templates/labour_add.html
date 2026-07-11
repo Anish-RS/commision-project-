@@ -221,9 +221,10 @@
   .input-field::placeholder { color: #a89f8c; }
 
   .grid-amount-note {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 14px;
+    align-items: start;
   }
 
   .amount-wrap { position: relative; }
@@ -265,50 +266,12 @@
 
   .actions {
     display: flex;
-    justify-content: flex-start;
+    justify-content: flex-end;
     align-items: center;
     gap: 14px;
     margin-top: 20px;
-    flex-wrap: wrap;
-  }
-
-  #labourCard {
-    position: relative;
-    border-top: none;
-    padding-top: 34px;
-    overflow: hidden;
-  }
-
-  #labourCard::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 6px;
-    background: linear-gradient(90deg, var(--green), var(--gold), var(--green));
-  }
-
-  .corner-mark {
-    position: absolute;
-    width: 22px;
-    height: 22px;
-    border: 1.5px solid var(--gold-line);
-    top: 24px;
-    opacity: 0.8;
-    pointer-events: none;
-  }
-
-  .corner-mark.tl {
-    left: 18px;
-    border-right: none;
-    border-bottom: none;
-  }
-
-  .corner-mark.tr {
-    right: 18px;
-    border-left: none;
-    border-bottom: none;
+    padding-top: 18px;
+    border-top: 1px solid var(--gold-line);
   }
 
   .btn {
@@ -419,8 +382,6 @@
   </div>
 
   <div class="card" id="labourCard">
-    <span class="corner-mark tl"></span>
-    <span class="corner-mark tr"></span>
     <form method="POST" id="labour-form" novalidate>
 
       <div class="grid-amount-note">
@@ -439,6 +400,7 @@
       </div>
 
       <div class="actions">
+        <a href="{{ url_for('cash_in_hand') }}" class="btn-secondary">Back to Cash In Hand</a>
         <button type="submit" id="saveLabourBtn" class="btn btn-primary">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
@@ -447,7 +409,6 @@
           </svg>
           Save Labour
         </button>
-        <a href="{{ url_for('cash_in_hand') }}" class="btn-secondary">Back to Cash In Hand</a>
       </div>
 
     </form>
