@@ -2,287 +2,385 @@
 {% block content %}
 <style>
   :root {
-    --teal: #0d9488;
-    --teal-dark: #0b7c72;
-    --teal-light: #14b8a6;
-    --ink: #0f172a;
-    --muted: #64748b;
-    --border: #e2e8f0;
-    --bg-soft: #f8fafc;
+    --cream: #faf6ec;
+    --cream-deep: #f5efe0;
+    --parchment: #fbf8ef;
+    --ink: #1f2a24;
+    --muted: #8a7f68;
+    --border: #e6dcc0;
+    --gold: #c9a227;
+    --gold-dark: #a9821b;
+    --green: #16403a;
+    --green-deep: #0f2f2a;
+    --profit-green: #1a6b3c;
+    --loss-red: #a3272c;
   }
 
-  .pl-page { max-width: 1180px; margin: 0 auto; }
-
-  /* ---- Page header (matches reference: icon chip + title + subtitle) ---- */
-  .pl-header {
-    display: flex;
-    align-items: center;
-    gap: 18px;
-    margin: 4px 0 28px 0;
+  .pl-page {
+    max-width: 1180px;
+    margin: 0 auto;
+    font-family: "Georgia", "Iowan Old Style", serif;
+    color: var(--ink);
   }
-  .pl-header .icon-chip {
-    width: 56px;
-    height: 56px;
+
+  .pl-page .mono, .pl-page .currency, .pl-page input[type="date"] {
+    font-family: "Courier New", ui-monospace, monospace;
+  }
+
+  /* ---- Header card, styled like the "Old Balance Adjustment History" banner ---- */
+  .pl-banner {
+    position: relative;
+    background: var(--cream);
+    border: 1px solid var(--gold);
+    border-top: 4px solid var(--gold);
     border-radius: 14px;
-    background: linear-gradient(135deg, var(--teal-light), var(--teal-dark));
+    padding: 28px 32px 24px;
+    margin: 4px 0 26px 0;
+    box-shadow: 0 1px 2px rgba(31,42,36,0.04), 0 12px 30px rgba(31,42,36,0.05);
+  }
+
+  .pl-eyebrow {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold-dark);
+    margin: 0 0 10px 62px;
+  }
+
+  .pl-title-row { display: flex; align-items: center; gap: 18px; }
+
+  .pl-title-row .icon-chip {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--green-deep);
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 6px 16px rgba(13,148,136,0.28);
     flex-shrink: 0;
+    box-shadow: 0 4px 10px rgba(15,47,42,0.35);
   }
-  .pl-header .icon-chip svg { width: 28px; height: 28px; stroke: #fff; }
-  .pl-header h2 {
+  .pl-title-row .icon-chip svg { width: 22px; height: 22px; stroke: var(--cream); }
+
+  .pl-title-row h2 {
     margin: 0;
-    font-size: 26px;
-    font-weight: 800;
-    color: var(--ink);
-    letter-spacing: -0.02em;
-  }
-  .pl-header .pl-range {
-    display: block;
-    margin-top: 3px;
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--muted);
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--green-deep);
+    letter-spacing: -0.01em;
   }
 
-  /* ---- Filter bar (styled like the search/entity bar in reference) ---- */
-  .pl-controls {
-    background: #fff;
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 20px 24px;
-    box-shadow: 0 1px 3px rgba(15,23,42,0.05), 0 8px 24px rgba(15,23,42,0.03);
-    margin-bottom: 28px;
+  .pl-sub {
+    margin: 10px 0 0 62px;
+    font-size: 14.5px;
+    color: #5c5646;
+    max-width: 640px;
+    line-height: 1.5;
   }
-  .pl-controls form {
+
+  .pl-range-badge {
+    margin: 14px 0 0 62px;
+    display: inline-block;
+    font-family: "Courier New", monospace;
+    font-size: 13px;
+    color: var(--green-deep);
+    background: #eef3ee;
+    border: 1px solid #cfe0d2;
+    border-radius: 8px;
+    padding: 5px 12px;
+    letter-spacing: 0.02em;
+  }
+
+  /* stamp badge, top-right circular seal */
+  .pl-stamp {
+    position: absolute;
+    top: 24px;
+    right: 30px;
+    width: 92px;
+    height: 92px;
+    border-radius: 50%;
+    border: 1px dashed var(--gold);
     display: flex;
-    align-items: flex-end;
-    gap: 18px;
-    flex-wrap: wrap;
-  }
-  .pl-field { display: flex; flex-direction: column; gap: 6px; }
-  .pl-field label {
-    font-size: 11px;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: var(--gold-dark);
+    font-size: 9.5px;
     font-weight: 700;
     letter-spacing: 0.06em;
+    text-transform: uppercase;
+    line-height: 1.35;
+    padding: 6px;
+  }
+
+  hr.pl-hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 22px 0 20px 0;
+  }
+
+  /* ---- Filter / date controls, echoing the "select date / load / today" bar ---- */
+  .pl-controls-row {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 18px;
+  }
+
+  .pl-controls-row form {
+    display: flex;
+    align-items: flex-end;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .pl-field { display: flex; flex-direction: column; gap: 6px; }
+  .pl-field label {
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--muted);
   }
   .pl-field input[type="date"] {
     border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 10px 14px;
+    border-radius: 8px;
+    padding: 9px 12px;
     font-size: 14px;
     color: var(--ink);
-    background: var(--bg-soft);
-    min-width: 170px;
-    transition: border-color .15s, box-shadow .15s;
+    background: var(--parchment);
   }
   .pl-field input[type="date"]:focus {
     outline: none;
-    border-color: var(--teal-light);
-    box-shadow: 0 0 0 3px rgba(13,148,136,0.12);
-    background: #fff;
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(201,162,39,0.15);
   }
+
   .pl-go-btn {
-    background: linear-gradient(135deg, var(--teal-light), var(--teal-dark));
-    color: #fff;
+    background: var(--gold);
+    color: var(--green-deep);
     border: none;
-    border-radius: 10px;
-    padding: 11px 26px;
+    border-radius: 8px;
+    padding: 10px 22px;
     font-size: 14px;
     font-weight: 700;
+    font-family: "Georgia", serif;
     cursor: pointer;
-    box-shadow: 0 4px 12px rgba(13,148,136,0.28);
-    transition: transform .12s ease, box-shadow .12s ease;
     display: inline-flex;
     align-items: center;
     gap: 8px;
+    transition: background .15s ease;
   }
-  .pl-go-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(13,148,136,0.35); }
-  .pl-go-btn svg { width: 16px; height: 16px; stroke: #fff; }
+  .pl-go-btn:hover { background: var(--gold-dark); color: #fff; }
+  .pl-go-btn svg { width: 15px; height: 15px; stroke: currentColor; }
 
-  /* ---- Cards layout ---- */
+  /* ---- Info strip ---- */
+  .pl-info-strip {
+    background: var(--cream-deep);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13.5px;
+    color: #6b6350;
+    margin-bottom: 26px;
+  }
+  .pl-info-strip svg { width: 16px; height: 16px; stroke: var(--gold-dark); flex-shrink: 0; }
+
+  /* ---- Summary cards row ---- */
   .pl-container {
     display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    gap: 24px;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 22px;
     align-items: stretch;
-    margin-top: 4px;
   }
   @media (max-width: 860px) {
     .pl-container { grid-template-columns: 1fr; }
   }
 
   .pl-box {
+    background: var(--parchment);
     border: 1px solid var(--border);
-    border-radius: 18px;
-    padding: 0;
-    background: #fff;
-    box-shadow: 0 1px 3px rgba(15,23,42,0.05), 0 10px 28px rgba(15,23,42,0.04);
+    border-radius: 12px;
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    border-top: 3px solid var(--border);
   }
+  .pl-box.profit { border-top-color: var(--green-deep); }
+  .pl-box.loss { border-top-color: #1f1f1f; }
+
   .pl-box-head {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 18px 22px;
-    border-bottom: 1px solid var(--border);
+    justify-content: space-between;
+    padding: 18px 20px 6px;
+  }
+  .pl-box-head .label {
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
   }
   .pl-box-head .mini-icon {
-    width: 38px;
-    height: 38px;
-    border-radius: 10px;
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
   }
-  .pl-box.profit .mini-icon { background: #e6f7ea; }
-  .pl-box.loss .mini-icon { background: #fdecea; }
-  .pl-box.profit .mini-icon svg { stroke: #0a8a22; }
-  .pl-box.loss .mini-icon svg { stroke: #b92020; }
-  .pl-box-head svg { width: 20px; height: 20px; }
-  .pl-box-head h3 {
-    margin: 0;
-    font-size: 15px;
+  .pl-box.profit .mini-icon { background: #e6efe6; }
+  .pl-box.loss .mini-icon { background: #efe6e2; }
+  .pl-box.profit .mini-icon svg { stroke: var(--profit-green); }
+  .pl-box.loss .mini-icon svg { stroke: var(--loss-red); }
+  .pl-box-head svg { width: 17px; height: 17px; }
+
+  .pl-box-value {
+    padding: 2px 20px 4px;
+    font-size: 30px;
     font-weight: 700;
+    font-family: "Courier New", monospace;
     color: var(--ink);
-    letter-spacing: -0.01em;
   }
-  .pl-box-head .subtag {
-    display: block;
-    font-size: 11px;
+  .pl-box.profit .pl-box-value { color: var(--profit-green); }
+  .pl-box.loss .pl-box-value { color: var(--loss-red); }
+
+  .pl-box-sub {
+    padding: 0 20px 16px;
+    font-size: 12.5px;
     color: var(--muted);
-    font-weight: 500;
-    margin-top: 1px;
   }
 
-  .pl-list { list-style: none; padding: 6px 8px; margin: 0; flex: 1; }
+  .pl-list { list-style: none; padding: 0 10px 14px; margin: 6px 0 0 0; }
   .pl-list li {
-    padding: 13px 14px;
+    padding: 10px 10px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 14px;
+    font-size: 13.5px;
     color: var(--ink);
-    border-radius: 10px;
+    border-radius: 8px;
   }
-  .pl-list li:not(:last-child) { border-bottom: 1px dashed #eef1f5; }
-  .pl-list li:hover { background: var(--bg-soft); }
-  .pl-list li span:first-child { color: var(--muted); font-weight: 500; }
+  .pl-list li:not(:last-child) { border-bottom: 1px dashed var(--border); }
+  .pl-list li span:first-child { color: #746a55; }
   .pl-list li.total {
     margin-top: 4px;
     border-top: 1px solid var(--border);
     border-bottom: none !important;
-    font-weight: 800;
-    font-size: 15px;
+    font-weight: 700;
+    font-size: 14.5px;
   }
-  .pl-box.profit .pl-list li.total span:last-child { color: #0a8a22; }
-  .pl-box.loss .pl-list li.total span:last-child { color: #b92020; }
-  .currency { white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .pl-box.profit .pl-list li.total span:last-child { color: var(--profit-green); }
+  .pl-box.loss .pl-list li.total span:last-child { color: var(--loss-red); }
+  .currency { white-space: nowrap; }
+  .currency::before { content: "\20B9\00a0"; }
 
-  /* ---- Net box ---- */
-  .net-wrap { display: flex; align-items: center; justify-content: center; }
-  .net-box {
+  /* Net card (center) */
+  .pl-box.net {
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border-top-color: var(--gold);
+    padding: 20px 20px 24px;
+  }
+  .pl-box.net .mini-icon-center {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: var(--green-deep);
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 230px;
-    height: 100%;
-    min-height: 180px;
-    border-radius: 18px;
-    box-shadow: 0 6px 20px rgba(15,23,42,0.06);
-    position: relative;
-    overflow: hidden;
+    margin: 4px auto 12px;
   }
-  .net-positive { background: linear-gradient(155deg, #eafcf0, #ffffff); border: 1px solid #c7ecd1; }
-  .net-negative { background: linear-gradient(155deg, #fdecea, #ffffff); border: 1px solid #f5c6c6; }
-  .net-box::before {
-    content: "";
-    position: absolute;
-    top: -30px; right: -30px;
-    width: 100px; height: 100px;
-    border-radius: 50%;
-    opacity: 0.5;
-  }
-  .net-positive::before { background: radial-gradient(circle, #c7ecd1, transparent 70%); }
-  .net-negative::before { background: radial-gradient(circle, #f5c6c6, transparent 70%); }
-  .net-inner { text-align: center; z-index: 1; padding: 10px 18px; }
-  .net-label {
-    font-size: 12px;
+  .pl-box.net .mini-icon-center svg { width: 20px; height: 20px; stroke: var(--cream); }
+  .pl-box.net .net-value {
+    font-size: 34px;
     font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--muted);
+    font-family: "Courier New", monospace;
+    letter-spacing: -0.01em;
   }
-  .net-value {
-    font-size: 30px;
-    font-weight: 800;
-    margin-top: 8px;
-    letter-spacing: -0.02em;
-  }
-  .net-positive .net-value { color: #0a8a22; }
-  .net-negative .net-value { color: #b92020; }
+  .pl-box.net.is-positive .net-value { color: var(--profit-green); }
+  .pl-box.net.is-negative .net-value { color: var(--loss-red); }
   .net-badge {
     display: inline-block;
-    margin-top: 10px;
+    margin-top: 12px;
     font-size: 11px;
     font-weight: 700;
-    padding: 3px 10px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 4px 14px;
     border-radius: 999px;
   }
-  .net-positive .net-badge { background: #0a8a22; color: #fff; }
-  .net-negative .net-badge { background: #b92020; color: #fff; }
+  .pl-box.net.is-positive .net-badge { background: #e6efe6; color: var(--profit-green); border: 1px solid #bfd8bf; }
+  .pl-box.net.is-negative .net-badge { background: #f6e4e4; color: var(--loss-red); border: 1px solid #e3b9b9; }
 
   .pl-foot {
     text-align: center;
-    margin-top: 22px;
+    margin-top: 24px;
     color: var(--muted);
-    font-size: 13px;
+    font-size: 12.5px;
     padding-top: 16px;
     border-top: 1px solid var(--border);
   }
-  .pl-foot b.pos { color: #0a8a22; }
-  .pl-foot b.neg { color: #b92020; }
+  .pl-foot b.pos { color: var(--profit-green); }
+  .pl-foot b.neg { color: var(--loss-red); }
 </style>
 
 <div class="pl-page">
 
-  <div class="pl-header">
-    <div class="icon-chip">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="12" y1="1" x2="12" y2="23"></line>
-        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-      </svg>
-    </div>
-    <div>
+  <div class="pl-banner">
+    <div class="pl-stamp">Profit<br>&amp; Loss<br>Ledger</div>
+
+    <div class="pl-eyebrow">Ledger &middot; Profit &amp; Loss</div>
+    <div class="pl-title-row">
+      <div class="icon-chip">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="12" y1="1" x2="12" y2="23"></line>
+          <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+        </svg>
+      </div>
       <h2>Profit &amp; Loss</h2>
-      <span class="pl-range">{{ from_date }} &nbsp;&rarr;&nbsp; {{ to_date }}</span>
+    </div>
+    <p class="pl-sub">Commission earned against supplier and staff costs for the selected period, with the net result summarised at a glance.</p>
+    <span class="pl-range-badge">{{ from_date }} &nbsp;&rarr;&nbsp; {{ to_date }}</span>
+
+    <hr class="pl-hr">
+
+    <div class="pl-controls-row">
+      <form method="GET" action="/profit-loss">
+        <div class="pl-field">
+          <label for="from_date">From</label>
+          <input type="date" id="from_date" name="from_date" value="{{ from_date }}">
+        </div>
+        <div class="pl-field">
+          <label for="to_date">To</label>
+          <input type="date" id="to_date" name="to_date" value="{{ to_date }}">
+        </div>
+        <button type="submit" class="pl-go-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h14M13 6l6 6-6 6"></path>
+          </svg>
+          Load
+        </button>
+      </form>
     </div>
   </div>
 
-  <div class="pl-controls">
-    <form method="GET" action="/profit-loss">
-      <div class="pl-field">
-        <label for="from_date">From</label>
-        <input type="date" id="from_date" name="from_date" value="{{ from_date }}">
-      </div>
-      <div class="pl-field">
-        <label for="to_date">To</label>
-        <input type="date" id="to_date" name="to_date" value="{{ to_date }}">
-      </div>
-      <button type="submit" class="pl-go-btn">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M5 12h14M13 6l6 6-6 6"></path>
-        </svg>
-        Go
-      </button>
-    </form>
+  <div class="pl-info-strip">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"></circle>
+      <line x1="12" y1="16" x2="12" y2="12"></line>
+      <line x1="12" y1="8" x2="12.01" y2="8"></line>
+    </svg>
+    Pick a date range to see profit and loss for that period, or leave the defaults to view the running total.
   </div>
 
   <div class="pl-container">
@@ -290,17 +388,16 @@
     <!-- Profit column -->
     <div class="pl-box profit">
       <div class="pl-box-head">
+        <span class="label">Profit</span>
         <div class="mini-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M23 6l-9.5 9.5-5-5L1 18"></path>
             <path d="M17 6h6v6"></path>
           </svg>
         </div>
-        <div>
-          <h3>Profit</h3>
-          <span class="subtag">Cumulative</span>
-        </div>
       </div>
+      <div class="pl-box-value currency">{{ '%.2f'|format(profit) }}</div>
+      <div class="pl-box-sub">Cumulative for period</div>
       <ul class="pl-list">
         <li>
           <span>Total Commission</span>
@@ -318,31 +415,31 @@
     </div>
 
     <!-- Net box -->
-    <div class="net-wrap">
-      {% set net_val = net %}
-      <div class="net-box {% if net_val >= 0 %}net-positive{% else %}net-negative{% endif %}">
-        <div class="net-inner">
-          <div class="net-label">Net (Profit &minus; Loss)</div>
-          <div class="net-value">{{ '%.2f'|format(net_val) }}</div>
-          <span class="net-badge">{% if net_val >= 0 %}Overall Profit{% else %}Overall Loss{% endif %}</span>
-        </div>
+    {% set net_val = net %}
+    <div class="pl-box net {% if net_val >= 0 %}is-positive{% else %}is-negative{% endif %}">
+      <div class="mini-icon-center">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+        </svg>
       </div>
+      <span class="label">Net (Profit &minus; Loss)</span>
+      <div class="net-value currency" style="margin-top:8px;">{{ '%.2f'|format(net_val) }}</div>
+      <span class="net-badge">{% if net_val >= 0 %}Overall Profit{% else %}Overall Loss{% endif %}</span>
     </div>
 
     <!-- Loss column -->
     <div class="pl-box loss">
       <div class="pl-box-head">
+        <span class="label">Loss</span>
         <div class="mini-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M23 18l-9.5-9.5-5 5L1 6"></path>
             <path d="M17 18h6v-6"></path>
           </svg>
         </div>
-        <div>
-          <h3>Loss</h3>
-          <span class="subtag">Cumulative</span>
-        </div>
       </div>
+      <div class="pl-box-value currency">{{ '%.2f'|format(total_labour) }}</div>
+      <div class="pl-box-sub">Cumulative for period</div>
       <ul class="pl-list">
         <li>
           <span>Total Salary</span>
