@@ -2,104 +2,160 @@
 {% block content %}
 
 <style>
-  /* Reset useful defaults for the form */
   * { box-sizing: border-box; }
 
-  /* Clean premium background to match app shell */
+  :root {
+    --cream: #f4f0e2;
+    --card: #fffdf7;
+    --gold: #c9a15a;
+    --gold-dark: #a97f36;
+    --gold-line: #e6d7ae;
+    --green: #163c2f;
+    --green-mid: #1f5b46;
+    --ink: #1e2a22;
+    --muted: #7c7566;
+  }
+
   body {
-    background: #f4f6f9;
+    background: var(--cream);
   }
 
   .page-wrap {
-    max-width: 920px;
+    max-width: 960px;
     margin: 28px auto;
     padding: 0 20px;
+    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
   }
 
-  /* Header block: icon badge + title + subtitle, matching reference pages */
+  /* ---------- Header ---------- */
   .page-header {
     display: flex;
     align-items: flex-start;
+    justify-content: space-between;
     gap: 16px;
     margin-bottom: 22px;
   }
 
+  .page-header-left {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
   .page-icon {
     flex: none;
-    width: 52px;
-    height: 52px;
-    border-radius: 14px;
-    background: linear-gradient(135deg, #14b8a6, #0d9488);
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background: linear-gradient(155deg, var(--green-mid), var(--green));
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 8px 18px rgba(13,148,136,0.28);
+    box-shadow: 0 8px 18px rgba(22,60,47,0.30);
+    border: 2px solid #e9dcb8;
   }
 
   .page-icon svg {
-    width: 26px;
-    height: 26px;
-    stroke: #ffffff;
+    width: 24px;
+    height: 24px;
+    stroke: #f1e6c8;
+  }
+
+  .eyebrow {
+    font-family: 'Courier New', monospace;
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold-dark);
+    margin: 3px 0 6px;
   }
 
   .page-heading h2 {
     margin: 0;
-    font-size: 24px;
-    font-weight: 800;
-    color: #0f172a;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 30px;
+    font-weight: 700;
+    color: var(--green);
     letter-spacing: -0.2px;
   }
 
   .page-heading p {
-    margin: 4px 0 0;
+    margin: 8px 0 0;
     font-size: 14px;
-    color: #667085;
+    color: var(--muted);
+    max-width: 480px;
+    line-height: 1.5;
   }
 
-  /* Card container matching reference's clean white panel */
-  .card {
-    background: #ffffff;
-    padding: 26px 28px;
-    border-radius: 16px;
-    margin: 0 0 18px;
-    box-shadow: 0 8px 24px rgba(16, 24, 40, 0.06);
-    border: 1px solid #eef1f5;
+  /* Signature seal element */
+  .seal {
+    flex: none;
+    width: 84px;
+    height: 84px;
+    border-radius: 50%;
+    border: 1.5px dashed var(--gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 8px;
   }
 
-  /* Section label style: small uppercase gray-blue, like TRANSACTION TYPE / ENTITY */
-  label {
-    display: block;
-    font-size: 12px;
+  .seal span {
+    font-family: Georgia, serif;
+    font-size: 9.5px;
     font-weight: 700;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: #667085;
+    color: var(--gold-dark);
+    line-height: 1.35;
+  }
+
+  /* ---------- Card ---------- */
+  .card {
+    background: var(--card);
+    padding: 28px 30px;
+    border-radius: 14px;
+    margin: 0 0 18px;
+    box-shadow: 0 10px 26px rgba(22,60,47,0.07);
+    border: 1px solid var(--gold-line);
+    border-top: 3px solid var(--gold);
+  }
+
+  label {
+    display: block;
+    font-family: 'Courier New', monospace;
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
     margin-bottom: 8px;
   }
 
-  /* Unified input/select style — clean rounded fields like the reference */
   .input-field, select.input-field {
     width: 100%;
     padding: 12px 14px;
-    border-radius: 12px;
-    border: 1px solid #e2e8f0;
-    background: #f8fafc;
+    border-radius: 10px;
+    border: 1px solid #ddd4bd;
+    background: #fbf9f2;
     outline: none;
     transition: 0.16s ease;
     font-size: 15px;
     height: 46px;
     line-height: 20px;
-    color: #1e293b;
+    color: var(--ink);
     font-weight: 500;
+    font-family: 'Segoe UI', Arial, sans-serif;
   }
 
-  /* Ensure selects visually match inputs across browsers */
   select.input-field {
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
-    background-image: linear-gradient(45deg, transparent 50%, rgba(15,23,42,0.35) 50%),
-                      linear-gradient(135deg, rgba(15,23,42,0.35) 50%, transparent 50%);
+    background-image: linear-gradient(45deg, transparent 50%, rgba(22,60,47,0.45) 50%),
+                      linear-gradient(135deg, rgba(22,60,47,0.45) 50%, transparent 50%);
     background-position: calc(100% - 18px) calc(1em + 2px), calc(100% - 13px) calc(1em + 2px);
     background-size: 6px 6px, 6px 6px;
     background-repeat: no-repeat;
@@ -108,18 +164,16 @@
   }
 
   .input-field:focus, select.input-field:focus {
-    border-color: #14b8a6;
+    border-color: var(--gold);
     background: #ffffff;
-    box-shadow: 0 0 0 4px rgba(20,184,166,0.14);
+    box-shadow: 0 0 0 4px rgba(201,161,90,0.16);
   }
 
-  .input-field::placeholder { color: #94a3b8; }
+  .input-field::placeholder { color: #a89f8c; }
 
-  /* Layout rows */
   .form-row { display: flex; gap: 14px; align-items: flex-start; flex-wrap: wrap; }
   .col-full { width: 100%; min-width: 0; }
 
-  /* Amount/note grid ensures labels line up and equal heights */
   .grid-amount-note {
     display: grid;
     grid-template-columns: 1fr 2fr;
@@ -127,70 +181,75 @@
     align-items: start;
   }
 
-  /* Currency-prefixed amount field */
   .amount-wrap { position: relative; }
   .amount-wrap .currency-prefix {
     position: absolute;
     left: 14px;
     top: 50%;
     transform: translateY(-50%);
-    color: #94a3b8;
-    font-weight: 600;
+    color: var(--gold-dark);
+    font-weight: 700;
     font-size: 15px;
     pointer-events: none;
+    font-family: 'Courier New', monospace;
   }
-  .amount-wrap input { padding-left: 30px; }
+  .amount-wrap input {
+    padding-left: 30px;
+    font-family: 'Courier New', monospace;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
 
-  /* Info banner, matching the reference's light-blue helper strip */
+  /* Info banner */
   .info-banner {
     display: flex;
     align-items: center;
     gap: 10px;
-    background: #eff8ff;
-    border: 1px solid #d7ecff;
-    color: #175cd3;
-    font-size: 14px;
-    font-weight: 500;
+    background: #faf3df;
+    border: 1px solid var(--gold-line);
+    color: var(--gold-dark);
+    font-size: 13.5px;
+    font-weight: 600;
     padding: 13px 16px;
-    border-radius: 12px;
+    border-radius: 10px;
     margin: 0 0 18px;
   }
-  .info-banner svg { flex: none; width: 18px; height: 18px; stroke: #175cd3; }
+  .info-banner svg { flex: none; width: 18px; height: 18px; stroke: var(--gold-dark); }
 
-  /* Helper text */
-  .small-note { font-size: 13px; color: #94a3b8; margin-top: 8px; }
+  .small-note { font-size: 12.5px; color: var(--muted); margin-top: 8px; }
 
-  /* Divider above action row */
   .actions {
     display: flex;
     justify-content: flex-end;
-    margin-top: 18px;
+    margin-top: 20px;
     padding-top: 18px;
-    border-top: 1px solid #eef1f5;
+    border-top: 1px solid var(--gold-line);
   }
 
   .btn {
-    padding: 12px 22px;
-    border-radius: 12px;
+    padding: 12px 24px;
+    border-radius: 10px;
     border: none;
     font-weight: 700;
-    font-size: 14.5px;
+    font-size: 14px;
+    letter-spacing: 0.02em;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
     gap: 8px;
+    text-transform: uppercase;
   }
 
   .btn-primary {
-    background: linear-gradient(135deg, #14b8a6, #0d9488);
-    color: #ffffff;
-    box-shadow: 0 8px 18px rgba(13,148,136,0.28);
+    background: linear-gradient(155deg, var(--green-mid), var(--green));
+    color: #f4ecd2;
+    box-shadow: 0 8px 18px rgba(22,60,47,0.30);
     transition: 0.15s ease;
   }
 
   .btn-primary:hover {
     transform: translateY(-1px);
-    box-shadow: 0 10px 22px rgba(13,148,136,0.36);
+    box-shadow: 0 10px 22px rgba(22,60,47,0.38);
   }
 
   .btn-primary:disabled {
@@ -199,47 +258,56 @@
     transform: none;
   }
 
-  .btn-primary svg { width: 16px; height: 16px; stroke: #ffffff; }
+  .btn-primary svg { width: 16px; height: 16px; stroke: #f4ecd2; }
 
-  /* Suggestions dropdown, restyled to feel native to the new field style */
+  /* Suggestions dropdown */
   #suggestions {
-    border: 1px solid #e2e8f0 !important;
-    box-shadow: 0 12px 28px rgba(16,24,40,0.12) !important;
+    border: 1px solid var(--gold-line) !important;
+    box-shadow: 0 12px 28px rgba(22,60,47,0.14) !important;
   }
 
   .suggestion-item {
     font-size: 14.5px;
-    color: #1e293b;
+    color: var(--ink);
+    font-family: 'Segoe UI', Arial, sans-serif;
   }
 
-  .suggestion-item strong { color: #0f172a; }
+  .suggestion-item strong { color: var(--green); }
 
-  /* Autocomplete suggestion active state */
   .suggestion-item.active {
-    background: #e6fbf8;
+    background: #eef6f1;
   }
 
   .suggestion-item:hover {
-    background: #f1f5f9;
+    background: #faf3df;
   }
 
   @media (max-width: 720px) {
     .grid-amount-note { grid-template-columns: 1fr; }
     .card { padding: 20px; }
+    .page-header { flex-wrap: wrap; }
+    .seal { display: none; }
   }
 </style>
 
 <div class="page-wrap">
 
   <div class="page-header">
-    <div class="page-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M3 10h18M7 15h1m4 0h1M5 6h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z"/>
-      </svg>
+    <div class="page-header-left">
+      <div class="page-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 10h18M7 15h1m4 0h1M5 6h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z"/>
+        </svg>
+      </div>
+      <div class="page-heading">
+        <div class="eyebrow">Ledger &middot; Balance Adjustments</div>
+        <h2>Add Old Balance</h2>
+        <p>Record an opening or carried-forward balance for a supplier or customer.</p>
+      </div>
     </div>
-    <div class="page-heading">
-      <h2>Add Old Balance</h2>
-      <p>Record an opening or carried-forward balance for a supplier or customer.</p>
+
+    <div class="seal">
+      <span>Opening<br>Balance<br>Entry</span>
     </div>
   </div>
 
