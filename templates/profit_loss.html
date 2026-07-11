@@ -3,11 +3,11 @@
 <style>
   :root {
     --cream: #faf6ec;
-    --cream-deep: #f5efe0;
-    --parchment: #fbf8ef;
-    --ink: #1f2a24;
+    --cream-deep: #f2ead4;
+    --parchment: #fdfbf4;
+    --ink: #23291f;
     --muted: #8a7f68;
-    --border: #e6dcc0;
+    --border: #e8dfc4;
     --gold: #c9a227;
     --gold-dark: #a9821b;
     --green: #16403a;
@@ -17,141 +17,151 @@
   }
 
   .pl-page {
-    max-width: 1180px;
+    max-width: 1120px;
     margin: 0 auto;
+    padding-top: 8px;
     font-family: "Georgia", "Iowan Old Style", serif;
     color: var(--ink);
   }
 
-  .pl-page .mono, .pl-page .currency, .pl-page input[type="date"] {
+  .pl-page .currency, .pl-page input[type="date"] {
     font-family: "Courier New", ui-monospace, monospace;
   }
 
-  /* ---- Header card, styled like the "Old Balance Adjustment History" banner ---- */
+  /* ---- Header banner ---- */
   .pl-banner {
     position: relative;
-    background: var(--cream);
-    border: 1px solid var(--gold);
+    background: linear-gradient(180deg, #fffdf6, var(--cream));
+    border: 1px solid var(--border);
     border-top: 4px solid var(--gold);
     border-radius: 14px;
-    padding: 28px 32px 24px;
-    margin: 4px 0 26px 0;
-    box-shadow: 0 1px 2px rgba(31,42,36,0.04), 0 12px 30px rgba(31,42,36,0.05);
+    padding: 22px 26px 20px;
+    margin: 0 0 18px 0;
+    box-shadow: 0 1px 2px rgba(31,42,36,0.05), 0 10px 26px rgba(31,42,36,0.06);
   }
 
-  .pl-eyebrow {
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--gold-dark);
-    margin: 0 0 10px 62px;
-  }
-
-  .pl-title-row { display: flex; align-items: center; gap: 18px; }
+  .pl-title-row { display: flex; align-items: center; gap: 14px; padding-right: 110px; }
 
   .pl-title-row .icon-chip {
-    width: 48px;
-    height: 48px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
     background: var(--green-deep);
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    box-shadow: 0 4px 10px rgba(15,47,42,0.35);
+    box-shadow: 0 4px 10px rgba(15,47,42,0.32);
   }
-  .pl-title-row .icon-chip svg { width: 22px; height: 22px; stroke: var(--cream); }
+  .pl-title-row .icon-chip svg { width: 20px; height: 20px; stroke: var(--cream); }
+
+  .pl-title-text { min-width: 0; }
+
+  .pl-eyebrow {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--gold-dark);
+    margin: 0 0 2px 0;
+  }
 
   .pl-title-row h2 {
     margin: 0;
-    font-size: 32px;
+    font-size: 27px;
     font-weight: 700;
     color: var(--green-deep);
     letter-spacing: -0.01em;
+    line-height: 1.15;
   }
 
   .pl-sub {
-    margin: 10px 0 0 62px;
-    font-size: 14.5px;
+    margin: 12px 0 0 58px;
+    font-size: 13.5px;
     color: #5c5646;
-    max-width: 640px;
+    max-width: 620px;
     line-height: 1.5;
   }
 
   .pl-range-badge {
-    margin: 14px 0 0 62px;
+    margin: 12px 0 0 58px;
     display: inline-block;
     font-family: "Courier New", monospace;
-    font-size: 13px;
+    font-size: 12.5px;
     color: var(--green-deep);
     background: #eef3ee;
     border: 1px solid #cfe0d2;
-    border-radius: 8px;
-    padding: 5px 12px;
+    border-radius: 7px;
+    padding: 4px 11px;
     letter-spacing: 0.02em;
   }
 
-  /* stamp badge, top-right circular seal */
+  /* stamp badge, top-right circular seal, fully contained inside banner */
   .pl-stamp {
     position: absolute;
-    top: 24px;
-    right: 30px;
-    width: 92px;
-    height: 92px;
+    top: 20px;
+    right: 24px;
+    width: 78px;
+    height: 78px;
     border-radius: 50%;
     border: 1px dashed var(--gold);
+    background: rgba(255,255,255,0.5);
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
     color: var(--gold-dark);
-    font-size: 9.5px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 8.5px;
     font-weight: 700;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.05em;
     text-transform: uppercase;
-    line-height: 1.35;
-    padding: 6px;
+    line-height: 1.3;
+    padding: 4px;
   }
 
   hr.pl-hr {
     border: none;
     border-top: 1px solid var(--border);
-    margin: 22px 0 20px 0;
+    margin: 18px 0 16px 58px;
   }
 
-  /* ---- Filter / date controls, echoing the "select date / load / today" bar ---- */
+  /* ---- Filter / date controls ---- */
   .pl-controls-row {
     display: flex;
     align-items: flex-end;
-    justify-content: space-between;
     flex-wrap: wrap;
-    gap: 18px;
+    gap: 14px;
+    margin-left: 58px;
   }
 
   .pl-controls-row form {
     display: flex;
     align-items: flex-end;
-    gap: 14px;
+    gap: 12px;
     flex-wrap: wrap;
   }
 
-  .pl-field { display: flex; flex-direction: column; gap: 6px; }
+  .pl-field { display: flex; flex-direction: column; gap: 5px; }
   .pl-field label {
-    font-size: 10.5px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 10px;
     font-weight: 700;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.09em;
     text-transform: uppercase;
     color: var(--muted);
   }
   .pl-field input[type="date"] {
     border: 1px solid var(--border);
     border-radius: 8px;
-    padding: 9px 12px;
-    font-size: 14px;
+    padding: 8px 12px;
+    font-size: 13.5px;
     color: var(--ink);
     background: var(--parchment);
+    transition: border-color .15s ease, box-shadow .15s ease;
   }
+  .pl-field input[type="date"]:hover { border-color: #d8ccA0; }
   .pl-field input[type="date"]:focus {
     outline: none;
     border-color: var(--gold);
@@ -163,39 +173,42 @@
     color: var(--green-deep);
     border: none;
     border-radius: 8px;
-    padding: 10px 22px;
-    font-size: 14px;
+    padding: 9px 20px;
+    font-size: 13.5px;
     font-weight: 700;
     font-family: "Georgia", serif;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    transition: background .15s ease;
+    gap: 7px;
+    box-shadow: 0 2px 8px rgba(201,162,39,0.3);
+    transition: background .15s ease, transform .12s ease, box-shadow .12s ease;
   }
-  .pl-go-btn:hover { background: var(--gold-dark); color: #fff; }
-  .pl-go-btn svg { width: 15px; height: 15px; stroke: currentColor; }
+  .pl-go-btn:hover { background: var(--gold-dark); color: #fff; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(169,130,27,0.35); }
+  .pl-go-btn:active { transform: translateY(0); }
+  .pl-go-btn svg { width: 14px; height: 14px; stroke: currentColor; }
 
   /* ---- Info strip ---- */
   .pl-info-strip {
     background: var(--cream-deep);
     border: 1px solid var(--border);
     border-radius: 10px;
-    padding: 12px 18px;
+    padding: 10px 16px;
     display: flex;
     align-items: center;
-    gap: 10px;
-    font-size: 13.5px;
+    gap: 9px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 13px;
     color: #6b6350;
-    margin-bottom: 26px;
+    margin-bottom: 18px;
   }
-  .pl-info-strip svg { width: 16px; height: 16px; stroke: var(--gold-dark); flex-shrink: 0; }
+  .pl-info-strip svg { width: 15px; height: 15px; stroke: var(--gold-dark); flex-shrink: 0; }
 
   /* ---- Summary cards row ---- */
   .pl-container {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 22px;
+    grid-template-columns: 1fr 0.9fr 1fr;
+    gap: 16px;
     align-items: stretch;
   }
   @media (max-width: 860px) {
@@ -210,26 +223,31 @@
     display: flex;
     flex-direction: column;
     border-top: 3px solid var(--border);
+    box-shadow: 0 1px 2px rgba(31,42,36,0.03);
+    transition: box-shadow .15s ease, transform .15s ease;
   }
-  .pl-box.profit { border-top-color: var(--green-deep); }
-  .pl-box.loss { border-top-color: #1f1f1f; }
+  .pl-box:hover { box-shadow: 0 8px 20px rgba(31,42,36,0.06); transform: translateY(-1px); }
+  .pl-box.profit { border-top-color: var(--profit-green); }
+  .pl-box.loss { border-top-color: var(--loss-red); }
+  .pl-box.net { border-top-color: var(--gold); }
 
   .pl-box-head {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 18px 20px 6px;
+    padding: 16px 18px 4px;
   }
   .pl-box-head .label {
-    font-size: 10.5px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 10px;
     font-weight: 700;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.11em;
     text-transform: uppercase;
     color: var(--muted);
   }
   .pl-box-head .mini-icon {
-    width: 34px;
-    height: 34px;
+    width: 32px;
+    height: 32px;
     border-radius: 9px;
     display: flex;
     align-items: center;
@@ -237,14 +255,14 @@
     flex-shrink: 0;
   }
   .pl-box.profit .mini-icon { background: #e6efe6; }
-  .pl-box.loss .mini-icon { background: #efe6e2; }
+  .pl-box.loss .mini-icon { background: #f3e5e4; }
   .pl-box.profit .mini-icon svg { stroke: var(--profit-green); }
   .pl-box.loss .mini-icon svg { stroke: var(--loss-red); }
-  .pl-box-head svg { width: 17px; height: 17px; }
+  .pl-box-head svg { width: 16px; height: 16px; }
 
   .pl-box-value {
-    padding: 2px 20px 4px;
-    font-size: 30px;
+    padding: 0 18px 2px;
+    font-size: 27px;
     font-weight: 700;
     font-family: "Courier New", monospace;
     color: var(--ink);
@@ -253,30 +271,32 @@
   .pl-box.loss .pl-box-value { color: var(--loss-red); }
 
   .pl-box-sub {
-    padding: 0 20px 16px;
-    font-size: 12.5px;
+    padding: 0 18px 12px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 12px;
     color: var(--muted);
   }
 
-  .pl-list { list-style: none; padding: 0 10px 14px; margin: 6px 0 0 0; }
+  .pl-list { list-style: none; padding: 0 8px 10px; margin: 2px 0 0 0; }
   .pl-list li {
-    padding: 10px 10px;
+    padding: 8px 10px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 13.5px;
+    font-size: 13px;
     color: var(--ink);
     border-radius: 8px;
   }
   .pl-list li:not(:last-child) { border-bottom: 1px dashed var(--border); }
-  .pl-list li span:first-child { color: #746a55; }
+  .pl-list li span:first-child { color: #746a55; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 12.5px; }
   .pl-list li.total {
-    margin-top: 4px;
+    margin-top: 2px;
     border-top: 1px solid var(--border);
     border-bottom: none !important;
     font-weight: 700;
-    font-size: 14.5px;
+    font-size: 14px;
   }
+  .pl-list li.total span:first-child { font-family: "Georgia", serif; color: var(--ink); font-size: 13.5px; }
   .pl-box.profit .pl-list li.total span:last-child { color: var(--profit-green); }
   .pl-box.loss .pl-list li.total span:last-child { color: var(--loss-red); }
   .currency { white-space: nowrap; }
@@ -287,36 +307,45 @@
     align-items: center;
     justify-content: center;
     text-align: center;
-    border-top-color: var(--gold);
-    padding: 20px 20px 24px;
+    padding: 22px 20px;
   }
   .pl-box.net .mini-icon-center {
-    width: 42px;
-    height: 42px;
+    width: 38px;
+    height: 38px;
     border-radius: 50%;
     background: var(--green-deep);
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 4px auto 12px;
+    margin: 0 auto 10px;
   }
-  .pl-box.net .mini-icon-center svg { width: 20px; height: 20px; stroke: var(--cream); }
+  .pl-box.net .mini-icon-center svg { width: 18px; height: 18px; stroke: var(--cream); }
+  .pl-box.net .label {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
   .pl-box.net .net-value {
-    font-size: 34px;
+    font-size: 30px;
     font-weight: 700;
     font-family: "Courier New", monospace;
     letter-spacing: -0.01em;
+    margin-top: 6px;
   }
   .pl-box.net.is-positive .net-value { color: var(--profit-green); }
   .pl-box.net.is-negative .net-value { color: var(--loss-red); }
   .net-badge {
     display: inline-block;
-    margin-top: 12px;
-    font-size: 11px;
+    margin-top: 10px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 10.5px;
     font-weight: 700;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
-    padding: 4px 14px;
+    padding: 4px 13px;
     border-radius: 999px;
   }
   .pl-box.net.is-positive .net-badge { background: #e6efe6; color: var(--profit-green); border: 1px solid #bfd8bf; }
@@ -324,14 +353,21 @@
 
   .pl-foot {
     text-align: center;
-    margin-top: 24px;
+    margin-top: 18px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     color: var(--muted);
-    font-size: 12.5px;
-    padding-top: 16px;
+    font-size: 12px;
+    padding-top: 14px;
     border-top: 1px solid var(--border);
   }
   .pl-foot b.pos { color: var(--profit-green); }
   .pl-foot b.neg { color: var(--loss-red); }
+
+  @media (max-width: 640px) {
+    .pl-title-row { padding-right: 0; }
+    .pl-stamp { display: none; }
+    .pl-sub, .pl-range-badge, .pl-controls-row, hr.pl-hr { margin-left: 0; }
+  }
 </style>
 
 <div class="pl-page">
@@ -339,7 +375,6 @@
   <div class="pl-banner">
     <div class="pl-stamp">Profit<br>&amp; Loss<br>Ledger</div>
 
-    <div class="pl-eyebrow">Ledger &middot; Profit &amp; Loss</div>
     <div class="pl-title-row">
       <div class="icon-chip">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -347,7 +382,10 @@
           <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
         </svg>
       </div>
-      <h2>Profit &amp; Loss</h2>
+      <div class="pl-title-text">
+        <div class="pl-eyebrow">Ledger &middot; Profit &amp; Loss</div>
+        <h2>Profit &amp; Loss</h2>
+      </div>
     </div>
     <p class="pl-sub">Commission earned against supplier and staff costs for the selected period, with the net result summarised at a glance.</p>
     <span class="pl-range-badge">{{ from_date }} &nbsp;&rarr;&nbsp; {{ to_date }}</span>
@@ -423,7 +461,7 @@
         </svg>
       </div>
       <span class="label">Net (Profit &minus; Loss)</span>
-      <div class="net-value currency" style="margin-top:8px;">{{ '%.2f'|format(net_val) }}</div>
+      <div class="net-value currency">{{ '%.2f'|format(net_val) }}</div>
       <span class="net-badge">{% if net_val >= 0 %}Overall Profit{% else %}Overall Loss{% endif %}</span>
     </div>
 
