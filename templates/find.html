@@ -60,9 +60,17 @@
 
 .header-left{
     display:flex;
+    flex-direction:column;
+    flex:1;
+}
+
+.icon-title-row{
+    display:flex;
     align-items:center;
     gap:16px;
 }
+
+
 
 .page-icon{
     flex-shrink:0;
@@ -109,7 +117,7 @@ h2.page-title{
 }
 
 p.page-subtitle{
-    margin:8px 0 0;
+    margin:8px 0 0 66px;
     color:var(--muted);
     font-size:14.5px;
     max-width:52ch;
@@ -474,7 +482,7 @@ p.page-subtitle{
     .search-bar{ flex-direction:column; align-items:stretch; }
     .field-group.grow{ min-width:0; }
     .btn{ justify-content:center; }
-    .result-table th:nth-child(2), .result-table td:nth-child(2){ display:none; }
+    .result-table th:nth-child(1), .result-table td:nth-child(1){ display:none; }
 }
 
 @media (prefers-reduced-motion: reduce){
@@ -488,17 +496,19 @@ p.page-subtitle{
     <div class="header-card">
         <div class="header-top">
             <div class="header-left">
-                <div class="page-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="11" cy="11" r="7"></circle>
-                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                    </svg>
+                <div class="icon-title-row">
+                    <div class="page-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="7"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="eyebrow">LEDGER <span class="dot">·</span> ACCOUNT LOOKUP</div>
+                        <h2 class="page-title">Find Supplier / Customer</h2>
+                    </div>
                 </div>
-                <div>
-                    <div class="eyebrow">LEDGER <span class="dot">·</span> ACCOUNT LOOKUP</div>
-                    <h2 class="page-title">Find Supplier / Customer</h2>
-                    <p class="page-subtitle">Search records by name, view balances at a glance, and jump straight into editing.</p>
-                </div>
+                <p class="page-subtitle">Search records by name, view balances at a glance, and jump straight into editing.</p>
             </div>
             <div class="stamp">
                 <span>Account<br>Search<br>Registry</span>
@@ -565,8 +575,8 @@ p.page-subtitle{
         <table class="result-table">
             <thead>
                 <tr>
-                    <th>{% if mode == 'supplier' %}Supplier Name{% else %}Customer Name{% endif %}</th>
                     <th>{% if mode == 'supplier' %}Supplier ID{% else %}Customer ID{% endif %}</th>
+                    <th>{% if mode == 'supplier' %}Supplier Name{% else %}Customer Name{% endif %}</th>
                     <th>Balance</th>
                     <th>Action</th>
                 </tr>
@@ -574,6 +584,7 @@ p.page-subtitle{
             <tbody>
                 {% for r in results %}
                 <tr>
+                    <td><span class="badge">#{{ r.id }}</span></td>
                     <td>
                         <div class="name-cell">
                             <div class="avatar">{{ r.name|first|upper }}</div>
@@ -582,7 +593,6 @@ p.page-subtitle{
                             </div>
                         </div>
                     </td>
-                    <td><span class="badge">#{{ r.id }}</span></td>
                     <td>
                         {% if r.balance < 0 %}
                             <span class="amount-chip balance-negative">
