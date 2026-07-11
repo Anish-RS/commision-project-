@@ -261,7 +261,7 @@ tbody tr:not(.tot-row):not(.net-row) td {
 }
 
 .amount { font-weight: 600; }
-.amount::before { content: "\20B9"; opacity: 0.7; margin-right: 1px; font-weight: 500; }
+
 
 .credit { color: var(--credit); }
 .debit { color: var(--debit); }
@@ -403,7 +403,7 @@ tbody tr:not(.tot-row):not(.net-row) td {
         font-weight: bold;
     }
 
-    .amount::before { content: "Rs."; opacity: 1; }
+    
 
     .tot-row td {
         background: transparent;
@@ -453,16 +453,16 @@ tbody tr:not(.tot-row):not(.net-row) td {
     <div class="summary-card">
         <div class="s-label">Supplier Net Balance</div>
         <div class="s-value {{ 'pos' if (supplier_credit_total - supplier_debit_total) >= 0 else 'neg' }} mono">
-            &#8377;{{ '%.2f'|format(supplier_credit_total - supplier_debit_total) }}
+            {{ '%.2f'|format(supplier_credit_total - supplier_debit_total) }}
         </div>
-        <div class="s-sub mono">Credit &#8377;{{ '%.2f'|format(supplier_credit_total) }} &middot; Debit &#8377;{{ '%.2f'|format(supplier_debit_total) }}</div>
+        <div class="s-sub mono">Credit {{ '%.2f'|format(supplier_credit_total) }} &middot; Debit {{ '%.2f'|format(supplier_debit_total) }}</div>
     </div>
     <div class="summary-card">
         <div class="s-label">Customer Net Balance</div>
         <div class="s-value {{ 'pos' if (customer_credit_total - customer_debit_total) >= 0 else 'neg' }} mono">
-            &#8377;{{ '%.2f'|format(customer_credit_total - customer_debit_total) }}
+            {{ '%.2f'|format(customer_credit_total - customer_debit_total) }}
         </div>
-        <div class="s-sub mono">Credit &#8377;{{ '%.2f'|format(customer_credit_total) }} &middot; Debit &#8377;{{ '%.2f'|format(customer_debit_total) }}</div>
+        <div class="s-sub mono">Credit {{ '%.2f'|format(customer_credit_total) }} &middot; Debit {{ '%.2f'|format(customer_debit_total) }}</div>
     </div>
 </div>
 
