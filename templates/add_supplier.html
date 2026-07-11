@@ -6,39 +6,37 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 
-<!-- hidden filter used for the subtle paper-grain texture on the card -->
-<svg width="0" height="0" style="position:absolute">
-    <filter id="paperGrain">
-        <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch" result="noise"/>
-        <feColorMatrix in="noise" type="matrix"
-            values="0 0 0 0 0
-                    0 0 0 0 0
-                    0 0 0 0 0
-                    0 0 0 0.9 0"/>
-    </filter>
-</svg>
-
 <style>
     /* ========================================================
-       TOKENS
+       TOKENS — Ledger House theme (shared with Customer Ledger)
        ======================================================== */
     :root{
-        --ink:        #1B2A4A;
-        --ink-soft:    #3B4C6E;
-        --paper:      #F6F2E8;
-        --paper-raised:#FFFDF8;
-        --rule:       #E1D6BC;
-        --brass:      #A97F45;
-        --brass-deep: #8C6835;
-        --brass-light:#D8B77E;
-        --brass-tint: #EFE1C6;
+        --forest-900:  #0F1F16;
+        --forest-800:  #16321F;
+        --forest-700:  #1F4229;
+        --gold:        #C9A227;
+        --gold-light:  #E7CE7B;
+        --gold-deep:   #9C7A1C;
+        --gold-tint:   #F3E7C2;
+
+        --ink:        #1C271E;
+        --ink-soft:   #445046;
+        --paper:      #F7F3E7;
+        --paper-raised:#FFFFFF;
+        --field-bg:   #FAF6EA;
+        --rule:       #E4DCC1;
+
+        --dot-name:    #2F6F4E;
+        --dot-phone:   #2E5F7A;
+        --dot-address: #B24A2E;
+        --dot-balance: #B0821F;
+
         --success:    #2F6F4E;
-        --success-bg: #E7F1EA;
         --error:      #AD3B2B;
-        --error-bg:   #F7E7E2;
-        --muted:      #7A7563;
-        --shadow-lg:  0 28px 56px -20px rgba(27,42,74,0.32);
-        --shadow-sm:  0 2px 6px rgba(27,42,74,0.08);
+        --muted:      #857F68;
+
+        --shadow-lg:  0 30px 60px -22px rgba(15,31,22,0.35);
+        --shadow-sm:  0 2px 6px rgba(15,31,22,0.10);
     }
 
     @media (prefers-reduced-motion: reduce){
@@ -50,8 +48,8 @@
        ======================================================== */
     body{
         background:
-            radial-gradient(circle at 12% 8%, rgba(169,127,69,0.12), transparent 45%),
-            radial-gradient(circle at 88% 92%, rgba(27,42,74,0.09), transparent 50%),
+            radial-gradient(circle at 12% 8%, rgba(201,162,39,0.10), transparent 45%),
+            radial-gradient(circle at 88% 92%, rgba(15,31,22,0.08), transparent 50%),
             var(--paper);
         background-attachment: fixed;
         font-family: 'Inter', -apple-system, sans-serif;
@@ -64,147 +62,108 @@
         padding: 0 20px;
     }
 
-    .eyebrow{
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        gap:12px;
-        font-family:'IBM Plex Mono', monospace;
-        font-size:11px;
-        letter-spacing:.18em;
-        text-transform:uppercase;
-        color: var(--brass-deep);
-        margin-bottom:12px;
-    }
-    .eyebrow::before, .eyebrow::after{
-        content:"";
-        height:1px;
-        width:32px;
-        background: linear-gradient(90deg, transparent, var(--brass), transparent);
-        opacity:.7;
-    }
-
-    .page-title{
-        font-family:'Fraunces', serif;
-        font-weight:600;
-        font-size: 34px;
-        letter-spacing: -0.01em;
-        color: var(--ink);
-        text-align:center;
-        margin: 0;
-    }
-
-    .page-sub{
-        text-align:center;
-        font-size: 13.5px;
-        color: var(--muted);
-        margin: 8px 0 36px;
-        font-weight: 500;
-    }
-
     /* ========================================================
        LEDGER CARD
        ======================================================== */
-    .card-outer{
-        position:relative;
-        padding-top: 26px; /* room for the hanging seal */
-    }
-
-    /* thread the seal hangs from */
-    .tag-thread{
-        position:absolute;
-        top: 0;
-        left: 50%;
-        width: 1px;
-        height: 26px;
-        background: linear-gradient(to bottom, transparent, var(--brass) 60%);
-        opacity:.6;
-    }
-
-    /* wax-seal medallion */
-    .ledger-seal{
-        position:absolute;
-        top: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 54px;
-        height: 54px;
-        border-radius: 50%;
-        background:
-            radial-gradient(circle at 32% 28%, var(--brass-light), var(--brass) 46%, var(--brass-deep) 100%);
-        box-shadow:
-            var(--shadow-sm),
-            inset 0 2px 2px rgba(255,255,255,0.35),
-            inset 0 -3px 5px rgba(0,0,0,0.25);
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        z-index: 3;
-        animation: sealSettle .7s cubic-bezier(.2,.8,.2,1) .1s both;
-    }
-    .ledger-seal svg{
-        width: 24px;
-        height: 24px;
-        stroke: var(--paper-raised);
-        opacity: .95;
-    }
-    @keyframes sealSettle{
-        0%{ opacity:0; transform: translateX(-50%) translateY(-10px) rotate(-8deg); }
-        60%{ transform: translateX(-50%) translateY(2px) rotate(3deg); }
-        100%{ opacity:1; transform: translateX(-50%) translateY(0) rotate(0deg); }
-    }
-
     .supplier-card{
         position:relative;
         background: var(--paper-raised);
-        background-image: repeating-linear-gradient(
-            to bottom,
-            transparent 0px,
-            transparent 47px,
-            var(--rule) 48px
-        );
-        background-position: 0 118px;
-        border-radius: 16px;
-        padding: 42px 40px 34px;
+        border-radius: 22px;
         box-shadow: var(--shadow-lg);
-        border: 1px solid rgba(27,42,74,0.07);
-        animation: riseIn .55s cubic-bezier(.2,.8,.2,1) .05s both;
+        border: 1px solid rgba(15,31,22,0.06);
         overflow:hidden;
+        animation: riseIn .55s cubic-bezier(.2,.8,.2,1) .05s both;
     }
-
-    /* subtle paper-grain texture, purely atmospheric */
-    .supplier-card::after{
-        content:"";
-        position:absolute;
-        inset:0;
-        filter: url(#paperGrain);
-        opacity:.5;
-        mix-blend-mode: multiply;
-        pointer-events:none;
-    }
-
     @keyframes riseIn{
         from{ opacity:0; transform: translateY(16px); }
         to{ opacity:1; transform: translateY(0); }
     }
 
-    /* perforated left edge, echoes a torn ledger sheet */
-    .supplier-card::before{
+    /* ---- banner ---- */
+    .card-banner{
+        position:relative;
+        padding: 40px 32px 34px;
+        text-align:center;
+        background:
+            radial-gradient(circle at 50% 10%, rgba(231,206,123,0.16), transparent 55%),
+            radial-gradient(circle at 15% 90%, rgba(201,162,39,0.10), transparent 50%),
+            linear-gradient(160deg, var(--forest-700), var(--forest-900));
+        overflow:hidden;
+    }
+    .card-banner::before{
         content:"";
         position:absolute;
-        left: 0;
-        top: 20px;
-        bottom: 20px;
-        width: 1px;
-        background-image: radial-gradient(circle, var(--rule) 1.5px, transparent 1.6px);
-        background-size: 1px 10px;
-        background-repeat: repeat-y;
-        z-index:2;
+        inset:-40%;
+        background:
+            repeating-radial-gradient(circle at 50% 0%, rgba(255,255,255,0.03) 0 2px, transparent 2px 64px);
+        pointer-events:none;
+    }
+
+    .banner-seal{
+        position:relative;
+        width: 54px;
+        height: 54px;
+        margin: 0 auto 16px;
+        border-radius: 50%;
+        border: 1px solid rgba(231,206,123,0.55);
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        animation: sealSettle .7s cubic-bezier(.2,.8,.2,1) .1s both;
+    }
+    .banner-seal::before{
+        content:"";
+        position:absolute;
+        inset: -8px;
+        border-radius: 50%;
+        border: 1px dashed rgba(231,206,123,0.28);
+    }
+    .banner-seal svg{
+        width: 22px;
+        height: 22px;
+        stroke: var(--gold-light);
+        fill: var(--gold-light);
+    }
+    @keyframes sealSettle{
+        0%{ opacity:0; transform: translateY(-8px) scale(.85); }
+        100%{ opacity:1; transform: translateY(0) scale(1); }
+    }
+
+    .eyebrow{
+        font-family:'IBM Plex Mono', monospace;
+        font-size:11px;
+        font-weight:600;
+        letter-spacing:.22em;
+        text-transform:uppercase;
+        color: var(--gold-light);
+        margin-bottom:12px;
+    }
+
+    .page-title{
+        position:relative;
+        font-family:'Fraunces', serif;
+        font-weight:600;
+        font-size: 32px;
+        letter-spacing: -0.01em;
+        color: #FBF8EF;
+        margin: 0;
+    }
+
+    .banner-rule{
+        width: 46px;
+        height: 1px;
+        margin: 20px auto 0;
+        background: linear-gradient(90deg, transparent, var(--gold), transparent);
+        opacity:.8;
     }
 
     /* ========================================================
-       SECTION DIVIDERS
+       FORM BODY
        ======================================================== */
+    .card-body{
+        padding: 34px 40px 34px;
+    }
+
     .section-label{
         display:flex;
         align-items:center;
@@ -214,10 +173,8 @@
         font-weight:600;
         letter-spacing:.14em;
         text-transform:uppercase;
-        color: var(--brass-deep);
+        color: var(--gold-deep);
         margin: 0 0 20px;
-        position:relative;
-        z-index:1;
     }
     .section-label::after{
         content:"";
@@ -225,35 +182,36 @@
         height:1px;
         background: var(--rule);
     }
-    .section-label:not(:first-child){ margin-top: 8px; }
+    .section-label:not(:first-child){ margin-top: 30px; }
 
-    /* ========================================================
-       FORM
-       ======================================================== */
     .form-group{
         position: relative;
-        margin-bottom: 24px;
-        z-index:1;
+        margin-bottom: 22px;
     }
-
-    .field-row{
-        display:flex;
-        gap: 16px;
-    }
-    .field-row .form-group{ flex:1; }
 
     label{
         display:flex;
         align-items:center;
-        gap:7px;
+        gap:8px;
         font-weight:600;
         font-size: 12.5px;
-        letter-spacing:.03em;
+        letter-spacing:.04em;
         text-transform: uppercase;
         color: var(--ink-soft);
         margin-bottom: 9px;
     }
-    label .req{ color: var(--brass-deep); font-weight:700; }
+    label .dot{
+        width:7px; height:7px;
+        border-radius:50%;
+        background: currentColor;
+        flex:none;
+    }
+    label.f-name{ color: var(--dot-name); }
+    label.f-phone{ color: var(--dot-phone); }
+    label.f-address{ color: var(--dot-address); }
+    label.f-balance{ color: var(--dot-balance); }
+    label .label-text{ color: var(--ink-soft); text-transform:uppercase; }
+    label .req{ color: var(--dot-address); font-weight:700; }
     label .opt{
         font-weight:500;
         text-transform:none;
@@ -274,7 +232,7 @@
         width: 17px;
         height: 17px;
         color: var(--ink-soft);
-        opacity:.5;
+        opacity:.45;
         pointer-events:none;
         transition: color .2s ease, opacity .2s ease;
     }
@@ -282,30 +240,27 @@
 
     .input-field{
         width:100%;
-        padding: 13px 14px 13px 41px;
-        border-radius: 10px;
+        padding: 14px 14px 14px 41px;
+        border-radius: 12px;
         border: 1.5px solid var(--rule);
-        background: var(--paper);
+        background: var(--field-bg);
         outline:none;
         font-family:'Inter', sans-serif;
         font-size: 15px;
         color: var(--ink);
-        box-shadow: inset 0 1px 2px rgba(27,42,74,0.04);
+        box-shadow: inset 0 1px 2px rgba(15,31,22,0.04);
         transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
     }
 
     .input-field::placeholder{ color: #A79F87; }
-
     .input-field:hover{ border-color: #D3C6A3; }
-
     .input-field:focus{
-        border-color: var(--brass);
+        border-color: var(--gold);
         background: #fff;
-        box-shadow: 0 0 0 4px rgba(169,127,69,0.14), inset 0 1px 2px rgba(27,42,74,0.03);
+        box-shadow: 0 0 0 4px rgba(201,162,39,0.14), inset 0 1px 2px rgba(15,31,22,0.03);
     }
-    .input-field:focus ~ .input-icon,
     .input-shell:focus-within .input-icon{
-        color: var(--brass-deep);
+        color: var(--gold-deep);
         opacity:.9;
     }
 
@@ -315,24 +270,58 @@
         font-family:'IBM Plex Mono', monospace;
         font-weight:600;
         letter-spacing: .02em;
+        font-size: 20px;
     }
     .currency-prefix{
         position:absolute;
         left:14px;
         font-family:'IBM Plex Mono', monospace;
         font-weight:600;
+        font-size:18px;
         color: var(--ink-soft);
-        opacity:.65;
+        opacity:.55;
         pointer-events:none;
         transition: color .2s ease, opacity .2s ease;
     }
     .input-shell:focus-within .currency-prefix{
-        color: var(--brass-deep);
+        color: var(--gold-deep);
         opacity:1;
     }
 
+    /* quick amount presets */
+    .amount-presets{
+        display:flex;
+        gap: 22px;
+        margin-top: 12px;
+        padding-top: 2px;
+    }
+    .amount-preset{
+        background:none;
+        border:none;
+        padding: 4px 0 6px;
+        font-family:'Inter', sans-serif;
+        font-size: 13.5px;
+        font-weight:600;
+        color: var(--muted);
+        cursor:pointer;
+        position:relative;
+    }
+    .amount-preset::after{
+        content:"";
+        position:absolute;
+        left:0; right:0; bottom:0;
+        height:2px;
+        background: var(--gold);
+        transform: scaleX(0);
+        transform-origin:left;
+        transition: transform .18s ease;
+    }
+    .amount-preset:hover{ color: var(--ink); }
+    .amount-preset.active{ color: var(--ink); }
+    .amount-preset.active::after{ transform: scaleX(1); }
+
     .field-hint{
-        margin-top:7px;
+        margin-top:9px;
         font-size:12px;
         color: var(--muted);
     }
@@ -354,10 +343,7 @@
         opacity:0;
         transition: max-height .22s ease, opacity .18s ease, margin-top .22s ease;
     }
-    .name-status.show{
-        max-height: 40px;
-        opacity:1;
-    }
+    .name-status.show{ max-height: 40px; opacity:1; }
     .name-status.checking{ color:#8A7F5A; }
     .name-status.valid{ color: var(--success); }
     .name-status.duplicate{ color: var(--error); }
@@ -371,12 +357,10 @@
         justify-content:center;
         position:relative;
     }
-    /* plain pulsing dot while checking */
     .name-status.checking .status-dot{
         width:7px; height:7px;
         animation: pulse 1s ease-in-out infinite;
     }
-    /* check / cross glyph once resolved */
     .name-status.valid .status-dot::after,
     .name-status.duplicate .status-dot::after{
         content:"";
@@ -408,12 +392,12 @@
     .btn-submit{
         position:relative;
         width:100%;
-        margin-top: 10px;
-        padding: 15px 18px;
+        margin-top: 12px;
+        padding: 16px 18px;
         border:none;
-        border-radius: 12px;
-        background: linear-gradient(160deg, #2A3E68, var(--ink));
-        color: var(--paper-raised);
+        border-radius: 13px;
+        background: linear-gradient(160deg, var(--forest-700), var(--forest-900));
+        color: #FBF8EF;
         font-family:'Inter', sans-serif;
         font-size: 15.5px;
         font-weight:700;
@@ -428,21 +412,20 @@
         z-index:1;
         transition: transform .18s ease, box-shadow .18s ease, background .2s ease;
     }
-    /* brass sheen sweep on hover */
     .btn-submit::before{
         content:"";
         position:absolute;
         top:0; left:-60%;
         width: 50%;
         height:100%;
-        background: linear-gradient(100deg, transparent, rgba(216,183,126,0.35), transparent);
+        background: linear-gradient(100deg, transparent, rgba(231,206,123,0.30), transparent);
         transform: skewX(-18deg);
         transition: left .55s ease;
     }
     .btn-submit:hover:not(:disabled)::before{ left: 130%; }
     .btn-submit:hover:not(:disabled){
         transform: translateY(-2px);
-        box-shadow: 0 12px 26px -8px rgba(27,42,74,0.48);
+        box-shadow: 0 14px 28px -10px rgba(15,31,22,0.55);
     }
     .btn-submit:active:not(:disabled){ transform: translateY(0); }
     .btn-submit:disabled{
@@ -452,21 +435,17 @@
         box-shadow:none;
     }
     .btn-submit:focus-visible{
-        outline: 3px solid var(--brass);
+        outline: 3px solid var(--gold);
         outline-offset: 2px;
     }
-    .btn-label{
-        display:flex;
-        align-items:center;
-        gap:9px;
-    }
+    .btn-label{ display:flex; align-items:center; gap:9px; }
     .btn-label svg{ width:17px; height:17px; }
 
     .spinner{
         width:15px; height:15px;
         border-radius:50%;
-        border: 2px solid rgba(246,242,232,0.35);
-        border-top-color: var(--paper-raised);
+        border: 2px solid rgba(251,248,239,0.35);
+        border-top-color: #FBF8EF;
         animation: spin .7s linear infinite;
         display:none;
     }
@@ -490,58 +469,54 @@
         font-size:10.5px;
         font-weight:600;
         color: var(--ink-soft);
-        background: var(--brass-tint);
+        background: var(--gold-tint);
         border: 1px solid var(--rule);
         border-radius: 5px;
         padding: 2px 6px;
-        box-shadow: 0 1px 0 rgba(27,42,74,0.06);
+        box-shadow: 0 1px 0 rgba(15,31,22,0.06);
     }
 
     @media (max-width: 480px){
-        .supplier-card{ padding: 34px 22px 28px; }
-        .field-row{ flex-direction:column; gap:0; }
-        .page-title{ font-size:27px; }
+        .card-banner{ padding: 32px 22px 26px; }
+        .card-body{ padding: 28px 22px 28px; }
+        .page-title{ font-size:26px; }
+        .amount-presets{ gap:16px; flex-wrap:wrap; }
     }
 </style>
 
 <div class="supplier-wrap">
 
-    <div class="eyebrow">Supplier Ledger</div>
-    <h2 class="page-title">Add New Supplier</h2>
-    <p class="page-sub">A few details now save reconciliation headaches later.</p>
+    <div class="supplier-card">
 
-    <div class="card-outer">
-        <div class="tag-thread"></div>
-        <div class="ledger-seal" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M4 19.5V5.5C4 4.4 4.9 3.5 6 3.5H18C19.1 3.5 20 4.4 20 5.5V19.5"/>
-                <path d="M4 19.5C4 20.6 4.9 21.5 6 21.5H18C19.1 21.5 20 20.6 20 19.5"/>
-                <line x1="8" y1="7.5" x2="16" y2="7.5"/>
-                <line x1="8" y1="11" x2="16" y2="11"/>
-                <line x1="8" y1="14.5" x2="13" y2="14.5"/>
-            </svg>
+        <div class="card-banner">
+            <div class="banner-seal" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 3 L13.6 9.2 L20 12 L13.6 14.8 L12 21 L10.4 14.8 L4 12 L10.4 9.2 Z"/>
+                </svg>
+            </div>
+            <div class="eyebrow">Supplier Ledger</div>
+            <h2 class="page-title">New Supplier Entry</h2>
+            <div class="banner-rule"></div>
         </div>
 
-        <div class="supplier-card">
+        <div class="card-body">
 
             <form method="POST" id="supplierForm" novalidate>
 
-                <div class="section-label">Party Details</div>
-
                 <div class="form-group">
-                    <label for="supplier_name">Name <span class="req">*</span></label>
+                    <label for="supplier_name" class="f-name"><span class="dot"></span><span class="label-text">Name</span> <span class="req">*</span></label>
                     <div class="input-shell">
                         <span class="input-icon">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M20.59 13.41 11 3.83A2 2 0 0 0 9.5 3.17L4 3a1 1 0 0 0-1 1l.17 5.5a2 2 0 0 0 .66 1.5l9.58 9.58a2 2 0 0 0 2.83 0l4.35-4.35a2 2 0 0 0 0-2.82Z"/>
-                                <circle cx="7.5" cy="7.5" r="1.3" fill="currentColor" stroke="none"/>
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                <circle cx="12" cy="7" r="4"/>
                             </svg>
                         </span>
                         <input type="text"
                                id="supplier_name"
                                name="name"
                                class="input-field"
-                               placeholder="e.g. S M Bannas"
+                               placeholder="e.g. S M Bananas"
                                autocomplete="off"
                                required>
                     </div>
@@ -552,7 +527,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="supplier_phone">Phone <span class="opt">optional</span></label>
+                    <label for="supplier_phone" class="f-phone"><span class="dot"></span><span class="label-text">Phone</span> <span class="opt">optional</span></label>
                     <div class="input-shell">
                         <span class="input-icon">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -570,7 +545,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="supplier_address">Address <span class="opt">optional</span></label>
+                    <label for="supplier_address" class="f-address"><span class="dot"></span><span class="label-text">Address</span> <span class="opt">optional</span></label>
                     <div class="input-shell">
                         <span class="input-icon">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -586,18 +561,22 @@
                     </div>
                 </div>
 
-                <div class="section-label">Opening Balance</div>
-
-                <div class="form-group">
-                    <label for="opening_balance">Amount</label>
+                <div class="form-group" style="margin-bottom:6px;">
+                    <label for="opening_balance" class="f-balance"><span class="dot"></span><span class="label-text">Opening Balance</span></label>
                     <div class="input-shell">
                         <span class="currency-prefix">₹</span>
                         <input type="number"
-                               id="opening_balance"
                                step="0.01"
+                               id="opening_balance"
                                name="opening_balance"
                                value="0"
                                class="input-field">
+                    </div>
+                    <div class="amount-presets" id="amountPresets">
+                        <button type="button" class="amount-preset active" data-amount="0">₹0</button>
+                        <button type="button" class="amount-preset" data-amount="500">₹500</button>
+                        <button type="button" class="amount-preset" data-amount="1000">₹1,000</button>
+                        <button type="button" class="amount-preset" data-amount="5000">₹5,000</button>
                     </div>
                     <div class="field-hint">Amount already owed to or by this supplier, if any.</div>
                 </div>
@@ -630,6 +609,8 @@ const nameStatusText = nameStatus.querySelector(".status-text");
 const nameStatusDot = nameStatus.querySelector(".status-dot");
 const saveBtn = document.getElementById("saveBtn");
 const supplierForm = document.getElementById("supplierForm");
+const openingBalance = document.getElementById("opening_balance");
+const amountPresets = document.getElementById("amountPresets");
 
 let supplierSubmitting = false;
 
@@ -639,7 +620,6 @@ document.addEventListener("keydown", function (e) {
 
     const active = document.activeElement;
 
-    // Allow submit only if Enter is on button
     if (active.tagName === "BUTTON" && active.type === "submit") {
         return;
     }
@@ -654,16 +634,13 @@ document.addEventListener("keydown", function (e) {
 
     const index = focusable.indexOf(active);
 
-    // Opening Balance -> Submit
     if (active.name === "opening_balance") {
-
         if (!supplierSubmitting && !saveBtn.disabled) {
             supplierForm.requestSubmit();
         }
         return;
     }
 
-    // Move to next field
     if (index > -1 && index < focusable.length - 1) {
         focusable[index + 1].focus();
     }
@@ -691,7 +668,6 @@ supplierPhone.addEventListener("input", function () {
 // Title-case as you type
 supplierName.addEventListener("input", function () {
     this.value = this.value.replace(/\b\w/g, c => c.toUpperCase());
-    // typing again after a resolved check clears the stale state
     if (nameStatus.classList.contains("show")) {
         setStatus("checking", "Checking availability…");
     }
@@ -745,6 +721,25 @@ supplierName.addEventListener("blur", function () {
             setStatus(null);
             saveBtn.disabled = false;
         });
+});
+
+// Quick opening-balance presets
+amountPresets.addEventListener("click", function (e) {
+    const btn = e.target.closest(".amount-preset");
+    if (!btn) return;
+
+    amountPresets.querySelectorAll(".amount-preset").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    openingBalance.value = btn.dataset.amount;
+});
+
+// Typing a custom amount clears the preset highlight unless it matches one
+openingBalance.addEventListener("input", function () {
+    const match = Array.from(amountPresets.querySelectorAll(".amount-preset"))
+        .find(b => b.dataset.amount === this.value);
+
+    amountPresets.querySelectorAll(".amount-preset").forEach(b => b.classList.remove("active"));
+    if (match) match.classList.add("active");
 });
 </script>
 
