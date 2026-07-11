@@ -4,7 +4,7 @@
 
 {% block content %}
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap');
 
     /* Hide chrome from base.html and neutralize any layout spacing above us */
     nav.main-nav { display: none !important; }
@@ -150,9 +150,13 @@
         -webkit-backdrop-filter: blur(16px);
         padding: 38px 34px 30px;
         text-align: center;
-        border-radius: 16px;
+        border-radius: 18px;
         border: 1px solid rgba(255,255,255,0.55);
-        box-shadow: 0 20px 55px rgba(6,10,20,0.45), inset 0 1px 0 rgba(255,255,255,0.7);
+        box-shadow:
+            0 4px 14px rgba(6,10,20,0.18),
+            0 26px 60px rgba(6,10,20,0.42),
+            0 0 0 1px rgba(212,175,55,0.14),
+            inset 0 1px 0 rgba(255,255,255,0.7);
         overflow: hidden;
     }
 
@@ -175,6 +179,11 @@
         justify-content: center;
         background: linear-gradient(135deg, #1a2744, #2c3e5e);
         box-shadow: 0 6px 16px rgba(26,39,68,0.35), 0 0 0 5px rgba(212,175,55,0.08);
+        animation: pulseGlow 3.4s ease-in-out infinite;
+    }
+    @keyframes pulseGlow {
+        0%, 100% { box-shadow: 0 6px 16px rgba(26,39,68,0.35), 0 0 0 5px rgba(212,175,55,0.08); }
+        50%      { box-shadow: 0 6px 20px rgba(26,39,68,0.45), 0 0 0 8px rgba(212,175,55,0.14); }
     }
     .login-icon svg { width: 25px; height: 25px; }
 
@@ -189,6 +198,7 @@
 
     .login-subtitle {
         color: #8a8f99;
+        font-family: 'IBM Plex Mono', monospace;
         font-size: 10.5px;
         letter-spacing: 0.13em;
         text-transform: uppercase;
@@ -308,17 +318,39 @@
     }
     @keyframes rippleAnim { to { transform: scale(3.5); opacity: 0; } }
 
+    .login-btn .btn-arrow {
+        width: 15px; height: 15px;
+        transition: transform 0.2s ease;
+    }
+    .login-btn:hover .btn-arrow { transform: translateX(3px); }
+    .login-btn.loading .btn-arrow { display: none; }
+
     .login-footer-note {
         margin-top: 18px;
-        font-size: 11px;
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 10.5px;
         color: #a7adba;
-        letter-spacing: 0.03em;
+        letter-spacing: 0.04em;
     }
 
     /* ---- Responsive ---- */
+    .mobile-logo {
+        display: none;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        margin-bottom: 22px;
+        color: #f5f1e6;
+    }
+    .mobile-logo .logo-mark { width: 38px; height: 38px; }
+    .mobile-logo .logo-mark svg { width: 18px; height: 18px; }
+    .mobile-logo .logo-word { font-size: 19px; }
+    .mobile-logo .logo-tag { font-size: 9px; }
+
     @media (max-width: 880px) {
         .brand-panel { display: none; }
-        .login-content { justify-content: center; padding: 0 20px; }
+        .login-content { justify-content: center; padding: 0 20px; flex-direction: column; gap: 0; }
+        .mobile-logo { display: flex; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -342,12 +374,26 @@
                     </svg>
                 </div>
                 <div class="logo-text">
-                    <span class="logo-word">Banana </span>
+                    <span class="logo-word">Banana Co.</span>
                     <span class="logo-tag">Commission System</span>
                 </div>
             </div>
             <h1 class="brand-title">Every Bunch,<br>Weighed with <span class="accent">Trust</span>.</h1>
             <p class="brand-quote">"From the plantation to the ledger &mdash; every deal built on honest measure."</p>
+        </div>
+
+        <div class="mobile-logo">
+            <div class="logo-mark">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2C12 2 7 5 7 11C7 15.4183 9.68629 18 12 18C14.3137 18 17 15.4183 17 11C17 5 12 2 12 2Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+                    <path d="M12 18V22" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                    <path d="M9 9C9 9 10 11 12 11C14 11 15 9 15 9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+                </svg>
+            </div>
+            <div class="logo-text">
+                <span class="logo-word">Banana Co.</span>
+                <span class="logo-tag">Commission System</span>
+            </div>
         </div>
 
         <div class="card-stage">
@@ -405,6 +451,9 @@
                     <button type="submit" class="login-btn" id="loginBtn">
                         <span class="spinner"></span>
                         <span class="btn-label">Access System</span>
+                        <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M5 12H19M19 12L13 6M19 12L13 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
                     </button>
                 </form>
 
