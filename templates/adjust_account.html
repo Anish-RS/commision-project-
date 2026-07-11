@@ -22,9 +22,11 @@
 
   .page-wrap {
     max-width: 960px;
+    width: 100%;
     margin: 28px auto;
     padding: 0 20px;
     font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    align-self: stretch;
   }
 
   /* ---------- Header ---------- */
@@ -33,6 +35,8 @@
     align-items: flex-start;
     gap: 16px;
     margin-bottom: 22px;
+    width: 100%;
+    align-self: stretch;
   }
 
   .page-icon {
@@ -110,6 +114,14 @@
     box-shadow: 0 10px 26px rgba(22,60,47,0.07);
     border: 1px solid var(--gold-line);
     border-top: 3px solid var(--gold);
+    width: 100%;
+    align-self: stretch;
+    display: block;
+  }
+
+  #adjust-form {
+    width: 100%;
+    display: block;
   }
 
   label {
@@ -202,6 +214,8 @@
     padding: 13px 16px;
     border-radius: 10px;
     margin: 0 0 18px;
+    width: 100%;
+    align-self: stretch;
   }
   .info-banner svg { flex: none; width: 18px; height: 18px; stroke: var(--gold-dark); }
 
