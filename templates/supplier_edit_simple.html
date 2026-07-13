@@ -3,133 +3,785 @@
 {% block content %}
 
 <style>
-.edit-card{
-    max-width:500px;
-    margin:40px auto;
-    background:#ffffff;
-    padding:32px;
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@500;600;700&family=Inter:wght@400;500;600&display=swap');
+
+:root{
+    --forest:#1B3A2E;
+    --forest-dark:#12271E;
+    --forest-soft:#2A4E3D;
+    --gold:#B8912F;
+    --gold-light:#D4AF63;
+    --rust:#A54D3B;
+    --cream:#F7F2E7;
+    --ivory:#FBF8F1;
+    --card:#FFFDF8;
+    --ink:#20261F;
+    --slate:#6B6558;
+    --slate-soft:#A69E8C;
+    --line:#E6DCC3;
+    --line-soft:#EFE7D3;
+    --locked-bg:#F1ECDD;
+    --teal:#2F6E62;
+    --teal-ring:rgba(47,110,98,0.28);
+}
+
+*{ box-sizing:border-box; }
+
+.ledger-page{
+    min-height:calc(100vh - 40px);
+    padding:32px 48px 44px;
+    background:
+        radial-gradient(circle at 12% 8%, rgba(184,145,47,0.07), transparent 45%),
+        radial-gradient(circle at 92% 88%, rgba(27,58,46,0.06), transparent 40%),
+        var(--cream);
+    font-family:'Inter', -apple-system, sans-serif;
+}
+
+/* ---------- breadcrumb / back ---------- */
+.back-nav{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    background:none;
+    border:none;
+    padding:6px 2px;
+    margin-bottom:18px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11.5px;
+    font-weight:600;
+    letter-spacing:0.5px;
+    text-transform:uppercase;
+    color:var(--slate);
+    cursor:pointer;
+    text-decoration:none;
+    transition:color 0.15s ease, transform 0.15s ease;
+}
+.back-nav svg{ width:13px; height:13px; transition:transform 0.15s ease; }
+.back-nav:hover{ color:var(--forest); }
+.back-nav:hover svg{ transform:translateX(-2px); }
+
+/* ---------- entrance ---------- */
+.reveal{
+    animation:riseIn 0.5s cubic-bezier(.16,.9,.35,1) both;
+}
+.reveal.d1{ animation-delay:0.04s; }
+.reveal.d2{ animation-delay:0.10s; }
+.reveal.d3{ animation-delay:0.16s; }
+@keyframes riseIn{
+    from{ opacity:0; transform:translateY(10px); }
+    to{ opacity:1; transform:translateY(0); }
+}
+
+.page-header{
+    position:relative;
+    display:flex;
+    align-items:flex-start;
+    gap:16px;
+}
+
+.avatar-badge{
+    flex:0 0 auto;
+    width:52px;
+    height:52px;
     border-radius:12px;
-    border:1px solid #e5e7eb;
-    box-shadow:0 2px 10px rgba(0,0,0,0.04);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:linear-gradient(150deg, var(--forest), var(--forest-dark));
+    color:var(--gold-light);
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:22px;
+    box-shadow:0 8px 16px rgba(18,39,30,0.30);
 }
 
-.edit-header{
-    border-bottom:1px solid #e5e7eb;
-    padding-bottom:18px;
-    margin-bottom:24px;
+.header-text{
+    display:flex;
+    flex-direction:column;
+    gap:3px;
+    min-width:0;
+    padding-top:2px;
 }
 
-.edit-header h2{
+.edit-title{
     margin:0;
-    font-size:28px;
-    font-weight:700;
-    color:#1f2937;
+    font-family:'Fraunces', serif;
+    font-size:30px;
+    font-weight:600;
+    color:var(--forest);
+    letter-spacing:-0.3px;
 }
 
-.edit-header p{
-    margin:6px 0 0;
-    font-size:14px;
-    color:#6b7280;
+.edit-subtitle{
+    margin:0;
+    font-size:14.5px;
+    color:var(--slate);
+    font-weight:500;
+    display:flex;
+    align-items:center;
+    gap:8px;
+}
+
+.status-chip{
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    padding:3px 9px 3px 7px;
+    border-radius:20px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10px;
+    font-weight:700;
+    letter-spacing:0.5px;
+    text-transform:uppercase;
+    background:var(--locked-bg);
+    color:var(--slate);
+    opacity:0;
+    transform:scale(0.9);
+    transition:opacity 0.2s ease, transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+.status-chip.show{ opacity:1; transform:scale(1); }
+.status-chip.dirty{ background:rgba(184,145,47,0.16); color:var(--gold); }
+.status-chip.dirty::before{
+    content:'';
+    width:5px; height:5px; border-radius:50%;
+    background:var(--gold);
+}
+
+.gold-rule{
+    height:2px;
+    margin:18px 0 18px;
+    background:linear-gradient(90deg, var(--forest) 0%, var(--forest) 70%, transparent 100%);
+}
+
+.info-banner{
+    display:flex;
+    align-items:flex-start;
+    gap:10px;
+    background:var(--ivory);
+    border:1px solid var(--line);
+    border-left:3px solid var(--gold);
+    border-radius:6px;
+    padding:12px 18px;
+    margin-bottom:20px;
+}
+
+.info-banner svg{
+    flex:0 0 auto;
+    width:16px;
+    height:16px;
+    color:var(--gold);
+    margin-top:1px;
+}
+
+.info-banner p{
+    margin:0;
+    font-size:13.5px;
+    color:var(--slate);
+    line-height:1.5;
+}
+
+.edit-card{
+    background:var(--card);
+    border-radius:8px;
+    padding:28px 34px 28px;
+    box-shadow:
+        0 1px 2px rgba(27,58,46,0.05),
+        0 24px 48px -28px rgba(27,58,46,0.20);
+    border:1px solid var(--gold);
+    position:relative;
+}
+
+.form-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:18px 24px;
 }
 
 .form-group{
-    margin-bottom:18px;
+    display:flex;
+    flex-direction:column;
 }
 
-.form-group label{
-    display:block;
-    margin-bottom:8px;
+.form-group.full{
+    grid-column:1 / -1;
+}
+
+.form-label{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:6px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
     font-weight:600;
+    color:var(--slate);
+    text-transform:uppercase;
+    letter-spacing:0.9px;
+    margin-bottom:8px;
+    transition:color 0.15s ease;
 }
 
-.form-control{
+.form-label .label-main{
+    display:flex;
+    align-items:center;
+    gap:6px;
+}
+
+.form-label svg{
+    width:12px;
+    height:12px;
+    opacity:0.55;
+    flex-shrink:0;
+    color:var(--gold);
+}
+
+.form-group.focused .form-label{ color:var(--forest); }
+.form-group.focused .form-label svg{ opacity:1; }
+
+.required-dot{
+    color:var(--rust);
+    font-size:13px;
+    line-height:1;
+}
+
+.char-count{
+    font-weight:500;
+    letter-spacing:0.3px;
+    color:var(--slate-soft);
+    text-transform:none;
+    font-size:10.5px;
+}
+
+.form-input{
     width:100%;
-    padding:12px;
-    border:1px solid #d1d5db;
-    border-radius:8px;
+    padding:13px 15px;
+    border:1.5px solid var(--line);
+    border-radius:6px;
+    background:var(--ivory);
+    font-family:'Inter', sans-serif;
+    font-size:14.5px;
+    font-weight:500;
+    color:var(--ink);
+    transition:border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
     box-sizing:border-box;
 }
 
+.form-input::placeholder{
+    color:var(--slate-soft);
+    font-weight:400;
+}
+
+.form-input:hover:not(:read-only){
+    border-color:var(--gold-light);
+}
+
+.form-input:focus{
+    outline:none;
+    border-color:var(--gold);
+    background:#fff;
+    box-shadow:0 0 0 4px rgba(184,145,47,0.14);
+}
+
+.form-input.invalid{
+    border-color:var(--rust);
+}
+.form-input.invalid:focus{
+    box-shadow:0 0 0 4px rgba(165,77,59,0.13);
+}
+
+.form-input.valid-mark{
+    border-color:var(--forest-soft);
+}
+
+.field-wrap{
+    position:relative;
+}
+
 .readonly-field{
-    background:#f3f4f6;
-    color:#6b7280;
-    font-weight:700;
-    cursor:not-allowed;
-}
-
-.save-btn{
-    width:100%;
-    height:48px;
-    border:none;
-    border-radius:8px;
-    background:#2563eb;
-    color:white;
-    font-size:15px;
+    background:var(--locked-bg);
+    color:var(--slate);
     font-weight:600;
-    cursor:pointer;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13.5px;
+    letter-spacing:0.3px;
+    padding-right:36px;
+    cursor:default;
 }
 
-.save-btn:hover{
-    background:#1d4ed8;
+.lock-icon-wrap{
+    position:absolute;
+    right:13px;
+    top:50%;
+    transform:translateY(-50%);
+    display:flex;
+}
+
+.lock-icon{
+    width:14px;
+    height:14px;
+    color:var(--slate-soft);
+    cursor:help;
+}
+
+.lock-tip{
+    position:absolute;
+    bottom:calc(100% + 9px);
+    right:-6px;
+    background:var(--forest-dark);
+    color:var(--ivory);
+    font-family:'Inter', sans-serif;
+    font-size:11.5px;
+    font-weight:500;
+    line-height:1.4;
+    padding:8px 11px;
+    border-radius:6px;
+    width:190px;
+    text-align:left;
+    text-transform:none;
+    letter-spacing:0;
+    opacity:0;
+    visibility:hidden;
+    transform:translateY(4px);
+    transition:opacity 0.15s ease, transform 0.15s ease, visibility 0.15s ease;
+    box-shadow:0 10px 24px -8px rgba(18,39,30,0.5);
+    z-index:5;
+}
+.lock-tip::after{
+    content:'';
+    position:absolute;
+    top:100%;
+    right:10px;
+    border:5px solid transparent;
+    border-top-color:var(--forest-dark);
+}
+.lock-icon-wrap:hover .lock-tip,
+.lock-icon-wrap:focus-within .lock-tip{
+    opacity:1;
+    visibility:visible;
+    transform:translateY(0);
+}
+
+.balance-field{
+    font-weight:700;
+}
+.balance-field.balance-positive{ color:var(--forest); }
+.balance-field.balance-negative{ color:var(--rust); }
+.balance-field.balance-zero{ color:var(--slate); }
+
+.helper-note{
+    margin:7px 2px 0;
+    font-size:11.5px;
+    color:var(--slate-soft);
+    font-weight:500;
+    display:flex;
+    align-items:center;
+    gap:5px;
+}
+
+.helper-note.error-note{
+    color:var(--rust);
+    font-weight:600;
+}
+
+.helper-note svg{ width:12px; height:12px; flex-shrink:0; }
+
+.form-footer{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    margin-top:4px;
+    padding-top:20px;
+    border-top:1px solid var(--line-soft);
+}
+
+.footer-hint{
+    font-size:12px;
+    color:var(--slate-soft);
+    font-weight:500;
+}
+
+.update-btn{
+    position:relative;
+    padding:13px 28px 13px 24px;
+    border:1px solid rgba(184,145,47,0.55);
+    border-radius:999px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    font-weight:700;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    color:var(--ivory);
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:9px;
+    background:linear-gradient(150deg, var(--forest), var(--forest-dark));
+    box-shadow:0 8px 18px -8px rgba(18,39,30,0.5), inset 0 1px 0 rgba(255,255,255,0.08);
+    transition:transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease, opacity 0.15s ease, border-color 0.15s ease;
+    white-space:nowrap;
+    overflow:hidden;
+}
+
+.update-btn::before{
+    content:'';
+    position:absolute;
+    inset:0;
+    background:linear-gradient(120deg, transparent 30%, rgba(212,175,99,0.28) 48%, transparent 66%);
+    transform:translateX(-100%);
+    transition:transform 0.5s ease;
+    pointer-events:none;
+}
+
+.update-btn:hover::before{
+    transform:translateX(100%);
+}
+
+.update-btn svg{
+    width:15px;
+    height:15px;
+    color:var(--gold-light);
+}
+
+.update-btn:hover{
+    transform:translateY(-1px);
+    border-color:var(--gold-light);
+    box-shadow:0 12px 24px -8px rgba(18,39,30,0.55), inset 0 1px 0 rgba(255,255,255,0.1);
+}
+
+.update-btn:active{
+    transform:translateY(0);
+    filter:brightness(0.96);
+}
+
+.update-btn:focus-visible{
+    outline:none;
+    box-shadow:0 0 0 4px var(--teal-ring), 0 8px 18px -8px rgba(18,39,30,0.5);
+}
+
+.update-btn:disabled{
+    opacity:0.6;
+    cursor:not-allowed;
+    transform:none;
+    box-shadow:0 8px 18px -8px rgba(18,39,30,0.3);
+}
+
+.update-btn .spinner{
+    width:14px;
+    height:14px;
+    border-radius:50%;
+    border:2px solid rgba(251,248,241,0.35);
+    border-top-color:var(--gold-light);
+    animation:spin 0.7s linear infinite;
+    display:none;
+}
+
+.update-btn.loading .spinner{ display:inline-block; }
+.update-btn.loading .btn-label-text{ display:none; }
+.update-btn.loading svg.default-icon{ display:none; }
+
+@keyframes spin{ to{ transform:rotate(360deg); } }
+
+.form-input:focus-visible{
+    outline:none;
+}
+
+@media(max-width:720px){
+    .ledger-page{
+        padding:28px 20px 40px;
+    }
+    .edit-title{
+        font-size:23px;
+    }
+    .edit-card{
+        padding:24px 20px 22px;
+    }
+    .form-grid{
+        grid-template-columns:1fr;
+    }
+    .form-footer{
+        flex-direction:column-reverse;
+        align-items:stretch;
+    }
+    .footer-hint{ text-align:center; }
+    .update-btn{
+        width:100%;
+    }
+}
+
+@media(prefers-reduced-motion:reduce){
+    .update-btn, .form-input, .status-chip{
+        transition:none;
+    }
+    .reveal{
+        animation:none;
+    }
+    .update-btn .spinner{
+        animation:none;
+    }
 }
 </style>
 
-<div class="edit-card">
+<div class="ledger-page">
 
-    <div class="edit-header">
-        <h2>Edit Supplier</h2>
-        <p>Update supplier details</p>
+    <a href="javascript:history.back()" class="back-nav reveal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Back to suppliers
+    </a>
+
+    <div class="page-header reveal d1">
+        <div class="avatar-badge">{{ (supplier.name or "?")[0]|upper }}</div>
+        <div class="header-text">
+            <h2 class="edit-title">Edit Supplier</h2>
+            <p class="edit-subtitle">
+                {{ supplier.name or "Unnamed supplier" }}
+                <span class="status-chip" id="dirtyChip">Unsaved changes</span>
+            </p>
+        </div>
     </div>
 
-    <form method="POST">
+    <div class="gold-rule reveal d1"></div>
 
-        <div class="form-group">
-            <label>Supplier ID</label>
-            <input type="text"
-                   class="form-control readonly-field"
-                   value="{{ supplier.supplier_id }}"
-                   readonly>
+    <div class="info-banner reveal d2">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+        <p>Supplier ID and amount are locked. Update the name or phone number below, then save.</p>
+    </div>
+
+    <div class="edit-card reveal d3">
+    <form method="POST" id="supplierForm" novalidate>
+
+        <div class="form-grid">
+
+            <div class="form-group">
+                <label class="form-label">
+                    <span class="label-main">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h10M7 12h6"/></svg>
+                        Supplier ID
+                    </span>
+                </label>
+                <div class="field-wrap">
+                    <input
+                        type="text"
+                        value="{{ supplier.supplier_id }}"
+                        readonly
+                        class="form-input readonly-field">
+                    <div class="lock-icon-wrap" tabindex="0">
+                        <svg class="lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+                        <div class="lock-tip">This ID is assigned permanently and can't be changed.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">
+                    <span class="label-main">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                        Amount
+                    </span>
+                </label>
+                <div class="field-wrap">
+                    <input
+                        type="text"
+                        value="₹{{ '%.2f'|format(supplier.balance or 0) }}"
+                        readonly
+                        class="form-input readonly-field balance-field {{ 'balance-negative' if (supplier.balance or 0) < 0 else ('balance-zero' if not supplier.balance else 'balance-positive') }}">
+                    <div class="lock-icon-wrap" tabindex="0">
+                        <svg class="lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+                        <div class="lock-tip">Amount updates automatically from transactions and can't be edited here.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group full" id="nameGroup">
+                <label class="form-label">
+                    <span class="label-main">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        Supplier name
+                        {% if not (supplier.balance and supplier.balance != 0) %}<span class="required-dot">*</span>{% endif %}
+                    </span>
+                    {% if not (supplier.balance and supplier.balance != 0) %}<span class="char-count" id="nameCount"></span>{% endif %}
+                </label>
+                {% if supplier.balance and supplier.balance != 0 %}
+                <div class="field-wrap">
+                    <input
+                        type="text"
+                        value="{{ supplier.name }}"
+                        readonly
+                        class="form-input readonly-field">
+                    <div class="lock-icon-wrap" tabindex="0">
+                        <svg class="lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+                        <div class="lock-tip">Names are locked while a balance is outstanding, to keep the ledger trail consistent.</div>
+                    </div>
+                </div>
+                <input type="hidden" name="name" value="{{ supplier.name }}">
+                <p class="helper-note">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+                    Name is locked while this supplier has an outstanding balance.
+                </p>
+                {% else %}
+                <input
+                    type="text"
+                    name="name"
+                    value="{{ supplier.name }}"
+                    placeholder="Enter supplier name"
+                    required
+                    maxlength="60"
+                    autofocus
+                    autocomplete="off"
+                    class="form-input"
+                    id="nameInput">
+                <p class="helper-note error-note" id="nameError" style="display:none;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+                    Enter a name before saving.
+                </p>
+                {% endif %}
+            </div>
+
+            <div class="form-group full">
+                <label class="form-label">
+                    <span class="label-main">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.8a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.84.57 2.8.7A2 2 0 0 1 22 16.92z"/></svg>
+                        Phone number
+                    </span>
+                </label>
+                <input
+                    type="tel"
+                    name="phone"
+                    value="{{ supplier.phone or '' }}"
+                    placeholder="98765 43210"
+                    inputmode="numeric"
+                    autocomplete="off"
+                    class="form-input"
+                    id="phoneInput">
+                <p class="helper-note error-note" id="phoneError" style="display:none;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+                    Enter a valid 10-digit phone number.
+                </p>
+            </div>
+
         </div>
 
-        <div class="form-group">
-            <label>Amount</label>
-            <input type="text"
-                   class="form-control readonly-field"
-                   value="₹{{ '%.2f'|format(supplier.balance or 0) }}"
-                   readonly>
+        <div class="form-footer">
+            <span class="footer-hint" id="footerHint">All fields save instantly once submitted.</span>
+            <button type="submit" class="update-btn" id="submitBtn">
+                <svg class="default-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                <span class="spinner"></span>
+                <span class="btn-label-text">Update Supplier</span>
+            </button>
         </div>
-
-        <div class="form-group">
-            <label>Supplier Name</label>
-            {% if supplier.balance and supplier.balance != 0 %}
-            <input type="text"
-                   class="form-control readonly-field"
-                   value="{{ supplier.name }}"
-                   readonly>
-            <input type="hidden" name="name" value="{{ supplier.name }}">
-            {% else %}
-            <input type="text"
-                   name="name"
-                   class="form-control"
-                   value="{{ supplier.name }}"
-                   required>
-            {% endif %}
-        </div>
-
-        <div class="form-group">
-            <label>Phone Number</label>
-            <input type="text"
-                   name="phone"
-                   class="form-control"
-                   value="{{ supplier.phone or '' }}">
-        </div>
-
-        <button type="submit" class="save-btn">
-            Save Changes
-        </button>
 
     </form>
+    </div>
 
 </div>
+
+<script>
+(function(){
+    var form = document.getElementById('supplierForm');
+    var submitBtn = document.getElementById('submitBtn');
+    var nameInput = document.getElementById('nameInput');
+    var phoneInput = document.getElementById('phoneInput');
+    var nameError = document.getElementById('nameError');
+    var phoneError = document.getElementById('phoneError');
+    var nameCount = document.getElementById('nameCount');
+    var dirtyChip = document.getElementById('dirtyChip');
+    var nameGroup = document.getElementById('nameGroup');
+
+    var initialValues = {};
+    var trackedInputs = [nameInput, phoneInput].filter(Boolean);
+
+    trackedInputs.forEach(function(input){
+        initialValues[input.name] = input.value;
+
+        input.addEventListener('focus', function(){
+            var group = input.closest('.form-group');
+            if(group) group.classList.add('focused');
+        });
+        input.addEventListener('blur', function(){
+            var group = input.closest('.form-group');
+            if(group) group.classList.remove('focused');
+        });
+        input.addEventListener('input', checkDirty);
+    });
+
+    function checkDirty(){
+        var dirty = trackedInputs.some(function(input){
+            return input.value !== initialValues[input.name];
+        });
+        if(dirtyChip){
+            dirtyChip.classList.toggle('show', dirty);
+            dirtyChip.classList.toggle('dirty', dirty);
+        }
+        window.__hasUnsavedChanges = dirty;
+    }
+
+    if(nameInput && nameCount){
+        var updateCount = function(){
+            nameCount.textContent = nameInput.value.length + ' / 60';
+        };
+        nameInput.addEventListener('input', updateCount);
+        updateCount();
+    }
+
+    // Live phone formatting: groups digits as "XXXXX XXXXX"
+    if(phoneInput){
+        phoneInput.addEventListener('input', function(){
+            var digits = phoneInput.value.replace(/\D/g, '').slice(0, 10);
+            var formatted = digits.length > 5 ? digits.slice(0,5) + ' ' + digits.slice(5) : digits;
+            phoneInput.value = formatted;
+            var digitCount = digits.length;
+            var valid = digitCount === 0 || digitCount === 10;
+            phoneInput.classList.toggle('invalid', !valid);
+            phoneError.style.display = valid ? 'none' : 'flex';
+        });
+    }
+
+    window.addEventListener('beforeunload', function(e){
+        if(window.__hasUnsavedChanges){
+            e.preventDefault();
+            e.returnValue = '';
+        }
+    });
+
+    form.addEventListener('submit', function(e){
+        var valid = true;
+
+        if(nameInput && nameInput.value.trim() === ''){
+            valid = false;
+            nameInput.classList.add('invalid');
+            nameError.style.display = 'flex';
+            if(nameGroup) nameGroup.scrollIntoView({behavior:'smooth', block:'center'});
+        }
+
+        if(phoneInput){
+            var digits = phoneInput.value.replace(/\D/g, '');
+            if(digits.length !== 0 && digits.length !== 10){
+                valid = false;
+                phoneInput.classList.add('invalid');
+                phoneError.style.display = 'flex';
+            }
+        }
+
+        if(!valid){
+            e.preventDefault();
+            return;
+        }
+
+        window.__hasUnsavedChanges = false;
+        submitBtn.classList.add('loading');
+        submitBtn.disabled = true;
+    });
+
+    if(nameInput){
+        nameInput.addEventListener('input', function(){
+            if(nameInput.value.trim() !== ''){
+                nameInput.classList.remove('invalid');
+                nameError.style.display = 'none';
+            }
+        });
+    }
+})();
+</script>
 
 {% endblock %}
