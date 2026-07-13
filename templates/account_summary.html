@@ -250,7 +250,7 @@
                     {% if purchases %}
                       {% for p in purchases %}
                         <tr>
-                          <td>{{ p.date }}</td>
+                          <td>{{ p.date.strftime('%d-%m-%Y') if p.date else '' }}</td>
                           <td>Bill #{{ p.bill_id }} {% if p.supplier_bill_id %} — SB#{{ p.supplier_bill_id }}{% endif %}</td>
                           <td class="right"> {{ '%.2f'|format(p.amount) }}</td>
                         </tr>
@@ -281,7 +281,7 @@
                   <tbody>
                     {% if receipts %}
                       {% for r in receipts %}
-                        <tr><td>{{ r.date }}</td><td>{{ r.note or '-' }}</td><td class="right"> {{ '%.2f'|format(r.amount) }}</td></tr>
+                        <tr><td>{{ r.date.strftime('%d-%m-%Y') if r.date else '' }}</td><td>{{ r.note or '-' }}</td><td class="right"> {{ '%.2f'|format(r.amount) }}</td></tr>
                       {% endfor %}
                     {% else %}
                       <tr><td colspan="3" class="muted">No receipts in this range.</td></tr>
