@@ -50,6 +50,13 @@
     box-sizing:border-box;
 }
 
+.readonly-field{
+    background:#f3f4f6;
+    color:#6b7280;
+    font-weight:700;
+    cursor:not-allowed;
+}
+
 .save-btn{
     width:100%;
     height:48px;
@@ -77,12 +84,28 @@
     <form method="POST">
 
         <div class="form-group">
+            <label>Amount</label>
+            <input type="text"
+                   class="form-control readonly-field"
+                   value="₹{{ '%.2f'|format(supplier.balance or 0) }}"
+                   readonly>
+        </div>
+
+        <div class="form-group">
             <label>Supplier Name</label>
+            {% if supplier.balance and supplier.balance != 0 %}
+            <input type="text"
+                   class="form-control readonly-field"
+                   value="{{ supplier.name }}"
+                   readonly>
+            <input type="hidden" name="name" value="{{ supplier.name }}">
+            {% else %}
             <input type="text"
                    name="name"
                    class="form-control"
                    value="{{ supplier.name }}"
                    required>
+            {% endif %}
         </div>
 
         <div class="form-group">
