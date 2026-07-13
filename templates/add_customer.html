@@ -97,7 +97,7 @@
   .page-heading h2 {
     margin: 0;
     font-family: Georgia, 'Times New Roman', serif;
-    font-size: 28px;
+    font-size: 30px;
     font-weight: 700;
     color: var(--green);
     letter-spacing: -0.2px;
@@ -107,7 +107,7 @@
     margin: 8px 0 0;
     font-size: 14px;
     color: var(--muted);
-    max-width: 420px;
+    max-width: 480px;
     line-height: 1.5;
   }
 
@@ -212,6 +212,22 @@
     border: 1px solid var(--gold-line);
     border-top: 3px solid var(--gold);
     width: 100%;
+  }
+
+  /* Fights any global .card rules from base.html (e.g. flex-basis / max-width)
+     that were shrinking and centering this form */
+  #customerCard.card {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 1 1 100% !important;
+    flex-basis: 100% !important;
+    display: block !important;
+    box-sizing: border-box !important;
+  }
+
+  #customerForm {
+    width: 100%;
+    display: block;
   }
 
   label {
@@ -587,7 +603,7 @@
     {% endif %}
   {% endwith %}
 
-  <div class="card">
+  <div class="card" id="customerCard">
     <form method="POST" id="customerForm" novalidate>
 
       <div class="form-group fg-name">
