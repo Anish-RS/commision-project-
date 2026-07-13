@@ -233,7 +233,11 @@
     </form>
 
     {% if selected_customer %}
-      <div class="small-note">Showing results for <strong>{{ selected_customer }}</strong> from <strong>{{ from_date }}</strong> to <strong>{{ to_date }}</strong></div>
+      <div class="small-note">
+          Showing results for <strong>{{ selected_customer }}</strong>
+          from <strong>{{ from_date.strftime('%d-%m-%Y') }}</strong>
+          to <strong>{{ to_date.strftime('%d-%m-%Y') }}</strong>
+      </div>
 
       <div class="grid">
         <!-- Left: Purchases + Receipts -->
