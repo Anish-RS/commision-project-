@@ -1,603 +1,684 @@
 {% extends "base.html" %}
-
 {% block content %}
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
-
 <style>
-    /* ========================================================
-       TOKENS — Ledger House theme (shared with Customer Ledger)
-       ======================================================== */
-    :root{
-        --forest-900:  #0F1F16;
-        --forest-800:  #16321F;
-        --forest-700:  #1F4229;
-        --gold:        #C9A227;
-        --gold-light:  #E7CE7B;
-        --gold-deep:   #9C7A1C;
-        --gold-tint:   #F3E7C2;
+  * { box-sizing: border-box; }
 
-        --ink:        #1C271E;
-        --ink-soft:   #445046;
-        --paper:      #F7F3E7;
-        --paper-raised:#FFFFFF;
-        --field-bg:   #FAF6EA;
-        --rule:       #E4DCC1;
+  :root {
+    --cream: #f4f0e2;
+    --card: #fffdf7;
+    --gold: #c9a15a;
+    --gold-dark: #a97f36;
+    --gold-line: #e6d7ae;
+    --green: #163c2f;
+    --green-mid: #1f5b46;
+    --ink: #1e2a22;
+    --muted: #7c7566;
+    --red: #a23b2a;
+    --red-soft: #f7ebe6;
+  }
 
-        --dot-name:    #2F6F4E;
-        --dot-phone:   #2E5F7A;
-        --dot-address: #B24A2E;
-        --dot-balance: #B0821F;
+  body { background: var(--cream); }
 
-        --success:    #2F6F4E;
-        --error:      #AD3B2B;
-        --muted:      #857F68;
+  .page-wrap {
+    max-width: 960px;
+    width: 100%;
+    margin: 28px auto;
+    padding: 0 20px;
+    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  }
 
-        --shadow-lg:  0 30px 60px -22px rgba(15,31,22,0.35);
-        --shadow-sm:  0 2px 6px rgba(15,31,22,0.10);
-    }
+  /* ---------- Header ---------- */
+  .page-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 18px;
+    width: 100%;
+  }
 
-    @media (prefers-reduced-motion: reduce){
-        *{ animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
-    }
+  .page-header-left {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    min-width: 0;
+  }
 
-    /* ========================================================
-       PAGE
-       ======================================================== */
-    body{
-        background:
-            radial-gradient(circle at 12% 8%, rgba(201,162,39,0.10), transparent 45%),
-            radial-gradient(circle at 88% 92%, rgba(15,31,22,0.08), transparent 50%),
-            var(--paper);
-        background-attachment: fixed;
-        font-family: 'Inter', -apple-system, sans-serif;
-        color: var(--ink);
-    }
+  .page-icon {
+    flex: none;
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background: linear-gradient(155deg, var(--green-mid), var(--green));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 18px rgba(22,60,47,0.30);
+    border: 2px solid #e9dcb8;
+  }
 
-    .supplier-wrap{
-        max-width: 560px;
-        margin: 32px auto 28px;
-        padding: 0 20px;
-    }
+  .page-icon svg { width: 24px; height: 24px; stroke: #f1e6c8; }
 
-    /* ========================================================
-       LEDGER CARD
-       ======================================================== */
-    .supplier-card{
-        position:relative;
-        background: var(--paper-raised);
-        border-radius: 22px;
-        box-shadow: var(--shadow-lg);
-        border: 1px solid rgba(15,31,22,0.06);
-        overflow:hidden;
-        animation: riseIn .55s cubic-bezier(.2,.8,.2,1) .05s both;
-    }
-    @keyframes riseIn{
-        from{ opacity:0; transform: translateY(16px); }
-        to{ opacity:1; transform: translateY(0); }
-    }
+  .eyebrow-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 3px 0 6px;
+  }
 
-    /* ---- banner ---- */
-    .card-banner{
-        position:relative;
-        padding: 28px 32px 24px;
-        text-align:center;
-        background:
-            radial-gradient(circle at 50% 10%, rgba(231,206,123,0.16), transparent 55%),
-            radial-gradient(circle at 15% 90%, rgba(201,162,39,0.10), transparent 50%),
-            linear-gradient(160deg, var(--forest-700), var(--forest-900));
-        overflow:hidden;
-    }
-    .card-banner::before{
-        content:"";
-        position:absolute;
-        inset:-40%;
-        background:
-            repeating-radial-gradient(circle at 50% 0%, rgba(255,255,255,0.03) 0 2px, transparent 2px 64px);
-        pointer-events:none;
-    }
+  .eyebrow {
+    font-family: 'Courier New', monospace;
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold-dark);
+  }
 
-    .banner-seal{
-        position:relative;
-        width: 44px;
-        height: 44px;
-        margin: 0 auto 10px;
-        border-radius: 50%;
-        border: 1px solid rgba(231,206,123,0.55);
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        animation: sealSettle .7s cubic-bezier(.2,.8,.2,1) .1s both;
-    }
-    .banner-seal::before{
-        content:"";
-        position:absolute;
-        inset: -8px;
-        border-radius: 50%;
-        border: 1px dashed rgba(231,206,123,0.28);
-    }
-    .banner-seal svg{
-        width: 18px;
-        height: 18px;
-        stroke: var(--gold-light);
-        fill: var(--gold-light);
-    }
-    @keyframes sealSettle{
-        0%{ opacity:0; transform: translateY(-8px) scale(.85); }
-        100%{ opacity:1; transform: translateY(0) scale(1); }
-    }
+  .entry-tag {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--gold-dark);
+    border: 1px dashed var(--gold);
+    border-radius: 999px;
+    padding: 3px 10px;
+    white-space: nowrap;
+  }
 
-    .eyebrow{
-        font-family:'IBM Plex Mono', monospace;
-        font-size:11px;
-        font-weight:600;
-        letter-spacing:.22em;
-        text-transform:uppercase;
-        color: var(--gold-light);
-        margin-bottom:8px;
-    }
+  .page-heading h2 {
+    margin: 0;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 30px;
+    font-weight: 700;
+    color: var(--green);
+    letter-spacing: -0.2px;
+  }
 
-    .page-title{
-        position:relative;
-        font-family:'Fraunces', serif;
-        font-weight:600;
-        font-size: 28px;
-        letter-spacing: -0.01em;
-        color: #FBF8EF;
-        margin: 0;
-    }
+  .page-heading p {
+    margin: 8px 0 0;
+    font-size: 14px;
+    color: var(--muted);
+    max-width: 480px;
+    line-height: 1.5;
+  }
 
-    .banner-rule{
-        width: 40px;
-        height: 1px;
-        margin: 14px auto 0;
-        background: linear-gradient(90deg, transparent, var(--gold), transparent);
-        opacity:.8;
-    }
+  .header-divider {
+    height: 3px;
+    background: var(--green);
+    border-radius: 2px;
+    margin: 0 0 22px;
+    width: 100%;
+  }
 
-    /* ========================================================
-       FORM BODY
-       ======================================================== */
-    .card-body{
-        padding: 24px 32px 28px;
-    }
+  /* Circular stamp/seal */
+  .seal {
+    flex: none;
+    width: 92px;
+    height: 92px;
+    position: relative;
+  }
 
-    .section-label{
-        display:flex;
-        align-items:center;
-        gap:10px;
-        font-family:'IBM Plex Mono', monospace;
-        font-size:10.5px;
-        font-weight:600;
-        letter-spacing:.14em;
-        text-transform:uppercase;
-        color: var(--gold-deep);
-        margin: 0 0 14px;
-    }
-    .section-label::after{
-        content:"";
-        flex:1;
-        height:1px;
-        background: var(--rule);
-    }
-    .section-label:not(:first-child){ margin-top: 20px; }
+  .seal svg { width: 100%; height: 100%; }
 
-    .form-group{
-        position: relative;
-        margin-bottom: 16px;
-    }
+  .seal circle.ring {
+    fill: none;
+    stroke: var(--gold);
+    stroke-width: 1.4;
+    stroke-dasharray: 3 3;
+  }
 
-    label{
-        display:flex;
-        align-items:center;
-        gap:8px;
-        font-weight:600;
-        font-size: 12.5px;
-        letter-spacing:.04em;
-        text-transform: uppercase;
-        color: var(--ink-soft);
-        margin-bottom: 7px;
-    }
-    label .dot{
-        width:7px; height:7px;
-        border-radius:50%;
-        background: currentColor;
-        flex:none;
-    }
-    label.f-name{ color: var(--dot-name); }
-    label.f-phone{ color: var(--dot-phone); }
-    label.f-address{ color: var(--dot-address); }
-    label.f-balance{ color: var(--dot-balance); }
-    label .label-text{ color: var(--ink-soft); text-transform:uppercase; }
-    label .req{ color: var(--dot-address); font-weight:700; }
-    label .opt{
-        font-weight:500;
-        text-transform:none;
-        color: var(--muted);
-        letter-spacing:0;
-        font-size: 11.5px;
-    }
+  .seal textPath {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-weight: 700;
+    font-size: 9.5px;
+    letter-spacing: 1.5px;
+    fill: var(--gold-dark);
+  }
 
-    .input-shell{
-        position:relative;
-        display:flex;
-        align-items:center;
-    }
+  .seal-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    width: 60px;
+  }
 
-    .input-icon{
-        position:absolute;
-        left:14px;
-        width: 17px;
-        height: 17px;
-        color: var(--ink-soft);
-        opacity:.45;
-        pointer-events:none;
-        transition: color .2s ease, opacity .2s ease;
-    }
-    .input-icon svg{ width:100%; height:100%; }
+  .seal-center span {
+    display: block;
+    font-family: Georgia, serif;
+    font-weight: 700;
+    font-size: 9.5px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--gold-dark);
+    line-height: 1.3;
+  }
 
-    .input-field{
-        width:100%;
-        padding: 12px 14px 12px 41px;
-        border-radius: 12px;
-        border: 1.5px solid var(--rule);
-        background: var(--field-bg);
-        outline:none;
-        font-family:'Inter', sans-serif;
-        font-size: 15px;
-        color: var(--ink);
-        box-shadow: inset 0 1px 2px rgba(15,31,22,0.04);
-        transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
-    }
+  /* ---------- Info banner ---------- */
+  .info-banner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #faf3df;
+    border: 1px solid var(--gold-line);
+    color: var(--gold-dark);
+    font-size: 13.5px;
+    font-weight: 600;
+    padding: 13px 16px;
+    border-radius: 10px;
+    margin: 0 0 18px;
+    width: 100%;
+  }
+  .info-banner svg { flex: none; width: 18px; height: 18px; stroke: var(--gold-dark); }
 
-    .input-field::placeholder{ color: #A79F87; }
-    .input-field:hover{ border-color: #D3C6A3; }
-    .input-field:focus{
-        border-color: var(--gold);
-        background: #fff;
-        box-shadow: 0 0 0 4px rgba(201,162,39,0.14), inset 0 1px 2px rgba(15,31,22,0.03);
-    }
-    .input-shell:focus-within .input-icon{
-        color: var(--gold-deep);
-        opacity:.9;
-    }
+  /* ---------- Flash message ---------- */
+  .flash-msg {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--red-soft);
+    border: 1px solid rgba(162,59,42,0.2);
+    color: var(--red);
+    font-size: 13.5px;
+    font-weight: 600;
+    padding: 13px 16px;
+    border-radius: 10px;
+    margin: 0 0 18px;
+    width: 100%;
+  }
 
-    /* currency-style opening balance field */
-    input[name="opening_balance"]{
-        padding-left: 34px;
-        font-family:'IBM Plex Mono', monospace;
-        font-weight:600;
-        letter-spacing: .02em;
-        font-size: 20px;
-    }
-    .currency-prefix{
-        position:absolute;
-        left:14px;
-        font-family:'IBM Plex Mono', monospace;
-        font-weight:600;
-        font-size:18px;
-        color: var(--ink-soft);
-        opacity:.55;
-        pointer-events:none;
-        transition: color .2s ease, opacity .2s ease;
-    }
-    .input-shell:focus-within .currency-prefix{
-        color: var(--gold-deep);
-        opacity:1;
-    }
+  /* ---------- Card ---------- */
+  .card {
+    background: var(--card);
+    padding: 28px 30px;
+    border-radius: 14px;
+    margin: 0 0 18px;
+    box-shadow: 0 10px 26px rgba(22,60,47,0.07);
+    border: 1px solid var(--gold-line);
+    border-top: 3px solid var(--gold);
+    width: 100%;
+  }
 
-    /* quick amount presets */
-    .amount-presets{
-        display:flex;
-        gap: 18px;
-        margin-top: 9px;
-        padding-top: 1px;
-    }
-    .amount-preset{
-        background:none;
-        border:none;
-        padding: 4px 0 6px;
-        font-family:'Inter', sans-serif;
-        font-size: 13.5px;
-        font-weight:600;
-        color: var(--muted);
-        cursor:pointer;
-        position:relative;
-    }
-    .amount-preset::after{
-        content:"";
-        position:absolute;
-        left:0; right:0; bottom:0;
-        height:2px;
-        background: var(--gold);
-        transform: scaleX(0);
-        transform-origin:left;
-        transition: transform .18s ease;
-    }
-    .amount-preset:hover{ color: var(--ink); }
-    .amount-preset.active{ color: var(--ink); }
-    .amount-preset.active::after{ transform: scaleX(1); }
+  /* Fights any global .card rules from base.html (e.g. flex-basis / max-width)
+     that were shrinking and centering this form */
+  #supplierCard.card {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 1 1 100% !important;
+    flex-basis: 100% !important;
+    display: block !important;
+    box-sizing: border-box !important;
+  }
 
-    .field-hint{
-        margin-top:7px;
-        font-size:12px;
-        color: var(--muted);
-    }
+  #supplierForm {
+    width: 100%;
+    display: block;
+  }
 
-    /* name-field validation state */
-    .input-field.is-checking{ border-color: #C9BE97; }
-    .input-field.is-valid{ border-color: var(--success); background:#fff; }
-    .input-field.is-duplicate{ border-color: var(--error); background:#fff; }
+  label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Courier New', monospace;
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
 
-    .name-status{
-        display:flex;
-        align-items:center;
-        gap:8px;
-        margin-top:6px;
-        font-size:13px;
-        font-weight:600;
-        max-height:0;
-        overflow:hidden;
-        opacity:0;
-        transition: max-height .22s ease, opacity .18s ease, margin-top .22s ease;
-    }
-    .name-status.show{ max-height: 40px; opacity:1; }
-    .name-status.checking{ color:#8A7F5A; }
-    .name-status.valid{ color: var(--success); }
-    .name-status.duplicate{ color: var(--error); }
+  label .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent, var(--gold));
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent, var(--gold)) 18%, transparent);
+    flex-shrink: 0;
+  }
 
-    .status-dot{
-        width:16px; height:16px; border-radius:50%;
-        background: currentColor;
-        flex:none;
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        position:relative;
-    }
-    .name-status.checking .status-dot{
-        width:7px; height:7px;
-        animation: pulse 1s ease-in-out infinite;
-    }
-    .name-status.valid .status-dot::after,
-    .name-status.duplicate .status-dot::after{
-        content:"";
-        width:8px; height:8px;
-        background: #fff;
-        -webkit-mask-repeat:no-repeat;
-        mask-repeat:no-repeat;
-        -webkit-mask-position:center;
-        mask-position:center;
-        -webkit-mask-size:contain;
-        mask-size:contain;
-    }
-    .name-status.valid .status-dot::after{
-        -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E");
-        mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E");
-    }
-    .name-status.duplicate .status-dot::after{
-        -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3'%3E%3Cline x1='18' y1='6' x2='6' y2='18'/%3E%3Cline x1='6' y1='6' x2='18' y2='18'/%3E%3C/svg%3E");
-        mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3'%3E%3Cline x1='18' y1='6' x2='6' y2='18'/%3E%3Cline x1='6' y1='6' x2='18' y2='18'/%3E%3C/svg%3E");
-    }
-    @keyframes pulse{
-        0%,100%{ opacity:1; transform:scale(1); }
-        50%{ opacity:.4; transform:scale(.7); }
-    }
+  label .req { color: var(--red); font-size: 12px; font-family: 'Segoe UI', Arial, sans-serif; }
 
-    /* ========================================================
-       SUBMIT
-       ======================================================== */
-    .btn-submit{
-        position:relative;
-        width:100%;
-        margin-top: 6px;
-        padding: 14px 18px;
-        border:none;
-        border-radius: 13px;
-        background: linear-gradient(160deg, var(--forest-700), var(--forest-900));
-        color: #FBF8EF;
-        font-family:'Inter', sans-serif;
-        font-size: 15.5px;
-        font-weight:700;
-        letter-spacing:.02em;
-        cursor:pointer;
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        gap:9px;
-        box-shadow: var(--shadow-sm);
-        overflow:hidden;
-        z-index:1;
-        transition: transform .18s ease, box-shadow .18s ease, background .2s ease;
-    }
-    .btn-submit::before{
-        content:"";
-        position:absolute;
-        top:0; left:-60%;
-        width: 50%;
-        height:100%;
-        background: linear-gradient(100deg, transparent, rgba(231,206,123,0.30), transparent);
-        transform: skewX(-18deg);
-        transition: left .55s ease;
-    }
-    .btn-submit:hover:not(:disabled)::before{ left: 130%; }
-    .btn-submit:hover:not(:disabled){
-        transform: translateY(-2px);
-        box-shadow: 0 14px 28px -10px rgba(15,31,22,0.55);
-    }
-    .btn-submit:active:not(:disabled){ transform: translateY(0); }
-    .btn-submit:disabled{
-        cursor:not-allowed;
-        opacity:.55;
-        transform:none;
-        box-shadow:none;
-    }
-    .btn-submit:focus-visible{
-        outline: 3px solid var(--gold);
-        outline-offset: 2px;
-    }
-    .btn-label{ display:flex; align-items:center; gap:9px; }
-    .btn-label svg{ width:17px; height:17px; }
+  label .opt {
+    font-weight: 500;
+    text-transform: none;
+    letter-spacing: 0;
+    color: #ada98f;
+    font-size: 11px;
+    margin-left: 2px;
+    font-family: 'Segoe UI', Arial, sans-serif;
+  }
 
-    .spinner{
-        width:15px; height:15px;
-        border-radius:50%;
-        border: 2px solid rgba(251,248,239,0.35);
-        border-top-color: #FBF8EF;
-        animation: spin .7s linear infinite;
-        display:none;
-    }
-    @keyframes spin{ to{ transform: rotate(360deg); } }
-    .btn-submit.is-loading .spinner{ display:inline-block; }
-    .btn-submit.is-loading .btn-label{ display:none; }
+  .form-group { margin-bottom: 16px; }
+  .fg-name    { --accent: var(--green-mid); }
+  .fg-phone   { --accent: #2e6472; }
+  .fg-address { --accent: #a6592e; }
+  .fg-balance { --accent: var(--gold-dark); }
 
-    .footnote{
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        flex-wrap:wrap;
-        gap:6px;
-        text-align:center;
-        margin-top:14px;
-        font-size:12px;
-        color: var(--muted);
-    }
-    .footnote kbd{
-        font-family:'IBM Plex Mono', monospace;
-        font-size:10.5px;
-        font-weight:600;
-        color: var(--ink-soft);
-        background: var(--gold-tint);
-        border: 1px solid var(--rule);
-        border-radius: 5px;
-        padding: 2px 6px;
-        box-shadow: 0 1px 0 rgba(15,31,22,0.06);
-    }
+  .form-row { display: flex; gap: 14px; align-items: flex-start; flex-wrap: wrap; }
+  .col-half { flex: 1 1 45%; min-width: 220px; }
+  .col-half .form-group { margin-bottom: 0; }
 
-    @media (max-width: 480px){
-        .card-banner{ padding: 24px 20px 20px; }
-        .card-body{ padding: 20px 20px 24px; }
-        .page-title{ font-size:23px; }
-        .amount-presets{ gap:14px; flex-wrap:wrap; }
+  .input-wrap { position: relative; }
+
+  .input-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 15px;
+    height: 15px;
+    stroke-width: 2;
+    color: var(--muted);
+    opacity: 0.5;
+    pointer-events: none;
+    transition: color 0.2s ease, opacity 0.2s ease;
+  }
+
+  .form-group:focus-within .input-icon {
+    color: var(--accent, var(--green));
+    opacity: 0.85;
+  }
+
+  .input-field, select.input-field {
+    width: 100%;
+    padding: 12px 14px 12px 36px;
+    border-radius: 10px;
+    border: 1px solid #ddd4bd;
+    background: #fbf9f2;
+    outline: none;
+    transition: 0.16s ease;
+    font-size: 15px;
+    height: 46px;
+    line-height: 20px;
+    color: var(--ink);
+    font-weight: 500;
+    font-family: 'Segoe UI', Arial, sans-serif;
+  }
+
+  .input-field:focus {
+    border-color: var(--accent, var(--gold));
+    background: #ffffff;
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent, var(--gold)) 14%, transparent);
+  }
+
+  .input-field::placeholder { color: #a89f8c; }
+
+  /* name-field validation states (checking / valid / duplicate) */
+  .input-field.is-checking {
+    border-color: var(--gold);
+  }
+
+  .input-field.is-valid {
+    border-color: var(--green-mid);
+    background: #ffffff;
+    box-shadow: 0 0 0 4px rgba(31,91,70,0.10);
+  }
+
+  .input-field.is-duplicate {
+    border-color: var(--red);
+    background: #ffffff;
+    box-shadow: 0 0 0 4px rgba(162,59,42,0.10);
+    animation: shake 0.3s ease;
+  }
+
+  @keyframes shake {
+    20%, 60% { transform: translateX(-2px); }
+    40%, 80% { transform: translateX(2px); }
+  }
+
+  /* ---------- Name availability status ---------- */
+  .name-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 0;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    font-size: 12px;
+    font-weight: 600;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    transition: max-height 0.22s ease, opacity 0.18s ease, margin-top 0.22s ease;
+  }
+
+  .name-status.show { max-height: 30px; opacity: 1; margin-top: 8px; }
+
+  .name-status.checking .status-text { color: var(--muted); }
+  .name-status.valid .status-text { color: var(--green-mid); }
+  .name-status.duplicate .status-text { color: var(--red); }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--gold);
+    flex: none;
+  }
+
+  .name-status.checking .status-dot {
+    background: var(--gold-dark);
+    animation: pulse 1s ease-in-out infinite;
+  }
+
+  .name-status.valid .status-dot { background: var(--green-mid); }
+  .name-status.duplicate .status-dot { background: var(--red); }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.7); }
+  }
+
+  /* Opening balance — currency prefix */
+  .amount-wrap { position: relative; }
+
+  .amount-wrap .currency-prefix {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gold-dark);
+    font-weight: 700;
+    font-size: 15px;
+    pointer-events: none;
+    font-family: 'Courier New', monospace;
+    z-index: 1;
+  }
+
+  .amount-wrap input {
+    padding-left: 30px;
+    font-family: 'Courier New', monospace;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* quick balance presets */
+  .amount-presets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .amount-preset {
+    border: 1px solid var(--gold-line);
+    background: #fbf6e6;
+    color: var(--muted);
+    font-family: 'Courier New', monospace;
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    padding: 5px 12px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: 0.15s ease;
+  }
+
+  .amount-preset:hover {
+    color: var(--gold-dark);
+    border-color: var(--gold);
+  }
+
+  .amount-preset.active {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: #fffdf7;
+    font-weight: 700;
+  }
+
+  .field-hint {
+    font-size: 12.5px;
+    color: var(--muted);
+    margin-top: 8px;
+  }
+
+  /* ---------- Button ---------- */
+  .actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+    padding-top: 18px;
+    border-top: 1px solid var(--gold-line);
+  }
+
+  .btn-submit {
+    padding: 12px 24px;
+    border-radius: 10px;
+    border: none;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-transform: uppercase;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: linear-gradient(155deg, var(--green-mid), var(--green));
+    color: #f4ecd2;
+    box-shadow: 0 8px 18px rgba(22,60,47,0.30);
+    transition: 0.15s ease;
+  }
+
+  .btn-submit:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 22px rgba(22,60,47,0.38);
+  }
+
+  .btn-submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .btn-label svg { width: 16px; height: 16px; stroke: #f4ecd2; flex-shrink: 0; }
+
+  .spinner {
+    width: 15px;
+    height: 15px;
+    border: 2px solid rgba(244,236,210,0.35);
+    border-top-color: #f4ecd2;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+    display: none;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .btn-submit.is-loading .spinner { display: inline-block; }
+  .btn-submit.is-loading .btn-label { display: none; }
+
+  .footnote {
+    text-align: center;
+    font-size: 11.5px;
+    color: var(--muted);
+    opacity: 0.8;
+    margin-top: 14px;
+    letter-spacing: 0.01em;
+  }
+
+  .footnote kbd {
+    font-family: 'Courier New', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    border: 1px solid var(--gold-line);
+    border-radius: 4px;
+    padding: 1px 6px;
+    background: #fbf9f2;
+    color: var(--muted);
+  }
+
+  @media (max-width: 720px) {
+    .card { padding: 20px; }
+    .page-header { flex-wrap: wrap; }
+    .col-half { flex: 1 1 100%; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .spinner, .status-dot, .input-field.is-duplicate, .name-status {
+      animation: none !important;
     }
+  }
 </style>
 
-<div class="supplier-wrap">
+<div class="page-wrap">
 
-    <div class="supplier-card">
-
-        <div class="card-banner">
-            <div class="banner-seal" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M12 3 L13.6 9.2 L20 12 L13.6 14.8 L12 21 L10.4 14.8 L4 12 L10.4 9.2 Z"/>
-                </svg>
-            </div>
-            <div class="eyebrow">Supplier Ledger</div>
-            <h2 class="page-title">New Supplier Entry</h2>
-            <div class="banner-rule"></div>
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="page-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M16.5 9.4 7.55 4.24"></path>
+          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path>
+          <path d="m3.3 7 8.7 5 8.7-5"></path>
+          <path d="M12 22V12"></path>
+        </svg>
+      </div>
+      <div class="page-heading">
+        <div class="eyebrow-row">
+          <span class="eyebrow">Ledger &middot; Supplier Onboarding</span>
+          <span class="entry-tag">New Entry</span>
         </div>
-
-        <div class="card-body">
-
-            <form method="POST" id="supplierForm" novalidate>
-
-                <div class="form-group">
-                    <label for="supplier_name" class="f-name"><span class="dot"></span><span class="label-text">Name</span> <span class="req">*</span></label>
-                    <div class="input-shell">
-                        <span class="input-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                                <circle cx="12" cy="7" r="4"/>
-                            </svg>
-                        </span>
-                        <input type="text"
-                               id="supplier_name"
-                               name="name"
-                               class="input-field"
-                               placeholder="e.g. S M Bananas"
-                               autocomplete="off"
-                               required>
-                    </div>
-                    <div id="name-status" class="name-status" role="status" aria-live="polite">
-                        <span class="status-dot"></span>
-                        <span class="status-text"></span>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="supplier_phone" class="f-phone"><span class="dot"></span><span class="label-text">Phone</span> <span class="opt">optional</span></label>
-                    <div class="input-shell">
-                        <span class="input-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92Z"/>
-                            </svg>
-                        </span>
-                        <input type="tel"
-                               id="supplier_phone"
-                               name="phone"
-                               class="input-field"
-                               placeholder="10-digit mobile number"
-                               inputmode="numeric"
-                               maxlength="10">
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="supplier_address" class="f-address"><span class="dot"></span><span class="label-text">Address</span> <span class="opt">optional</span></label>
-                    <div class="input-shell">
-                        <span class="input-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M21 10c0 6.5-9 13-9 13s-9-6.5-9-13a9 9 0 0 1 18 0Z"/>
-                                <circle cx="12" cy="10" r="3"/>
-                            </svg>
-                        </span>
-                        <input type="text"
-                               id="supplier_address"
-                               name="address"
-                               class="input-field"
-                               placeholder="Shop / street / city">
-                    </div>
-                </div>
-
-                <div class="form-group" style="margin-bottom:6px;">
-                    <label for="opening_balance" class="f-balance"><span class="dot"></span><span class="label-text">Opening Balance</span></label>
-                    <div class="input-shell">
-                        <span class="currency-prefix">₹</span>
-                        <input type="number"
-                               step="0.01"
-                               id="opening_balance"
-                               name="opening_balance"
-                               value="0"
-                               class="input-field">
-                    </div>
-                    <div class="amount-presets" id="amountPresets">
-                        <button type="button" class="amount-preset active" data-amount="0">₹0</button>
-                        <button type="button" class="amount-preset" data-amount="500">₹500</button>
-                        <button type="button" class="amount-preset" data-amount="1000">₹1,000</button>
-                        <button type="button" class="amount-preset" data-amount="5000">₹5,000</button>
-                    </div>
-                    <div class="field-hint">Amount already owed to or by this supplier, if any.</div>
-                </div>
-
-                <button type="submit" id="saveBtn" class="btn-submit">
-                    <span class="spinner"></span>
-                    <span class="btn-label">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/>
-                            <polyline points="17 21 17 13 7 13 7 21"/>
-                            <polyline points="7 3 7 8 15 8"/>
-                        </svg>
-                        Save Supplier
-                    </span>
-                </button>
-
-            </form>
-        </div>
+        <h2>New Supplier Entry</h2>
+        <p>Add a supplier to the ledger with contact details and an opening balance.</p>
+      </div>
     </div>
 
-    <div class="footnote"><kbd>Enter</kbd> moves to the next field · <kbd>Enter</kbd> on Amount saves</div>
+    <div class="seal">
+      <svg viewBox="0 0 100 100">
+        <circle class="ring" cx="50" cy="50" r="46"/>
+        <path id="sealArcTopSup" d="M 8,50 A 42,42 0 1,1 92,50" fill="none"/>
+        <text>
+          <textPath href="#sealArcTopSup" startOffset="50%" text-anchor="middle">SUPPLIER LEDGER</textPath>
+        </text>
+      </svg>
+      <div class="seal-center">
+        <span>Ledger</span>
+        <span>Entry</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="header-divider"></div>
+
+  <div class="info-banner">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>
+    </svg>
+    Enter the supplier's name and contact details, then add an opening balance if carrying one forward.
+  </div>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="flash-msg">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18" stroke="currentColor">
+            <circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/>
+          </svg>
+          {{ message }}
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <div class="card" id="supplierCard">
+    <form method="POST" id="supplierForm" novalidate>
+
+      <div class="form-group fg-name">
+        <label for="supplier_name"><span class="dot"></span>Name <span class="req">*</span></label>
+        <div class="input-wrap">
+          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <input type="text"
+                 id="supplier_name"
+                 name="name"
+                 class="input-field"
+                 placeholder="e.g. S M Bananas"
+                 autocomplete="off"
+                 required>
+        </div>
+        <div id="name-status" class="name-status" role="status" aria-live="polite">
+          <span class="status-dot"></span>
+          <span class="status-text"></span>
+        </div>
+      </div>
+
+      <div class="form-row" style="margin-bottom:16px;">
+        <div class="col-half">
+          <div class="form-group fg-phone">
+            <label for="supplier_phone"><span class="dot"></span>Phone <span class="opt">optional</span></label>
+            <div class="input-wrap">
+              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              <input type="tel"
+                     id="supplier_phone"
+                     name="phone"
+                     class="input-field"
+                     placeholder="10-digit mobile number"
+                     inputmode="numeric"
+                     maxlength="10">
+            </div>
+          </div>
+        </div>
+
+        <div class="col-half">
+          <div class="form-group fg-address">
+            <label for="supplier_address"><span class="dot"></span>Address <span class="opt">optional</span></label>
+            <div class="input-wrap">
+              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <input type="text"
+                     id="supplier_address"
+                     name="address"
+                     class="input-field"
+                     placeholder="Shop / street / city">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group fg-balance">
+        <label for="opening_balance"><span class="dot"></span>Opening Balance</label>
+        <div class="amount-wrap">
+          <span class="currency-prefix">&#8377;</span>
+          <input type="number"
+                 step="0.01"
+                 id="opening_balance"
+                 name="opening_balance"
+                 value="0"
+                 class="input-field">
+        </div>
+        <div class="amount-presets" id="amountPresets">
+          <button type="button" class="amount-preset active" data-amount="0">&#8377;0</button>
+          <button type="button" class="amount-preset" data-amount="500">&#8377;500</button>
+          <button type="button" class="amount-preset" data-amount="1000">&#8377;1,000</button>
+          <button type="button" class="amount-preset" data-amount="5000">&#8377;5,000</button>
+        </div>
+        <div class="field-hint">Amount already owed to or by this supplier, if any.</div>
+      </div>
+
+      <div class="actions">
+        <button type="submit" id="saveBtn" class="btn-submit">
+          <span class="spinner"></span>
+          <span class="btn-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/>
+              <polyline points="17 21 17 13 7 13 7 21"/>
+              <polyline points="7 3 7 8 15 8"/>
+            </svg>
+            Save Supplier
+          </span>
+        </button>
+      </div>
+
+    </form>
+  </div>
+
+  <div class="footnote"><kbd>Enter</kbd> moves to the next field &middot; <kbd>Enter</kbd> on Amount saves</div>
+
 </div>
 
 <script>
