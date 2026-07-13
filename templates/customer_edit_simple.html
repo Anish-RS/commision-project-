@@ -110,6 +110,15 @@
             </div>
 
             <div class="form-group">
+                <label class="form-label">Amount</label>
+                <input
+                    type="text"
+                    value="₹{{ '%.2f'|format(customer.balance or 0) }}"
+                    readonly
+                    class="form-input readonly-field">
+            </div>
+
+            <div class="form-group">
                 <label class="form-label">Phone Number</label>
                 <input
                     type="text"
@@ -120,12 +129,21 @@
 
             <div class="form-group full">
                 <label class="form-label">Customer Name</label>
+                {% if customer.balance and customer.balance != 0 %}
+                <input
+                    type="text"
+                    value="{{ customer.name }}"
+                    readonly
+                    class="form-input readonly-field">
+                <input type="hidden" name="name" value="{{ customer.name }}">
+                {% else %}
                 <input
                     type="text"
                     name="name"
                     value="{{ customer.name }}"
                     required
                     class="form-input">
+                {% endif %}
             </div>
 
         </div>
