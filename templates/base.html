@@ -159,8 +159,9 @@
     /* ─── CONTAINER ───────────────────────────────────────── */
     .container {
       max-width: 1240px;
-      margin: 80px auto 60px auto;
+      margin: calc(var(--nav-height, 116px) + 22px) auto 60px auto;
       padding: 0 28px;
+      transition: margin-top 0.15s ease;
     }
 
     /* ─── FLASH MESSAGES ──────────────────────────────────── */
@@ -228,11 +229,28 @@
 </head>
 
 <script>
+  // Keep page content clear of the nav no matter how many rows it wraps to
+  // (nav height changes across viewport widths since it can wrap to 2 or 3 rows).
+  function syncNavHeight() {
+    const nav = document.querySelector(".main-nav");
+    if (!nav) return;
+    document.documentElement.style.setProperty("--nav-height", nav.offsetHeight + "px");
+  }
+
+  document.addEventListener("DOMContentLoaded", syncNavHeight);
+  window.addEventListener("load", syncNavHeight);
+  window.addEventListener("resize", syncNavHeight);
+  // Fonts loading async can change nav height after first paint
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(syncNavHeight);
+  }
+
   let prevScrollPos = window.pageYOffset;
   window.addEventListener("scroll", function () {
     let currentScrollPos = window.pageYOffset;
     const nav = document.querySelector(".main-nav");
-    nav.style.top = prevScrollPos > currentScrollPos ? "0" : "-150px";
+    const hiddenOffset = -(nav.offsetHeight + 10) + "px";
+    nav.style.top = prevScrollPos > currentScrollPos ? "0" : hiddenOffset;
     prevScrollPos = currentScrollPos;
   });
 </script>
