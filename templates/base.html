@@ -262,10 +262,13 @@
     const currentScrollPos = window.pageYOffset;
     const navHeight = nav.offsetHeight;
 
-    // Always show the nav while near the top of the page, and only hide it
-    // once the user has scrolled down past it — a small delta threshold
-    // stops jitter from triggering hide/show on tiny scroll adjustments.
-    if (currentScrollPos < navHeight) {
+    // Only force the nav visible right at the very top of the page.
+    // (Forcing it visible for any scroll < navHeight used to cover the
+    // page content that had scrolled up into that same 0..navHeight band,
+    // making it look like content "disappeared" behind the nav.)
+    // Below that, a small delta threshold stops jitter from triggering
+    // hide/show on tiny scroll adjustments.
+    if (currentScrollPos <= 0) {
       nav.style.top = "0px";
     } else if (currentScrollPos < lastScrollPos - 5) {
       nav.style.top = "0px";
