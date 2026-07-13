@@ -61,7 +61,7 @@
       align-items: center;
       flex-wrap: wrap;
       gap: 0;
-      padding: 0 32px;
+      padding: 0 24px;
       background: var(--navy);
       border-bottom: 1px solid rgba(201,168,76,0.25);
       box-shadow: 0 4px 24px rgba(0,0,0,0.35);
@@ -91,8 +91,8 @@
       font-size: 18px;
       letter-spacing: 0.04em;
       color: var(--gold-light);
-      margin-right: 28px;
-      padding-right: 28px;
+      margin-right: 20px;
+      padding-right: 20px;
       border-right: 1px solid rgba(201,168,76,0.25);
       white-space: nowrap;
       line-height: 58px;
@@ -104,12 +104,12 @@
       display: inline-flex;
       align-items: center;
       height: 58px;
-      padding: 0 14px;
+      padding: 0 11px;
       color: var(--platinum);
       text-decoration: none;
       font-size: 10.5px;
       font-weight: 500;
-      letter-spacing: 0.1em;
+      letter-spacing: 0.075em;
       text-transform: uppercase;
       white-space: nowrap;
       position: relative;
@@ -120,7 +120,7 @@
     nav.main-nav a::after {
       content: '';
       position: absolute;
-      bottom: 0; left: 14px; right: 14px;
+      bottom: 0; left: 11px; right: 11px;
       height: 1.5px;
       background: var(--gold);
       transform: scaleX(0);
@@ -152,7 +152,7 @@
       height: 20px;
       align-self: center;
       background: rgba(201,168,76,0.22);
-      margin: 0 6px;
+      margin: 0 4px;
       flex-shrink: 0;
     }
 
@@ -229,6 +229,13 @@
 </head>
 
 <script>
+  // Prevent the browser from silently restoring an old scroll position on
+  // load/refresh — that was tricking the hide-on-scroll logic below into
+  // thinking the user had scrolled down, hiding the nav on a fresh page.
+  if ("scrollRestoration" in history) {
+    history.scrollRestoration = "manual";
+  }
+
   // Keep page content clear of the nav no matter how many rows it wraps to
   // (nav height changes across viewport widths since it can wrap to 2 or 3 rows).
   function syncNavHeight() {
@@ -245,14 +252,40 @@
     document.fonts.ready.then(syncNavHeight);
   }
 
-  let prevScrollPos = window.pageYOffset;
-  window.addEventListener("scroll", function () {
-    let currentScrollPos = window.pageYOffset;
+  let lastScrollPos = window.pageYOffset;
+  let navTicking = false;
+
+  function updateNavVisibility() {
     const nav = document.querySelector(".main-nav");
-    const hiddenOffset = -(nav.offsetHeight + 10) + "px";
-    nav.style.top = prevScrollPos > currentScrollPos ? "0" : hiddenOffset;
-    prevScrollPos = currentScrollPos;
+    if (!nav) { navTicking = false; return; }
+
+    const currentScrollPos = window.pageYOffset;
+    const navHeight = nav.offsetHeight;
+
+    // Always show the nav while near the top of the page, and only hide it
+    // once the user has scrolled down past it — a small delta threshold
+    // stops jitter from triggering hide/show on tiny scroll adjustments.
+    if (currentScrollPos < navHeight) {
+      nav.style.top = "0px";
+    } else if (currentScrollPos < lastScrollPos - 5) {
+      nav.style.top = "0px";
+    } else if (currentScrollPos > lastScrollPos + 5) {
+      nav.style.top = -(navHeight + 10) + "px";
+    }
+
+    lastScrollPos = currentScrollPos;
+    navTicking = false;
+  }
+
+  window.addEventListener("scroll", function () {
+    if (!navTicking) {
+      window.requestAnimationFrame(updateNavVisibility);
+      navTicking = true;
+    }
   });
+
+  // Force the correct state once on load, in case the page opened mid-scroll
+  window.addEventListener("load", updateNavVisibility);
 </script>
 
 <body>
