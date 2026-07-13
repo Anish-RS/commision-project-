@@ -22,12 +22,9 @@
     --locked-bg:#F1ECDD;
 }
 
-.ledger-wrap{
+.ledger-page{
     min-height:calc(100vh - 40px);
-    display:flex;
-    align-items:flex-start;
-    justify-content:center;
-    padding:48px 16px;
+    padding:40px 48px 56px;
     background:
         radial-gradient(circle at 12% 8%, rgba(184,145,47,0.07), transparent 45%),
         radial-gradient(circle at 92% 88%, rgba(27,58,46,0.06), transparent 40%),
@@ -35,51 +32,12 @@
     font-family:'Inter', -apple-system, sans-serif;
 }
 
-.edit-card{
+.page-header{
     position:relative;
-    width:100%;
-    max-width:560px;
-    margin:0 auto;
-    background:var(--card);
-    border-radius:6px;
-    padding:36px 40px 36px;
-    box-shadow:
-        0 1px 2px rgba(27,58,46,0.05),
-        0 24px 48px -20px rgba(27,58,46,0.20);
-    border:1px solid var(--gold);
-}
-
-/* signature: ledger entry seal, echoes the stamped-record motif */
-.ledger-seal{
-    position:absolute;
-    top:26px;
-    right:32px;
-    width:78px;
-    height:78px;
-    border-radius:50%;
-    border:1.5px dashed var(--gold);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    text-align:center;
-    transform:rotate(6deg);
-}
-
-.ledger-seal span{
-    font-family:'IBM Plex Mono', monospace;
-    font-size:9.5px;
-    font-weight:700;
-    letter-spacing:0.8px;
-    color:var(--gold);
-    line-height:1.35;
-    text-transform:uppercase;
-}
-
-.card-header{
     display:flex;
     align-items:flex-start;
     gap:16px;
-    padding-right:90px;
+    padding-right:110px;
 }
 
 .avatar-badge{
@@ -109,7 +67,7 @@
 .edit-title{
     margin:0;
     font-family:'Fraunces', serif;
-    font-size:26px;
+    font-size:30px;
     font-weight:600;
     color:var(--forest);
     letter-spacing:-0.3px;
@@ -117,18 +75,41 @@
 
 .edit-subtitle{
     margin:0;
-    font-size:13px;
+    font-size:14.5px;
     color:var(--slate);
     font-weight:500;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    white-space:nowrap;
+}
+
+/* signature: ledger entry seal, echoes the stamped-record motif used across the app */
+.ledger-seal{
+    position:absolute;
+    top:0;
+    right:0;
+    width:80px;
+    height:80px;
+    border-radius:50%;
+    border:1.5px dashed var(--gold);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    transform:rotate(6deg);
+}
+
+.ledger-seal span{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:9.5px;
+    font-weight:700;
+    letter-spacing:0.8px;
+    color:var(--gold);
+    line-height:1.35;
+    text-transform:uppercase;
 }
 
 .gold-rule{
     height:2px;
-    margin:22px 0 24px;
-    background:linear-gradient(90deg, var(--gold), rgba(184,145,47,0.15) 70%, transparent);
+    margin:26px 0 24px;
+    background:var(--forest);
 }
 
 .info-banner{
@@ -136,10 +117,11 @@
     align-items:flex-start;
     gap:10px;
     background:var(--ivory);
+    border:1px solid var(--line);
     border-left:3px solid var(--gold);
-    border-radius:4px;
-    padding:12px 16px;
-    margin-bottom:26px;
+    border-radius:6px;
+    padding:14px 18px;
+    margin-bottom:28px;
 }
 
 .info-banner svg{
@@ -152,15 +134,25 @@
 
 .info-banner p{
     margin:0;
-    font-size:13px;
+    font-size:13.5px;
     color:var(--slate);
     line-height:1.5;
+}
+
+.edit-card{
+    background:var(--card);
+    border-radius:8px;
+    padding:34px 40px 32px;
+    box-shadow:
+        0 1px 2px rgba(27,58,46,0.05),
+        0 24px 48px -28px rgba(27,58,46,0.20);
+    border:1px solid var(--gold);
 }
 
 .form-grid{
     display:grid;
     grid-template-columns:1fr 1fr;
-    gap:18px;
+    gap:22px 28px;
 }
 
 .form-group{
@@ -182,7 +174,7 @@
     color:var(--slate);
     text-transform:uppercase;
     letter-spacing:0.9px;
-    margin-bottom:7px;
+    margin-bottom:8px;
 }
 
 .form-label svg{
@@ -195,7 +187,7 @@
 
 .form-input{
     width:100%;
-    padding:12px 14px;
+    padding:13px 15px;
     border:1.5px solid var(--line);
     border-radius:6px;
     background:var(--ivory);
@@ -255,17 +247,22 @@
 }
 
 .helper-note{
-    margin:6px 2px 0;
+    margin:7px 2px 0;
     font-size:11.5px;
     color:var(--slate-soft);
     font-weight:500;
 }
 
+.form-footer{
+    display:flex;
+    justify-content:flex-end;
+    margin-top:8px;
+    padding-top:24px;
+    border-top:1px solid var(--line-soft);
+}
+
 .update-btn{
-    position:relative;
-    margin-top:28px;
-    width:100%;
-    padding:14px;
+    padding:14px 30px;
     border:none;
     border-radius:6px;
     font-family:'IBM Plex Mono', monospace;
@@ -308,28 +305,34 @@
     outline:none;
 }
 
-@media(max-width:560px){
-    .edit-card{
-        padding:28px 22px 26px;
-        border-radius:8px;
+@media(max-width:720px){
+    .ledger-page{
+        padding:28px 20px 40px;
+    }
+    .page-header{
+        padding-right:76px;
     }
     .ledger-seal{
         width:60px;
         height:60px;
-        top:20px;
-        right:20px;
     }
     .ledger-seal span{
         font-size:8px;
     }
-    .card-header{
-        padding-right:68px;
-    }
     .edit-title{
-        font-size:21px;
+        font-size:23px;
+    }
+    .edit-card{
+        padding:24px 20px 22px;
     }
     .form-grid{
         grid-template-columns:1fr;
+    }
+    .form-footer{
+        justify-content:stretch;
+    }
+    .update-btn{
+        width:100%;
     }
 }
 
@@ -340,26 +343,25 @@
 }
 </style>
 
-<div class="ledger-wrap">
-<div class="edit-card">
+<div class="ledger-page">
 
-    <div class="ledger-seal"><span>Customer<br>Record</span></div>
-
-    <div class="card-header">
+    <div class="page-header">
         <div class="avatar-badge">{{ (customer.name or "?")[0]|upper }}</div>
         <div class="header-text">
             <h2 class="edit-title">Edit Customer</h2>
             <p class="edit-subtitle">{{ customer.name or "Unnamed customer" }}</p>
         </div>
+        <div class="ledger-seal"><span>Customer<br>Record</span></div>
     </div>
 
     <div class="gold-rule"></div>
 
     <div class="info-banner">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
-        <p>Customer ID and balance are locked. Update the phone number or name below, then save.</p>
+        <p>Customer ID and balance are locked. Update the name or phone number below, then save.</p>
     </div>
 
+    <div class="edit-card">
     <form method="POST">
 
         <div class="form-grid">
@@ -396,19 +398,6 @@
 
             <div class="form-group full">
                 <label class="form-label">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.8a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.84.57 2.8.7A2 2 0 0 1 22 16.92z"/></svg>
-                    Phone number
-                </label>
-                <input
-                    type="tel"
-                    name="phone"
-                    value="{{ customer.phone or '' }}"
-                    placeholder="Enter phone number"
-                    class="form-input">
-            </div>
-
-            <div class="form-group full">
-                <label class="form-label">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                     Customer name
                 </label>
@@ -434,16 +423,31 @@
                 {% endif %}
             </div>
 
+            <div class="form-group full">
+                <label class="form-label">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.8a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.84.57 2.8.7A2 2 0 0 1 22 16.92z"/></svg>
+                    Phone number
+                </label>
+                <input
+                    type="tel"
+                    name="phone"
+                    value="{{ customer.phone or '' }}"
+                    placeholder="Enter phone number"
+                    class="form-input">
+            </div>
+
         </div>
 
-        <button type="submit" class="update-btn">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-            Update Customer
-        </button>
+        <div class="form-footer">
+            <button type="submit" class="update-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                Update Customer
+            </button>
+        </div>
 
     </form>
+    </div>
 
-</div>
 </div>
 
 {% endblock %}
