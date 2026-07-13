@@ -21,12 +21,16 @@
   body { background: var(--cream); }
 
   .page-wrap {
-    max-width: 720px;
+    max-width: 960px;
     width: 100%;
     margin: 28px auto;
     padding: 0 20px;
     font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
   }
+
+  .form-row { display: flex; gap: 14px; align-items: flex-start; flex-wrap: wrap; }
+  .col-half { flex: 1 1 45%; min-width: 220px; }
+  .col-half .form-group { margin-bottom: 0; }
 
   /* ---------- Header ---------- */
   .page-header {
@@ -75,19 +79,6 @@
     letter-spacing: 0.14em;
     text-transform: uppercase;
     color: var(--gold-dark);
-  }
-
-  .entry-tag {
-    font-family: Georgia, 'Times New Roman', serif;
-    font-size: 10.5px;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--gold-dark);
-    border: 1px dashed var(--gold);
-    border-radius: 999px;
-    padding: 3px 10px;
-    white-space: nowrap;
   }
 
   .entry-tag {
@@ -471,8 +462,6 @@
     gap: 8px;
     text-transform: uppercase;
     font-family: 'Segoe UI', Arial, sans-serif;
-    width: 100%;
-    justify-content: center;
   }
 
   .btn-primary {
@@ -533,6 +522,7 @@
     .card { padding: 20px; }
     .page-header { flex-wrap: wrap; }
     .seal { width: 64px; height: 64px; }
+    .col-half { flex: 1 1 100%; }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -622,23 +612,29 @@
         </div>
       </div>
 
-      <div class="form-group fg-phone">
-        <label for="phone"><span class="dot"></span>Phone <span class="opt">optional</span></label>
-        <div class="input-wrap" id="phoneWrap">
-          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-          <input type="text" id="phone" name="phone" class="input-field"
-                 placeholder="10-digit mobile number" autocomplete="off" inputmode="tel" maxlength="15">
-          <button type="button" class="input-clear" id="phoneClear" tabindex="-1" aria-label="Clear phone">&times;</button>
+      <div class="form-row" style="margin-bottom:16px;">
+        <div class="col-half">
+          <div class="form-group fg-phone">
+            <label for="phone"><span class="dot"></span>Phone <span class="opt">optional</span></label>
+            <div class="input-wrap" id="phoneWrap">
+              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              <input type="text" id="phone" name="phone" class="input-field"
+                     placeholder="10-digit mobile number" autocomplete="off" inputmode="tel" maxlength="15">
+              <button type="button" class="input-clear" id="phoneClear" tabindex="-1" aria-label="Clear phone">&times;</button>
+            </div>
+          </div>
         </div>
-      </div>
 
-      <div class="form-group fg-address">
-        <label for="address"><span class="dot"></span>Address <span class="opt">optional</span></label>
-        <div class="input-wrap" id="addressWrap">
-          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-          <input type="text" id="address" name="address" class="input-field"
-                 placeholder="Shop / street / city" autocomplete="off">
-          <button type="button" class="input-clear" id="addressClear" tabindex="-1" aria-label="Clear address">&times;</button>
+        <div class="col-half">
+          <div class="form-group fg-address">
+            <label for="address"><span class="dot"></span>Address <span class="opt">optional</span></label>
+            <div class="input-wrap" id="addressWrap">
+              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <input type="text" id="address" name="address" class="input-field"
+                     placeholder="Shop / street / city" autocomplete="off">
+              <button type="button" class="input-clear" id="addressClear" tabindex="-1" aria-label="Clear address">&times;</button>
+            </div>
+          </div>
         </div>
       </div>
 
