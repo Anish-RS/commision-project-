@@ -166,6 +166,26 @@
     font-size:14px;
   }
   .empty-state strong{ color:var(--bottle-deep); }
+
+  /* ---------- Customer combobox / autosuggest ---------- */
+  .combo-field{ position:relative; }
+  .suggest-box{
+    position:absolute; top:calc(100% + 6px); left:0; right:0; z-index:40;
+    background:var(--paper); border:1px solid var(--line); border-radius:12px;
+    box-shadow:0 14px 30px -12px rgba(31,61,52,.32);
+    max-height:264px; overflow-y:auto; display:none;
+  }
+  .suggest-box.open{ display:block; }
+  .suggest-item{
+    padding:9px 14px; cursor:pointer; display:flex; align-items:baseline;
+    justify-content:space-between; gap:10px; border-bottom:1px solid var(--line);
+  }
+  .suggest-item:last-child{ border-bottom:none; }
+  .suggest-item:hover, .suggest-item.active{ background:var(--teal-soft); }
+  .suggest-name{ font-size:13.5px; color:var(--ink); font-weight:500; }
+  .suggest-name mark{ background:var(--brass-soft); color:var(--bottle-deep); border-radius:3px; padding:0 1px; }
+  .suggest-id{ font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:var(--muted); white-space:nowrap; }
+  .suggest-empty{ padding:12px 14px; font-size:13px; color:var(--muted); }
 </style>
 
 <div class="as-wrap">
@@ -178,24 +198,18 @@
     </div>
     <p class="as-sub">Choose a customer and a date range (or select a date only) then click <strong>Show</strong>.</p>
 
-    <!-- form: we submit a hidden 'customer_id' field that JS sets from either the dropdown or manual input -->
+    {% set ns = namespace(selected_name='') %}
+    {% for c in customers %}
+      {% if selected_customer and (selected_customer|int(0)) == (c.id|int) %}{% set ns.selected_name = c.name ~ ' (ID: ' ~ c.id ~ ')' %}{% endif %}
+    {% endfor %}
+
+    <!-- form: we submit a hidden 'customer_id' field that JS sets from the combobox -->
     <form method="GET" action="{{ url_for('account_summary') }}" id="acct-form">
       <div class="controls">
-        <div class="control-field">
-          <label class="small" for="customer-select">Customer</label>
-          <select id="customer-select" class="input" aria-label="Customer selector">
-            <option value="">— All customers —</option>
-            {% for c in customers %}
-              <option value="{{ c.id }}" {% if selected_customer and (selected_customer|int) == (c.id|int) %}selected{% endif %}>
-                {{ c.name }} (ID: {{ c.id }})
-              </option>
-            {% endfor %}
-          </select>
-        </div>
-
-        <div class="control-field" style="min-width:220px;">
-          <label class="small" for="customer-manual">Or enter ID or Name</label>
-          <input id="customer-manual" name="customer_manual" class="input" placeholder="Type numeric ID (eg. 1) or name" />
+        <div class="control-field combo-field" style="min-width:280px;">
+          <label class="small" for="customer-combo">Customer</label>
+          <input id="customer-combo" class="input" autocomplete="off" placeholder="Type name or ID to search…" value="{{ ns.selected_name }}" />
+          <div id="customer-suggestions" class="suggest-box" role="listbox" aria-label="Customer suggestions"></div>
         </div>
 
         <div class="control-field">
@@ -322,24 +336,137 @@
   </div>
 </div>
 
+<script id="customers-data" type="application/json">
+  [{% for c in customers %}{"id": {{ c.id }}, "name": {{ c.name|tojson }}}{% if not loop.last %},{% endif %}{% endfor %}]
+</script>
+
 <script>
-  // Populate the hidden customer_id before submitting the form.
-  // Priority: manual input (if present) -> dropdown value -> empty (means all customers).
+  // Single-field customer search: type a name or ID, pick a suggestion (or just
+  // type an exact ID/name and submit). Keeps posting the same hidden 'customer_id'
+  // the backend already expects.
   (function(){
     var form = document.getElementById('acct-form');
     var hidden = document.getElementById('customer_id_hidden');
-    var select = document.getElementById('customer-select');
-    var manual = document.getElementById('customer-manual');
+    var input = document.getElementById('customer-combo');
+    var box = document.getElementById('customer-suggestions');
+    var dataEl = document.getElementById('customers-data');
 
-    form.addEventListener('submit', function(e){
-      var m = manual.value && manual.value.trim();
-      if (m) {
-        hidden.value = m;
-      } else {
-        // use selected option value (may be empty string)
-        hidden.value = select.value || '';
+    var customers = [];
+    try { customers = JSON.parse(dataEl.textContent || '[]'); } catch (e) { customers = []; }
+
+    var selectedId = hidden.value || null; // preselected from server (e.g. on reload)
+    var activeIndex = -1;
+    var currentMatches = [];
+
+    function escapeHtml(s){
+      return String(s).replace(/[&<>"']/g, function(c){
+        return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+      });
+    }
+
+    function highlight(name, query){
+      if (!query) return escapeHtml(name);
+      var idx = name.toLowerCase().indexOf(query.toLowerCase());
+      if (idx === -1) return escapeHtml(name);
+      return escapeHtml(name.slice(0, idx)) + '<mark>' + escapeHtml(name.slice(idx, idx + query.length)) + '</mark>' + escapeHtml(name.slice(idx + query.length));
+    }
+
+    function closeBox(){
+      box.classList.remove('open');
+      box.innerHTML = '';
+      activeIndex = -1;
+      currentMatches = [];
+    }
+
+    function renderMatches(query){
+      var q = query.trim().toLowerCase();
+      if (!q) { closeBox(); return; }
+
+      var matches = customers.filter(function(c){
+        return c.name.toLowerCase().indexOf(q) !== -1 || String(c.id).indexOf(q) !== -1;
+      }).slice(0, 8);
+
+      currentMatches = matches;
+      activeIndex = -1;
+
+      if (!matches.length) {
+        box.innerHTML = '<div class="suggest-empty">No matching customers.</div>';
+        box.classList.add('open');
+        return;
       }
-      // allow form to submit normally
+
+      box.innerHTML = matches.map(function(c, i){
+        return '<div class="suggest-item" role="option" data-index="' + i + '">' +
+                 '<span class="suggest-name">' + highlight(c.name, query) + '</span>' +
+                 '<span class="suggest-id">ID: ' + c.id + '</span>' +
+               '</div>';
+      }).join('');
+      box.classList.add('open');
+    }
+
+    function pick(c){
+      input.value = c.name + ' (ID: ' + c.id + ')';
+      selectedId = c.id;
+      closeBox();
+    }
+
+    function setActive(i){
+      var items = box.querySelectorAll('.suggest-item');
+      items.forEach(function(el){ el.classList.remove('active'); });
+      if (i >= 0 && i < items.length) {
+        items[i].classList.add('active');
+        items[i].scrollIntoView({ block: 'nearest' });
+      }
+      activeIndex = i;
+    }
+
+    input.addEventListener('input', function(){
+      selectedId = null; // typing invalidates any previous pick
+      renderMatches(input.value);
+    });
+
+    input.addEventListener('focus', function(){
+      if (input.value.trim()) renderMatches(input.value);
+    });
+
+    input.addEventListener('keydown', function(e){
+      if (!box.classList.contains('open')) return;
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        setActive(Math.min(activeIndex + 1, currentMatches.length - 1));
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        setActive(Math.max(activeIndex - 1, 0));
+      } else if (e.key === 'Enter') {
+        if (activeIndex >= 0 && currentMatches[activeIndex]) {
+          e.preventDefault();
+          pick(currentMatches[activeIndex]);
+        }
+      } else if (e.key === 'Escape') {
+        closeBox();
+      }
+    });
+
+    box.addEventListener('mousedown', function(e){
+      var item = e.target.closest('.suggest-item');
+      if (!item) return;
+      var idx = parseInt(item.getAttribute('data-index'), 10);
+      if (currentMatches[idx]) pick(currentMatches[idx]);
+    });
+
+    document.addEventListener('click', function(e){
+      if (!e.target.closest('.combo-field')) closeBox();
+    });
+
+    form.addEventListener('submit', function(){
+      // Prefer an explicitly picked customer; otherwise fall back to whatever
+      // was typed (numeric ID or name) so the backend can resolve it as before.
+      var typed = input.value.trim();
+      if (selectedId !== null && typed) {
+        hidden.value = selectedId;
+      } else {
+        hidden.value = typed;
+      }
     });
   })();
 </script>
