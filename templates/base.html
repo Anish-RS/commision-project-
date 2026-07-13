@@ -146,6 +146,16 @@
       background: var(--gold-light);
     }
 
+    /* Subtle gold divider between logical nav groups */
+    nav.main-nav .nav-divider {
+      width: 1px;
+      height: 20px;
+      align-self: center;
+      background: rgba(201,168,76,0.22);
+      margin: 0 6px;
+      flex-shrink: 0;
+    }
+
     /* ─── CONTAINER ───────────────────────────────────────── */
     .container {
       max-width: 1240px;
@@ -232,23 +242,40 @@
   <nav class="main-nav" role="navigation" aria-label="Main navigation">
     <span class="logo">Banana Commission</span>
 
+    <!-- Group 1: Onboarding / Records -->
     <a href="/customers/add">Add Customer</a>
     <a href="/suppliers/add">Add Supplier</a>
+    <a href="/labour/add">Add Labour</a>
+
+    <span class="nav-divider" aria-hidden="true"></span>
+
+    <!-- Group 2: Billing -->
     <a href="/bills/supplier/add">Supplier &amp; Customer Bill</a>
     <a href="/bills/supplier/search">Edit Supplier Bill</a>
     <a href="{{ url_for('customer_bill_search') }}">Customer Bill / Print</a>
-    <a href="/tally">Tally</a>
-    <a href="/ledger">Credit / Debit</a>
+
+    <span class="nav-divider" aria-hidden="true"></span>
+
+    <!-- Group 3: Transactions -->
     <a href="/transactions/receipt">Receipt</a>
     <a href="/transactions/payment">Payment</a>
+    <a href="/transactions/edit">Edit Receipt / Payment</a>
+    <a href="/ledger">Credit / Debit</a>
     <a href="/cash_in_hand">Money In / Out</a>
-    <a href="/labour/add">Add Labour</a>
+
+    <span class="nav-divider" aria-hidden="true"></span>
+
+    <!-- Group 4: Accounts & Reconciliation -->
+    <a href="/tally">Tally</a>
+    <a href="/account-summary">Account Summary</a>
+    <a href="/accounts/adjust">Old Balance</a>
+    <a href="/account-adjustment-history">Old Balance History</a>
+
+    <span class="nav-divider" aria-hidden="true"></span>
+
+    <!-- Group 5: Reports & Utilities -->
     <a href="/profit-loss">Profit &amp; Loss</a>
     <a href="/find">Find</a>
-    <a href="/accounts/adjust">Old Balance</a>
-    <a href="/account-summary">Account Summary</a>
-    <a href="/transactions/edit">Edit Receipt / Payment</a>
-    <a href="/account-adjustment-history">Old Balance History</a>
   </nav>
 
   <!-- container -->
