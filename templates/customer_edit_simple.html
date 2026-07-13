@@ -11,6 +11,7 @@
     --forest-soft:#2A4E3D;
     --gold:#B8912F;
     --gold-light:#D4AF63;
+    --rust:#A54D3B;
     --cream:#F7F2E7;
     --ivory:#FBF8F1;
     --card:#FFFDF8;
@@ -22,6 +23,8 @@
     --locked-bg:#F1ECDD;
 }
 
+*{ box-sizing:border-box; }
+
 .ledger-page{
     min-height:calc(100vh - 40px);
     padding:40px 48px 56px;
@@ -30,6 +33,41 @@
         radial-gradient(circle at 92% 88%, rgba(27,58,46,0.06), transparent 40%),
         var(--cream);
     font-family:'Inter', -apple-system, sans-serif;
+}
+
+/* ---------- breadcrumb / back ---------- */
+.back-nav{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    background:none;
+    border:none;
+    padding:6px 2px;
+    margin-bottom:18px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11.5px;
+    font-weight:600;
+    letter-spacing:0.5px;
+    text-transform:uppercase;
+    color:var(--slate);
+    cursor:pointer;
+    text-decoration:none;
+    transition:color 0.15s ease, transform 0.15s ease;
+}
+.back-nav svg{ width:13px; height:13px; transition:transform 0.15s ease; }
+.back-nav:hover{ color:var(--forest); }
+.back-nav:hover svg{ transform:translateX(-2px); }
+
+/* ---------- entrance ---------- */
+.reveal{
+    animation:riseIn 0.5s cubic-bezier(.16,.9,.35,1) both;
+}
+.reveal.d1{ animation-delay:0.04s; }
+.reveal.d2{ animation-delay:0.10s; }
+.reveal.d3{ animation-delay:0.16s; }
+@keyframes riseIn{
+    from{ opacity:0; transform:translateY(10px); }
+    to{ opacity:1; transform:translateY(0); }
 }
 
 .page-header{
@@ -78,6 +116,34 @@
     font-size:14.5px;
     color:var(--slate);
     font-weight:500;
+    display:flex;
+    align-items:center;
+    gap:8px;
+}
+
+.status-chip{
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    padding:3px 9px 3px 7px;
+    border-radius:20px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10px;
+    font-weight:700;
+    letter-spacing:0.5px;
+    text-transform:uppercase;
+    background:var(--locked-bg);
+    color:var(--slate);
+    opacity:0;
+    transform:scale(0.9);
+    transition:opacity 0.2s ease, transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+.status-chip.show{ opacity:1; transform:scale(1); }
+.status-chip.dirty{ background:rgba(184,145,47,0.16); color:var(--gold); }
+.status-chip.dirty::before{
+    content:'';
+    width:5px; height:5px; border-radius:50%;
+    background:var(--gold);
 }
 
 /* signature: ledger entry seal, echoes the stamped-record motif used across the app */
@@ -94,6 +160,13 @@
     justify-content:center;
     text-align:center;
     transform:rotate(6deg);
+    transition:transform 0.4s cubic-bezier(.34,1.56,.64,1), border-color 0.2s ease;
+    cursor:default;
+}
+
+.ledger-seal:hover{
+    transform:rotate(-4deg) scale(1.05);
+    border-color:var(--gold-light);
 }
 
 .ledger-seal span{
@@ -109,7 +182,7 @@
 .gold-rule{
     height:2px;
     margin:26px 0 24px;
-    background:var(--forest);
+    background:linear-gradient(90deg, var(--forest) 0%, var(--forest) 70%, transparent 100%);
 }
 
 .info-banner{
@@ -147,6 +220,7 @@
         0 1px 2px rgba(27,58,46,0.05),
         0 24px 48px -28px rgba(27,58,46,0.20);
     border:1px solid var(--gold);
+    position:relative;
 }
 
 .form-grid{
@@ -167,6 +241,7 @@
 .form-label{
     display:flex;
     align-items:center;
+    justify-content:space-between;
     gap:6px;
     font-family:'IBM Plex Mono', monospace;
     font-size:11px;
@@ -175,6 +250,13 @@
     text-transform:uppercase;
     letter-spacing:0.9px;
     margin-bottom:8px;
+    transition:color 0.15s ease;
+}
+
+.form-label .label-main{
+    display:flex;
+    align-items:center;
+    gap:6px;
 }
 
 .form-label svg{
@@ -183,6 +265,23 @@
     opacity:0.55;
     flex-shrink:0;
     color:var(--gold);
+}
+
+.form-group.focused .form-label{ color:var(--forest); }
+.form-group.focused .form-label svg{ opacity:1; }
+
+.required-dot{
+    color:var(--rust);
+    font-size:13px;
+    line-height:1;
+}
+
+.char-count{
+    font-weight:500;
+    letter-spacing:0.3px;
+    color:var(--slate-soft);
+    text-transform:none;
+    font-size:10.5px;
 }
 
 .form-input{
@@ -215,6 +314,17 @@
     box-shadow:0 0 0 4px rgba(184,145,47,0.14);
 }
 
+.form-input.invalid{
+    border-color:var(--rust);
+}
+.form-input.invalid:focus{
+    box-shadow:0 0 0 4px rgba(165,77,59,0.13);
+}
+
+.form-input.valid-mark{
+    border-color:var(--forest-soft);
+}
+
 .field-wrap{
     position:relative;
 }
@@ -230,35 +340,97 @@
     cursor:default;
 }
 
-.lock-icon{
+.lock-icon-wrap{
     position:absolute;
     right:13px;
     top:50%;
     transform:translateY(-50%);
+    display:flex;
+}
+
+.lock-icon{
     width:14px;
     height:14px;
     color:var(--slate-soft);
-    pointer-events:none;
+    cursor:help;
+}
+
+.lock-tip{
+    position:absolute;
+    bottom:calc(100% + 9px);
+    right:-6px;
+    background:var(--forest-dark);
+    color:var(--ivory);
+    font-family:'Inter', sans-serif;
+    font-size:11.5px;
+    font-weight:500;
+    line-height:1.4;
+    padding:8px 11px;
+    border-radius:6px;
+    width:190px;
+    text-align:left;
+    text-transform:none;
+    letter-spacing:0;
+    opacity:0;
+    visibility:hidden;
+    transform:translateY(4px);
+    transition:opacity 0.15s ease, transform 0.15s ease, visibility 0.15s ease;
+    box-shadow:0 10px 24px -8px rgba(18,39,30,0.5);
+    z-index:5;
+}
+.lock-tip::after{
+    content:'';
+    position:absolute;
+    top:100%;
+    right:10px;
+    border:5px solid transparent;
+    border-top-color:var(--forest-dark);
+}
+.lock-icon-wrap:hover .lock-tip,
+.lock-icon-wrap:focus-within .lock-tip{
+    opacity:1;
+    visibility:visible;
+    transform:translateY(0);
 }
 
 .balance-field{
-    color:var(--forest);
     font-weight:700;
 }
+.balance-field.balance-positive{ color:var(--forest); }
+.balance-field.balance-negative{ color:var(--rust); }
+.balance-field.balance-zero{ color:var(--slate); }
 
 .helper-note{
     margin:7px 2px 0;
     font-size:11.5px;
     color:var(--slate-soft);
     font-weight:500;
+    display:flex;
+    align-items:center;
+    gap:5px;
 }
+
+.helper-note.error-note{
+    color:var(--rust);
+    font-weight:600;
+}
+
+.helper-note svg{ width:12px; height:12px; flex-shrink:0; }
 
 .form-footer{
     display:flex;
-    justify-content:flex-end;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
     margin-top:8px;
     padding-top:24px;
     border-top:1px solid var(--line-soft);
+}
+
+.footer-hint{
+    font-size:12px;
+    color:var(--slate-soft);
+    font-weight:500;
 }
 
 .update-btn{
@@ -278,7 +450,8 @@
     gap:9px;
     background:linear-gradient(150deg, var(--forest), var(--forest-dark));
     box-shadow:0 10px 20px -6px rgba(18,39,30,0.45);
-    transition:transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+    transition:transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease, opacity 0.15s ease;
+    white-space:nowrap;
 }
 
 .update-btn svg{
@@ -300,6 +473,29 @@
     outline:2px solid var(--gold);
     outline-offset:3px;
 }
+
+.update-btn:disabled{
+    opacity:0.6;
+    cursor:not-allowed;
+    transform:none;
+    box-shadow:0 10px 20px -6px rgba(18,39,30,0.3);
+}
+
+.update-btn .spinner{
+    width:15px;
+    height:15px;
+    border-radius:50%;
+    border:2px solid rgba(251,248,241,0.35);
+    border-top-color:var(--ivory);
+    animation:spin 0.7s linear infinite;
+    display:none;
+}
+
+.update-btn.loading .spinner{ display:inline-block; }
+.update-btn.loading .btn-label-text{ display:none; }
+.update-btn.loading svg.default-icon{ display:none; }
+
+@keyframes spin{ to{ transform:rotate(360deg); } }
 
 .form-input:focus-visible{
     outline:none;
@@ -329,47 +525,65 @@
         grid-template-columns:1fr;
     }
     .form-footer{
-        justify-content:stretch;
+        flex-direction:column-reverse;
+        align-items:stretch;
     }
+    .footer-hint{ text-align:center; }
     .update-btn{
         width:100%;
     }
 }
 
 @media(prefers-reduced-motion:reduce){
-    .update-btn, .form-input{
+    .update-btn, .form-input, .ledger-seal, .status-chip{
         transition:none;
+    }
+    .reveal{
+        animation:none;
+    }
+    .update-btn .spinner{
+        animation:none;
     }
 }
 </style>
 
 <div class="ledger-page">
 
-    <div class="page-header">
+    <a href="javascript:history.back()" class="back-nav reveal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Back to customers
+    </a>
+
+    <div class="page-header reveal d1">
         <div class="avatar-badge">{{ (customer.name or "?")[0]|upper }}</div>
         <div class="header-text">
             <h2 class="edit-title">Edit Customer</h2>
-            <p class="edit-subtitle">{{ customer.name or "Unnamed customer" }}</p>
+            <p class="edit-subtitle">
+                {{ customer.name or "Unnamed customer" }}
+                <span class="status-chip" id="dirtyChip">Unsaved changes</span>
+            </p>
         </div>
         <div class="ledger-seal"><span>Customer<br>Record</span></div>
     </div>
 
-    <div class="gold-rule"></div>
+    <div class="gold-rule reveal d1"></div>
 
-    <div class="info-banner">
+    <div class="info-banner reveal d2">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
         <p>Customer ID and balance are locked. Update the name or phone number below, then save.</p>
     </div>
 
-    <div class="edit-card">
-    <form method="POST">
+    <div class="edit-card reveal d3">
+    <form method="POST" id="customerForm" novalidate>
 
         <div class="form-grid">
 
             <div class="form-group">
                 <label class="form-label">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h10M7 12h6"/></svg>
-                    Customer ID
+                    <span class="label-main">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h10M7 12h6"/></svg>
+                        Customer ID
+                    </span>
                 </label>
                 <div class="field-wrap">
                     <input
@@ -377,29 +591,41 @@
                         value="{{ customer.customer_id }}"
                         readonly
                         class="form-input readonly-field">
-                    <svg class="lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+                    <div class="lock-icon-wrap" tabindex="0">
+                        <svg class="lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+                        <div class="lock-tip">This ID is assigned permanently and can't be changed.</div>
+                    </div>
                 </div>
             </div>
 
             <div class="form-group">
                 <label class="form-label">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                    Balance
+                    <span class="label-main">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                        Balance
+                    </span>
                 </label>
                 <div class="field-wrap">
                     <input
                         type="text"
                         value="₹{{ '%.2f'|format(customer.balance or 0) }}"
                         readonly
-                        class="form-input readonly-field balance-field">
-                    <svg class="lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+                        class="form-input readonly-field balance-field {{ 'balance-negative' if (customer.balance or 0) < 0 else ('balance-zero' if not customer.balance else 'balance-positive') }}">
+                    <div class="lock-icon-wrap" tabindex="0">
+                        <svg class="lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+                        <div class="lock-tip">Balance updates automatically from transactions and can't be edited here.</div>
+                    </div>
                 </div>
             </div>
 
-            <div class="form-group full">
+            <div class="form-group full" id="nameGroup">
                 <label class="form-label">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                    Customer name
+                    <span class="label-main">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        Customer name
+                        {% if not (customer.balance and customer.balance != 0) %}<span class="required-dot">*</span>{% endif %}
+                    </span>
+                    {% if not (customer.balance and customer.balance != 0) %}<span class="char-count" id="nameCount"></span>{% endif %}
                 </label>
                 {% if customer.balance and customer.balance != 0 %}
                 <div class="field-wrap">
@@ -408,10 +634,16 @@
                         value="{{ customer.name }}"
                         readonly
                         class="form-input readonly-field">
-                    <svg class="lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+                    <div class="lock-icon-wrap" tabindex="0">
+                        <svg class="lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+                        <div class="lock-tip">Names are locked while a balance is outstanding, to keep the ledger trail consistent.</div>
+                    </div>
                 </div>
                 <input type="hidden" name="name" value="{{ customer.name }}">
-                <p class="helper-note">Name is locked while this customer has an outstanding balance.</p>
+                <p class="helper-note">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+                    Name is locked while this customer has an outstanding balance.
+                </p>
                 {% else %}
                 <input
                     type="text"
@@ -419,29 +651,48 @@
                     value="{{ customer.name }}"
                     placeholder="Enter customer name"
                     required
-                    class="form-input">
+                    maxlength="60"
+                    autofocus
+                    autocomplete="off"
+                    class="form-input"
+                    id="nameInput">
+                <p class="helper-note error-note" id="nameError" style="display:none;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+                    Enter a name before saving.
+                </p>
                 {% endif %}
             </div>
 
             <div class="form-group full">
                 <label class="form-label">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.8a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.84.57 2.8.7A2 2 0 0 1 22 16.92z"/></svg>
-                    Phone number
+                    <span class="label-main">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.8a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.84.57 2.8.7A2 2 0 0 1 22 16.92z"/></svg>
+                        Phone number
+                    </span>
                 </label>
                 <input
                     type="tel"
                     name="phone"
                     value="{{ customer.phone or '' }}"
-                    placeholder="Enter phone number"
-                    class="form-input">
+                    placeholder="98765 43210"
+                    inputmode="numeric"
+                    autocomplete="off"
+                    class="form-input"
+                    id="phoneInput">
+                <p class="helper-note error-note" id="phoneError" style="display:none;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+                    Enter a valid 10-digit phone number.
+                </p>
             </div>
 
         </div>
 
         <div class="form-footer">
-            <button type="submit" class="update-btn">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-                Update Customer
+            <span class="footer-hint" id="footerHint">All fields save instantly once submitted.</span>
+            <button type="submit" class="update-btn" id="submitBtn">
+                <svg class="default-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                <span class="spinner"></span>
+                <span class="btn-label-text">Update Customer</span>
             </button>
         </div>
 
@@ -449,5 +700,113 @@
     </div>
 
 </div>
+
+<script>
+(function(){
+    var form = document.getElementById('customerForm');
+    var submitBtn = document.getElementById('submitBtn');
+    var nameInput = document.getElementById('nameInput');
+    var phoneInput = document.getElementById('phoneInput');
+    var nameError = document.getElementById('nameError');
+    var phoneError = document.getElementById('phoneError');
+    var nameCount = document.getElementById('nameCount');
+    var dirtyChip = document.getElementById('dirtyChip');
+    var nameGroup = document.getElementById('nameGroup');
+
+    var initialValues = {};
+    var trackedInputs = [nameInput, phoneInput].filter(Boolean);
+
+    trackedInputs.forEach(function(input){
+        initialValues[input.name] = input.value;
+
+        input.addEventListener('focus', function(){
+            var group = input.closest('.form-group');
+            if(group) group.classList.add('focused');
+        });
+        input.addEventListener('blur', function(){
+            var group = input.closest('.form-group');
+            if(group) group.classList.remove('focused');
+        });
+        input.addEventListener('input', checkDirty);
+    });
+
+    function checkDirty(){
+        var dirty = trackedInputs.some(function(input){
+            return input.value !== initialValues[input.name];
+        });
+        if(dirtyChip){
+            dirtyChip.classList.toggle('show', dirty);
+            dirtyChip.classList.toggle('dirty', dirty);
+        }
+        window.__hasUnsavedChanges = dirty;
+    }
+
+    if(nameInput && nameCount){
+        var updateCount = function(){
+            nameCount.textContent = nameInput.value.length + ' / 60';
+        };
+        nameInput.addEventListener('input', updateCount);
+        updateCount();
+    }
+
+    // Live phone formatting: groups digits as "XXXXX XXXXX"
+    if(phoneInput){
+        phoneInput.addEventListener('input', function(){
+            var digits = phoneInput.value.replace(/\D/g, '').slice(0, 10);
+            var formatted = digits.length > 5 ? digits.slice(0,5) + ' ' + digits.slice(5) : digits;
+            phoneInput.value = formatted;
+            var digitCount = digits.length;
+            var valid = digitCount === 0 || digitCount === 10;
+            phoneInput.classList.toggle('invalid', !valid);
+            phoneError.style.display = valid ? 'none' : 'flex';
+        });
+    }
+
+    window.addEventListener('beforeunload', function(e){
+        if(window.__hasUnsavedChanges){
+            e.preventDefault();
+            e.returnValue = '';
+        }
+    });
+
+    form.addEventListener('submit', function(e){
+        var valid = true;
+
+        if(nameInput && nameInput.value.trim() === ''){
+            valid = false;
+            nameInput.classList.add('invalid');
+            nameError.style.display = 'flex';
+            if(nameGroup) nameGroup.scrollIntoView({behavior:'smooth', block:'center'});
+        }
+
+        if(phoneInput){
+            var digits = phoneInput.value.replace(/\D/g, '');
+            if(digits.length !== 0 && digits.length !== 10){
+                valid = false;
+                phoneInput.classList.add('invalid');
+                phoneError.style.display = 'flex';
+            }
+        }
+
+        if(!valid){
+            e.preventDefault();
+            return;
+        }
+
+        window.__hasUnsavedChanges = false;
+        submitBtn.classList.add('loading');
+        submitBtn.disabled = true;
+    });
+
+    if(nameInput){
+        nameInput.addEventListener('input', function(){
+            if(nameInput.value.trim() !== ''){
+                nameInput.classList.remove('invalid');
+                nameError.style.display = 'none';
+            }
+        });
+    }
+})();
+</script>
 
 {% endblock %}
