@@ -2168,7 +2168,7 @@ def edit_supplier(supplier_id):
         return redirect(url_for("find_page", mode="supplier"))
 
     cursor.execute("""
-        SELECT supplier_id, name, phone
+        SELECT supplier_id, name, phone, balance
         FROM suppliers
         WHERE supplier_id = %s
     """, (supplier_id,))
@@ -2210,7 +2210,7 @@ def edit_customer(customer_id):
         return redirect(url_for("find_page", mode="customer"))
 
     cursor.execute("""
-        SELECT customer_id, name, phone
+        SELECT customer_id, name, phone, balance
         FROM customers
         WHERE customer_id = %s
     """, (customer_id,))
