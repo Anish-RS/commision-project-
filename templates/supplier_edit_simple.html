@@ -84,6 +84,14 @@
     <form method="POST">
 
         <div class="form-group">
+            <label>Supplier ID</label>
+            <input type="text"
+                   class="form-control readonly-field"
+                   value="{{ supplier.supplier_id }}"
+                   readonly>
+        </div>
+
+        <div class="form-group">
             <label>Amount</label>
             <input type="text"
                    class="form-control readonly-field"
