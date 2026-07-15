@@ -1996,7 +1996,87 @@ def add_labour():
 
     return render_template("labour_add.html", today=today.isoformat())
 
+@app.route("/labour/history")
+def labour_history():
+    conn = get_connection()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
 
+    cursor.execute("""
+        SELECT
+            labour_id,
+            entry_date,
+            amount,
+            note
+        FROM labour_entries
+        ORDER BY entry_date DESC, labour_id DESC
+    """)
+
+    entries = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    return render_template(
+        "labour_history.html",
+        entries=entries,
+        today=ist_today()
+    )
+
+@app.route("/labour/edit/<int:labour_id>", methods=["GET", "POST"])
+def edit_labour(labour_id):
+
+    conn = get_connection()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
+
+    cursor.execute("""
+        SELECT *
+        FROM labour_entries
+        WHERE labour_id = %s
+    """, (labour_id,))
+
+    labour = cursor.fetchone()
+
+    if not labour:
+        flash("Entry not found.", "danger")
+        cursor.close()
+        conn.close()
+        return redirect(url_for("labour_history"))
+
+    if labour["entry_date"] != ist_today():
+        flash("Only today's labour entries can be edited.", "danger")
+        cursor.close()
+        conn.close()
+        return redirect(url_for("labour_history"))
+
+    if request.method == "POST":
+
+        amount = float(request.form.get("amount") or 0)
+        note = request.form.get("note")
+
+        cursor.execute("""
+            UPDATE labour_entries
+            SET amount=%s,
+                note=%s
+            WHERE labour_id=%s
+        """, (amount, note, labour_id))
+
+        conn.commit()
+
+        cursor.close()
+        conn.close()
+
+        recompute_cash_in_hand_for_date(ist_today())
+
+        flash("Labour entry updated successfully.", "success")
+        return redirect(url_for("labour_history"))
+
+    cursor.close()
+    conn.close()
+
+    return render_template(
+        "labour_edit.html",
+        labour=labour
+    )
 # ---------------------------------------------------------------------------
 # Ledger
 # ---------------------------------------------------------------------------
