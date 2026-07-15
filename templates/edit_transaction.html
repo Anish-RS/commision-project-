@@ -958,9 +958,12 @@ hr { display: none; }
             </div>
           </div>
           <div class="edit-field">
-            <label>Date</label>
-            <input name="tx_date" id="edit-date" type="datetime-local">
-          </div>
+             <label>Date</label>
+             <input
+                 id="edit-date"
+                 type="datetime-local"
+                 readonly>
+         </div>
           <div class="edit-field full">
             <label>Note</label>
             <input name="note" id="edit-note" type="text" placeholder="Add an optional note…">
@@ -1270,9 +1273,11 @@ hr { display: none; }
     const txid = by('edit-tx-id-input').value;
     const amount = parseFloat(by('edit-amount').value || 0);
     const note = by('edit-note').value || '';
-    const dateVal = by('edit-date').value;
-    const tx_date = dateVal ? new Date(dateVal).toISOString() : null;
-    const payload = { amount: amount, note: note, tx_date: tx_date };
+
+    const payload = {
+       amount: amount,
+       note: note
+   };
 
     const saveBtn = by('save-edit');
     saveBtn.classList.add('loading');
