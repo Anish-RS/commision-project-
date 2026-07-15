@@ -478,8 +478,8 @@
             <thead>
                 <tr>
                     <th>Date</th>
-                    <th class="amount-col">Amount</th>
                     <th>Note</th>
+                    <th class="amount-col">Amount</th>
                     <th class="status-col">Status</th>
                 </tr>
             </thead>
@@ -495,11 +495,11 @@
 
                 <td class="date-col">{{ entry_date_display }}</td>
 
-                <td class="amount-col">{{ "%.2f"|format(row.amount) }}</td>
-
                 <td class="note-col">
                     {% if row.note %}{{ row.note }}{% else %}<span class="no-note">No note added</span>{% endif %}
                 </td>
+
+                <td class="amount-col">{{ "%.2f"|format(row.amount) }}</td>
 
                 <td class="status-col">
 
