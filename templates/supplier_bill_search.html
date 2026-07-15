@@ -682,7 +682,7 @@
             {% if r.bill_date %}{{ r.bill_date.strftime('%d-%m-%Y') }}{% else %}—{% endif %}
           </div>
 
-          <div class="field-item amount" data-label="Amount">₹{{ '%.2f'|format(r.total_amount or 0) }}</div>
+          <div class="field-item amount" data-label="Amount">{{ '%.2f'|format(r.total_amount or 0) }}</div>
 
           <div class="field-item actions-col" data-label="Actions">
             <div class="action-group">
@@ -712,7 +712,7 @@
         {% endfor %}
       </div>
 
-      <p class="summary-note">Total across results: <strong>₹{{ '%.2f'|format(results|sum(attribute='total_amount') or 0) }}</strong></p>
+      <p class="summary-note">Total across results: <strong>{{ '%.2f'|format(results|sum(attribute='total_amount') or 0) }}</strong></p>
 
     {% else %}
 
