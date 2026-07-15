@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+<h3>Labour Entries</h3>
+
+<table class="table table-bordered table-hover">
+
+    <thead class="table-dark">
+        <tr>
+            <th>Date</th>
+            <th>Amount</th>
+            <th>Note</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+    {% for row in entries %}
+
+    <tr>
+
+        <td>{{ row.entry_date }}</td>
+
+        <td>₹{{ "%.2f"|format(row.amount) }}</td>
+
+        <td>{{ row.note }}</td>
+
+        <td>
+
+            {% if row.entry_date == today %}
+
+            <a href="{{ url_for('edit_labour', labour_id=row.labour_id) }}"
+               class="btn btn-warning btn-sm">
+                Edit
+            </a>
+
+            {% else %}
+
+            <span class="text-muted">Locked</span>
+
+            {% endif %}
+
+        </td>
+
+    </tr>
+
+    {% endfor %}
+
+    </tbody>
+
+</table>
+
+</div>
+
+{% endblock %}
