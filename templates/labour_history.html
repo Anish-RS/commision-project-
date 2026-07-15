@@ -7,125 +7,246 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
 <style>
-  .ledger-wrap {
+  .ledger-page {
+    --ink-950: #0c1729;
     --ink-900: #142238;
-    --ink-700: #26364f;
-    --paper: #fbf8f2;
-    --paper-line: #e7e0d0;
-    --brass: #a9782f;
-    --brass-soft: #ecd9ab;
-    --ink-muted: #74808f;
+    --ink-800: #1e3049;
+    --ink-700: #2c405c;
+    --paper: #f7f2e6;
+    --paper-deep: #efe7d4;
+    --paper-line: #ddd2b4;
+    --brass-dk: #7c5a22;
+    --brass: #b4863a;
+    --brass-lt: #e8c877;
+    --brass-hi: #f7e5b0;
+    --ink-muted: #6f7c8c;
     --success: #2f6f4f;
-    --success-soft: #e3efe7;
+    --success-dk: #1f4c37;
+    --success-soft: #e2efe6;
     font-family: 'Inter', -apple-system, sans-serif;
-    max-width: 920px;
-    margin: 2.5rem auto;
+    max-width: 960px;
+    margin: 3rem auto 4rem;
     padding: 0 1rem;
+    background-image:
+      radial-gradient(circle at 15% 0%, rgba(180,134,58,0.07), transparent 45%),
+      radial-gradient(circle at 100% 30%, rgba(20,34,56,0.05), transparent 40%);
+  }
+
+  .ledger-header-row {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 2rem;
   }
 
   .ledger-eyebrow {
     font-family: 'JetBrains Mono', monospace;
     font-size: 0.72rem;
-    letter-spacing: 0.16em;
+    letter-spacing: 0.22em;
     text-transform: uppercase;
-    color: var(--brass);
+    color: var(--brass-dk);
     font-weight: 600;
-    margin-bottom: 0.4rem;
-    display: block;
+    margin-bottom: 0.55rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .ledger-eyebrow::before {
+    content: "";
+    display: inline-block;
+    width: 18px;
+    height: 1px;
+    background: var(--brass);
   }
 
   .ledger-title {
     font-family: 'Fraunces', serif;
     font-optical-sizing: auto;
     font-weight: 600;
-    font-size: clamp(1.9rem, 3.2vw, 2.6rem);
-    color: var(--ink-900);
-    margin: 0 0 1.5rem 0;
+    font-size: clamp(2.1rem, 3.6vw, 2.9rem);
+    color: var(--ink-950);
+    margin: 0;
     letter-spacing: -0.01em;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.4);
   }
 
+  .ledger-title-block { border-bottom: 2px solid transparent; border-image: linear-gradient(to right, var(--brass) 0%, transparent 60%) 1; padding-bottom: 0.9rem; flex: 1 1 auto; }
+
+  /* ---------- stat plates: brushed brass on ink ---------- */
   .ledger-stats {
     display: flex;
-    gap: 0.75rem;
+    gap: 0.9rem;
     flex-wrap: wrap;
-    margin-bottom: 1.5rem;
+    margin-bottom: 2rem;
   }
 
   .ledger-stat {
-    background: #fff;
-    border: 1px solid var(--paper-line);
+    position: relative;
+    background: linear-gradient(160deg, var(--ink-800) 0%, var(--ink-950) 100%);
     border-radius: 10px;
-    padding: 0.7rem 1.1rem;
-    min-width: 130px;
+    padding: 0.95rem 1.35rem;
+    min-width: 148px;
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.06) inset,
+      0 10px 22px -12px rgba(12,23,41,0.55),
+      0 1px 2px rgba(12,23,41,0.3);
+    border: 1px solid #0a1424;
+  }
+
+  .ledger-stat::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--brass-lt), transparent);
+    opacity: 0.55;
   }
 
   .ledger-stat .num {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 1.15rem;
+    font-size: 1.3rem;
     font-weight: 600;
-    color: var(--ink-900);
+    background: linear-gradient(180deg, var(--brass-hi), var(--brass));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
     display: block;
     line-height: 1.2;
+    letter-spacing: 0.01em;
   }
 
   .ledger-stat .lbl {
-    font-size: 0.72rem;
-    color: var(--ink-muted);
+    font-size: 0.68rem;
+    color: #b7c2d1;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.09em;
+    font-weight: 500;
   }
+
+  /* ---------- the book itself ---------- */
+  .ledger-book-frame {
+    position: relative;
+    padding-right: 10px;
+    padding-bottom: 10px;
+  }
+
+  .ledger-book-frame::before,
+  .ledger-book-frame::after {
+    content: "";
+    position: absolute;
+    background: var(--paper-deep);
+    border: 1px solid var(--paper-line);
+    border-radius: 14px;
+  }
+
+  .ledger-book-frame::before { inset: 5px 0 0 5px; z-index: 0; opacity: 0.75; }
+  .ledger-book-frame::after { inset: 9px -1px -1px 9px; z-index: -1; background: #e7dcc0; opacity: 0.6; }
 
   .ledger-book {
     position: relative;
+    z-index: 1;
     background: var(--paper);
+    background-image:
+      repeating-linear-gradient(rgba(20,34,56,0.02) 0 1px, transparent 1px 32px);
     border-radius: 14px;
-    box-shadow: 0 1px 2px rgba(20,34,56,0.06), 0 12px 32px -16px rgba(20,34,56,0.28);
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.6) inset,
+      0 22px 44px -20px rgba(12,23,41,0.4),
+      0 6px 14px -8px rgba(12,23,41,0.25);
     overflow: hidden;
     border: 1px solid var(--paper-line);
   }
 
-  /* stitched spine — the signature detail */
+  /* stitched brass spine — the signature detail */
   .ledger-book::before {
     content: "";
     position: absolute;
     top: 0;
     bottom: 0;
     left: 0;
-    width: 10px;
-    background: var(--ink-900);
+    width: 16px;
+    background: linear-gradient(to right, var(--ink-950) 0%, var(--ink-800) 45%, var(--ink-900) 100%);
+    box-shadow: 2px 0 6px rgba(0,0,0,0.25) inset;
+    z-index: 3;
+  }
+
+  .ledger-book::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 5px;
+    width: 2px;
     background-image: repeating-linear-gradient(
       to bottom,
       transparent 0,
-      transparent 9px,
-      var(--brass-soft) 9px,
-      var(--brass-soft) 11px
+      transparent 10px,
+      var(--brass-lt) 10px,
+      var(--brass-lt) 13px
     );
-    z-index: 2;
+    box-shadow: 0 0 3px rgba(232,200,119,0.5);
+    z-index: 3;
   }
 
   .ledger-book-head {
-    padding: 1.25rem 1.75rem 1.25rem 2.25rem;
-    background: var(--ink-900);
+    position: relative;
+    padding: 1.5rem 2rem 1.5rem 2.75rem;
+    background: linear-gradient(135deg, var(--ink-800) 0%, var(--ink-950) 100%);
     color: #f2ede1;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
+    border-bottom: 1px solid var(--brass-dk);
+  }
+
+  .ledger-book-head::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 2px;
+    background: linear-gradient(to right, transparent, var(--brass-lt) 25%, var(--brass-lt) 75%, transparent);
+    opacity: 0.7;
+  }
+
+  /* bookmark ribbon tab */
+  .ribbon-tab {
+    position: absolute;
+    top: 0;
+    right: 2.25rem;
+    width: 22px;
+    height: 34px;
+    background: linear-gradient(180deg, var(--brass-lt), var(--brass));
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 78%, 0 100%);
+    box-shadow: 0 3px 6px rgba(0,0,0,0.25);
   }
 
   .ledger-book-head h5 {
     font-family: 'Fraunces', serif;
     font-weight: 500;
-    font-size: 1.05rem;
+    font-size: 1.15rem;
     margin: 0;
-    color: #f2ede1;
+    color: #f7f2e6;
+    letter-spacing: 0.01em;
   }
 
-  .ledger-book-head span.today-tag {
+  .ledger-book-head .today-tag {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 0.72rem;
-    color: var(--brass-soft);
-    letter-spacing: 0.05em;
+    font-size: 0.7rem;
+    color: var(--brass-lt);
+    letter-spacing: 0.07em;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .today-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: #6fd39a;
+    box-shadow: 0 0 0 3px rgba(111,211,154,0.2), 0 0 6px rgba(111,211,154,0.7);
   }
 
   .ledger-table-scroll {
@@ -140,32 +261,32 @@
 
   table.ledger-table thead th {
     font-family: 'Inter', sans-serif;
-    font-size: 0.7rem;
+    font-size: 0.68rem;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--ink-muted);
-    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: var(--brass-dk);
+    font-weight: 700;
     text-align: left;
-    padding: 0.9rem 1.25rem 0.9rem 2.25rem;
+    padding: 1rem 1.35rem 1rem 2.75rem;
     border-bottom: 1px solid var(--paper-line);
-    background: #f5f1e8;
+    background: var(--paper-deep);
   }
 
-  table.ledger-table thead th:first-child { padding-left: 2.25rem; }
+  table.ledger-table thead th:first-child { padding-left: 2.75rem; }
   table.ledger-table thead th.amount-col,
   table.ledger-table td.amount-col { text-align: right; }
   table.ledger-table thead th.status-col,
-  table.ledger-table td.status-col { text-align: right; padding-right: 1.75rem; }
+  table.ledger-table td.status-col { text-align: right; padding-right: 2.1rem; }
 
   table.ledger-table tbody td {
-    padding: 0.95rem 1.25rem;
+    padding: 1.05rem 1.35rem;
     border-bottom: 1px dashed var(--paper-line);
     color: var(--ink-700);
-    font-size: 0.92rem;
+    font-size: 0.93rem;
     vertical-align: middle;
   }
 
-  table.ledger-table tbody td:first-child { padding-left: 2.25rem; }
+  table.ledger-table tbody td:first-child { padding-left: 2.75rem; }
 
   table.ledger-table tbody tr:last-child td { border-bottom: none; }
 
@@ -174,15 +295,16 @@
   }
 
   table.ledger-table tbody tr:hover {
-    background: #f6f2e9;
+    background: #f1e9d4;
   }
 
   table.ledger-table tbody tr.is-today {
     background: var(--success-soft);
+    box-shadow: inset 3px 0 0 var(--success);
   }
 
   table.ledger-table tbody tr.is-today:hover {
-    background: #d9ecdf;
+    background: #d3ecdc;
   }
 
   td.date-col {
@@ -190,20 +312,22 @@
     font-size: 0.85rem;
     color: var(--ink-900);
     white-space: nowrap;
+    font-weight: 500;
   }
 
   td.amount-col {
     font-family: 'JetBrains Mono', monospace;
-    font-weight: 600;
-    color: var(--ink-900);
+    font-weight: 700;
+    color: var(--ink-950);
     white-space: nowrap;
+    font-size: 0.97rem;
   }
 
   td.amount-col::before {
     content: "\20B9";
     margin-right: 2px;
-    color: var(--ink-muted);
-    font-weight: 500;
+    color: var(--brass-dk);
+    font-weight: 600;
   }
 
   td.note-col {
@@ -222,9 +346,9 @@
     align-items: center;
     gap: 0.35rem;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 0.72rem;
-    letter-spacing: 0.03em;
-    padding: 0.3rem 0.65rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.04em;
+    padding: 0.35rem 0.75rem;
     border-radius: 999px;
     text-transform: uppercase;
     font-weight: 600;
@@ -232,11 +356,11 @@
 
   .status-pill.locked {
     color: var(--ink-muted);
-    background: #eef0ee;
-    border: 1px solid #dfe2df;
+    background: #eae5d6;
+    border: 1px solid var(--paper-line);
   }
 
-  .status-pill.locked svg { opacity: 0.7; }
+  .status-pill.locked svg { opacity: 0.75; }
 
   .btn-edit-entry {
     display: inline-flex;
@@ -245,34 +369,36 @@
     font-family: 'Inter', sans-serif;
     font-size: 0.78rem;
     font-weight: 600;
-    color: #fff;
-    background: var(--success);
-    border: none;
+    color: #f2fbf6;
+    background: linear-gradient(160deg, #37866028, var(--success)) , linear-gradient(160deg, #3d8763, var(--success-dk));
+    background: linear-gradient(160deg, #3d8763, var(--success-dk));
+    border: 1px solid var(--success-dk);
     border-radius: 999px;
-    padding: 0.4rem 0.9rem;
+    padding: 0.45rem 1rem;
     text-decoration: none;
-    transition: background-color 0.15s ease, transform 0.1s ease;
+    box-shadow: 0 4px 10px -4px rgba(31,76,55,0.55), 0 1px 0 rgba(255,255,255,0.15) inset;
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
   }
 
   .btn-edit-entry:hover {
-    background: #255a40;
-    color: #fff;
+    color: #f2fbf6;
     transform: translateY(-1px);
+    box-shadow: 0 7px 14px -5px rgba(31,76,55,0.6), 0 1px 0 rgba(255,255,255,0.15) inset;
   }
 
   .ledger-empty {
-    padding: 3.5rem 2rem 3.5rem 2.25rem;
+    padding: 4rem 2rem 4rem 2.75rem;
     text-align: center;
     color: var(--ink-muted);
   }
 
-  .ledger-empty svg { color: var(--brass); margin-bottom: 0.75rem; }
+  .ledger-empty svg { color: var(--brass); margin-bottom: 0.85rem; }
 
   .ledger-empty p.title {
     font-family: 'Fraunces', serif;
-    font-size: 1.15rem;
-    color: var(--ink-900);
-    margin-bottom: 0.25rem;
+    font-size: 1.2rem;
+    color: var(--ink-950);
+    margin-bottom: 0.3rem;
   }
 
   .ledger-empty p.sub {
@@ -281,17 +407,24 @@
   }
 
   @media (max-width: 576px) {
+    .ledger-book-frame { padding-right: 6px; padding-bottom: 6px; }
     table.ledger-table thead th,
     table.ledger-table tbody td { padding-left: 1.1rem; padding-right: 0.9rem; }
     table.ledger-table thead th:first-child,
-    table.ledger-table tbody td:first-child { padding-left: 1.75rem; }
+    table.ledger-table tbody td:first-child { padding-left: 1.85rem; }
+    .ledger-book-head { padding-left: 1.85rem; }
+    .ribbon-tab { display: none; }
   }
 </style>
 
-<div class="ledger-wrap">
+<div class="ledger-page">
 
-    <span class="ledger-eyebrow">Daily record</span>
-    <h1 class="ledger-title">Labour Entries</h1>
+    <div class="ledger-header-row">
+        <div class="ledger-title-block">
+            <span class="ledger-eyebrow">Daily record</span>
+            <h1 class="ledger-title">Labour Entries</h1>
+        </div>
+    </div>
 
     {% set today_count = entries|selectattr('entry_date', 'equalto', today)|list|length %}
 
@@ -310,11 +443,13 @@
         </div>
     </div>
 
+    <div class="ledger-book-frame">
     <div class="ledger-book">
 
         <div class="ledger-book-head">
             <h5>Entry log</h5>
-            <span class="today-tag">TODAY &middot; {{ today }}</span>
+            <span class="today-tag"><span class="today-dot"></span>TODAY &middot; {{ today }}</span>
+            <div class="ribbon-tab"></div>
         </div>
 
         {% if entries %}
@@ -382,6 +517,7 @@
 
         {% endif %}
 
+    </div>
     </div>
 
 </div>
