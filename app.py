@@ -2888,7 +2888,7 @@ def transactions_edit_one(tx_id):
 
         if parsed_for_db:
             cursor.execute(
-                "UPDATE transactions SET amount=%s, tx_date=%s, note=%s WHERE tx_id=%s",
+                "UPDATE transactions SET amount=%s, note=%s WHERE tx_id=%s",
                 (new_amount, parsed_for_db, new_note, tx_id)
             )
         else:
