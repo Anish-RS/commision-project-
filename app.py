@@ -161,8 +161,7 @@ def recompute_cash_in_hand_from_date(start_date):
 # Home
 # ---------------------------------------------------------------------------
 
-# Force the session to expire after 10 minutes of inactivity
-app.permanent_session_lifetime = timedelta(minutes=10)
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -170,7 +169,7 @@ def login():
         password = request.form.get('password')
         if password == 'Students@123':
             # This tells Flask to apply the 10-minute timer
-            session.permanent = True 
+             
             session['logged_in'] = True
             return redirect(url_for('home'))
         else:
@@ -180,6 +179,7 @@ def login():
     return render_template('login.html')
 
 @app.route('/')
+
 def home():
     # Check if the user is logged in
     if not session.get('logged_in'):
@@ -194,6 +194,7 @@ def home():
 # ---------------------------------------------------------------------------
 
 @app.route("/customers/add", methods=["GET", "POST"])
+
 def add_customer():
     if request.method == "POST":
         name = request.form["name"].strip().title()
@@ -258,6 +259,7 @@ def add_customer():
 # ---------------------------------------------------------------------------
 
 @app.route("/suppliers/add", methods=["GET", "POST"])
+
 def add_supplier():
     if request.method == "POST":
         name = request.form["name"].strip().title()
@@ -317,6 +319,7 @@ def add_supplier():
 
     return render_template("add_supplier.html")
 @app.route("/api/check_customer")
+
 def check_customer():
 
     name = request.args.get("name", "").strip().title()
@@ -338,6 +341,7 @@ def check_customer():
     return jsonify({"exists": exists})
 
 @app.route("/api/check_supplier")
+
 def check_supplier():
 
     name = request.args.get("name", "").strip().title()
@@ -358,6 +362,7 @@ def check_supplier():
 
     return jsonify({"exists": exists})
 @app.route("/api/supplier/<int:supplier_id>/balance")
+
 def get_supplier_balance(supplier_id):
     conn   = get_connection()
     cursor = conn.cursor()
@@ -368,6 +373,7 @@ def get_supplier_balance(supplier_id):
     return jsonify({"old_balance": float(row[0]) if row else 0.0})
 
 @app.route("/api/customer/<int:customer_id>")
+
 def get_customer(customer_id):
 
     conn = get_connection()
@@ -399,6 +405,7 @@ def get_customer(customer_id):
 # ---------------------------------------------------------------------------
 
 @app.route("/bills/supplier/add", methods=["GET", "POST"])
+
 def add_supplier_bill():
     if request.method == "POST":
         raw_supplier_id = request.form.get("supplier_id")
@@ -598,6 +605,7 @@ def add_supplier_bill():
 # ---------------------------------------------------------------------------
 
 @app.route("/bills/supplier/search", methods=["GET", "POST"])
+
 def supplier_bill_search():
     name = ""
     bill_date = ""
@@ -676,6 +684,7 @@ def supplier_bill_search():
 # ---------------------------------------------------------------------------
 
 @app.route("/bills/supplier/edit/<int:bill_id>", methods=["GET", "POST"])
+
 def supplier_bill_edit(bill_id):
     conn   = get_connection()
     cursor = conn.cursor(cursor_factory=RealDictCursor)
@@ -882,6 +891,7 @@ def supplier_bill_edit(bill_id):
 # ---------------------------------------------------------------------------
 
 @app.route("/bills/supplier/delete/<int:bill_id>", methods=["POST"])
+
 def supplier_bill_delete(bill_id):
     conn   = get_connection()
     cursor = conn.cursor(cursor_factory=RealDictCursor)
@@ -953,6 +963,7 @@ def supplier_bill_delete(bill_id):
 # ---------------------------------------------------------------------------
 
 @app.route("/bills/supplier/print/<int:bill_id>")
+
 def supplier_bill_print(bill_id):
     conn   = get_connection()
     cursor = conn.cursor(cursor_factory=RealDictCursor)
@@ -1002,6 +1013,7 @@ def supplier_bill_print(bill_id):
 # ---------------------------------------------------------------------------
 
 @app.route("/bills/supplier/print_search", methods=["POST"])
+
 def supplier_bill_print_search():
     bill_no   = request.form.get("bill_no")
     name      = request.form.get("name")
@@ -1066,6 +1078,7 @@ def supplier_bill_print_search():
 # ---------------------------------------------------------------------------
 
 @app.route("/bills/customer/search", methods=["GET", "POST"])
+
 def customer_bill_search():
     results = []
     name = ""
@@ -1165,6 +1178,7 @@ def customer_bill_search():
 # ---------------------------------------------------------------------------
 
 @app.route("/bills/customer/edit/<int:bill_id>", methods=["GET", "POST"])
+
 def customer_bill_edit(bill_id):
     conn = get_connection()
     cursor = conn.cursor(cursor_factory=RealDictCursor)
@@ -1271,6 +1285,7 @@ def customer_bill_edit(bill_id):
 # ---------------------------------------------------------------------------
 
 @app.route("/bills/customer/delete/<int:bill_id>", methods=["POST"])
+
 def customer_bill_delete(bill_id):
     conn   = get_connection()
     cursor = conn.cursor(cursor_factory=RealDictCursor)
@@ -1354,6 +1369,7 @@ def customer_bill_delete(bill_id):
 # ---------------------------------------------------------------------------
 
 @app.route("/bills/customer/print/<int:bill_id>")
+
 def customer_bill_print(bill_id):
     conn   = get_connection()
     cursor = conn.cursor(cursor_factory=RealDictCursor)
@@ -1377,6 +1393,7 @@ def customer_bill_print(bill_id):
     return render_template("customer_bill_print.html", bill=bill, current_balance=current_balance)
 
 @app.route("/send_sms/<int:bill_id>")
+
 def send_sms_bill(bill_id):
 
     flash(f"SMS button clicked for Bill #{bill_id}", "success")
@@ -1432,6 +1449,7 @@ def send_whatsapp_bill(bill_id):
 
     return redirect(whatsapp_url)
 @app.route("/send_supplier_whatsapp/<int:bill_id>")
+
 def send_supplier_whatsapp(bill_id):
 
     conn = get_connection()
@@ -1516,6 +1534,7 @@ Supplier: {bill['supplier_name']}
 # ---------------------------------------------------------------------------
 
 @app.route("/bills/customer/print_search", methods=["POST"])
+
 def customer_bill_print_search():
     bill_no   = request.form.get("bill_no",   "").strip()
     name      = request.form.get("name",      "").strip()
@@ -1748,6 +1767,7 @@ def get_entity_id_from_raw(conn, raw_value, entity_type):
 # ---------------------------------------------------------------------------
 
 @app.route("/transactions/receipt", methods=["GET", "POST"])
+
 def receipt_page():
     conn   = get_connection()
     cursor = conn.cursor(cursor_factory=RealDictCursor)
@@ -1794,6 +1814,7 @@ def receipt_page():
 # ---------------------------------------------------------------------------
 
 @app.route("/transactions/payment", methods=["GET", "POST"])
+
 def payment_page():
     conn   = get_connection()
     cursor = conn.cursor(cursor_factory=RealDictCursor)
@@ -1840,6 +1861,7 @@ def payment_page():
 # ---------------------------------------------------------------------------
 
 @app.route("/cash_in_hand")
+
 def cash_in_hand():
     today          = ist_today()
     today_start    = datetime.combine(today, time.min)
@@ -1947,6 +1969,7 @@ def cash_in_hand():
 # ---------------------------------------------------------------------------
 
 @app.route("/labour/add", methods=["GET", "POST"])
+
 def add_labour():
     today = ist_today()
 
@@ -1979,6 +2002,7 @@ def add_labour():
 # ---------------------------------------------------------------------------
 
 @app.route("/ledger")
+
 def ledger():
     conn   = get_connection()
     cursor = conn.cursor(cursor_factory=RealDictCursor)
@@ -2021,6 +2045,7 @@ def ledger():
 from psycopg2.extras import RealDictCursor
 
 @app.route("/ledger/print")
+
 def ledger_print():
 
     conn = get_connection()
@@ -2109,6 +2134,7 @@ def ledger_print():
 # ---------------------------------------------------------------------------
 
 @app.route("/find", methods=["GET"])
+
 def find_page():
     q    = request.args.get("q",    "").strip()
     mode = request.args.get("mode", "supplier")
@@ -2142,6 +2168,7 @@ def find_page():
 # ---------------------------------------------------------------------------
 
 @app.route("/supplier/edit/<int:supplier_id>", methods=["GET", "POST"])
+
 def edit_supplier(supplier_id):
 
     conn = get_connection()
@@ -2184,6 +2211,7 @@ def edit_supplier(supplier_id):
     )
 
 @app.route("/customer/edit/<int:customer_id>", methods=["GET", "POST"])
+
 def edit_customer(customer_id):
 
     conn = get_connection()
@@ -2230,6 +2258,7 @@ def edit_customer(customer_id):
 # ---------------------------------------------------------------------------
 
 @app.route("/accounts/adjust", methods=["GET", "POST"])
+
 def adjust_account():
     conn   = get_connection()
     cursor = conn.cursor(cursor_factory=RealDictCursor)
@@ -2293,6 +2322,7 @@ def adjust_account():
     return render_template("adjust_account.html", suppliers=suppliers, customers=customers)
 
 @app.route("/account-adjustment-history")
+
 def account_adjustment_history():
 
     conn = get_connection()
@@ -2346,6 +2376,7 @@ def account_adjustment_history():
 # ---------------------------------------------------------------------------
 
 @app.route("/account-summary", methods=["GET"])
+
 def account_summary():
     conn   = get_connection()
     cursor = conn.cursor(cursor_factory=RealDictCursor)
@@ -2489,6 +2520,7 @@ def account_summary():
 # ---------------------------------------------------------------------------
 
 @app.route("/tally", methods=["GET", "POST"])
+
 def tally():
     supplier_data, customer_data           = [], []
     total_supplier, total_customer, difference = 0, 0, 0
@@ -2557,6 +2589,7 @@ def tally():
 # ---------------------------------------------------------------------------
 
 @app.route("/profit-loss", methods=["GET"])
+
 def profit_loss():
     from_str = request.args.get("from_date")
     to_str   = request.args.get("to_date")
@@ -2615,6 +2648,7 @@ def profit_loss():
 # ---------------------------------------------------------------------------
 
 @app.route("/transactions/edit", methods=["GET"])
+
 def transactions_edit_page():
     conn   = get_connection()
     cursor = conn.cursor(cursor_factory=RealDictCursor)
@@ -2631,6 +2665,7 @@ def transactions_edit_page():
 # ---------------------------------------------------------------------------
 
 @app.route("/transactions/list", methods=["GET"])
+
 def transactions_list():
     entity_type = request.args.get("entity_type")
     entity_id   = request.args.get("entity_id")
@@ -2693,6 +2728,7 @@ def transactions_list():
 # ---------------------------------------------------------------------------
 
 @app.route("/transactions/edit/<int:tx_id>", methods=["GET", "POST"])
+
 def transactions_edit_one(tx_id):
     conn   = get_connection()
     cursor = conn.cursor(cursor_factory=RealDictCursor)
@@ -2791,6 +2827,7 @@ def transactions_edit_one(tx_id):
 # ---------------------------------------------------------------------------
 
 @app.route("/debug-routes")
+
 def debug_routes():
     return "<br>".join(sorted([r.endpoint for r in app.url_map.iter_rules()]))
 
