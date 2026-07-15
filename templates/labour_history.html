@@ -24,7 +24,7 @@
     --text-faint: #a4adba;
     font-family: 'Inter', -apple-system, sans-serif;
     max-width: 1080px;
-    margin: 2.5rem auto 4rem;
+    margin: 1.5rem auto 3rem;
     padding: 0 1rem;
   }
 
@@ -32,15 +32,15 @@
   .lh-header-row {
     display: flex;
     align-items: flex-start;
-    gap: 1rem;
-    margin-bottom: 1.75rem;
+    gap: 0.85rem;
+    margin-bottom: 1.1rem;
   }
 
   .lh-icon-badge {
     flex: none;
-    width: 52px;
-    height: 52px;
-    border-radius: 16px;
+    width: 46px;
+    height: 46px;
+    border-radius: 14px;
     background: linear-gradient(155deg, var(--teal-500), var(--teal-700));
     display: flex;
     align-items: center;
@@ -53,14 +53,14 @@
   .lh-title {
     font-family: 'Fraunces', serif;
     font-weight: 600;
-    font-size: clamp(1.7rem, 3vw, 2.15rem);
+    font-size: clamp(1.5rem, 2.6vw, 1.85rem);
     color: var(--text-dark);
-    margin: 0.15rem 0 0.15rem;
+    margin: 0.1rem 0 0.05rem;
     letter-spacing: -0.01em;
   }
 
   .lh-subtitle {
-    font-size: 0.92rem;
+    font-size: 0.86rem;
     color: var(--text-muted);
     margin: 0;
   }
@@ -68,28 +68,28 @@
   /* ---------- stat cards ---------- */
   .lh-stats {
     display: flex;
-    gap: 1rem;
+    gap: 0.75rem;
     flex-wrap: wrap;
-    margin-bottom: 1.5rem;
+    margin-bottom: 0.9rem;
   }
 
   .lh-stat {
     flex: 1 1 180px;
     background: #ffffff;
     border: 1px solid var(--card-line);
-    border-radius: 18px;
-    padding: 1.1rem 1.35rem;
+    border-radius: 14px;
+    padding: 0.75rem 1rem;
     display: flex;
     align-items: center;
-    gap: 0.85rem;
+    gap: 0.7rem;
     box-shadow: 0 1px 2px rgba(20,34,56,0.04);
   }
 
   .lh-stat .icon-wrap {
     flex: none;
-    width: 40px;
-    height: 40px;
-    border-radius: 12px;
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
     background: var(--teal-50);
     color: var(--teal-700);
     display: flex;
@@ -99,7 +99,7 @@
 
   .lh-stat .num {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 1.25rem;
+    font-size: 1.1rem;
     font-weight: 700;
     color: var(--text-dark);
     display: block;
@@ -107,7 +107,7 @@
   }
 
   .lh-stat .lbl {
-    font-size: 0.72rem;
+    font-size: 0.68rem;
     color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 0.06em;
@@ -118,30 +118,30 @@
   .lh-filter-card {
     background: #ffffff;
     border: 1px solid var(--card-line);
-    border-radius: 20px;
-    padding: 1.5rem 1.75rem;
-    margin-bottom: 1.25rem;
+    border-radius: 16px;
+    padding: 0.9rem 1.1rem;
+    margin-bottom: 0.9rem;
     box-shadow: 0 1px 2px rgba(20,34,56,0.04);
   }
 
   .lh-filter-grid {
     display: flex;
-    gap: 1.5rem;
+    gap: 0.85rem;
     flex-wrap: wrap;
-    align-items: flex-end;
+    align-items: center;
   }
 
   .lh-field {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
-    flex: 1 1 190px;
+    gap: 0.3rem;
+    flex: 0 1 220px;
   }
 
   .lh-field label {
-    font-size: 0.68rem;
+    font-size: 0.65rem;
     text-transform: uppercase;
-    letter-spacing: 0.09em;
+    letter-spacing: 0.08em;
     font-weight: 700;
     color: var(--text-muted);
   }
@@ -154,7 +154,7 @@
 
   .lh-input-wrap svg.field-icon {
     position: absolute;
-    left: 14px;
+    left: 12px;
     color: var(--text-muted);
     pointer-events: none;
   }
@@ -162,12 +162,12 @@
   .lh-input-wrap input[type="date"] {
     width: 100%;
     font-family: 'Inter', sans-serif;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: var(--text-dark);
     background: var(--cream);
     border: 1px solid var(--card-line);
-    border-radius: 12px;
-    padding: 0.68rem 0.85rem 0.68rem 2.6rem;
+    border-radius: 10px;
+    padding: 0.5rem 0.75rem 0.5rem 2.4rem;
     outline: none;
     transition: border-color 0.15s ease, box-shadow 0.15s ease;
   }
@@ -181,20 +181,21 @@
     display: flex;
     gap: 0.6rem;
     flex: none;
+    align-self: flex-end;
   }
 
   .btn-clear-filter {
     display: inline-flex;
     align-items: center;
-    gap: 0.4rem;
+    gap: 0.35rem;
     font-family: 'Inter', sans-serif;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     font-weight: 600;
     color: var(--text-muted);
     background: var(--cream);
     border: 1px solid var(--card-line);
     border-radius: 999px;
-    padding: 0.68rem 1.15rem;
+    padding: 0.5rem 1rem;
     cursor: pointer;
     transition: background 0.15s ease, color 0.15s ease;
   }
@@ -205,11 +206,11 @@
   }
 
   .lh-filter-hint {
-    margin-top: 0.9rem;
+    margin-top: 0.6rem;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    font-size: 0.82rem;
+    gap: 0.4rem;
+    font-size: 0.78rem;
     color: var(--teal-700);
   }
 
@@ -444,17 +445,10 @@
     <div class="lh-filter-card">
         <div class="lh-filter-grid">
             <div class="lh-field">
-                <label for="lhDateFrom">From date</label>
+                <label for="lhDate">Filter by date</label>
                 <div class="lh-input-wrap">
                     <svg class="field-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M16 2v4M8 2v4M3 10h18"></path></svg>
-                    <input type="date" id="lhDateFrom">
-                </div>
-            </div>
-            <div class="lh-field">
-                <label for="lhDateTo">To date</label>
-                <div class="lh-input-wrap">
-                    <svg class="field-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M16 2v4M8 2v4M3 10h18"></path></svg>
-                    <input type="date" id="lhDateTo">
+                    <input type="date" id="lhDate">
                 </div>
             </div>
             <div class="lh-filter-actions">
@@ -535,7 +529,7 @@
 
         </table>
         </div>
-        <p class="lh-empty" id="lhNoResults" style="display:none; padding: 2.5rem 2rem;">No entries match the selected date range.</p>
+        <p class="lh-empty" id="lhNoResults" style="display:none; padding: 2.5rem 2rem;">No entries match the selected date.</p>
         {% else %}
 
         <div class="lh-empty">
@@ -552,8 +546,7 @@
 
 <script>
 (function () {
-  var fromInput = document.getElementById('lhDateFrom');
-  var toInput = document.getElementById('lhDateTo');
+  var dateInput = document.getElementById('lhDate');
   var clearBtn = document.getElementById('lhClearFilter');
   var tbody = document.getElementById('lhTableBody');
   var hint = document.getElementById('lhFilterHint');
@@ -571,16 +564,13 @@
   }
 
   function applyFilter() {
-    var from = fromInput.value;
-    var to = toInput.value;
+    var selected = dateInput.value;
     var rows = tbody.querySelectorAll('tr');
     var visibleCount = 0;
 
     rows.forEach(function (row) {
       var rowDate = row.getAttribute('data-date');
-      var visible = true;
-      if (from && rowDate < from) { visible = false; }
-      if (to && rowDate > to) { visible = false; }
+      var visible = !selected || rowDate === selected;
       row.classList.toggle('lh-hidden', !visible);
       if (visible) { visibleCount++; }
     });
@@ -589,23 +579,18 @@
       noResults.style.display = visibleCount === 0 ? 'block' : 'none';
     }
 
-    if (from || to) {
-      var label = 'Showing entries';
-      if (from) { label += ' from ' + formatDisplay(from); }
-      if (to) { label += (from ? ' to ' : ' up to ') + formatDisplay(to); }
-      hintText.textContent = label + '.';
+    if (selected) {
+      hintText.textContent = 'Showing entries for ' + formatDisplay(selected) + '.';
       hint.classList.remove('hidden');
     } else {
       hint.classList.add('hidden');
     }
   }
 
-  fromInput.addEventListener('change', applyFilter);
-  toInput.addEventListener('change', applyFilter);
+  dateInput.addEventListener('change', applyFilter);
 
   clearBtn.addEventListener('click', function () {
-    fromInput.value = '';
-    toInput.value = '';
+    dateInput.value = '';
     applyFilter();
   });
 })();
