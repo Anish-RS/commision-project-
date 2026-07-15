@@ -1301,7 +1301,10 @@ hr { display: none; }
         r.className = 'success';
         r.style.display = 'inline-flex';
         showToast('Transaction updated successfully', 'success');
-        setTimeout(()=> by('load-transactions').click(), 400);
+        setTimeout(function(){
+          by('edit-panel').style.display = 'none';
+          by('load-transactions').click();
+        }, 400);
       }
     })
     .catch(err=>{
