@@ -2009,6 +2009,7 @@ def labour_history():
             note
         FROM labour_entries
         ORDER BY entry_date DESC, labour_id DESC
+        LIMIT 20
     """)
 
     entries = cursor.fetchall()
