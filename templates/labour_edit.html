@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+<h3>Edit Labour Entry</h3>
+
+<form method="POST">
+
+<div class="mb-3">
+<label>Amount</label>
+
+<input
+type="number"
+step="0.01"
+name="amount"
+class="form-control"
+value="{{ labour.amount }}"
+required>
+
+</div>
+
+<div class="mb-3">
+
+<label>Note</label>
+
+<input
+type="text"
+name="note"
+class="form-control"
+value="{{ labour.note }}">
+
+</div>
+
+<button class="btn btn-success">
+Update
+</button>
+
+<a href="{{ url_for('labour_history') }}"
+class="btn btn-secondary">
+Cancel
+</a>
+
+</form>
+
+</div>
+
+{% endblock %}
