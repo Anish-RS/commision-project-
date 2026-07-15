@@ -2050,8 +2050,17 @@ def edit_labour(labour_id):
 
     if request.method == "POST":
 
-        amount = float(request.form.get("amount") or 0)
-        note = request.form.get("note")
+        try:
+            amount = float(request.form.get("amount") or 0)
+        except ValueError:
+            flash("Amount must be a valid number.", "danger")
+            return redirect(url_for("edit_labour", labour_id=labour_id))
+        
+        if amount < 0:
+            flash("Amount cannot be negative.", "danger")
+            return redirect(url_for("edit_labour", labour_id=labour_id))
+        
+        note = request.form.get("note", "").strip()
 
         cursor.execute("""
             UPDATE labour_entries
