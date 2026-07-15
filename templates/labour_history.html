@@ -412,35 +412,7 @@
 
     {% set today_count = entries|selectattr('entry_date', 'equalto', today)|list|length %}
 
-    <div class="lh-stats">
-        <div class="lh-stat">
-            <span class="icon-wrap">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"></path><rect x="9" y="3" width="6" height="4" rx="1"></rect></svg>
-            </span>
-            <div>
-                <span class="num">{{ entries|length }}</span>
-                <span class="lbl">Total entries</span>
-            </div>
-        </div>
-        <div class="lh-stat">
-            <span class="icon-wrap">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1v22"></path><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-            </span>
-            <div>
-                <span class="num">&#8377;{{ "%.2f"|format(entries|sum(attribute='amount')) }}</span>
-                <span class="lbl">Total amount</span>
-            </div>
-        </div>
-        <div class="lh-stat">
-            <span class="icon-wrap">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M16 2v4M8 2v4M3 10h18"></path></svg>
-            </span>
-            <div>
-                <span class="num">{{ today_count }}</span>
-                <span class="lbl">Editable today</span>
-            </div>
-        </div>
-    </div>
+    
 
     <div class="lh-filter-card">
         <div class="lh-filter-grid">
