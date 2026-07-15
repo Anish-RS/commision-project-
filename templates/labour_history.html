@@ -4,313 +4,313 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
 <style>
-  .ledger-page {
-    --ink-950: #0c1729;
-    --ink-900: #142238;
-    --ink-800: #1e3049;
-    --ink-700: #2c405c;
-    --paper: #f7f2e6;
-    --paper-deep: #efe7d4;
-    --paper-line: #ddd2b4;
-    --brass-dk: #7c5a22;
-    --brass: #b4863a;
-    --brass-lt: #e8c877;
-    --brass-hi: #f7e5b0;
-    --ink-muted: #6f7c8c;
-    --success: #2f6f4f;
-    --success-dk: #1f4c37;
-    --success-soft: #e2efe6;
+  .lh-page {
+    --navy-950: #0e1a2e;
+    --navy-900: #142238;
+    --navy-800: #1b2f4d;
+    --cream: #f4efe2;
+    --cream-deep: #ede6d4;
+    --card-line: #e7e0cd;
+    --teal-700: #0c6b58;
+    --teal-600: #0f8f74;
+    --teal-500: #16a087;
+    --teal-50: #e5f4ef;
+    --gold: #c9a24a;
+    --text-dark: #16233a;
+    --text-muted: #7c8698;
+    --text-faint: #a4adba;
     font-family: 'Inter', -apple-system, sans-serif;
-    max-width: 960px;
-    margin: 3rem auto 4rem;
+    max-width: 1080px;
+    margin: 2.5rem auto 4rem;
     padding: 0 1rem;
-    background-image:
-      radial-gradient(circle at 15% 0%, rgba(180,134,58,0.07), transparent 45%),
-      radial-gradient(circle at 100% 30%, rgba(20,34,56,0.05), transparent 40%);
   }
 
-  .ledger-header-row {
+  /* ---------- header ---------- */
+  .lh-header-row {
     display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    flex-wrap: wrap;
+    align-items: flex-start;
     gap: 1rem;
-    margin-bottom: 2rem;
+    margin-bottom: 1.75rem;
   }
 
-  .ledger-eyebrow {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.72rem;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: var(--brass-dk);
+  .lh-icon-badge {
+    flex: none;
+    width: 52px;
+    height: 52px;
+    border-radius: 16px;
+    background: linear-gradient(155deg, var(--teal-500), var(--teal-700));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 18px -8px rgba(15,143,116,0.55);
+  }
+
+  .lh-icon-badge svg { color: #eafff9; }
+
+  .lh-title {
+    font-family: 'Fraunces', serif;
     font-weight: 600;
-    margin-bottom: 0.55rem;
+    font-size: clamp(1.7rem, 3vw, 2.15rem);
+    color: var(--text-dark);
+    margin: 0.15rem 0 0.15rem;
+    letter-spacing: -0.01em;
+  }
+
+  .lh-subtitle {
+    font-size: 0.92rem;
+    color: var(--text-muted);
+    margin: 0;
+  }
+
+  /* ---------- stat cards ---------- */
+  .lh-stats {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+  }
+
+  .lh-stat {
+    flex: 1 1 180px;
+    background: #ffffff;
+    border: 1px solid var(--card-line);
+    border-radius: 18px;
+    padding: 1.1rem 1.35rem;
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    box-shadow: 0 1px 2px rgba(20,34,56,0.04);
+  }
+
+  .lh-stat .icon-wrap {
+    flex: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: var(--teal-50);
+    color: var(--teal-700);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .lh-stat .num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    display: block;
+    line-height: 1.2;
+  }
+
+  .lh-stat .lbl {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+  }
+
+  /* ---------- filter card ---------- */
+  .lh-filter-card {
+    background: #ffffff;
+    border: 1px solid var(--card-line);
+    border-radius: 20px;
+    padding: 1.5rem 1.75rem;
+    margin-bottom: 1.25rem;
+    box-shadow: 0 1px 2px rgba(20,34,56,0.04);
+  }
+
+  .lh-filter-grid {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    align-items: flex-end;
+  }
+
+  .lh-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex: 1 1 190px;
+  }
+
+  .lh-field label {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    font-weight: 700;
+    color: var(--text-muted);
+  }
+
+  .lh-input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .lh-input-wrap svg.field-icon {
+    position: absolute;
+    left: 14px;
+    color: var(--text-muted);
+    pointer-events: none;
+  }
+
+  .lh-input-wrap input[type="date"] {
+    width: 100%;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem;
+    color: var(--text-dark);
+    background: var(--cream);
+    border: 1px solid var(--card-line);
+    border-radius: 12px;
+    padding: 0.68rem 0.85rem 0.68rem 2.6rem;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .lh-input-wrap input[type="date"]:focus {
+    border-color: var(--teal-500);
+    box-shadow: 0 0 0 3px rgba(22,160,135,0.15);
+  }
+
+  .lh-filter-actions {
+    display: flex;
+    gap: 0.6rem;
+    flex: none;
+  }
+
+  .btn-clear-filter {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    background: var(--cream);
+    border: 1px solid var(--card-line);
+    border-radius: 999px;
+    padding: 0.68rem 1.15rem;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+
+  .btn-clear-filter:hover {
+    background: var(--cream-deep);
+    color: var(--text-dark);
+  }
+
+  .lh-filter-hint {
+    margin-top: 0.9rem;
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    font-size: 0.82rem;
+    color: var(--teal-700);
   }
 
-  .ledger-eyebrow::before {
-    content: "";
-    display: inline-block;
-    width: 18px;
-    height: 1px;
-    background: var(--brass);
-  }
+  .lh-filter-hint.hidden { display: none; }
 
-  .ledger-title {
-    font-family: 'Fraunces', serif;
-    font-optical-sizing: auto;
-    font-weight: 600;
-    font-size: clamp(2.1rem, 3.6vw, 2.9rem);
-    color: var(--ink-950);
-    margin: 0;
-    letter-spacing: -0.01em;
-    text-shadow: 0 1px 0 rgba(255,255,255,0.4);
-  }
-
-  .ledger-title-block { border-bottom: 2px solid transparent; border-image: linear-gradient(to right, var(--brass) 0%, transparent 60%) 1; padding-bottom: 0.9rem; flex: 1 1 auto; }
-
-  /* ---------- stat plates: brushed brass on ink ---------- */
-  .ledger-stats {
-    display: flex;
-    gap: 0.9rem;
-    flex-wrap: wrap;
-    margin-bottom: 2rem;
-  }
-
-  .ledger-stat {
-    position: relative;
-    background: linear-gradient(160deg, var(--ink-800) 0%, var(--ink-950) 100%);
-    border-radius: 10px;
-    padding: 0.95rem 1.35rem;
-    min-width: 148px;
-    box-shadow:
-      0 1px 0 rgba(255,255,255,0.06) inset,
-      0 10px 22px -12px rgba(12,23,41,0.55),
-      0 1px 2px rgba(12,23,41,0.3);
-    border: 1px solid #0a1424;
-  }
-
-  .ledger-stat::before {
-    content: "";
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 1px;
-    background: linear-gradient(to right, transparent, var(--brass-lt), transparent);
-    opacity: 0.55;
-  }
-
-  .ledger-stat .num {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 1.3rem;
-    font-weight: 600;
-    background: linear-gradient(180deg, var(--brass-hi), var(--brass));
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    display: block;
-    line-height: 1.2;
-    letter-spacing: 0.01em;
-  }
-
-  .ledger-stat .lbl {
-    font-size: 0.68rem;
-    color: #b7c2d1;
-    text-transform: uppercase;
-    letter-spacing: 0.09em;
-    font-weight: 500;
-  }
-
-  /* ---------- the book itself ---------- */
-  .ledger-book-frame {
-    position: relative;
-    padding-right: 10px;
-    padding-bottom: 10px;
-  }
-
-  .ledger-book-frame::before,
-  .ledger-book-frame::after {
-    content: "";
-    position: absolute;
-    background: var(--paper-deep);
-    border: 1px solid var(--paper-line);
-    border-radius: 14px;
-  }
-
-  .ledger-book-frame::before { inset: 5px 0 0 5px; z-index: 0; opacity: 0.75; }
-  .ledger-book-frame::after { inset: 9px -1px -1px 9px; z-index: -1; background: #e7dcc0; opacity: 0.6; }
-
-  .ledger-book {
-    position: relative;
-    z-index: 1;
-    background: var(--paper);
-    background-image:
-      repeating-linear-gradient(rgba(20,34,56,0.02) 0 1px, transparent 1px 32px);
-    border-radius: 14px;
-    box-shadow:
-      0 1px 0 rgba(255,255,255,0.6) inset,
-      0 22px 44px -20px rgba(12,23,41,0.4),
-      0 6px 14px -8px rgba(12,23,41,0.25);
+  /* ---------- table card ---------- */
+  .lh-table-card {
+    background: #ffffff;
+    border: 1px solid var(--card-line);
+    border-radius: 20px;
     overflow: hidden;
-    border: 1px solid var(--paper-line);
+    box-shadow: 0 1px 2px rgba(20,34,56,0.04);
   }
 
-  /* stitched brass spine — the signature detail */
-  .ledger-book::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    width: 16px;
-    background: linear-gradient(to right, var(--ink-950) 0%, var(--ink-800) 45%, var(--ink-900) 100%);
-    box-shadow: 2px 0 6px rgba(0,0,0,0.25) inset;
-    z-index: 3;
-  }
-
-  .ledger-book::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 5px;
-    width: 2px;
-    background-image: repeating-linear-gradient(
-      to bottom,
-      transparent 0,
-      transparent 10px,
-      var(--brass-lt) 10px,
-      var(--brass-lt) 13px
-    );
-    box-shadow: 0 0 3px rgba(232,200,119,0.5);
-    z-index: 3;
-  }
-
-  .ledger-book-head {
-    position: relative;
-    padding: 1.5rem 2rem 1.5rem 2.75rem;
-    background: linear-gradient(135deg, var(--ink-800) 0%, var(--ink-950) 100%);
-    color: #f2ede1;
+  .lh-table-head {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
-    border-bottom: 1px solid var(--brass-dk);
+    padding: 1.25rem 1.75rem;
+    background: linear-gradient(135deg, var(--navy-800), var(--navy-950));
+    color: #f2ede1;
   }
 
-  .ledger-book-head::after {
-    content: "";
-    position: absolute;
-    left: 0; right: 0; bottom: 0;
-    height: 2px;
-    background: linear-gradient(to right, transparent, var(--brass-lt) 25%, var(--brass-lt) 75%, transparent);
-    opacity: 0.7;
-  }
-
-  /* bookmark ribbon tab */
-  .ribbon-tab {
-    position: absolute;
-    top: 0;
-    right: 2.25rem;
-    width: 22px;
-    height: 34px;
-    background: linear-gradient(180deg, var(--brass-lt), var(--brass));
-    clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 78%, 0 100%);
-    box-shadow: 0 3px 6px rgba(0,0,0,0.25);
-  }
-
-  .ledger-book-head h5 {
+  .lh-table-head h5 {
     font-family: 'Fraunces', serif;
     font-weight: 500;
-    font-size: 1.15rem;
+    font-size: 1.05rem;
     margin: 0;
     color: #f7f2e6;
-    letter-spacing: 0.01em;
   }
 
-  .ledger-book-head .today-tag {
+  .lh-today-tag {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 0.7rem;
-    color: var(--brass-lt);
-    letter-spacing: 0.07em;
+    font-size: 0.72rem;
+    color: #a9d8c8;
+    letter-spacing: 0.05em;
     display: flex;
     align-items: center;
     gap: 0.4rem;
   }
 
-  .today-dot {
+  .lh-today-dot {
     width: 6px; height: 6px; border-radius: 50%;
     background: #6fd39a;
     box-shadow: 0 0 0 3px rgba(111,211,154,0.2), 0 0 6px rgba(111,211,154,0.7);
   }
 
-  .ledger-table-scroll {
-    overflow-x: auto;
-  }
+  .lh-table-scroll { overflow-x: auto; }
 
-  table.ledger-table {
+  table.lh-table {
     width: 100%;
     border-collapse: collapse;
     margin: 0;
   }
 
-  table.ledger-table thead th {
+  table.lh-table thead th {
     font-family: 'Inter', sans-serif;
     font-size: 0.68rem;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--brass-dk);
+    letter-spacing: 0.09em;
+    color: var(--text-muted);
     font-weight: 700;
     text-align: left;
-    padding: 1rem 1.35rem 1rem 2.75rem;
-    border-bottom: 1px solid var(--paper-line);
-    background: var(--paper-deep);
+    padding: 0.95rem 1.35rem;
+    border-bottom: 1px solid var(--card-line);
+    background: var(--cream);
   }
 
-  table.ledger-table thead th:first-child { padding-left: 2.75rem; }
-  table.ledger-table thead th.amount-col,
-  table.ledger-table td.amount-col { text-align: right; }
-  table.ledger-table thead th.status-col,
-  table.ledger-table td.status-col { text-align: right; padding-right: 2.1rem; }
+  table.lh-table thead th:first-child { padding-left: 1.75rem; }
+  table.lh-table thead th.amount-col,
+  table.lh-table td.amount-col { text-align: right; }
+  table.lh-table thead th.status-col,
+  table.lh-table td.status-col { text-align: right; padding-right: 1.75rem; }
 
-  table.ledger-table tbody td {
-    padding: 1.05rem 1.35rem;
-    border-bottom: 1px dashed var(--paper-line);
-    color: var(--ink-700);
-    font-size: 0.93rem;
+  table.lh-table tbody td {
+    padding: 1rem 1.35rem;
+    border-bottom: 1px solid var(--card-line);
+    color: var(--text-dark);
+    font-size: 0.92rem;
     vertical-align: middle;
   }
 
-  table.ledger-table tbody td:first-child { padding-left: 2.75rem; }
+  table.lh-table tbody td:first-child { padding-left: 1.75rem; }
+  table.lh-table tbody tr:last-child td { border-bottom: none; }
+  table.lh-table tbody tr { transition: background-color 0.15s ease; }
+  table.lh-table tbody tr:hover { background: var(--cream); }
 
-  table.ledger-table tbody tr:last-child td { border-bottom: none; }
-
-  table.ledger-table tbody tr {
-    transition: background-color 0.15s ease;
+  table.lh-table tbody tr.is-today {
+    background: var(--teal-50);
+    box-shadow: inset 3px 0 0 var(--teal-600);
   }
 
-  table.ledger-table tbody tr:hover {
-    background: #f1e9d4;
-  }
+  table.lh-table tbody tr.is-today:hover { background: #d9f0e8; }
 
-  table.ledger-table tbody tr.is-today {
-    background: var(--success-soft);
-    box-shadow: inset 3px 0 0 var(--success);
-  }
-
-  table.ledger-table tbody tr.is-today:hover {
-    background: #d3ecdc;
-  }
+  table.lh-table tbody tr.lh-hidden { display: none; }
 
   td.date-col {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 0.85rem;
-    color: var(--ink-900);
+    font-size: 0.84rem;
+    color: var(--navy-900);
     white-space: nowrap;
     font-weight: 500;
   }
@@ -318,49 +318,36 @@
   td.amount-col {
     font-family: 'JetBrains Mono', monospace;
     font-weight: 700;
-    color: var(--ink-950);
+    color: var(--text-dark);
     white-space: nowrap;
-    font-size: 0.97rem;
+    font-size: 0.95rem;
   }
 
   td.amount-col::before {
     content: "\20B9";
     margin-right: 2px;
-    color: var(--brass-dk);
+    color: var(--teal-700);
     font-weight: 600;
   }
 
-  td.note-col {
-    color: var(--ink-700);
-    max-width: 320px;
-  }
-
-  td.note-col .no-note {
-    color: var(--ink-muted);
-    font-style: italic;
-    font-size: 0.85rem;
-  }
+  td.note-col { color: var(--text-dark); max-width: 320px; }
+  td.note-col .no-note { color: var(--text-faint); font-style: italic; font-size: 0.85rem; }
 
   .status-pill {
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 0.7rem;
+    font-size: 0.68rem;
     letter-spacing: 0.04em;
     padding: 0.35rem 0.75rem;
     border-radius: 999px;
     text-transform: uppercase;
     font-weight: 600;
+    color: var(--text-muted);
+    background: var(--cream);
+    border: 1px solid var(--card-line);
   }
-
-  .status-pill.locked {
-    color: var(--ink-muted);
-    background: #eae5d6;
-    border: 1px solid var(--paper-line);
-  }
-
-  .status-pill.locked svg { opacity: 0.75; }
 
   .btn-edit-entry {
     display: inline-flex;
@@ -370,91 +357,129 @@
     font-size: 0.78rem;
     font-weight: 600;
     color: #f2fbf6;
-    background: linear-gradient(160deg, #37866028, var(--success)) , linear-gradient(160deg, #3d8763, var(--success-dk));
-    background: linear-gradient(160deg, #3d8763, var(--success-dk));
-    border: 1px solid var(--success-dk);
+    background: linear-gradient(160deg, var(--teal-500), var(--teal-700));
+    border: 1px solid var(--teal-700);
     border-radius: 999px;
     padding: 0.45rem 1rem;
     text-decoration: none;
-    box-shadow: 0 4px 10px -4px rgba(31,76,55,0.55), 0 1px 0 rgba(255,255,255,0.15) inset;
+    box-shadow: 0 4px 10px -4px rgba(12,107,88,0.5);
     transition: transform 0.12s ease, box-shadow 0.12s ease;
   }
 
   .btn-edit-entry:hover {
     color: #f2fbf6;
     transform: translateY(-1px);
-    box-shadow: 0 7px 14px -5px rgba(31,76,55,0.6), 0 1px 0 rgba(255,255,255,0.15) inset;
+    box-shadow: 0 7px 14px -5px rgba(12,107,88,0.55);
   }
 
-  .ledger-empty {
-    padding: 4rem 2rem 4rem 2.75rem;
+  .lh-empty {
+    padding: 3.5rem 2rem;
     text-align: center;
-    color: var(--ink-muted);
+    color: var(--text-muted);
   }
 
-  .ledger-empty svg { color: var(--brass); margin-bottom: 0.85rem; }
+  .lh-empty svg { color: var(--teal-500); margin-bottom: 0.85rem; }
 
-  .ledger-empty p.title {
+  .lh-empty p.title {
     font-family: 'Fraunces', serif;
-    font-size: 1.2rem;
-    color: var(--ink-950);
+    font-size: 1.15rem;
+    color: var(--text-dark);
     margin-bottom: 0.3rem;
   }
 
-  .ledger-empty p.sub {
-    font-size: 0.88rem;
-    margin: 0;
-  }
+  .lh-empty p.sub { font-size: 0.88rem; margin: 0; }
 
   @media (max-width: 576px) {
-    .ledger-book-frame { padding-right: 6px; padding-bottom: 6px; }
-    table.ledger-table thead th,
-    table.ledger-table tbody td { padding-left: 1.1rem; padding-right: 0.9rem; }
-    table.ledger-table thead th:first-child,
-    table.ledger-table tbody td:first-child { padding-left: 1.85rem; }
-    .ledger-book-head { padding-left: 1.85rem; }
-    .ribbon-tab { display: none; }
+    table.lh-table thead th,
+    table.lh-table tbody td { padding-left: 1rem; padding-right: 0.85rem; }
+    .lh-table-head { padding: 1.1rem 1.25rem; flex-wrap: wrap; }
+    .lh-filter-card { padding: 1.25rem; }
   }
 </style>
 
-<div class="ledger-page">
+<div class="lh-page">
 
-    <div class="ledger-header-row">
-        <div class="ledger-title-block">
-            <span class="ledger-eyebrow">Daily record</span>
-            <h1 class="ledger-title">Labour Entries</h1>
+    <div class="lh-header-row">
+        <div class="lh-icon-badge">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v4a1 1 0 0 0 1 1h4"></path><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"></path><path d="M9 13h6M9 17h4"></path></svg>
+        </div>
+        <div>
+            <h1 class="lh-title">Labour Entries</h1>
+            <p class="lh-subtitle">Daily record of labour transactions &mdash; filter by date to review any period.</p>
         </div>
     </div>
 
     {% set today_count = entries|selectattr('entry_date', 'equalto', today)|list|length %}
 
-    <div class="ledger-stats">
-        <div class="ledger-stat">
-            <span class="num">{{ entries|length }}</span>
-            <span class="lbl">Total entries</span>
+    <div class="lh-stats">
+        <div class="lh-stat">
+            <span class="icon-wrap">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"></path><rect x="9" y="3" width="6" height="4" rx="1"></rect></svg>
+            </span>
+            <div>
+                <span class="num">{{ entries|length }}</span>
+                <span class="lbl">Total entries</span>
+            </div>
         </div>
-        <div class="ledger-stat">
-            <span class="num">&#8377;{{ "%.2f"|format(entries|sum(attribute='amount')) }}</span>
-            <span class="lbl">Total amount</span>
+        <div class="lh-stat">
+            <span class="icon-wrap">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1v22"></path><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+            </span>
+            <div>
+                <span class="num">&#8377;{{ "%.2f"|format(entries|sum(attribute='amount')) }}</span>
+                <span class="lbl">Total amount</span>
+            </div>
         </div>
-        <div class="ledger-stat">
-            <span class="num">{{ today_count }}</span>
-            <span class="lbl">Editable today</span>
+        <div class="lh-stat">
+            <span class="icon-wrap">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M16 2v4M8 2v4M3 10h18"></path></svg>
+            </span>
+            <div>
+                <span class="num">{{ today_count }}</span>
+                <span class="lbl">Editable today</span>
+            </div>
         </div>
     </div>
 
-    <div class="ledger-book-frame">
-    <div class="ledger-book">
+    <div class="lh-filter-card">
+        <div class="lh-filter-grid">
+            <div class="lh-field">
+                <label for="lhDateFrom">From date</label>
+                <div class="lh-input-wrap">
+                    <svg class="field-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M16 2v4M8 2v4M3 10h18"></path></svg>
+                    <input type="date" id="lhDateFrom">
+                </div>
+            </div>
+            <div class="lh-field">
+                <label for="lhDateTo">To date</label>
+                <div class="lh-input-wrap">
+                    <svg class="field-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M16 2v4M8 2v4M3 10h18"></path></svg>
+                    <input type="date" id="lhDateTo">
+                </div>
+            </div>
+            <div class="lh-filter-actions">
+                <button type="button" class="btn-clear-filter" id="lhClearFilter">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"></path></svg>
+                    Clear filter
+                </button>
+            </div>
+        </div>
+        <div class="lh-filter-hint hidden" id="lhFilterHint">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4M12 8h.01"></path></svg>
+            <span id="lhFilterHintText"></span>
+        </div>
+    </div>
 
-        <div class="ledger-book-head">
+    <div class="lh-table-card">
+
+        <div class="lh-table-head">
             <h5>Entry log</h5>
-            <span class="today-tag"><span class="today-dot"></span>TODAY &middot; {{ today }}</span>
-            <div class="ribbon-tab"></div>
+            <span class="lh-today-tag"><span class="lh-today-dot"></span>TODAY &middot; {{ today.strftime('%d %B %Y') if today.strftime is defined else today }}</span>
         </div>
 
         {% if entries %}
-        <div class="ledger-table-scroll">
-        <table class="ledger-table">
+        <div class="lh-table-scroll">
+        <table class="lh-table" id="lhTable">
 
             <thead>
                 <tr>
@@ -465,13 +490,16 @@
                 </tr>
             </thead>
 
-            <tbody>
+            <tbody id="lhTableBody">
 
             {% for row in entries %}
 
-            <tr class="{{ 'is-today' if row.entry_date == today else '' }}">
+            {% set entry_date_iso = row.entry_date.strftime('%Y-%m-%d') if row.entry_date.strftime is defined else row.entry_date %}
+            {% set entry_date_display = row.entry_date.strftime('%d %B %Y') if row.entry_date.strftime is defined else row.entry_date %}
 
-                <td class="date-col">{{ row.entry_date }}</td>
+            <tr class="{{ 'is-today' if row.entry_date == today else '' }}" data-date="{{ entry_date_iso }}">
+
+                <td class="date-col">{{ entry_date_display }}</td>
 
                 <td class="amount-col">{{ "%.2f"|format(row.amount) }}</td>
 
@@ -490,7 +518,7 @@
 
                     {% else %}
 
-                    <span class="status-pill locked">
+                    <span class="status-pill">
                         <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
                         Locked
                     </span>
@@ -507,9 +535,10 @@
 
         </table>
         </div>
+        <p class="lh-empty" id="lhNoResults" style="display:none; padding: 2.5rem 2rem;">No entries match the selected date range.</p>
         {% else %}
 
-        <div class="ledger-empty">
+        <div class="lh-empty">
             <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v4a1 1 0 0 0 1 1h4"></path><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"></path><path d="M9 13h6M9 17h4"></path></svg>
             <p class="title">No entries yet</p>
             <p class="sub">Today's entry will appear here once it's added.</p>
@@ -518,8 +547,68 @@
         {% endif %}
 
     </div>
-    </div>
 
 </div>
+
+<script>
+(function () {
+  var fromInput = document.getElementById('lhDateFrom');
+  var toInput = document.getElementById('lhDateTo');
+  var clearBtn = document.getElementById('lhClearFilter');
+  var tbody = document.getElementById('lhTableBody');
+  var hint = document.getElementById('lhFilterHint');
+  var hintText = document.getElementById('lhFilterHintText');
+  var noResults = document.getElementById('lhNoResults');
+
+  if (!tbody) { return; }
+
+  function formatDisplay(isoStr) {
+    var parts = isoStr.split('-');
+    if (parts.length !== 3) { return isoStr; }
+    var d = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+    var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    return d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear();
+  }
+
+  function applyFilter() {
+    var from = fromInput.value;
+    var to = toInput.value;
+    var rows = tbody.querySelectorAll('tr');
+    var visibleCount = 0;
+
+    rows.forEach(function (row) {
+      var rowDate = row.getAttribute('data-date');
+      var visible = true;
+      if (from && rowDate < from) { visible = false; }
+      if (to && rowDate > to) { visible = false; }
+      row.classList.toggle('lh-hidden', !visible);
+      if (visible) { visibleCount++; }
+    });
+
+    if (noResults) {
+      noResults.style.display = visibleCount === 0 ? 'block' : 'none';
+    }
+
+    if (from || to) {
+      var label = 'Showing entries';
+      if (from) { label += ' from ' + formatDisplay(from); }
+      if (to) { label += (from ? ' to ' : ' up to ') + formatDisplay(to); }
+      hintText.textContent = label + '.';
+      hint.classList.remove('hidden');
+    } else {
+      hint.classList.add('hidden');
+    }
+  }
+
+  fromInput.addEventListener('change', applyFilter);
+  toInput.addEventListener('change', applyFilter);
+
+  clearBtn.addEventListener('click', function () {
+    fromInput.value = '';
+    toInput.value = '';
+    applyFilter();
+  });
+})();
+</script>
 
 {% endblock %}
