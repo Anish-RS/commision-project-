@@ -2,49 +2,377 @@
 
 {% block content %}
 
-<div class="container mt-4">
+<style>
+  .labour-edit-scope {
+    --forest-950: #0c1f16;
+    --forest-900: #12291d;
+    --forest-800: #1a3826;
+    --forest-700: #234a32;
+    --gold-300: #ecd58a;
+    --gold-500: #c9a227;
+    --gold-600: #a9821c;
+    --cream-50: #f7f2e3;
+    --cream-100: #efe7d1;
+    --ink-900: #241d14;
+    --ink-600: #5a5142;
 
-<h3>Edit Labour Entry</h3>
+    font-family: 'Inter', -apple-system, sans-serif;
+    color: var(--ink-900);
+    padding: 3.5rem 1.5rem;
+    display: flex;
+    justify-content: center;
+    background:
+      radial-gradient(ellipse at 20% -10%, rgba(201,162,39,0.10), transparent 55%),
+      radial-gradient(ellipse at 100% 110%, rgba(35,74,50,0.12), transparent 50%);
+  }
 
-<form method="POST">
+  .labour-voucher {
+    width: 100%;
+    max-width: 560px;
+    position: relative;
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    background: var(--cream-50);
+    border-radius: 14px;
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.6) inset,
+      0 30px 60px -25px rgba(12,31,22,0.55),
+      0 2px 8px rgba(12,31,22,0.15);
+    overflow: hidden;
+    border: 1px solid rgba(36,29,20,0.08);
+  }
 
-<div class="mb-3">
-<label>Amount</label>
+  /* Torn ledger stub edge */
+  .voucher-stub {
+    background: linear-gradient(180deg, var(--forest-900), var(--forest-950));
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .voucher-stub span {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.66rem;
+    letter-spacing: 0.28em;
+    color: var(--gold-300);
+    text-transform: uppercase;
+    opacity: 0.85;
+  }
+  .voucher-stub::after {
+    content: "";
+    position: absolute;
+    top: 0; right: -6px; bottom: 0;
+    width: 12px;
+    background-image: radial-gradient(circle, var(--cream-50) 3.2px, transparent 3.4px);
+    background-size: 12px 16px;
+    background-position: center;
+  }
 
-<input
-    type="number"
-    step="0.01"
-    min="0"
-    name="amount"
-    class="form-control"
-    value="{{ labour.amount }}"
-    required>
+  .voucher-body {
+    padding: 2.6rem 2.6rem 2.2rem;
+  }
 
+  .voucher-eyebrow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.35rem;
+  }
+  .voucher-eyebrow .tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold-600);
+    background: rgba(201,162,39,0.12);
+    border: 1px solid rgba(201,162,39,0.35);
+    padding: 0.22rem 0.55rem;
+    border-radius: 100px;
+  }
+  .voucher-eyebrow .voucher-kind {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--ink-600);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  h3.voucher-title {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-optical-sizing: auto;
+    font-size: 1.9rem;
+    letter-spacing: -0.01em;
+    color: var(--forest-900);
+    margin: 0.2rem 0 1.6rem;
+  }
+
+  .field-block {
+    margin-bottom: 1.5rem;
+  }
+
+  .field-label {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-600);
+    margin-bottom: 0.5rem;
+  }
+  .field-label .hint {
+    text-transform: none;
+    letter-spacing: 0;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.72rem;
+    color: rgba(90,81,66,0.65);
+  }
+
+  /* Amount field styled as ledger currency line */
+  .amount-shell {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: var(--cream-100);
+    border: 1.5px solid rgba(36,29,20,0.14);
+    border-radius: 10px;
+    padding: 0 0.4rem 0 1rem;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  .amount-shell:focus-within {
+    border-color: var(--gold-500);
+    box-shadow: 0 0 0 3px rgba(201,162,39,0.18);
+  }
+  .amount-shell .currency-mark {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 1.3rem;
+    color: var(--forest-700);
+    margin-right: 0.35rem;
+  }
+  .amount-shell input {
+    border: none;
+    background: transparent;
+    outline: none;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 1.55rem;
+    font-weight: 500;
+    color: var(--ink-900);
+    padding: 0.85rem 0.4rem;
+    width: 100%;
+    letter-spacing: 0.01em;
+  }
+  .amount-shell input::-webkit-outer-spin-button,
+  .amount-shell input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  .amount-shell input[type=number] { -moz-appearance: textfield; }
+
+  .amount-words {
+    margin-top: 0.5rem;
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 0.82rem;
+    color: var(--ink-600);
+    min-height: 1.1em;
+  }
+
+  /* Note field styled as a ruled ledger line */
+  .note-shell {
+    background: var(--cream-100);
+    border: 1.5px solid rgba(36,29,20,0.14);
+    border-radius: 10px;
+    padding: 0.15rem 0.2rem;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  .note-shell:focus-within {
+    border-color: var(--gold-500);
+    box-shadow: 0 0 0 3px rgba(201,162,39,0.18);
+  }
+  .note-shell input {
+    width: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    color: var(--ink-900);
+    padding: 0.8rem 0.85rem;
+  }
+  .note-shell input::placeholder {
+    color: rgba(90,81,66,0.55);
+  }
+
+  .voucher-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-top: 2rem;
+    padding-top: 1.4rem;
+    border-top: 1px dashed rgba(36,29,20,0.18);
+  }
+
+  .btn-update {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 0.92rem;
+    letter-spacing: 0.01em;
+    color: var(--forest-950);
+    background: linear-gradient(180deg, var(--gold-300), var(--gold-500));
+    border: 1px solid var(--gold-600);
+    border-radius: 9px;
+    padding: 0.78rem 1.2rem;
+    cursor: pointer;
+    box-shadow: 0 6px 16px -6px rgba(169,130,28,0.55);
+    transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+  }
+  .btn-update:hover {
+    filter: brightness(1.04);
+    transform: translateY(-1px);
+    box-shadow: 0 10px 20px -6px rgba(169,130,28,0.6);
+  }
+  .btn-update:active { transform: translateY(0); }
+  .btn-update:focus-visible {
+    outline: 2px solid var(--forest-700);
+    outline-offset: 2px;
+  }
+
+  .btn-cancel {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 0.92rem;
+    color: var(--ink-600);
+    background: transparent;
+    border: 1.5px solid rgba(36,29,20,0.2);
+    border-radius: 9px;
+    padding: 0.76rem 1.3rem;
+    text-decoration: none;
+    transition: border-color 0.12s ease, color 0.12s ease, background 0.12s ease;
+  }
+  .btn-cancel:hover {
+    border-color: var(--forest-700);
+    color: var(--forest-900);
+    background: rgba(35,74,50,0.05);
+  }
+  .btn-cancel:focus-visible {
+    outline: 2px solid var(--forest-700);
+    outline-offset: 2px;
+  }
+
+  @media (max-width: 480px) {
+    .labour-edit-scope { padding: 2rem 1rem; }
+    .voucher-body { padding: 2.1rem 1.5rem 1.8rem; }
+    h3.voucher-title { font-size: 1.6rem; }
+    .voucher-actions { flex-direction: column-reverse; align-items: stretch; }
+    .btn-cancel { text-align: center; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn-update { transition: none; }
+  }
+</style>
+
+<div class="labour-edit-scope">
+  <div class="labour-voucher">
+    <div class="voucher-stub"><span>Labour Ledger</span></div>
+
+    <div class="voucher-body">
+
+      <div class="voucher-eyebrow">
+        <span class="tag">Edit Entry</span>
+        <span class="voucher-kind">Wage Voucher</span>
+      </div>
+
+      <h3 class="voucher-title">Edit Labour Entry</h3>
+
+      <form method="POST">
+
+        <div class="field-block">
+          <div class="field-label">
+            <span>Amount</span>
+            <span class="hint">in rupees</span>
+          </div>
+          <div class="amount-shell">
+            <span class="currency-mark">₹</span>
+            <input
+              type="number"
+              step="0.01"
+              min="0"
+              name="amount"
+              id="labourAmount"
+              class="form-control"
+              value="{{ labour.amount }}"
+              required
+              inputmode="decimal"
+              autocomplete="off">
+          </div>
+          <div class="amount-words" id="amountWords" aria-live="polite"></div>
+        </div>
+
+        <div class="field-block">
+          <div class="field-label">
+            <span>Note</span>
+            <span class="hint">optional</span>
+          </div>
+          <div class="note-shell">
+            <input
+              type="text"
+              name="note"
+              class="form-control"
+              value="{{ labour.note }}"
+              placeholder="What was this labour for?"
+              autocomplete="off">
+          </div>
+        </div>
+
+        <div class="voucher-actions">
+          <button type="submit" class="btn-update">
+            Update Entry
+          </button>
+          <a href="{{ url_for('labour_history') }}" class="btn-cancel">
+            Cancel
+          </a>
+        </div>
+
+      </form>
+    </div>
+  </div>
 </div>
 
-<div class="mb-3">
+<script>
+  (function () {
+    var input = document.getElementById('labourAmount');
+    var words = document.getElementById('amountWords');
+    if (!input || !words) return;
 
-<label>Note</label>
+    function toWords(numStr) {
+      var n = parseFloat(numStr);
+      if (isNaN(n) || n <= 0) return '';
+      var rupees = Math.floor(n);
+      var formatted = rupees.toLocaleString('en-IN');
+      return 'Rupees ' + formatted + ' only';
+    }
 
-<input
-type="text"
-name="note"
-class="form-control"
-value="{{ labour.note }}">
+    function update() {
+      words.textContent = toWords(input.value);
+    }
 
-</div>
-
-<button class="btn btn-success">
-Update
-</button>
-
-<a href="{{ url_for('labour_history') }}"
-class="btn btn-secondary">
-Cancel
-</a>
-
-</form>
-
-</div>
+    input.addEventListener('input', update);
+    update();
+  })();
+</script>
 
 {% endblock %}
