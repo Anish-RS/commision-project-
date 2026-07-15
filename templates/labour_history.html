@@ -2,57 +2,387 @@
 
 {% block content %}
 
-<div class="container mt-4">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
-<h3>Labour Entries</h3>
+<style>
+  .ledger-wrap {
+    --ink-900: #142238;
+    --ink-700: #26364f;
+    --paper: #fbf8f2;
+    --paper-line: #e7e0d0;
+    --brass: #a9782f;
+    --brass-soft: #ecd9ab;
+    --ink-muted: #74808f;
+    --success: #2f6f4f;
+    --success-soft: #e3efe7;
+    font-family: 'Inter', -apple-system, sans-serif;
+    max-width: 920px;
+    margin: 2.5rem auto;
+    padding: 0 1rem;
+  }
 
-<table class="table table-bordered table-hover">
+  .ledger-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--brass);
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+    display: block;
+  }
 
-    <thead class="table-dark">
-        <tr>
-            <th>Date</th>
-            <th>Amount</th>
-            <th>Note</th>
-            <th>Action</th>
-        </tr>
-    </thead>
+  .ledger-title {
+    font-family: 'Fraunces', serif;
+    font-optical-sizing: auto;
+    font-weight: 600;
+    font-size: clamp(1.9rem, 3.2vw, 2.6rem);
+    color: var(--ink-900);
+    margin: 0 0 1.5rem 0;
+    letter-spacing: -0.01em;
+  }
 
-    <tbody>
+  .ledger-stats {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+  }
 
-    {% for row in entries %}
+  .ledger-stat {
+    background: #fff;
+    border: 1px solid var(--paper-line);
+    border-radius: 10px;
+    padding: 0.7rem 1.1rem;
+    min-width: 130px;
+  }
 
-    <tr>
+  .ledger-stat .num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--ink-900);
+    display: block;
+    line-height: 1.2;
+  }
 
-        <td>{{ row.entry_date }}</td>
+  .ledger-stat .lbl {
+    font-size: 0.72rem;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
 
-        <td>{{ "%.2f"|format(row.amount) }}</td>
+  .ledger-book {
+    position: relative;
+    background: var(--paper);
+    border-radius: 14px;
+    box-shadow: 0 1px 2px rgba(20,34,56,0.06), 0 12px 32px -16px rgba(20,34,56,0.28);
+    overflow: hidden;
+    border: 1px solid var(--paper-line);
+  }
 
-        <td>{{ row.note }}</td>
+  /* stitched spine — the signature detail */
+  .ledger-book::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 10px;
+    background: var(--ink-900);
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 9px,
+      var(--brass-soft) 9px,
+      var(--brass-soft) 11px
+    );
+    z-index: 2;
+  }
 
-        <td>
+  .ledger-book-head {
+    padding: 1.25rem 1.75rem 1.25rem 2.25rem;
+    background: var(--ink-900);
+    color: #f2ede1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
 
-            {% if row.entry_date == today %}
+  .ledger-book-head h5 {
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: 1.05rem;
+    margin: 0;
+    color: #f2ede1;
+  }
 
-            <a href="{{ url_for('edit_labour', labour_id=row.labour_id) }}"
-               class="btn btn-warning btn-sm">
-                Edit
-            </a>
+  .ledger-book-head span.today-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--brass-soft);
+    letter-spacing: 0.05em;
+  }
 
-            {% else %}
+  .ledger-table-scroll {
+    overflow-x: auto;
+  }
 
-            <span class="text-muted">Locked</span>
+  table.ledger-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0;
+  }
 
-            {% endif %}
+  table.ledger-table thead th {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-muted);
+    font-weight: 600;
+    text-align: left;
+    padding: 0.9rem 1.25rem 0.9rem 2.25rem;
+    border-bottom: 1px solid var(--paper-line);
+    background: #f5f1e8;
+  }
 
-        </td>
+  table.ledger-table thead th:first-child { padding-left: 2.25rem; }
+  table.ledger-table thead th.amount-col,
+  table.ledger-table td.amount-col { text-align: right; }
+  table.ledger-table thead th.status-col,
+  table.ledger-table td.status-col { text-align: right; padding-right: 1.75rem; }
 
-    </tr>
+  table.ledger-table tbody td {
+    padding: 0.95rem 1.25rem;
+    border-bottom: 1px dashed var(--paper-line);
+    color: var(--ink-700);
+    font-size: 0.92rem;
+    vertical-align: middle;
+  }
 
-    {% endfor %}
+  table.ledger-table tbody td:first-child { padding-left: 2.25rem; }
 
-    </tbody>
+  table.ledger-table tbody tr:last-child td { border-bottom: none; }
 
-</table>
+  table.ledger-table tbody tr {
+    transition: background-color 0.15s ease;
+  }
+
+  table.ledger-table tbody tr:hover {
+    background: #f6f2e9;
+  }
+
+  table.ledger-table tbody tr.is-today {
+    background: var(--success-soft);
+  }
+
+  table.ledger-table tbody tr.is-today:hover {
+    background: #d9ecdf;
+  }
+
+  td.date-col {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--ink-900);
+    white-space: nowrap;
+  }
+
+  td.amount-col {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    color: var(--ink-900);
+    white-space: nowrap;
+  }
+
+  td.amount-col::before {
+    content: "\20B9";
+    margin-right: 2px;
+    color: var(--ink-muted);
+    font-weight: 500;
+  }
+
+  td.note-col {
+    color: var(--ink-700);
+    max-width: 320px;
+  }
+
+  td.note-col .no-note {
+    color: var(--ink-muted);
+    font-style: italic;
+    font-size: 0.85rem;
+  }
+
+  .status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.03em;
+    padding: 0.3rem 0.65rem;
+    border-radius: 999px;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+
+  .status-pill.locked {
+    color: var(--ink-muted);
+    background: #eef0ee;
+    border: 1px solid #dfe2df;
+  }
+
+  .status-pill.locked svg { opacity: 0.7; }
+
+  .btn-edit-entry {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #fff;
+    background: var(--success);
+    border: none;
+    border-radius: 999px;
+    padding: 0.4rem 0.9rem;
+    text-decoration: none;
+    transition: background-color 0.15s ease, transform 0.1s ease;
+  }
+
+  .btn-edit-entry:hover {
+    background: #255a40;
+    color: #fff;
+    transform: translateY(-1px);
+  }
+
+  .ledger-empty {
+    padding: 3.5rem 2rem 3.5rem 2.25rem;
+    text-align: center;
+    color: var(--ink-muted);
+  }
+
+  .ledger-empty svg { color: var(--brass); margin-bottom: 0.75rem; }
+
+  .ledger-empty p.title {
+    font-family: 'Fraunces', serif;
+    font-size: 1.15rem;
+    color: var(--ink-900);
+    margin-bottom: 0.25rem;
+  }
+
+  .ledger-empty p.sub {
+    font-size: 0.88rem;
+    margin: 0;
+  }
+
+  @media (max-width: 576px) {
+    table.ledger-table thead th,
+    table.ledger-table tbody td { padding-left: 1.1rem; padding-right: 0.9rem; }
+    table.ledger-table thead th:first-child,
+    table.ledger-table tbody td:first-child { padding-left: 1.75rem; }
+  }
+</style>
+
+<div class="ledger-wrap">
+
+    <span class="ledger-eyebrow">Daily record</span>
+    <h1 class="ledger-title">Labour Entries</h1>
+
+    {% set today_count = entries|selectattr('entry_date', 'equalto', today)|list|length %}
+
+    <div class="ledger-stats">
+        <div class="ledger-stat">
+            <span class="num">{{ entries|length }}</span>
+            <span class="lbl">Total entries</span>
+        </div>
+        <div class="ledger-stat">
+            <span class="num">&#8377;{{ "%.2f"|format(entries|sum(attribute='amount')) }}</span>
+            <span class="lbl">Total amount</span>
+        </div>
+        <div class="ledger-stat">
+            <span class="num">{{ today_count }}</span>
+            <span class="lbl">Editable today</span>
+        </div>
+    </div>
+
+    <div class="ledger-book">
+
+        <div class="ledger-book-head">
+            <h5>Entry log</h5>
+            <span class="today-tag">TODAY &middot; {{ today }}</span>
+        </div>
+
+        {% if entries %}
+        <div class="ledger-table-scroll">
+        <table class="ledger-table">
+
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th class="amount-col">Amount</th>
+                    <th>Note</th>
+                    <th class="status-col">Status</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+            {% for row in entries %}
+
+            <tr class="{{ 'is-today' if row.entry_date == today else '' }}">
+
+                <td class="date-col">{{ row.entry_date }}</td>
+
+                <td class="amount-col">{{ "%.2f"|format(row.amount) }}</td>
+
+                <td class="note-col">
+                    {% if row.note %}{{ row.note }}{% else %}<span class="no-note">No note added</span>{% endif %}
+                </td>
+
+                <td class="status-col">
+
+                    {% if row.entry_date == today %}
+
+                    <a href="{{ url_for('edit_labour', labour_id=row.labour_id) }}" class="btn-edit-entry">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                        Edit
+                    </a>
+
+                    {% else %}
+
+                    <span class="status-pill locked">
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                        Locked
+                    </span>
+
+                    {% endif %}
+
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+            </tbody>
+
+        </table>
+        </div>
+        {% else %}
+
+        <div class="ledger-empty">
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v4a1 1 0 0 0 1 1h4"></path><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"></path><path d="M9 13h6M9 17h4"></path></svg>
+            <p class="title">No entries yet</p>
+            <p class="sub">Today's entry will appear here once it's added.</p>
+        </div>
+
+        {% endif %}
+
+    </div>
 
 </div>
 
