@@ -2,21 +2,98 @@
 {% block content %}
 
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+:root{
+    --cream:#F6F1E4;
+    --cream-deep:#EDE6D3;
+    --navy:#16233A;
+    --navy-soft:#28374F;
+    --brass:#B08D57;
+    --brass-light:#D4B483;
+    --teal:#2F8F87;
+    --bottle:#1F4B3F;
+    --bottle-deep:#153229;
+    --gold:#D4AF37;
+    --ink:#1f2937;
+    --line:rgba(22,35,58,.12);
+}
+
+@keyframes riseIn{
+    from{opacity:0; transform:translateY(14px);}
+    to{opacity:1; transform:translateY(0);}
+}
+
+@keyframes sealPop{
+    0%{opacity:0; transform:scale(.6) rotate(-14deg);}
+    60%{opacity:1; transform:scale(1.06) rotate(3deg);}
+    100%{opacity:1; transform:scale(1) rotate(-6deg);}
+}
+
 .edit-container{
-    max-width:1100px;
-    margin:20px auto;
-    background:#fff;
-    padding:20px;
-    border-radius:12px;
-    box-shadow:0 2px 10px rgba(0,0,0,.08);
+    max-width:1120px;
+    margin:32px auto;
+    background:linear-gradient(180deg, rgba(255,255,255,.72), rgba(255,255,255,.5));
+    background-color:var(--cream);
+    padding:36px 40px 44px;
+    border-radius:20px;
+    border:1px solid rgba(176,141,87,.25);
+    box-shadow:0 1px 2px rgba(22,35,58,.06), 0 20px 48px -20px rgba(22,35,58,.28);
+    backdrop-filter:blur(6px);
+    -webkit-backdrop-filter:blur(6px);
+    font-family:'Inter',sans-serif;
+    color:var(--ink);
+    position:relative;
+    animation:riseIn .55s ease both;
+}
+
+.edit-container::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    border-radius:20px;
+    pointer-events:none;
+    background-image:
+        repeating-linear-gradient(0deg, rgba(22,35,58,.035) 0 1px, transparent 1px 34px);
+    opacity:.5;
+}
+
+.page-header{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:18px;
+    margin-bottom:28px;
+    position:relative;
 }
 
 .page-title{
-    margin-bottom:20px;
-    font-size:28px;
-    font-weight:700;
+    font-family:'Fraunces',serif;
+    font-size:32px;
+    font-weight:600;
     text-align:center;
-    color:#1f2937;
+    color:var(--navy);
+    letter-spacing:.2px;
+}
+
+.bill-seal{
+    flex-shrink:0;
+    width:64px;
+    height:64px;
+    border-radius:50%;
+    background:radial-gradient(circle at 32% 28%, #f2d98a, var(--gold) 55%, #9c7a1f 100%);
+    color:var(--navy);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    font-weight:600;
+    text-align:center;
+    line-height:1.15;
+    box-shadow:0 3px 0 rgba(0,0,0,.18), inset 0 0 0 2px rgba(255,255,255,.4);
+    transform:rotate(-6deg);
+    animation:sealPop .6s cubic-bezier(.34,1.56,.64,1) both;
 }
 
 .form-grid{
@@ -32,156 +109,270 @@
 }
 
 .field-group label{
+    font-family:'Inter',sans-serif;
     font-weight:600;
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:.06em;
     margin-bottom:8px;
-    color:#374151;
+    color:var(--navy-soft);
 }
 
 .field-group input{
-    height:40px;
+    height:44px;
 }
 
 input,
 select{
     width:100%;
-    padding:8px 10px;
-    border:1px solid #d1d5db;
-    border-radius:8px;
+    padding:9px 14px;
+    border:1px solid rgba(22,35,58,.16);
+    border-radius:999px;
     font-size:15px;
+    font-family:'IBM Plex Mono',monospace;
+    background:rgba(255,255,255,.85);
+    color:var(--ink);
     box-sizing:border-box;
+    transition:border-color .15s ease, box-shadow .15s ease, background .15s ease;
 }
 
-input:focus{
+input:focus,
+select:focus{
     outline:none;
-    border-color:#2563eb;
-    box-shadow:0 0 0 3px rgba(37,99,235,.15);
+    border-color:var(--teal);
+    box-shadow:0 0 0 3px rgba(47,143,135,.18);
+    background:#fff;
 }
 
 .section-title{
-    margin:30px 0 15px;
-    font-size:24px;
-    font-weight:700;
+    margin:34px 0 16px;
+    font-family:'Fraunces',serif;
+    font-size:22px;
+    font-weight:600;
+    color:var(--navy);
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.section-title::after{
+    content:"";
+    flex:1;
+    height:1px;
+    background:linear-gradient(90deg, var(--brass), transparent);
+    opacity:.5;
 }
 
 #lines-table{
     width:100%;
     border-collapse:collapse;
-    background:#fff;
-    border-radius:12px;
+    background:rgba(255,255,255,.7);
+    border-radius:14px;
     overflow:hidden;
+    box-shadow:0 1px 0 rgba(22,35,58,.05);
 }
 
 #lines-table th{
-    background:#f3f4f6;
-    padding:14px;
+    background:var(--navy);
+    color:var(--cream);
+    padding:13px 10px;
     text-align:center;
-    font-size:18px;
+    font-family:'Inter',sans-serif;
+    font-size:12px;
+    font-weight:600;
+    text-transform:uppercase;
+    letter-spacing:.06em;
 }
 
 #lines-table td{
-    padding:8px;
+    padding:10px 8px;
+    position:relative;
 }
 
 #lines-table input{
     margin:0;
+    border-radius:10px;
+    text-align:center;
+    height:38px;
+}
+
+#lines-table tbody tr{
+    border-bottom:1px dashed var(--line);
+    transition:background .15s ease;
+}
+
+#lines-table tbody tr:hover{
+    background:rgba(47,143,135,.05);
 }
 
 #lines-table tr:nth-child(even){
-    background:#fafafa;
+    background:rgba(22,35,58,.02);
+}
+
+#lines-table tfoot td{
+    padding:12px 8px;
+}
+
+#lines-table tfoot tr{
+    background:var(--cream-deep) !important;
+}
+
+#total_qty{
+    background:var(--cream-deep) !important;
+    font-weight:700;
+    border:none !important;
 }
 
 .summary-grid{
     display:grid;
     grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-    gap:15px;
-    margin-top:25px;
+    gap:16px;
+    margin-top:28px;
 }
 
 .summary-grid input{
-    height:45px;
+    height:46px;
+    font-weight:600;
 }
 
 .balance-card{
-    background:#f8fafc;
-    border:1px solid #e5e7eb;
-    border-radius:12px;
-    padding:20px;
-    margin-top:25px;
+    background:linear-gradient(155deg, var(--bottle) 0%, var(--bottle-deep) 100%);
+    border:1px solid rgba(212,175,55,.35);
+    border-radius:16px;
+    padding:26px 28px;
+    margin-top:28px;
+    color:var(--cream);
+    box-shadow:0 16px 32px -18px rgba(21,50,41,.6);
 }
 
 .balance-card label{
+    font-family:'Inter',sans-serif;
     font-weight:600;
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:.06em;
     display:block;
     margin-bottom:6px;
+    color:rgba(246,241,228,.85);
+}
+
+.balance-card input{
+    background:rgba(255,255,255,.1);
+    border:1px solid rgba(212,175,55,.4);
+    color:var(--cream);
+    font-weight:700;
+}
+
+.balance-card input#display_total,
+.balance-card input#new_total{
+    color:var(--gold);
 }
 
 .btn-primary{
-    background:#2563eb;
-    color:#fff;
+    background:linear-gradient(180deg, var(--brass-light), var(--brass));
+    color:var(--navy);
     border:none;
-    padding:12px 24px;
-    border-radius:8px;
+    padding:13px 30px;
+    border-radius:999px;
     cursor:pointer;
-    font-size:16px;
-    font-weight:600;
+    font-family:'Inter',sans-serif;
+    font-size:15px;
+    font-weight:700;
+    letter-spacing:.02em;
+    box-shadow:0 8px 18px -8px rgba(176,141,87,.6);
+    transition:transform .15s ease, box-shadow .15s ease;
 }
 
 .btn-primary:hover{
-    opacity:.9;
+    transform:translateY(-1px);
+    box-shadow:0 10px 22px -8px rgba(176,141,87,.75);
 }
 
 .btn-add{
-    background:#16a34a;
-    color:white;
-    border:none;
-    padding:10px 18px;
-    border-radius:8px;
+    background:transparent;
+    color:var(--teal);
+    border:1.5px solid var(--teal);
+    padding:9px 20px;
+    border-radius:999px;
     cursor:pointer;
+    font-family:'Inter',sans-serif;
     font-weight:600;
+    font-size:14px;
+    transition:background .15s ease, color .15s ease;
+}
+
+.btn-add:hover{
+    background:var(--teal);
+    color:#fff;
 }
 
 .remove-btn{
-    background:#dc2626;
-    color:white;
-    border:none;
-    width:40px;
-    height:40px;
-    border-radius:8px;
+    background:transparent;
+    color:#b0433f;
+    border:1.5px solid rgba(176,67,63,.4);
+    width:34px;
+    height:34px;
+    border-radius:50%;
     cursor:pointer;
+    font-size:13px;
+    line-height:1;
+    transition:background .15s ease, color .15s ease;
+}
+
+.remove-btn:hover{
+    background:#b0433f;
+    color:#fff;
+    border-color:#b0433f;
 }
 
 .readonly{
-    background:#f3f4f6;
+    background:rgba(22,35,58,.05) !important;
+    color:var(--navy-soft);
+    font-family:'IBM Plex Mono',monospace;
 }
 
 .customer-suggestions{
     position:absolute;
-    background:white;
-    border:1px solid #d1d5db;
+    background:rgba(255,255,255,.98);
+    backdrop-filter:blur(4px);
+    border:1px solid rgba(176,141,87,.35);
+    border-radius:10px;
     max-height:200px;
     overflow-y:auto;
-    width:250px;
+    width:230px;
     z-index:9999;
-    box-shadow:0 2px 10px rgba(0,0,0,.15);
+    box-shadow:0 10px 24px -8px rgba(22,35,58,.3);
+    margin-top:4px;
+}
+
+.customer-suggestions div{
+    padding:8px 12px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13px;
 }
 
 .customer-suggestions div:hover{
-    background:#f3f4f6;
+    background:rgba(47,143,135,.12);
 }
-    
+
+@media (max-width:640px){
+    .edit-container{ padding:24px 18px; margin:16px; }
+    .page-title{ font-size:24px; }
+}
 </style>
 
 <div class="edit-container">
 
-<h2 class="page-title">
-    Edit Supplier Bill #{{ bill.bill_id }}
-</h2>
+<div class="page-header">
+    <div class="bill-seal">BILL<br>#{{ bill.bill_id }}</div>
+    <h2 class="page-title">Edit Supplier Bill</h2>
+</div>
 
 <form method="POST" oninput="recalcTotals()">
 
-    <div style="display:flex; gap:20px; align-items:end; flex-wrap:wrap; margin-bottom:20px;">
+    <div class="form-grid" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr));">
 
-        <div class="field-group" style="width:180px;">
+        <div class="field-group">
             <label>Supplier ID</label>
             <input type="text"
                    value="{{ bill.supplier_id }}"
@@ -189,7 +380,7 @@ input:focus{
                    class="readonly">
         </div>
 
-        <div class="field-group" style="width:300px;">
+        <div class="field-group">
             <label>Supplier Name</label>
             <input type="text"
                    value="{{ bill.supplier_name }}"
@@ -197,7 +388,7 @@ input:focus{
                    class="readonly">
         </div>
 
-        <div class="field-group" style="width:180px;">
+        <div class="field-group">
             <label>Bill Date</label>
             <input type="text"
                    value="{{ bill.bill_date.strftime('%d-%m-%Y') if bill.bill_date else '' }}"
@@ -210,10 +401,9 @@ input:focus{
     <input type="hidden"
            name="bill_date"
            value="{{ bill.bill_date }}">
-   
-   
+
    <h3 class="section-title">Line Items</h3>
-    <table id="lines-table" border="1" cellpadding="5" cellspacing="0">
+    <table id="lines-table" border="0" cellpadding="5" cellspacing="0">
         <thead>
             <tr>
                <th>Customer ID</th>
@@ -239,7 +429,7 @@ input:focus{
                            oninput="showCustomerSuggestions(this)">
                     <div class="customer-suggestions"></div>
                </td>
-               
+
                <td>
                    <input type="text"
                            class="customer-name"
@@ -257,46 +447,45 @@ input:focus{
                         value="{{ it.quantity }}" oninput="recalcTotals()">
 
                 </td>
-               
+
                 <td>
                     <input type="number" step="0.01" name="amount[]" class="amount" value="{{ it.amount }}" readonly>
                 </td>
                 <td>
-                    <button type="button"         class="remove-btn"         onclick="removeLine(this)">     ✕ </button>
+                    <button type="button" class="remove-btn" onclick="removeLine(this)">✕</button>
                 </td>
             </tr>
             {% endfor %}
 
         </tbody>
         <tfoot>
-        <tr style="background:#eef2ff;font-weight:bold;">
-            <td colspan="3" style="text-align:right;">
+        <tr>
+            <td colspan="3" style="text-align:right; font-family:'Inter',sans-serif; font-weight:600; color:var(--navy);">
                 Total Quantity
             </td>
-        
+
             <td>
                 <input type="number"
                        id="total_qty"
-                       readonly
-                       style="font-weight:bold;background:#eef2ff;">
+                       readonly>
             </td>
-        
+
             <td></td>
             <td></td>
         </tr>
         </tfoot>
     </table>
 
-    <button type="button"
-              class="btn-add"
-              onclick="addLine()">
-          + Add Line
-      </button>
-
-    <br><br>
+    <div style="margin-top:16px;">
+        <button type="button"
+                  class="btn-add"
+                  onclick="addLine()">
+              + Add Line
+          </button>
+    </div>
 
     <div class="summary-grid">
-    
+
         <div class="field-group">
             <label>Commission</label>
             <input type="text"
@@ -304,7 +493,7 @@ input:focus{
                id="commission"
                value="{{ bill.commission_text if bill.commission_text else bill.commission }}">
         </div>
-    
+
         <div class="field-group">
             <label>Labour</label>
             <input type="number"
@@ -313,7 +502,7 @@ input:focus{
                    id="labour"
                    value="{{ bill.labour }}">
         </div>
-    
+
         <div class="field-group">
             <label>Transport</label>
             <input type="number"
@@ -322,7 +511,7 @@ input:focus{
                    id="transport"
                    value="{{ bill.transport }}">
         </div>
-    
+
         <div class="field-group">
             <label>Paid</label>
             <input type="number"
@@ -331,25 +520,24 @@ input:focus{
                    id="paid"
                    value="{{ bill.paid }}">
         </div>
-    
+
     </div>
 
     <div class="balance-card">
-        <label><b>Total Bill Amount:</b></label>
+        <label><b>Total Bill Amount</b></label>
         <input type="number"
                id="display_total"
-               readonly
-               style="background:#f3f4f6; font-weight:bold;">
+               readonly>
         <br><br>
         <!-- bill.old_balance is SIGNED. Convert to ABS for UI display -->
         {% set disp_old = bill.old_balance * -1 if bill.old_balance < 0 else bill.old_balance %}
 
-        <label><b>Old Supplier Balance:</b></label>
+        <label><b>Old Supplier Balance</b></label>
         <input type="number" id="old_balance" readonly value="{{ disp_old|float }}">
         <br><br>
 
-        <label><b>New Total (Resulting Supplier Balance stored):</b></label>
-        <input type="number" id="new_total" name="new_total" readonly style="background:#eee">
+        <label><b>New Total (Resulting Supplier Balance stored)</b></label>
+        <input type="number" id="new_total" name="new_total" readonly>
 
     </div>
 
@@ -357,11 +545,14 @@ input:focus{
     <input type="hidden" id="total_amount" name="total_amount">
     <input type="hidden" id="balance" name="balance">
 
-    <br>
-    <button type="submit" class="btn-primary">
-        Save Changes
-    </button>
+    <div style="text-align:center; margin-top:28px;">
+        <button type="submit" class="btn-primary">
+            Save Changes
+        </button>
+    </div>
 </form>
+
+</div>
 
 <script>
 
@@ -435,29 +626,29 @@ function addLine() {
     body.appendChild(tr);
 
     recalcTotals();
-}    
+}
 
     function showCustomerSuggestions(input) {
 
         const row = input.closest("tr");
-    
+
         let box = row.querySelector(".customer-suggestions");
-    
+
         if (!box) {
             box = document.createElement("div");
             box.className = "customer-suggestions";
             input.parentNode.appendChild(box);
         }
-    
+
         const text = String(input.value).toLowerCase().trim();
-    
+
         box.innerHTML = "";
-    
+
         if (!text) {
             box.style.display = "none";
             return;
         }
-    
+
         const isIdField = input.classList.contains("customer-id");
 
         const matches = allCustomers.filter(c =>
@@ -465,30 +656,30 @@ function addLine() {
                 ? c.id.toString().includes(text)
                 : c.name.toLowerCase().includes(text)
         );
-    
+
         matches.slice(0,20).forEach(c => {
-    
+
             const div = document.createElement("div");
-    
+
             div.style.padding = "8px";
             div.style.cursor = "pointer";
             div.innerText = `${c.id} - ${c.name}`;
-    
+
             div.onclick = function() {
-    
+
                 row.querySelector(".customer-id").value = c.id;
                 row.querySelector(".customer-name").value = c.name;
-    
+
                 box.style.display = "none";
             };
-    
+
             box.appendChild(div);
         });
-    
+
         box.style.display =
             matches.length ? "block" : "none";
     }
-    
+
     function removeLine(btn) {
     const body = document.getElementById('lines-body');
     if (body.rows.length > 1) {
