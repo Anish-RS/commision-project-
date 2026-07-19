@@ -1055,10 +1055,18 @@ document.addEventListener("keydown", function (e) {
 
     /* ========= EXPLICIT FLOW RULES ========= */
 
-    // Customer → Rate
+    // Customer → Rate, unless this row has nothing selected yet
+    // (empty/unused row) — then treat it as "done", jump to Commission.
     if (active.classList.contains("customer_search")) {
         e.preventDefault();
         const row = active.closest("tr");
+        const customerId = row?.querySelector(".customer_id")?.value.trim();
+
+        if (!customerId) {
+            document.getElementById("commission")?.focus();
+            return;
+        }
+
         row?.querySelector(".rate")?.focus();
         return;
     }
@@ -1070,53 +1078,31 @@ document.addEventListener("keydown", function (e) {
         return;
     }
 
-    // Quantity → Next Line or Commission
+    // Quantity → Next Line (create one if it doesn't exist yet)
     if (active.classList.contains("qty")) {
         e.preventDefault();
-    
+
         const currentRow = active.closest("tr");
-    
-        const customer =
-            currentRow.querySelector(".customer_id")?.value.trim();
-    
-        const rate =
-            currentRow.querySelector(".rate")?.value.trim();
-    
-        const qty =
-            currentRow.querySelector(".qty")?.value.trim();
-    
-        // If row is incomplete -> Commission
-        if (!customer || !rate || !qty) {
-            document.getElementById("commission")?.focus();
-            return;
-        }
-    
+
         const rows = [...document.querySelectorAll("#lines-body tr")];
         const currentIndex = rows.indexOf(currentRow);
         const nextRow = rows[currentIndex + 1];
-    
-        // Next row already exists
+
+        // Next row already exists — go fill it in
         if (nextRow) {
-            const nextCustomer =
-                nextRow.querySelector(".customer_id")?.value.trim();
-    
-            if (nextCustomer) {
-                nextRow.querySelector(".customer_search")?.focus();
-            } else {
-                document.getElementById("commission")?.focus();
-            }
+            nextRow.querySelector(".customer_search")?.focus();
             return;
         }
-    
+
         // No next row -> create one
         addLine();
-    
+
         setTimeout(() => {
             document
                 .querySelector("#lines-body tr:last-child .customer_search")
                 ?.focus();
         }, 50);
-    
+
         return;
     }
     // Commission → Labour
