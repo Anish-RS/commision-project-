@@ -61,7 +61,7 @@
     font-family:'Fraunces',serif;
     font-size:32px;
     font-weight:700;
-    text-align:left;
+    text-align:center;
     color:var(--navy);
     letter-spacing:.2px;
     padding-bottom:18px;
@@ -525,16 +525,16 @@ select:focus{
             </div>
 
             <div class="field-group">
-                <label><b>New Total (Resulting Supplier Balance stored)</b></label>
-                <input type="number" id="new_total" name="new_total" readonly>
+                <label><b>Total Bill Amount</b></label>
+                <input type="number"
+                       id="display_total"
+                       readonly>
             </div>
         </div>
 
         <div class="field-group">
-            <label><b>Total Bill Amount</b></label>
-            <input type="number"
-                   id="display_total"
-                   readonly>
+            <label><b>New Total (Resulting Supplier Balance stored)</b></label>
+            <input type="number" id="new_total" name="new_total" readonly>
         </div>
     </div>
 
