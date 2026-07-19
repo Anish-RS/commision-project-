@@ -406,7 +406,7 @@ button[onclick="addLine()"]:hover{ background:rgba(169,123,47,0.08); }
 <h2 class="page-title">Create Supplier Bill</h2>
 
 <div class="card">
-  <form method="POST" id="bill-form" oninput="recalcTotals()">
+  <form method="POST" id="bill-form" autocomplete="off" oninput="recalcTotals()">
     <div class="section-eyebrow">Bill Details</div>
     <div style="margin-bottom:15px;">
         <label class="label">Bill Number</label>
@@ -482,6 +482,7 @@ button[onclick="addLine()"]:hover{ background:rgba(169,123,47,0.08); }
             <input type="number" step="0.01"
                   name="rate[]"
                   class="input-field rate"
+                  autocomplete="off"
                   oninput="recalcTotals()">
           </td>
 
@@ -490,6 +491,7 @@ button[onclick="addLine()"]:hover{ background:rgba(169,123,47,0.08); }
             <input type="number" step="0.01"
                   name="quantity[]"
                   class="input-field qty"
+                  autocomplete="off"
                   oninput="recalcTotals()">
           </td>
 
@@ -572,15 +574,15 @@ button[onclick="addLine()"]:hover{ background:rgba(169,123,47,0.08); }
       </div>
       <div class="col-1">
         <label class="label">Labour</label>
-        <input type="number" step="0.01" id="labour" name="labour" required class="input-field" placeholder="Labour">
+        <input type="number" step="0.01" id="labour" name="labour" required class="input-field" autocomplete="new-password" placeholder="Labour">
       </div>
       <div class="col-1">
         <label class="label">Transport</label>
-        <input type="number" step="0.01" id="transport" name="transport" required class="input-field" placeholder="Transport">
+        <input type="number" step="0.01" id="transport" name="transport" required class="input-field" autocomplete="new-password" placeholder="Transport">
       </div>
       <div class="col-1">
         <label class="label">Paid</label>
-        <input type="number" step="0.01" id="paid" name="paid" class="input-field" placeholder="Paid">
+        <input type="number" step="0.01" id="paid" name="paid" class="input-field" autocomplete="new-password" placeholder="Paid">
       </div>
     </div>
 
@@ -830,8 +832,8 @@ function addLine() {
         <input type="hidden" name="customer_id[]" class="customer_id" required>
       </div>
     </td>
-    <td><input type="number" step="0.01" name="rate[]" class="input-field rate" oninput="recalcTotals()"></td>
-    <td><input type="number" step="0.01" name="quantity[]" class="input-field qty" oninput="recalcTotals()"></td>
+    <td><input type="number" step="0.01" name="rate[]" class="input-field rate" autocomplete="off" oninput="recalcTotals()"></td>
+    <td><input type="number" step="0.01" name="quantity[]" class="input-field qty" autocomplete="off" oninput="recalcTotals()"></td>
 
     <td><input type="number" step="0.01" name="amount[]" class="input-field amount" readonly></td>
     <td class="right"><button type="button" class="btn btn-small btn-remove" onclick="removeLine(this)" aria-label="Remove line" title="Remove line"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></td>
