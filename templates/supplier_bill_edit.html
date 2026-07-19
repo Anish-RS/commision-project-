@@ -2,136 +2,21 @@
 {% block content %}
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
-
-:root{
-    --cream:#F6F1E6;
-    --cream-deep:#EDE6D6;
-    --navy:#16233D;
-    --navy-soft:#2A3B5C;
-    --brass:#B08D57;
-    --brass-light:#D8BD8B;
-    --teal:#2FA8A0;
-    --bottle:#1F4B3F;
-    --bottle-deep:#0E2E26;
-    --ink:#1F2937;
-    --line:rgba(22,35,61,0.12);
-}
-
-.sb-page{
-    background:
-        radial-gradient(1200px 500px at 10% -10%, rgba(176,141,87,0.10), transparent 60%),
-        radial-gradient(900px 500px at 100% 0%, rgba(31,75,63,0.08), transparent 55%),
-        var(--cream);
-    padding:36px 16px 60px;
-    font-family:'Inter', sans-serif;
-    color:var(--ink);
-}
-
 .edit-container{
-    max-width:1120px;
-    margin:0 auto;
-    background:rgba(255,255,255,0.6);
-    backdrop-filter:blur(18px);
-    -webkit-backdrop-filter:blur(18px);
-    border:1px solid rgba(255,255,255,0.5);
-    padding:38px 40px 44px;
-    border-radius:20px;
-    box-shadow:
-        0 1px 0 rgba(255,255,255,0.6) inset,
-        0 20px 50px -20px rgba(22,35,61,0.25),
-        0 2px 8px rgba(22,35,61,0.06);
-    position:relative;
-    overflow:hidden;
-    animation:sbRise .6s cubic-bezier(.2,.7,.2,1) both;
-}
-
-.edit-container::before{
-    content:"";
-    position:absolute;
-    inset:0;
-    pointer-events:none;
-    background:
-        linear-gradient(180deg, rgba(176,141,87,0.55) 0%, rgba(176,141,87,0.55) 100%) top / 100% 4px no-repeat;
-}
-
-@keyframes sbRise{
-    from{ opacity:0; transform:translateY(14px); }
-    to{ opacity:1; transform:translateY(0); }
-}
-
-.page-head{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:18px;
-    margin-bottom:8px;
-    flex-wrap:wrap;
+    max-width:1100px;
+    margin:20px auto;
+    background:#fff;
+    padding:20px;
+    border-radius:12px;
+    box-shadow:0 2px 10px rgba(0,0,0,.08);
 }
 
 .page-title{
-    margin:0;
-    font-family:'Fraunces', serif;
-    font-optical-sizing:auto;
-    font-size:32px;
-    font-weight:600;
+    margin-bottom:20px;
+    font-size:28px;
+    font-weight:700;
     text-align:center;
-    color:var(--navy);
-    letter-spacing:.2px;
-}
-
-.page-title .bill-no{
-    font-family:'IBM Plex Mono', monospace;
-    color:var(--brass);
-    font-weight:500;
-}
-
-.seal{
-    flex:0 0 auto;
-    width:54px;
-    height:54px;
-    border-radius:50%;
-    background:radial-gradient(circle at 32% 28%, #F3E3BC, #D8BD8B 42%, #B08D57 78%, #8f6f3f 100%);
-    border:1px solid #a3813f;
-    box-shadow:
-        0 3px 8px rgba(176,141,87,0.45),
-        inset 0 1px 2px rgba(255,255,255,0.6),
-        inset 0 -2px 4px rgba(0,0,0,0.25);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    position:relative;
-    animation:sealPop .7s cubic-bezier(.2,.8,.3,1.2) .15s both;
-}
-
-.seal::before{
-    content:"";
-    position:absolute;
-    inset:5px;
-    border-radius:50%;
-    border:1px dashed rgba(31,35,61,0.4);
-}
-
-.seal-text{
-    font-family:'IBM Plex Mono', monospace;
-    font-size:9px;
-    font-weight:600;
-    letter-spacing:.5px;
-    color:var(--navy);
-    text-transform:uppercase;
-}
-
-@keyframes sealPop{
-    from{ opacity:0; transform:scale(.5) rotate(-15deg); }
-    to{ opacity:1; transform:scale(1) rotate(-8deg); }
-}
-
-.subtitle-rule{
-    max-width:340px;
-    margin:0 auto 28px;
-    height:1px;
-    background:linear-gradient(90deg, transparent, var(--brass) 50%, transparent);
-    opacity:.6;
+    color:#1f2937;
 }
 
 .form-grid{
@@ -147,388 +32,154 @@
 }
 
 .field-group label{
-    font-family:'Inter', sans-serif;
-    font-size:11px;
-    font-weight:700;
-    text-transform:uppercase;
-    letter-spacing:.08em;
+    font-weight:600;
     margin-bottom:8px;
-    color:var(--navy-soft);
+    color:#374151;
 }
 
 .field-group input{
-    height:44px;
+    height:40px;
 }
 
 input,
 select{
     width:100%;
-    padding:9px 16px;
-    border:1px solid var(--line);
-    border-radius:999px;
-    font-size:14.5px;
-    font-family:'Inter', sans-serif;
+    padding:8px 10px;
+    border:1px solid #d1d5db;
+    border-radius:8px;
+    font-size:15px;
     box-sizing:border-box;
-    background:rgba(255,255,255,0.75);
-    color:var(--ink);
-    transition:border-color .18s ease, box-shadow .18s ease, background .18s ease;
 }
 
-input:focus,
-select:focus{
+input:focus{
     outline:none;
-    border-color:var(--teal);
-    box-shadow:0 0 0 4px rgba(47,168,160,.16);
-    background:#fff;
-}
-
-input.readonly,
-.readonly{
-    background:var(--cream-deep);
-    color:var(--navy-soft);
-    font-family:'IBM Plex Mono', monospace;
-    font-size:13.5px;
-    cursor:default;
-}
-
-.top-fields{
-    display:flex;
-    gap:20px;
-    align-items:end;
-    flex-wrap:wrap;
-    margin-bottom:26px;
-    padding:20px 22px;
-    background:rgba(255,255,255,0.45);
-    border:1px solid var(--line);
-    border-radius:16px;
+    border-color:#2563eb;
+    box-shadow:0 0 0 3px rgba(37,99,235,.15);
 }
 
 .section-title{
-    margin:34px 0 16px;
-    font-family:'Fraunces', serif;
-    font-size:21px;
-    font-weight:600;
-    color:var(--navy);
-    display:flex;
-    align-items:center;
-    gap:12px;
-}
-
-.section-title::after{
-    content:"";
-    flex:1;
-    height:1px;
-    background:linear-gradient(90deg, var(--line), transparent);
-}
-
-.table-wrap{
-    border-radius:14px;
-    overflow:hidden;
-    border:1px solid var(--line);
-    box-shadow:
-        0 1px 0 rgba(255,255,255,0.7) inset,
-        0 10px 28px -16px rgba(22,35,61,.4);
-    background:#fffdf8;
+    margin:30px 0 15px;
+    font-size:24px;
+    font-weight:700;
 }
 
 #lines-table{
     width:100%;
     border-collapse:collapse;
-    background:#fffdf8;
+    background:#fff;
+    border-radius:12px;
+    overflow:hidden;
 }
 
-#lines-table thead th{
-    background:linear-gradient(180deg, var(--navy), var(--navy-soft));
-    color:var(--cream);
-    padding:15px 10px;
+#lines-table th{
+    background:#f3f4f6;
+    padding:14px;
     text-align:center;
-    font-size:10.5px;
-    font-weight:700;
-    text-transform:uppercase;
-    letter-spacing:.1em;
-    font-family:'Inter', sans-serif;
-    border-bottom:2px solid var(--brass);
-}
-
-#lines-table thead th:first-child{
-    text-align:left;
-    padding-left:20px;
+    font-size:18px;
 }
 
 #lines-table td{
-    padding:14px 12px;
-    vertical-align:middle;
-    border-bottom:1px solid rgba(176,141,87,0.22);
-    position:relative;
-}
-
-#lines-table tbody tr:nth-child(odd){
-    background:rgba(176,141,87,0.045);
-}
-
-#lines-table tbody tr:last-child td{
-    border-bottom:none;
-}
-
-#lines-table tbody tr{
-    transition:background .15s ease;
-    animation:rowIn .4s ease both;
-}
-
-#lines-table tbody tr:hover{
-    background:rgba(47,168,160,0.07);
+    padding:8px;
 }
 
 #lines-table input{
     margin:0;
-    text-align:center;
-    background:transparent;
-    border:none;
-    border-radius:0;
-    border-bottom:1px solid transparent;
-    padding:6px 4px;
-    font-size:14.5px;
-    color:var(--navy);
 }
 
-#lines-table input:hover{
-    border-bottom-color:rgba(176,141,87,0.5);
-}
-
-#lines-table input:focus{
-    border-bottom-color:var(--teal);
-    box-shadow:none;
-    background:rgba(47,168,160,0.06);
-    border-radius:6px;
-}
-
-#lines-table .customer-id{
-    font-family:'IBM Plex Mono', monospace;
-    font-weight:600;
-    color:var(--brass);
-    text-align:left;
-    padding-left:6px;
-}
-
-#lines-table .customer-name{
-    text-align:left;
-    font-weight:500;
-}
-
-#lines-table input.rate,
-#lines-table input.qty{
-    font-family:'IBM Plex Mono', monospace;
-    color:var(--navy-soft);
-}
-
-#lines-table input.amount{
-    font-family:'IBM Plex Mono', monospace;
-    font-weight:700;
-    color:var(--bottle);
-    text-align:right;
-    padding-right:14px;
-    cursor:default;
-}
-
-#lines-table td:has(input.amount){
-    background:linear-gradient(90deg, transparent, rgba(31,75,63,0.05));
-}
-
-#lines-table td:last-child{
-    text-align:center;
-    width:52px;
-}
-
-@keyframes rowIn{
-    from{ opacity:0; transform:translateY(6px); }
-    to{ opacity:1; transform:translateY(0); }
+#lines-table tr:nth-child(even){
+    background:#fafafa;
 }
 
 .summary-grid{
     display:grid;
     grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-    gap:16px;
-    margin-top:28px;
+    gap:15px;
+    margin-top:25px;
 }
 
 .summary-grid input{
-    height:46px;
-    font-family:'IBM Plex Mono', monospace;
+    height:45px;
 }
 
 .balance-card{
-    background:linear-gradient(155deg, var(--bottle) 0%, var(--bottle-deep) 100%);
-    border:1px solid rgba(0,0,0,0.15);
-    border-radius:16px;
-    padding:26px 28px;
-    margin-top:28px;
-    color:var(--cream);
-    box-shadow:0 16px 34px -18px rgba(14,46,38,.6);
-    position:relative;
-    overflow:hidden;
-}
-
-.balance-card::before{
-    content:"";
-    position:absolute;
-    top:-40%;
-    right:-10%;
-    width:220px;
-    height:220px;
-    background:radial-gradient(circle, rgba(176,141,87,0.18), transparent 70%);
+    background:#f8fafc;
+    border:1px solid #e5e7eb;
+    border-radius:12px;
+    padding:20px;
+    margin-top:25px;
 }
 
 .balance-card label{
-    font-family:'Inter', sans-serif;
-    font-weight:700;
-    font-size:11.5px;
-    text-transform:uppercase;
-    letter-spacing:.08em;
-    display:block;
-    margin-bottom:8px;
-    color:var(--brass-light);
-}
-
-.balance-card input{
-    background:rgba(255,255,255,0.08);
-    border:1px solid rgba(255,255,255,0.18);
-    color:var(--cream);
-    font-size:16px;
-    height:46px;
-    border-radius:10px;
-}
-
-.balance-card input:focus{
-    box-shadow:0 0 0 4px rgba(47,168,160,.25);
-}
-
-#new_total{
     font-weight:600;
-    background:rgba(255,255,255,0.12) !important;
-    border-color:rgba(216,189,139,0.5) !important;
+    display:block;
+    margin-bottom:6px;
 }
 
 .btn-primary{
-    background:linear-gradient(180deg, var(--navy-soft), var(--navy));
-    color:var(--cream);
+    background:#2563eb;
+    color:#fff;
     border:none;
-    padding:14px 34px;
-    border-radius:999px;
+    padding:12px 24px;
+    border-radius:8px;
     cursor:pointer;
-    font-size:15px;
+    font-size:16px;
     font-weight:600;
-    font-family:'Inter', sans-serif;
-    letter-spacing:.02em;
-    box-shadow:0 10px 24px -10px rgba(22,35,61,.55);
-    transition:transform .15s ease, box-shadow .15s ease, background .15s ease;
 }
 
 .btn-primary:hover{
-    transform:translateY(-1px);
-    box-shadow:0 14px 28px -10px rgba(22,35,61,.6);
-    background:linear-gradient(180deg, var(--navy), #0e1830);
-}
-
-.btn-primary:active{
-    transform:translateY(0);
+    opacity:.9;
 }
 
 .btn-add{
-    background:transparent;
-    color:var(--bottle);
-    border:1.5px solid var(--bottle);
-    padding:10px 20px;
-    border-radius:999px;
+    background:#16a34a;
+    color:white;
+    border:none;
+    padding:10px 18px;
+    border-radius:8px;
     cursor:pointer;
     font-weight:600;
-    font-family:'Inter', sans-serif;
-    font-size:13.5px;
-    letter-spacing:.02em;
-    transition:all .15s ease;
-    margin-top:16px;
-}
-
-.btn-add:hover{
-    background:var(--bottle);
-    color:var(--cream);
 }
 
 .remove-btn{
-    background:transparent;
-    color:#b3413a;
-    border:1.5px solid #d8c9c7;
-    width:36px;
-    height:36px;
-    border-radius:50%;
+    background:#dc2626;
+    color:white;
+    border:none;
+    width:40px;
+    height:40px;
+    border-radius:8px;
     cursor:pointer;
-    font-size:13px;
-    transition:all .15s ease;
 }
 
-.remove-btn:hover{
-    background:#b3413a;
-    color:#fff;
-    border-color:#b3413a;
-}
-
-.form-actions{
-    display:flex;
-    justify-content:center;
-    margin-top:32px;
+.readonly{
+    background:#f3f4f6;
 }
 
 .customer-suggestions{
     position:absolute;
-    background:#fffdf8;
-    border:1px solid var(--brass-light);
-    border-radius:10px;
-    max-height:210px;
+    background:white;
+    border:1px solid #d1d5db;
+    max-height:200px;
     overflow-y:auto;
     width:250px;
     z-index:9999;
-    box-shadow:0 14px 30px -10px rgba(22,35,61,.3);
-    font-family:'IBM Plex Mono', monospace;
-    font-size:13px;
-    margin-top:6px;
-    padding:4px;
-}
-
-.customer-suggestions div{
-    padding:9px 12px;
-    cursor:pointer;
-    border-radius:6px;
-    color:var(--navy);
-    transition:background .12s ease;
+    box-shadow:0 2px 10px rgba(0,0,0,.15);
 }
 
 .customer-suggestions div:hover{
-    background:rgba(47,168,160,0.12);
-    color:var(--bottle);
+    background:#f3f4f6;
 }
-
-@media (max-width: 640px){
-    .edit-container{ padding:26px 18px 34px; }
-    .page-title{ font-size:24px; }
-    .top-fields{ padding:16px; }
-}
-
-@media (prefers-reduced-motion: reduce){
-    .edit-container, .seal, #lines-table tbody tr{ animation:none !important; }
-}
+    
 </style>
 
-<div class="sb-page">
 <div class="edit-container">
 
-<div class="page-head">
-    <div class="seal"><span class="seal-text">S&nbsp;M</span></div>
-    <h2 class="page-title">Edit Supplier Bill <span class="bill-no">#{{ bill.bill_id }}</span></h2>
-</div>
-<div class="subtitle-rule"></div>
+<h2 class="page-title">
+    Edit Supplier Bill #{{ bill.bill_id }}
+</h2>
 
 <form method="POST" oninput="recalcTotals()">
 
-    <div class="top-fields">
+    <div style="display:flex; gap:20px; align-items:end; flex-wrap:wrap; margin-bottom:20px;">
 
         <div class="field-group" style="width:180px;">
             <label>Supplier ID</label>
@@ -559,11 +210,10 @@ input.readonly,
     <input type="hidden"
            name="bill_date"
            value="{{ bill.bill_date }}">
-
-
-    <h3 class="section-title">Line Items</h3>
-    <div class="table-wrap">
-    <table id="lines-table" border="0" cellpadding="5" cellspacing="0">
+   
+   
+   <h3 class="section-title">Line Items</h3>
+    <table id="lines-table" border="1" cellpadding="5" cellspacing="0">
         <thead>
             <tr>
                <th>Customer ID</th>
@@ -589,7 +239,7 @@ input.readonly,
                            oninput="showCustomerSuggestions(this)">
                     <div class="customer-suggestions"></div>
                </td>
-
+               
                <td>
                    <input type="text"
                            class="customer-name"
@@ -607,7 +257,7 @@ input.readonly,
                         value="{{ it.quantity }}" oninput="recalcTotals()">
 
                 </td>
-
+               
                 <td>
                     <input type="number" step="0.01" name="amount[]" class="amount" value="{{ it.amount }}" readonly>
                 </td>
@@ -619,7 +269,6 @@ input.readonly,
 
         </tbody>
     </table>
-    </div>
 
     <button type="button"
               class="btn-add"
@@ -630,7 +279,7 @@ input.readonly,
     <br><br>
 
     <div class="summary-grid">
-
+    
         <div class="field-group">
             <label>Commission</label>
             <input type="text"
@@ -638,7 +287,7 @@ input.readonly,
                id="commission"
                value="{{ bill.commission_text if bill.commission_text else bill.commission }}">
         </div>
-
+    
         <div class="field-group">
             <label>Labour</label>
             <input type="number"
@@ -647,7 +296,7 @@ input.readonly,
                    id="labour"
                    value="{{ bill.labour }}">
         </div>
-
+    
         <div class="field-group">
             <label>Transport</label>
             <input type="number"
@@ -656,7 +305,7 @@ input.readonly,
                    id="transport"
                    value="{{ bill.transport }}">
         </div>
-
+    
         <div class="field-group">
             <label>Paid</label>
             <input type="number"
@@ -665,7 +314,7 @@ input.readonly,
                    id="paid"
                    value="{{ bill.paid }}">
         </div>
-
+    
     </div>
 
     <div class="balance-card">
@@ -673,12 +322,12 @@ input.readonly,
         <!-- bill.old_balance is SIGNED. Convert to ABS for UI display -->
         {% set disp_old = bill.old_balance * -1 if bill.old_balance < 0 else bill.old_balance %}
 
-        <label>Old Supplier Balance</label>
+        <label><b>Old Supplier Balance:</b></label>
         <input type="number" id="old_balance" readonly value="{{ disp_old|float }}">
         <br><br>
 
-        <label>New Total &mdash; Resulting Supplier Balance Stored</label>
-        <input type="number" id="new_total" name="new_total" readonly>
+        <label><b>New Total (Resulting Supplier Balance stored):</b></label>
+        <input type="number" id="new_total" name="new_total" readonly style="background:#eee">
 
     </div>
 
@@ -686,15 +335,11 @@ input.readonly,
     <input type="hidden" id="total_amount" name="total_amount">
     <input type="hidden" id="balance" name="balance">
 
-    <div class="form-actions">
-        <button type="submit" class="btn-primary">
-            Save Changes
-        </button>
-    </div>
+    <br>
+    <button type="submit" class="btn-primary">
+        Save Changes
+    </button>
 </form>
-
-</div>
-</div>
 
 <script>
 
@@ -881,4 +526,565 @@ function recalcTotals() {
 recalcTotals();
 </script>
 
-{% endblock %}
+{% endblock %}  i need to display {% extends "base.html" %}
+{% block content %}
+
+<style>
+.edit-container{
+    max-width:1100px;
+    margin:20px auto;
+    background:#fff;
+    padding:20px;
+    border-radius:12px;
+    box-shadow:0 2px 10px rgba(0,0,0,.08);
+}
+
+.page-title{
+    margin-bottom:20px;
+    font-size:28px;
+    font-weight:700;
+    text-align:center;
+    color:#1f2937;
+}
+
+.form-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    gap:20px;
+    margin-bottom:25px;
+}
+
+.field-group{
+    display:flex;
+    flex-direction:column;
+}
+
+.field-group label{
+    font-weight:600;
+    margin-bottom:8px;
+    color:#374151;
+}
+
+.field-group input{
+    height:40px;
+}
+
+input,
+select{
+    width:100%;
+    padding:8px 10px;
+    border:1px solid #d1d5db;
+    border-radius:8px;
+    font-size:15px;
+    box-sizing:border-box;
+}
+
+input:focus{
+    outline:none;
+    border-color:#2563eb;
+    box-shadow:0 0 0 3px rgba(37,99,235,.15);
+}
+
+.section-title{
+    margin:30px 0 15px;
+    font-size:24px;
+    font-weight:700;
+}
+
+#lines-table{
+    width:100%;
+    border-collapse:collapse;
+    background:#fff;
+    border-radius:12px;
+    overflow:hidden;
+}
+
+#lines-table th{
+    background:#f3f4f6;
+    padding:14px;
+    text-align:center;
+    font-size:18px;
+}
+
+#lines-table td{
+    padding:8px;
+}
+
+#lines-table input{
+    margin:0;
+}
+
+#lines-table tr:nth-child(even){
+    background:#fafafa;
+}
+
+.summary-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:15px;
+    margin-top:25px;
+}
+
+.summary-grid input{
+    height:45px;
+}
+
+.balance-card{
+    background:#f8fafc;
+    border:1px solid #e5e7eb;
+    border-radius:12px;
+    padding:20px;
+    margin-top:25px;
+}
+
+.balance-card label{
+    font-weight:600;
+    display:block;
+    margin-bottom:6px;
+}
+
+.btn-primary{
+    background:#2563eb;
+    color:#fff;
+    border:none;
+    padding:12px 24px;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:16px;
+    font-weight:600;
+}
+
+.btn-primary:hover{
+    opacity:.9;
+}
+
+.btn-add{
+    background:#16a34a;
+    color:white;
+    border:none;
+    padding:10px 18px;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:600;
+}
+
+.remove-btn{
+    background:#dc2626;
+    color:white;
+    border:none;
+    width:40px;
+    height:40px;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+.readonly{
+    background:#f3f4f6;
+}
+
+.customer-suggestions{
+    position:absolute;
+    background:white;
+    border:1px solid #d1d5db;
+    max-height:200px;
+    overflow-y:auto;
+    width:250px;
+    z-index:9999;
+    box-shadow:0 2px 10px rgba(0,0,0,.15);
+}
+
+.customer-suggestions div:hover{
+    background:#f3f4f6;
+}
+    
+</style>
+
+<div class="edit-container">
+
+<h2 class="page-title">
+    Edit Supplier Bill #{{ bill.bill_id }}
+</h2>
+
+<form method="POST" oninput="recalcTotals()">
+
+    <div style="display:flex; gap:20px; align-items:end; flex-wrap:wrap; margin-bottom:20px;">
+
+        <div class="field-group" style="width:180px;">
+            <label>Supplier ID</label>
+            <input type="text"
+                   value="{{ bill.supplier_id }}"
+                   readonly
+                   class="readonly">
+        </div>
+
+        <div class="field-group" style="width:300px;">
+            <label>Supplier Name</label>
+            <input type="text"
+                   value="{{ bill.supplier_name }}"
+                   readonly
+                   class="readonly">
+        </div>
+
+        <div class="field-group" style="width:180px;">
+            <label>Bill Date</label>
+            <input type="text"
+                   value="{{ bill.bill_date.strftime('%d-%m-%Y') if bill.bill_date else '' }}"
+                   readonly
+                   class="readonly">
+        </div>
+
+    </div>
+
+    <input type="hidden"
+           name="bill_date"
+           value="{{ bill.bill_date }}">
+   
+   
+   <h3 class="section-title">Line Items</h3>
+    <table id="lines-table" border="1" cellpadding="5" cellspacing="0">
+        <thead>
+            <tr>
+               <th>Customer ID</th>
+               <th>Customer Name</th>
+               <th>Rate</th>
+               <th>Quantity</th>
+               <th>Amount</th>
+
+                <th></th>
+            </tr>
+        </thead>
+
+        <tbody id="lines-body">
+
+          {% for it in items %}
+            <tr>
+                <td>
+                   <input type="number"
+                           name="customer_id[]"
+                           class="customer-id"
+                           value="{{ it.customer_id }}"
+                           autocomplete="off"
+                           oninput="showCustomerSuggestions(this)">
+                    <div class="customer-suggestions"></div>
+               </td>
+               
+               <td>
+                   <input type="text"
+                           class="customer-name"
+                           value="{{ it.customer_name }}"
+                           autocomplete="off"
+                           oninput="showCustomerSuggestions(this)">
+                    <div class="customer-suggestions" style="display:none;"></div>
+               </td>
+                <td>
+                    <input type="number" step="0.01" name="rate[]" class="rate"
+                        value="{{ it.rate }}" oninput="recalcTotals()">
+                </td>
+                <td>
+                    <input type="number" step="0.01" name="quantity[]" class="qty"
+                        value="{{ it.quantity }}" oninput="recalcTotals()">
+
+                </td>
+               
+                <td>
+                    <input type="number" step="0.01" name="amount[]" class="amount" value="{{ it.amount }}" readonly>
+                </td>
+                <td>
+                    <button type="button"         class="remove-btn"         onclick="removeLine(this)">     ✕ </button>
+                </td>
+            </tr>
+            {% endfor %}
+
+        </tbody>
+        <tfoot>
+        <tr style="background:#eef2ff;font-weight:bold;">
+            <td colspan="3" style="text-align:right;">
+                Total Quantity
+            </td>
+        
+            <td>
+                <input type="number"
+                       id="total_qty"
+                       readonly
+                       style="font-weight:bold;background:#eef2ff;">
+            </td>
+        
+            <td></td>
+            <td></td>
+        </tr>
+        </tfoot>
+    </table>
+
+    <button type="button"
+              class="btn-add"
+              onclick="addLine()">
+          + Add Line
+      </button>
+
+    <br><br>
+
+    <div class="summary-grid">
+    
+        <div class="field-group">
+            <label>Commission</label>
+            <input type="text"
+               name="commission"
+               id="commission"
+               value="{{ bill.commission_text if bill.commission_text else bill.commission }}">
+        </div>
+    
+        <div class="field-group">
+            <label>Labour</label>
+            <input type="number"
+                   step="0.01"
+                   name="labour"
+                   id="labour"
+                   value="{{ bill.labour }}">
+        </div>
+    
+        <div class="field-group">
+            <label>Transport</label>
+            <input type="number"
+                   step="0.01"
+                   name="transport"
+                   id="transport"
+                   value="{{ bill.transport }}">
+        </div>
+    
+        <div class="field-group">
+            <label>Paid</label>
+            <input type="number"
+                   step="0.01"
+                   name="paid"
+                   id="paid"
+                   value="{{ bill.paid }}">
+        </div>
+    
+    </div>
+
+    <div class="balance-card">
+        <label><b>Total Bill Amount:</b></label>
+        <input type="number"
+               id="display_total"
+               readonly
+               style="background:#f3f4f6; font-weight:bold;">
+        <br><br>
+        <!-- bill.old_balance is SIGNED. Convert to ABS for UI display -->
+        {% set disp_old = bill.old_balance * -1 if bill.old_balance < 0 else bill.old_balance %}
+
+        <label><b>Old Supplier Balance:</b></label>
+        <input type="number" id="old_balance" readonly value="{{ disp_old|float }}">
+        <br><br>
+
+        <label><b>New Total (Resulting Supplier Balance stored):</b></label>
+        <input type="number" id="new_total" name="new_total" readonly style="background:#eee">
+
+    </div>
+
+    <!-- hidden fields for backend -->
+    <input type="hidden" id="total_amount" name="total_amount">
+    <input type="hidden" id="balance" name="balance">
+
+    <br>
+    <button type="submit" class="btn-primary">
+        Save Changes
+    </button>
+</form>
+
+<script>
+
+const allCustomers = [
+{% for c in customers %}
+{
+    id: "{{ c.customer_id }}",
+    name: "{{ c.name }}"
+},
+{% endfor %}
+];
+
+function addLine() {
+
+    const body = document.getElementById('lines-body');
+
+    const tr = document.createElement('tr');
+
+    tr.innerHTML = `
+        <td>
+            <input type="number"
+                   name="customer_id[]"
+                   class="customer-id"
+                   autocomplete="off"
+                   oninput="showCustomerSuggestions(this)">
+            <div class="customer-suggestions"></div>
+        </td>
+
+        <td>
+            <input type="text"
+                   class="customer-name"
+                   name="customer_name[]"
+                   autocomplete="off"
+                   oninput="showCustomerSuggestions(this)">
+            <div class="customer-suggestions" style="display:none;"></div>
+        </td>
+
+        <td>
+            <input type="number"
+                   step="0.01"
+                   name="rate[]"
+                   class="rate"
+                   oninput="recalcTotals()">
+        </td>
+
+        <td>
+            <input type="number"
+                   step="0.01"
+                   name="quantity[]"
+                   class="qty"
+                   oninput="recalcTotals()">
+        </td>
+
+        <td>
+            <input type="number"
+                   step="0.01"
+                   name="amount[]"
+                   class="amount"
+                   readonly>
+        </td>
+
+        <td>
+            <button type="button"
+                    class="remove-btn"
+                    onclick="removeLine(this)">
+                ✕
+            </button>
+        </td>
+    `;
+
+    body.appendChild(tr);
+
+    recalcTotals();
+}    
+
+    function showCustomerSuggestions(input) {
+
+        const row = input.closest("tr");
+    
+        let box = row.querySelector(".customer-suggestions");
+    
+        if (!box) {
+            box = document.createElement("div");
+            box.className = "customer-suggestions";
+            input.parentNode.appendChild(box);
+        }
+    
+        const text = String(input.value).toLowerCase().trim();
+    
+        box.innerHTML = "";
+    
+        if (!text) {
+            box.style.display = "none";
+            return;
+        }
+    
+        const isIdField = input.classList.contains("customer-id");
+
+        const matches = allCustomers.filter(c =>
+            isIdField
+                ? c.id.toString().includes(text)
+                : c.name.toLowerCase().includes(text)
+        );
+    
+        matches.slice(0,20).forEach(c => {
+    
+            const div = document.createElement("div");
+    
+            div.style.padding = "8px";
+            div.style.cursor = "pointer";
+            div.innerText = `${c.id} - ${c.name}`;
+    
+            div.onclick = function() {
+    
+                row.querySelector(".customer-id").value = c.id;
+                row.querySelector(".customer-name").value = c.name;
+    
+                box.style.display = "none";
+            };
+    
+            box.appendChild(div);
+        });
+    
+        box.style.display =
+            matches.length ? "block" : "none";
+    }
+    
+    function removeLine(btn) {
+    const body = document.getElementById('lines-body');
+    if (body.rows.length > 1) {
+        body.removeChild(btn.closest('tr'));
+        recalcTotals();
+    }
+}
+
+function recalcTotals() {
+
+    const rows = document.querySelectorAll('#lines-body tr');
+
+    let total = 0;
+    let totalQty = 0;
+
+    rows.forEach(row => {
+
+        const qty = parseFloat(row.querySelector('.qty')?.value) || 0;
+        const rate = parseFloat(row.querySelector('.rate')?.value) || 0;
+
+        const amount = qty * rate;
+
+        row.querySelector('.amount').value = amount.toFixed(2);
+
+        total += amount;
+        totalQty += qty;
+    });
+
+    // Display total bill amount
+    document.getElementById("display_total").value = total.toFixed(2);
+
+    // Display total quantity
+    document.getElementById("total_qty").value = totalQty.toFixed(2);
+
+    const commissionInput = document.getElementById('commission').value.trim();
+
+    let commission = 0;
+
+    if (commissionInput.endsWith('%')) {
+
+        const pct = parseFloat(commissionInput.replace('%', '')) || 0;
+        commission = total * pct / 100;
+
+    } else {
+
+        commission = parseFloat(commissionInput) || 0;
+    }
+
+    const labour = parseFloat(document.getElementById('labour').value) || 0;
+    const transport = parseFloat(document.getElementById('transport').value) || 0;
+    const paid = parseFloat(document.getElementById('paid').value) || 0;
+
+    const bill_balance = total - commission - labour - transport - paid;
+
+    // Hidden field submitted to backend
+    document.getElementById('total_amount').value = total.toFixed(2);
+
+    const old_abs = parseFloat(document.getElementById("old_balance").value) || 0;
+    const old_signed = -old_abs;
+
+    const new_total_positive = Math.abs(old_signed) + bill_balance;
+    const new_signed_balance = -new_total_positive;
+
+    document.getElementById("new_total").value = new_signed_balance.toFixed(2);
+    document.getElementById("balance").value = new_signed_balance.toFixed(2);
+}
+
+recalcTotals();
+</script>
+
+{% endblock %} 
