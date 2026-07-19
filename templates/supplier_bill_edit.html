@@ -225,52 +225,49 @@ input.readonly,
     border-radius:14px;
     overflow:hidden;
     border:1px solid var(--line);
-    box-shadow:0 8px 24px -16px rgba(22,35,61,.35);
+    box-shadow:
+        0 1px 0 rgba(255,255,255,0.7) inset,
+        0 10px 28px -16px rgba(22,35,61,.4);
+    background:#fffdf8;
 }
 
 #lines-table{
     width:100%;
     border-collapse:collapse;
-    background:
-        repeating-linear-gradient(
-            180deg,
-            rgba(255,255,255,0.9) 0px,
-            rgba(255,255,255,0.9) 47px,
-            rgba(176,141,87,0.16) 48px
-        );
+    background:#fffdf8;
 }
 
-#lines-table th{
+#lines-table thead th{
     background:linear-gradient(180deg, var(--navy), var(--navy-soft));
     color:var(--cream);
-    padding:14px 10px;
+    padding:15px 10px;
     text-align:center;
-    font-size:11px;
+    font-size:10.5px;
     font-weight:700;
     text-transform:uppercase;
-    letter-spacing:.08em;
+    letter-spacing:.1em;
     font-family:'Inter', sans-serif;
+    border-bottom:2px solid var(--brass);
+}
+
+#lines-table thead th:first-child{
+    text-align:left;
+    padding-left:20px;
 }
 
 #lines-table td{
-    padding:8px 10px;
+    padding:14px 12px;
     vertical-align:middle;
+    border-bottom:1px solid rgba(176,141,87,0.22);
+    position:relative;
 }
 
-#lines-table input{
-    margin:0;
-    border-radius:8px;
-    text-align:center;
+#lines-table tbody tr:nth-child(odd){
+    background:rgba(176,141,87,0.045);
 }
 
-#lines-table .customer-name{
-    text-align:left;
-}
-
-#lines-table input.amount,
-#lines-table input.rate,
-#lines-table input.qty{
-    font-family:'IBM Plex Mono', monospace;
+#lines-table tbody tr:last-child td{
+    border-bottom:none;
 }
 
 #lines-table tbody tr{
@@ -279,7 +276,67 @@ input.readonly,
 }
 
 #lines-table tbody tr:hover{
+    background:rgba(47,168,160,0.07);
+}
+
+#lines-table input{
+    margin:0;
+    text-align:center;
+    background:transparent;
+    border:none;
+    border-radius:0;
+    border-bottom:1px solid transparent;
+    padding:6px 4px;
+    font-size:14.5px;
+    color:var(--navy);
+}
+
+#lines-table input:hover{
+    border-bottom-color:rgba(176,141,87,0.5);
+}
+
+#lines-table input:focus{
+    border-bottom-color:var(--teal);
+    box-shadow:none;
     background:rgba(47,168,160,0.06);
+    border-radius:6px;
+}
+
+#lines-table .customer-id{
+    font-family:'IBM Plex Mono', monospace;
+    font-weight:600;
+    color:var(--brass);
+    text-align:left;
+    padding-left:6px;
+}
+
+#lines-table .customer-name{
+    text-align:left;
+    font-weight:500;
+}
+
+#lines-table input.rate,
+#lines-table input.qty{
+    font-family:'IBM Plex Mono', monospace;
+    color:var(--navy-soft);
+}
+
+#lines-table input.amount{
+    font-family:'IBM Plex Mono', monospace;
+    font-weight:700;
+    color:var(--bottle);
+    text-align:right;
+    padding-right:14px;
+    cursor:default;
+}
+
+#lines-table td:has(input.amount){
+    background:linear-gradient(90deg, transparent, rgba(31,75,63,0.05));
+}
+
+#lines-table td:last-child{
+    text-align:center;
+    width:52px;
 }
 
 @keyframes rowIn{
@@ -422,26 +479,31 @@ input.readonly,
 
 .customer-suggestions{
     position:absolute;
-    background:#fff;
-    border:1px solid var(--line);
+    background:#fffdf8;
+    border:1px solid var(--brass-light);
     border-radius:10px;
-    max-height:200px;
+    max-height:210px;
     overflow-y:auto;
     width:250px;
     z-index:9999;
-    box-shadow:0 12px 28px -8px rgba(22,35,61,.25);
-    font-family:'Inter', sans-serif;
-    font-size:13.5px;
-    margin-top:4px;
+    box-shadow:0 14px 30px -10px rgba(22,35,61,.3);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+    margin-top:6px;
+    padding:4px;
 }
 
 .customer-suggestions div{
     padding:9px 12px;
     cursor:pointer;
+    border-radius:6px;
+    color:var(--navy);
+    transition:background .12s ease;
 }
 
 .customer-suggestions div:hover{
-    background:rgba(47,168,160,0.1);
+    background:rgba(47,168,160,0.12);
+    color:var(--bottle);
 }
 
 @media (max-width: 640px){
