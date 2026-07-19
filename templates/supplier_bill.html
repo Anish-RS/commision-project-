@@ -483,7 +483,8 @@ button[onclick="addLine()"]:hover{ background:rgba(169,123,47,0.08); }
                   name="rate[]"
                   class="input-field rate"
                   autocomplete="off"
-                  oninput="recalcTotals()">
+                  oninput="recalcTotals()"
+                  disabled>
           </td>
 
           <td>
@@ -492,7 +493,8 @@ button[onclick="addLine()"]:hover{ background:rgba(169,123,47,0.08); }
                   name="quantity[]"
                   class="input-field qty"
                   autocomplete="off"
-                  oninput="recalcTotals()">
+                  oninput="recalcTotals()"
+                  disabled>
           </td>
 
           <td><input type="number" step="0.01" name="amount[]" class="input-field amount" readonly></td>
@@ -735,6 +737,18 @@ function filterCustomerList(inputEl) {
     const q = inputEl.value.trim().toLowerCase();
     const box = inputEl.parentNode.querySelector(".customer_list");
 
+    // Editing the customer text (typing again, or clearing it) invalidates
+    // whatever customer was previously chosen for this row, so lock Rate/
+    // Quantity again until a customer is re-selected from the list.
+    const row = inputEl.closest("tr");
+    const customerIdField = inputEl.parentNode.querySelector(".customer_id");
+    if (customerIdField) customerIdField.value = "";
+    const rate = row?.querySelector(".rate");
+    const qty = row?.querySelector(".qty");
+    if (rate) { rate.disabled = true; rate.value = ""; }
+    if (qty) { qty.disabled = true; qty.value = ""; }
+    recalcTotals();
+
     box.innerHTML = "";
     inputEl._activeIndex ??= -1;
 
@@ -811,9 +825,15 @@ function chooseCustomer(customer, inputEl) {
     box.querySelector(".customer_id").value = customer.id;
     inputEl.value = `${customer.name} (ID: ${customer.id})`;
     box.querySelector(".customer_list").style.display = "none";
+
+    const row = inputEl.closest("tr");
+    const rate = row.querySelector(".rate");
+    const qty = row.querySelector(".qty");
+    if (rate) rate.disabled = false;
+    if (qty) qty.disabled = false;
+
     recalcTotals();
 
-    const rate = inputEl.closest("tr").querySelector(".rate");
     if (rate) rate.focus();
 }
 
@@ -832,8 +852,8 @@ function addLine() {
         <input type="hidden" name="customer_id[]" class="customer_id" required>
       </div>
     </td>
-    <td><input type="number" step="0.01" name="rate[]" class="input-field rate" autocomplete="off" oninput="recalcTotals()"></td>
-    <td><input type="number" step="0.01" name="quantity[]" class="input-field qty" autocomplete="off" oninput="recalcTotals()"></td>
+    <td><input type="number" step="0.01" name="rate[]" class="input-field rate" autocomplete="off" oninput="recalcTotals()" disabled></td>
+    <td><input type="number" step="0.01" name="quantity[]" class="input-field qty" autocomplete="off" oninput="recalcTotals()" disabled></td>
 
     <td><input type="number" step="0.01" name="amount[]" class="input-field amount" readonly></td>
     <td class="right"><button type="button" class="btn btn-small btn-remove" onclick="removeLine(this)" aria-label="Remove line" title="Remove line"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></td>
