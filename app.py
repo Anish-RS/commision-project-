@@ -848,6 +848,17 @@ def supplier_bill_edit(bill_id):
                     (float(delta_cust), cid)
                 )
 
+            # Release the held amount for any customer whose line item was
+            # removed entirely (i.e. present in the old items but no longer
+            # present in the new items list).
+            new_customer_ids = {it["customer_id"] for it in new_items}
+            for old_cid, old_amt in old_customer_sums.items():
+                if old_cid not in new_customer_ids:
+                    cursor.execute(
+                        "UPDATE customers SET balance = balance - %s WHERE customer_id = %s",
+                        (float(old_amt), old_cid)
+                    )
+
             conn.commit()
 
         except Exception as e:
