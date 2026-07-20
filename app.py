@@ -683,9 +683,7 @@ def supplier_bill_search():
 # ---------------------------------------------------------------------------
 # Supplier Bills — Edit
 # ---------------------------------------------------------------------------
-
 @app.route("/bills/supplier/edit/<int:bill_id>", methods=["GET", "POST"])
-
 def supplier_bill_edit(bill_id):
     conn   = get_connection()
     cursor = conn.cursor(cursor_factory=RealDictCursor)
@@ -748,7 +746,7 @@ def supplier_bill_edit(bill_id):
 
             new_items        = []
             new_total_amount = to_decimal(0)
-            
+
             for cid, q, r in zip(customer_ids, quantities, rates_list):
                 if not cid:
                     continue
@@ -757,28 +755,33 @@ def supplier_bill_edit(bill_id):
                 amount = (qty * rate).quantize(Decimal("0.01"))
                 new_items.append({"customer_id": int(cid), "quantity": qty, "rate": rate, "amount": amount})
                 new_total_amount += amount
-            if commission_raw.endswith("%"):
 
+            # ------------------------------------------------------------
+            # FIX: aggregate new_items by customer_id BEFORE computing any
+            # per-customer deltas. Without this, a customer appearing on
+            # multiple line items in the edited bill gets old_amt (the full
+            # old aggregate) subtracted once per row instead of once total,
+            # corrupting customers.balance.
+            # ------------------------------------------------------------
+            new_customer_sums = {}
+            for it in new_items:
+                cid = it["customer_id"]
+                new_customer_sums[cid] = new_customer_sums.get(cid, to_decimal(0)) + it["amount"]
+
+            if commission_raw.endswith("%"):
                 pct = to_decimal(
                     commission_raw.replace("%", "")
                 )
-            
                 commission = (
                     new_total_amount * pct / Decimal("100")
                 ).quantize(Decimal("0.01"))
-            
             else:
-            
                 commission = to_decimal(commission_raw)
 
             new_bill_balance = (new_total_amount - commission - labour - transport - paid).quantize(Decimal("0.01"))
 
-            old_final_signed      = to_decimal(bill.get("final_balance") or 0)
+            old_final_signed       = to_decimal(bill.get("final_balance") or 0)
             old_header_old_balance = to_decimal(bill.get("old_balance")  or 0)
-            # Same formula used at bill creation (old_balance - bill_balance).
-            # This works regardless of the sign of old_header_old_balance,
-            # unlike the previous abs()-based formula which only worked when
-            # the supplier's prior balance was negative.
             new_final_signed       = (old_header_old_balance - new_bill_balance).quantize(Decimal("0.01"))
             delta_supplier_signed  = new_final_signed - old_final_signed
 
@@ -824,6 +827,11 @@ def supplier_bill_edit(bill_id):
             cursor.execute("DELETE FROM supplier_bill_items WHERE bill_id = %s",        (bill_id,))
             cursor.execute("DELETE FROM customer_bills WHERE supplier_bill_id = %s",    (bill_id,))
 
+            # ------------------------------------------------------------
+            # Insert rows only. No balance math here anymore — that's now
+            # done once per customer after the loop, using the aggregated
+            # sums computed above.
+            # ------------------------------------------------------------
             for it in new_items:
                 cid    = it["customer_id"]
                 qty    = it["quantity"]
@@ -836,9 +844,6 @@ def supplier_bill_edit(bill_id):
                     (bill_id, cid, float(qty), float(rate), float(amount))
                 )
 
-                old_amt    = old_customer_sums.get(cid, to_decimal(0))
-                delta_cust = amount - old_amt
-
                 cursor.execute(
                     """
                     INSERT INTO customer_bills
@@ -847,20 +852,23 @@ def supplier_bill_edit(bill_id):
                     """,
                     (cid, new_bill_date, float(qty), float(rate), float(amount), 0.0, float(amount), bill_id, 0.0, 0.0)
                 )
-                cursor.execute(
-                    "UPDATE customers SET balance = balance + %s WHERE customer_id = %s",
-                    (float(delta_cust), cid)
-                )
 
-            # Release the held amount for any customer whose line item was
-            # removed entirely (i.e. present in the old items but no longer
-            # present in the new items list).
-            new_customer_ids = {it["customer_id"] for it in new_items}
-            for old_cid, old_amt in old_customer_sums.items():
-                if old_cid not in new_customer_ids:
+            # ------------------------------------------------------------
+            # FIX: apply customer balance deltas exactly once per customer,
+            # comparing aggregated old sum vs aggregated new sum. Covers
+            # customers removed entirely (new_amt = 0), customers newly
+            # added (old_amt = 0), and customers with duplicate rows in
+            # either the old or new item set.
+            # ------------------------------------------------------------
+            all_customer_ids = set(old_customer_sums.keys()) | set(new_customer_sums.keys())
+            for cid in all_customer_ids:
+                old_amt = old_customer_sums.get(cid, to_decimal(0))
+                new_amt = new_customer_sums.get(cid, to_decimal(0))
+                delta   = new_amt - old_amt
+                if delta != 0:
                     cursor.execute(
-                        "UPDATE customers SET balance = balance - %s WHERE customer_id = %s",
-                        (float(old_amt), old_cid)
+                        "UPDATE customers SET balance = balance + %s WHERE customer_id = %s",
+                        (float(delta), cid)
                     )
 
             conn.commit()
@@ -899,8 +907,6 @@ def supplier_bill_edit(bill_id):
         cust_bills=cust_bills,
         customers=customers
     )
-
-
 # ---------------------------------------------------------------------------
 # Supplier Bills — Delete
 # ---------------------------------------------------------------------------
