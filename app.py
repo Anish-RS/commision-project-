@@ -192,28 +192,23 @@ def home():
 # ---------------------------------------------------------------------------
 # Customers
 # ---------------------------------------------------------------------------
-
 @app.route("/customers/add", methods=["GET", "POST"])
-
 def add_customer():
     if request.method == "POST":
         name = request.form["name"].strip().title()
-        phone           = request.form.get("phone")
-        address         = request.form.get("address")
+        phone = request.form.get("phone")
+        address = request.form.get("address")
         opening_balance = float(request.form.get("opening_balance", 0) or 0)
 
-        conn   = get_connection()
+        conn = get_connection()
         cursor = conn.cursor(cursor_factory=RealDictCursor)
 
         # Check duplicate customer
-        cursor.execute(
-            """
+        cursor.execute("""
             SELECT customer_id
             FROM customers
             WHERE LOWER(TRIM(name)) = LOWER(TRIM(%s))
-            """,
-            (name,)
-        )
+        """, (name,))
 
         existing = cursor.fetchone()
 
@@ -222,18 +217,24 @@ def add_customer():
             conn.close()
             flash("Customer already present. Cannot add duplicate customer.", "danger")
             return redirect(url_for("add_customer"))
-        
-        cursor.execute(
-            """
+
+        # Create customer with opening balance as current balance
+        cursor.execute("""
             INSERT INTO customers
-            (name, phone, address, opening_balance)
-            VALUES (%s, %s, %s, %s)
+            (name, phone, address, opening_balance, balance)
+            VALUES (%s, %s, %s, %s, %s)
             RETURNING customer_id
-            """,
-            (name, phone, address, opening_balance)
-        )
-        
+        """, (
+            name,
+            phone,
+            address,
+            opening_balance,
+            opening_balance
+        ))
+
         customer_id = cursor.fetchone()["customer_id"]
+
+        # Save opening balance in adjustment history
         if opening_balance > 0:
             cursor.execute("""
                 INSERT INTO account_adjustments
@@ -244,6 +245,7 @@ def add_customer():
                 customer_id,
                 opening_balance
             ))
+
         conn.commit()
         cursor.close()
         conn.close()
@@ -252,14 +254,10 @@ def add_customer():
         return redirect(url_for("add_customer"))
 
     return render_template("add_customer.html")
-
-
 # ---------------------------------------------------------------------------
 # Suppliers
 # ---------------------------------------------------------------------------
-
 @app.route("/suppliers/add", methods=["GET", "POST"])
-
 def add_supplier():
     if request.method == "POST":
         name = request.form["name"].strip().title()
@@ -271,35 +269,37 @@ def add_supplier():
         cursor = conn.cursor(cursor_factory=RealDictCursor)
 
         # Check duplicate supplier
-        cursor.execute(
-            """
+        cursor.execute("""
             SELECT supplier_id
             FROM suppliers
             WHERE LOWER(TRIM(name)) = LOWER(TRIM(%s))
-            """,
-            (name,)
-        )
+        """, (name,))
 
         existing = cursor.fetchone()
 
         if existing:
             cursor.close()
             conn.close()
-
             flash("Supplier already present. Cannot add duplicate supplier.", "danger")
             return redirect(url_for("add_supplier"))
-      
-        cursor.execute(
-            """
+
+        # Create supplier with opening balance as current balance
+        cursor.execute("""
             INSERT INTO suppliers
-            (name, phone, address, opening_balance)
-            VALUES (%s, %s, %s, %s)
+            (name, phone, address, opening_balance, balance)
+            VALUES (%s, %s, %s, %s, %s)
             RETURNING supplier_id
-            """,
-            (name, phone, address, opening_balance)
-        )
-        
+        """, (
+            name,
+            phone,
+            address,
+            opening_balance,
+            opening_balance
+        ))
+
         supplier_id = cursor.fetchone()["supplier_id"]
+
+        # Store opening balance in adjustment history
         if opening_balance > 0:
             cursor.execute("""
                 INSERT INTO account_adjustments
@@ -310,6 +310,7 @@ def add_supplier():
                 supplier_id,
                 opening_balance
             ))
+
         conn.commit()
         cursor.close()
         conn.close()
