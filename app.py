@@ -2503,10 +2503,8 @@ def account_summary():
 
     purchases       = []
     receipts        = []
-    adjustments     = []
     sum_purchases   = 0.0
     sum_receipts    = 0.0
-    sum_adjustments = 0.0
     current_balance = None
     customer_id     = None
     customer_name   = None
@@ -2594,35 +2592,13 @@ def account_summary():
             })
             sum_receipts += amt
 
-        # Adjustments (opening / carried-forward balances added via the
-        # Adjust Account page) also move customers.balance, so they must
-        # be pulled into the statement or the totals below won't tally
-        # with current_balance whenever an adjustment has been made.
-        cursor.execute(
-            "SELECT adjustment_id, adjustment_date, amount FROM account_adjustments "
-            "WHERE entity_type='customer' AND entity_id=%s "
-            "AND adjustment_date >= %s AND adjustment_date < %s ORDER BY adjustment_date ASC",
-            (customer_id, from_date, to_date + timedelta(days=1))
-        )
-        for r in cursor.fetchall():
-            amt = float(r.get("amount") or 0.0)
-            adjustments.append({
-                "adjustment_id": r.get("adjustment_id"),
-                "date":          r.get("adjustment_date"),
-                "amount":        amt
-            })
-            sum_adjustments += amt
-
         cursor.execute("SELECT balance FROM customers WHERE customer_id = %s", (customer_id,))
         crow            = cursor.fetchone()
         current_balance = float(crow.get("balance")) if crow and crow.get("balance") is not None else 0.0
 
     cursor.close(); conn.close()
 
-    # Adjustments increase balance the same way a purchase/bill does
-    # (see adjust_account: "balance = balance + amount"), so they belong
-    # on the same side of the ledger as purchases here.
-    net              = sum_receipts - sum_purchases - sum_adjustments
+    net              = sum_receipts - sum_purchases
     selected_customer = customer_id if customer_id is not None else raw_cid
 
     return render_template(
@@ -2633,10 +2609,8 @@ def account_summary():
         to_date=to_date,
         purchases=purchases,
         receipts=receipts,
-        adjustments=adjustments,
         sum_purchases=sum_purchases,
         sum_receipts=sum_receipts,
-        sum_adjustments=sum_adjustments,
         net=net,
         current_balance=current_balance
     )
