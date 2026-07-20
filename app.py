@@ -2385,8 +2385,7 @@ def adjust_account():
                 flash("Supplier not found.", "danger")
                 cursor.close(); conn.close()
                 return redirect(url_for("adjust_account"))
-            cursor.execute("UPDATE suppliers SET balance = balance + %s WHERE supplier_id = %s", (amount, entity_id))
-
+            
         elif entity_type == "customer":
             cursor.execute("SELECT customer_id, name, balance FROM customers WHERE customer_id = %s", (entity_id,))
             row = cursor.fetchone()
@@ -2394,7 +2393,7 @@ def adjust_account():
                 flash("Customer not found.", "danger")
                 cursor.close(); conn.close()
                 return redirect(url_for("adjust_account"))
-            cursor.execute("UPDATE customers SET balance = balance + %s WHERE customer_id = %s", (amount, entity_id))
+            
 
         else:
             flash("Invalid entity type.", "danger")
@@ -2592,9 +2591,36 @@ def account_summary():
             })
             sum_receipts += amt
 
-        cursor.execute("SELECT balance FROM customers WHERE customer_id = %s", (customer_id,))
-        crow            = cursor.fetchone()
-        current_balance = float(crow.get("balance")) if crow and crow.get("balance") is not None else 0.0
+        # Opening Balance
+        cursor.execute("""
+            SELECT COALESCE(opening_balance, 0) AS opening_balance
+            FROM customers
+            WHERE customer_id = %s
+        """, (customer_id,))
+        row = cursor.fetchone()
+        opening_balance = float(row["opening_balance"] or 0)
+        
+        # Total Purchases
+        cursor.execute("""
+            SELECT COALESCE(SUM(amount), 0) AS total_purchase
+            FROM customer_bills
+            WHERE customer_id = %s
+        """, (customer_id,))
+        row = cursor.fetchone()
+        total_purchase = float(row["total_purchase"] or 0)
+        
+        # Total Receipts
+        cursor.execute("""
+            SELECT COALESCE(SUM(amount), 0) AS total_receipt
+            FROM transactions
+            WHERE entity_type='customer'
+              AND entity_id=%s
+              AND tx_type='receipt'
+        """, (customer_id,))
+        row = cursor.fetchone()
+        total_receipt = float(row["total_receipt"] or 0)
+        
+        current_balance = opening_balance + total_purchase - total_receipt
 
     cursor.close(); conn.close()
 
