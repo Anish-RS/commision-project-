@@ -685,6 +685,19 @@ function addLine() {
     }
 }
 
+// Extra safeguard: block Enter/Space from ever activating a remove-btn
+// (or any .btn-add), regardless of how focus got there. Only a genuine
+// mouse click (or touch tap) should remove a line.
+document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+
+    const target = e.target;
+    if (target.classList && (target.classList.contains('remove-btn') || target.classList.contains('btn-add'))) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+}, true);
+
 function recalcTotals() {
 
     const rows = document.querySelectorAll('#lines-body tr');
@@ -758,15 +771,38 @@ billForm.addEventListener('keydown', function (e) {
 
     if (e.key !== 'Enter') return;
 
-    // Let Enter behave normally inside a <textarea> (new line) and
-    // let it work as "click" when focus is on an actual button.
+    // Let Enter behave normally inside a <textarea> (new line).
     const tag = e.target.tagName;
     const type = (e.target.getAttribute('type') || '').toLowerCase();
 
     if (tag === 'TEXTAREA') return;
 
-    if (tag === 'BUTTON' || type === 'submit' || type === 'button') {
+    // Only the real "Save Changes" submit button should ever respond to
+    // Enter. Buttons like "Remove (x)" and "+ Add Line" are type="button"
+    // and must NEVER fire from an accidental Enter press - they should
+    // only be triggered by an explicit mouse/tap click.
+    if (tag === 'BUTTON' && type === 'submit') {
         // Allow the Save button itself to be activated with Enter.
+        return;
+    }
+
+    if (tag === 'BUTTON') {
+        // Block Enter from clicking remove-btn / btn-add / any other
+        // non-submit button, and just move focus onward instead.
+        e.preventDefault();
+
+        const focusableBtns = Array.from(
+            billForm.querySelectorAll(
+                'input:not([type=hidden]):not([disabled]):not([readonly]), select, textarea, button'
+            )
+        ).filter(el => el.offsetParent !== null);
+
+        const idx = focusableBtns.indexOf(e.target);
+        if (idx > -1 && idx < focusableBtns.length - 1) {
+            focusableBtns[idx + 1].focus();
+        } else {
+            e.target.blur();
+        }
         return;
     }
 
