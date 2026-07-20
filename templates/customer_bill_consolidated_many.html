@@ -257,17 +257,18 @@
     <!-- SUMMARY -->
 
     <div class="summary">
+
+        <div class="row">
+            <div>Total Purchases</div>
+            <div>{{ "%.2f"|format(block.net) }}</div>
+        </div>
         
         <div class="row">
             <div>Opening Balance</div>
             <div>{{ "%.2f"|format(block.opening) }}</div>
         </div>
 
-        <div class="row">
-            <div>Total Purchases</div>
-            <div>{{ "%.2f"|format(block.net) }}</div>
-        </div>
-
+        
         <div class="row">
             <div>Total Receipts</div>
             <div>{{ "%.2f"|format(block.sum_receipts) }}</div>
