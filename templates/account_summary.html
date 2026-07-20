@@ -316,6 +316,23 @@
           </div>
 
           <div class="total-card">
+            <div class="total-label">Opening balance</div>
+            <div class="total-value">
+              {% if opening_balance is not none %}
+                {% if opening_balance < 0 %}
+                  <span class="negative"> {{ '%.2f'|format(opening_balance) }} (we owe)</span>
+                {% elif opening_balance > 0 %}
+                  <span class="positive"> {{ '%.2f'|format(opening_balance) }} (credit)</span>
+                {% else %}
+                  <span> 0.00</span>
+                {% endif %}
+              {% else %}
+                n/a
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="total-card">
             <div class="total-label">Current stored balance</div>
             <div class="total-value">
               {% if current_balance is not none %}
