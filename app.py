@@ -2507,6 +2507,7 @@ def account_summary():
     sum_purchases   = 0.0
     sum_receipts    = 0.0
     current_balance = None
+    opening_balance = None
     customer_id     = None
     customer_name   = None
 
@@ -2593,9 +2594,10 @@ def account_summary():
             })
             sum_receipts += amt
 
-        cursor.execute("SELECT balance FROM customers WHERE customer_id = %s", (customer_id,))
+        cursor.execute("SELECT balance, opening_balance FROM customers WHERE customer_id = %s", (customer_id,))
         crow            = cursor.fetchone()
         current_balance = float(crow.get("balance")) if crow and crow.get("balance") is not None else 0.0
+        opening_balance = float(crow.get("opening_balance")) if crow and crow.get("opening_balance") is not None else 0.0
 
     cursor.close(); conn.close()
 
@@ -2613,7 +2615,8 @@ def account_summary():
         sum_purchases=sum_purchases,
         sum_receipts=sum_receipts,
         net=net,
-        current_balance=current_balance
+        current_balance=current_balance,
+        opening_balance=opening_balance
     )
 
 
