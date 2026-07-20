@@ -18,6 +18,21 @@ app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "secret123")
 
 
+
+@app.route("/fix-history")
+def fix_history():
+    from datetime import date
+
+    # Set this to the earliest date in your records or system start date
+    earliest_date = date(2020, 1, 1)
+
+    try:
+        recompute_cash_in_hand_from_date(earliest_date)
+        return "Historical cash-in-hand recomputed successfully!"
+    except Exception as e:
+        return f"Error recomputing: {str(e)}"
+
+
 @app.before_request
 def require_login():
     # Pages that do NOT require a password (login page and static files like CSS)
