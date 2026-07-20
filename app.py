@@ -2369,6 +2369,11 @@ def adjust_account():
         entity_type = request.form.get("entity_type")
         entity_id   = int(request.form.get("entity_id") or 0)
 
+        # "add"      -> balance moves up (they owe us more / we owe them less)
+        # "subtract" -> balance moves down (they owe us less / we owe them more)
+        # Defaults to "add" so existing forms that don't send this field keep working.
+        direction = request.form.get("direction", "add")
+
         try:
             amount = float(request.form.get("amount") or 0)
         except ValueError:
@@ -2379,6 +2384,13 @@ def adjust_account():
             cursor.close(); conn.close()
             return redirect(url_for("adjust_account"))
 
+        if direction not in ("add", "subtract"):
+            flash("Invalid adjustment direction.", "danger")
+            cursor.close(); conn.close()
+            return redirect(url_for("adjust_account"))
+
+        signed_amount = amount if direction == "add" else -amount
+
         if entity_type == "supplier":
             cursor.execute("SELECT supplier_id, name, balance FROM suppliers WHERE supplier_id = %s", (entity_id,))
             row = cursor.fetchone()
@@ -2386,7 +2398,7 @@ def adjust_account():
                 flash("Supplier not found.", "danger")
                 cursor.close(); conn.close()
                 return redirect(url_for("adjust_account"))
-            cursor.execute("UPDATE suppliers SET balance = balance + %s WHERE supplier_id = %s", (amount, entity_id))
+            cursor.execute("UPDATE suppliers SET balance = balance + %s WHERE supplier_id = %s", (signed_amount, entity_id))
 
         elif entity_type == "customer":
             cursor.execute("SELECT customer_id, name, balance FROM customers WHERE customer_id = %s", (entity_id,))
@@ -2395,7 +2407,7 @@ def adjust_account():
                 flash("Customer not found.", "danger")
                 cursor.close(); conn.close()
                 return redirect(url_for("adjust_account"))
-            cursor.execute("UPDATE customers SET balance = balance + %s WHERE customer_id = %s", (amount, entity_id))
+            cursor.execute("UPDATE customers SET balance = balance + %s WHERE customer_id = %s", (signed_amount, entity_id))
 
         else:
             flash("Invalid entity type.", "danger")
@@ -2408,11 +2420,11 @@ def adjust_account():
         """, (
             entity_type,
             entity_id,
-            amount
+            signed_amount
         ))
         conn.commit()
         cursor.close(); conn.close()
-        flash(f"Account updated for {entity_type} #{entity_id} (₹{amount:.2f}).", "success")
+        flash(f"Account updated for {entity_type} #{entity_id} (₹{signed_amount:.2f}).", "success")
         return redirect(url_for("adjust_account"))
 
     cursor.execute("SELECT supplier_id AS id, name, balance FROM suppliers ORDER BY name ASC")
