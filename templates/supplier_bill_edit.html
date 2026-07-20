@@ -745,6 +745,59 @@ function recalcTotals() {
 }
 
 recalcTotals();
+
+// -----------------------------------------------------------------
+// Prevent accidental submission on Enter key.
+// Only the "Save Changes" button (or an explicit form.submit()) should
+// save the bill. Pressing Enter inside any field now just moves focus
+// to the next input instead of submitting the form.
+// -----------------------------------------------------------------
+const billForm = document.querySelector('form');
+
+billForm.addEventListener('keydown', function (e) {
+
+    if (e.key !== 'Enter') return;
+
+    // Let Enter behave normally inside a <textarea> (new line) and
+    // let it work as "click" when focus is on an actual button.
+    const tag = e.target.tagName;
+    const type = (e.target.getAttribute('type') || '').toLowerCase();
+
+    if (tag === 'TEXTAREA') return;
+
+    if (tag === 'BUTTON' || type === 'submit' || type === 'button') {
+        // Allow the Save button itself to be activated with Enter.
+        return;
+    }
+
+    // Stop the browser's default "submit on Enter" behavior.
+    e.preventDefault();
+
+    // Nicety: move focus to the next focusable field, like pressing Tab.
+    const focusable = Array.from(
+        billForm.querySelectorAll(
+            'input:not([type=hidden]):not([disabled]):not([readonly]), select, textarea, button'
+        )
+    ).filter(el => el.offsetParent !== null); // only visible fields
+
+    const currentIndex = focusable.indexOf(e.target);
+
+    if (currentIndex > -1 && currentIndex < focusable.length - 1) {
+        focusable[currentIndex + 1].focus();
+    } else {
+        e.target.blur();
+    }
+});
+
+// Belt-and-suspenders: also guard the submit event itself so the bill
+// can only be saved via a genuine submit-button activation/click.
+billForm.addEventListener('submit', function (e) {
+    const submitter = e.submitter; // the element that triggered submit
+
+    if (!submitter || submitter.type !== 'submit') {
+        e.preventDefault();
+    }
+});
 </script>
 
 {% endblock %}
