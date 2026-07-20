@@ -775,9 +775,12 @@ def supplier_bill_edit(bill_id):
 
             old_final_signed      = to_decimal(bill.get("final_balance") or 0)
             old_header_old_balance = to_decimal(bill.get("old_balance")  or 0)
-            total_due_positive    = (abs(old_header_old_balance) + new_bill_balance).quantize(Decimal("0.01"))
-            new_final_signed      = -total_due_positive
-            delta_supplier_signed = new_final_signed - old_final_signed
+            # Same formula used at bill creation (old_balance - bill_balance).
+            # This works regardless of the sign of old_header_old_balance,
+            # unlike the previous abs()-based formula which only worked when
+            # the supplier's prior balance was negative.
+            new_final_signed       = (old_header_old_balance - new_bill_balance).quantize(Decimal("0.01"))
+            delta_supplier_signed  = new_final_signed - old_final_signed
 
             cursor.execute(
                 """
@@ -1333,6 +1336,15 @@ def customer_bill_delete(bill_id):
             paid             = to_decimal(sb["paid"])
             new_bill_balance = new_total_amount - commission - labour - transport - paid
 
+            # Preserve running-balance semantics: final_balance must stay
+            # "supplier's old_balance minus this bill's balance", the same
+            # convention used everywhere else (creation, edit, delete of the
+            # supplier bill itself). Previously this was overwritten with
+            # just -new_bill_balance, which dropped the supplier's prior
+            # balance and corrupted later edits/deletes of this same bill.
+            old_header_old_balance = to_decimal(sb.get("old_balance") or 0)
+            new_final_balance      = (old_header_old_balance - new_bill_balance).quantize(Decimal("0.01"))
+
             cursor.execute(
                 "UPDATE suppliers SET balance = balance + %s WHERE supplier_id = %s",
                 (float(amount), sb["supplier_id"])
@@ -1343,7 +1355,7 @@ def customer_bill_delete(bill_id):
                 SET total_amount=%s, balance=%s, final_balance=%s
                 WHERE bill_id=%s
                 """,
-                (float(new_total_amount), float(new_bill_balance), float(new_bill_balance) * -1, supplier_bill_id)
+                (float(new_total_amount), float(new_bill_balance), float(new_final_balance), supplier_bill_id)
             )
             cursor.execute(
                 "DELETE FROM supplier_bill_items WHERE bill_id=%s AND customer_id=%s",
@@ -2901,8 +2913,8 @@ def transactions_edit_one(tx_id):
 
         if parsed_for_db:
             cursor.execute(
-                "UPDATE transactions SET amount=%s, note=%s WHERE tx_id=%s",
-                (new_amount, parsed_for_db, new_note, tx_id)
+                "UPDATE transactions SET amount=%s, note=%s, tx_date=%s WHERE tx_id=%s",
+                (new_amount, new_note, parsed_for_db, tx_id)
             )
         else:
             cursor.execute(
