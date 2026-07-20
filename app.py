@@ -478,6 +478,12 @@ def add_supplier_bill():
 
         bill_balance = total_amount - commission - labour - transport - paid
 
+        try:
+            bd = bill_date if isinstance(bill_date, date) else datetime.strptime(str(bill_date), "%Y-%m-%d").date()
+            recompute_cash_in_hand_from_date(bd)
+        except Exception:
+            pass
+
         conn   = get_connection()
         cursor = conn.cursor(cursor_factory=RealDictCursor)
 
@@ -1746,6 +1752,19 @@ def apply_transaction(entity_type, entity_id, tx_type, amount, note, tx_date):
             (entity_type, entity_id, tx_type, amount, note, tx_date)
         )
         conn.commit()
+
+        # Recompute cash in hand automatically for the transaction date
+        try:
+            if isinstance(tx_date, str):
+                bd = datetime.strptime(tx_date, "%Y-%m-%d").date()
+            elif isinstance(tx_date, datetime):
+                bd = tx_date.date()
+            else:
+                bd = tx_date
+            recompute_cash_in_hand_from_date(bd)
+        except Exception:
+            pass
+
         return True, "Transaction applied", {"old_balance": old_bal, "new_balance": new_bal, "entity": row}
 
     except Exception as e:
