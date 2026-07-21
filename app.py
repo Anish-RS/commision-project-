@@ -2471,16 +2471,12 @@ def account_adjustment_history():
     from_date = request.args.get("from_date")
     to_date = request.args.get("to_date")
 
-    query = """
-        SELECT
-            adjustment_id,
-            adjustment_date,
-            entity_type,
-            entity_id,
-            amount,
-            created_at
-        FROM account_adjustments
-    """
+    page = request.args.get("page", 1, type=int)
+    if page < 1:
+        page = 1
+    per_page = 10
+
+    base_query = " FROM account_adjustments"
     conditions = []
     params = []
 
@@ -2498,10 +2494,47 @@ def account_adjustment_history():
         params.append(to_date)
 
     if conditions:
-        query += " WHERE " + " AND ".join(conditions)
-    query += " ORDER BY created_at"
+        base_query += " WHERE " + " AND ".join(conditions)
 
-    cursor.execute(query, tuple(params))
+    cursor.execute("SELECT COUNT(*)" + base_query, tuple(params))
+    total_count = cursor.fetchone()["count"]
+    total_pages = max(1, (total_count + per_page - 1) // per_page)
+    if page > total_pages:
+        page = total_pages
+    offset = (page - 1) * per_page
+
+    cursor.execute(
+        "SELECT COALESCE(SUM(amount),0) AS total, COUNT(*) AS cnt"
+        + base_query + (" AND " if conditions else " WHERE ") + "entity_type = 'supplier'",
+        tuple(params)
+    )
+    supplier_stats = cursor.fetchone()
+
+    cursor.execute(
+        "SELECT COALESCE(SUM(amount),0) AS total, COUNT(*) AS cnt"
+        + base_query + (" AND " if conditions else " WHERE ") + "entity_type = 'customer'",
+        tuple(params)
+    )
+    customer_stats = cursor.fetchone()
+
+    cursor.execute(
+        "SELECT COALESCE(SUM(amount),0) AS total, COUNT(*) AS cnt"
+        + base_query + (" AND " if conditions else " WHERE ") + "entity_type NOT IN ('supplier','customer')",
+        tuple(params)
+    )
+    other_stats = cursor.fetchone()
+
+    query = """
+        SELECT
+            adjustment_id,
+            adjustment_date,
+            entity_type,
+            entity_id,
+            amount,
+            created_at
+    """ + base_query + " ORDER BY created_at LIMIT %s OFFSET %s"
+
+    cursor.execute(query, tuple(params) + (per_page, offset))
 
     rows = cursor.fetchall()
 
@@ -2528,7 +2561,17 @@ def account_adjustment_history():
         adjustments=rows,
         selected_date=selected_date,
         from_date=from_date,
-        to_date=to_date
+        to_date=to_date,
+        page=page,
+        total_pages=total_pages,
+        total_count=total_count,
+        per_page=per_page,
+        supplier_total=supplier_stats["total"],
+        supplier_count=supplier_stats["cnt"],
+        customer_total=customer_stats["total"],
+        customer_count=customer_stats["cnt"],
+        other_total=other_stats["total"],
+        other_count=other_stats["cnt"]
     )
 # ---------------------------------------------------------------------------
 # Account summary (customer statement)
