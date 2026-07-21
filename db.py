@@ -22,10 +22,11 @@ from flask import g, has_request_context, after_this_request
 # automatically at the end of every Flask request, even if a route raises
 # an exception before it reaches its own conn.close(). Previously, any
 # unhandled error in a route permanently leaked that connection out of the
-# pool. With a pool of only 5, a handful of errors over the app's lifetime
-# was enough to exhaust it completely, causing every subsequent request
-# (from any user) to fail with "pool exhausted" — which is what produced
-# the 500 errors under normal multi-user usage.
+# pool. With a small, fixed-size pool (see DB_POOL_MAX below), a handful
+# of errors over the app's lifetime was enough to exhaust it completely,
+# causing every subsequent request (from any user) to fail with
+# "pool exhausted" — which is what produced the 500 errors under normal
+# multi-user usage.
 # ---------------------------------------------------------------------------
 
 _pool = None
