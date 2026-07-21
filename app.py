@@ -158,6 +158,77 @@ def recompute_cash_in_hand_from_date(start_date):
 
 
 # ---------------------------------------------------------------------------
+# Ledger resync
+#
+# customer_bills.old_balance / final_balance used to be a one-time snapshot
+# taken from customers.balance at INSERT time. That's only correct if every
+# bill, adjustment, and receipt/payment for a customer is always entered in
+# true date order. The moment something is backdated (an adjustment entered
+# after later bills already exist, an old bill edited after newer activity,
+# etc.) those stored snapshots go stale and the printed "Opening Balance"
+# stops matching reality — even though customers.balance itself stays
+# correct throughout.
+#
+# This function rebuilds old_balance/final_balance for a customer's
+# customer_bills rows from scratch, by replaying EVERY dated event for that
+# customer (bills + account_adjustments + transactions) in true
+# chronological order, anchored on customers.opening_balance. Call it after
+# ANY operation that touches a customer's balance (bill create/edit/delete,
+# receipt, payment, manual adjustment) and the printed statements will
+# always be self-consistent — no more manual SQL repairs needed.
+# ---------------------------------------------------------------------------
+
+def resync_customer_ledger(cursor, customer_ids):
+    ids = list({int(cid) for cid in customer_ids if cid is not None})
+    if not ids:
+        return
+
+    cursor.execute(
+        """
+        WITH events AS (
+            SELECT cb.customer_id, cb.bill_date AS event_date, 1 AS kind_rank,
+                   cb.bill_id AS seq, cb.amount AS delta, cb.bill_id AS bill_id
+            FROM customer_bills cb
+            WHERE cb.customer_id = ANY(%(ids)s)
+
+            UNION ALL
+
+            SELECT aa.entity_id, aa.adjustment_date, 0,
+                   aa.adjustment_id, aa.amount, NULL
+            FROM account_adjustments aa
+            WHERE aa.entity_type = 'customer' AND aa.entity_id = ANY(%(ids)s)
+
+            UNION ALL
+
+            SELECT t.entity_id, t.tx_date::date, 2,
+                   t.tx_id,
+                   CASE WHEN t.tx_type = 'receipt' THEN -t.amount ELSE t.amount END,
+                   NULL
+            FROM transactions t
+            WHERE t.entity_type = 'customer' AND t.entity_id = ANY(%(ids)s)
+        ),
+        running AS (
+            SELECT e.*,
+                COALESCE(c.opening_balance, 0) + COALESCE(SUM(e.delta) OVER (
+                    PARTITION BY e.customer_id ORDER BY e.event_date, e.kind_rank, e.seq
+                    ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW), 0) AS balance_after,
+                COALESCE(c.opening_balance, 0) + COALESCE(SUM(e.delta) OVER (
+                    PARTITION BY e.customer_id ORDER BY e.event_date, e.kind_rank, e.seq
+                    ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING), 0) AS balance_before
+            FROM events e
+            JOIN customers c ON c.customer_id = e.customer_id
+        )
+        UPDATE customer_bills cb
+        SET old_balance   = ROUND(r.balance_before, 2),
+            final_balance = ROUND(r.balance_after, 2)
+        FROM running r
+        WHERE r.bill_id = cb.bill_id
+        """,
+        {"ids": ids}
+    )
+
+
+# ---------------------------------------------------------------------------
 # Home
 # ---------------------------------------------------------------------------
 
@@ -553,6 +624,8 @@ def add_supplier_bill():
                     (cust_new, cid)
                 )
 
+            resync_customer_ledger(cursor, [it["customer_id"] for it in items])
+
             conn.commit()
 
         except Exception as e:
@@ -834,25 +907,20 @@ def supplier_bill_edit(bill_id):
             cursor.execute("DELETE FROM customer_bills WHERE supplier_bill_id = %s",    (bill_id,))
 
             # ------------------------------------------------------------
-            # FIX: old_balance/final_balance on each re-inserted customer_bills
-            # row must reflect the customer's REAL running balance, not 0/0.
+            # old_balance/final_balance on each re-inserted customer_bills
+            # row can't be derived from the customer's CURRENT balance —
+            # if this bill is dated earlier than other activity the
+            # customer has had since, "current balance minus this bill's
+            # old amount" pulls in stuff that happened after this bill's
+            # date and corrupts its opening-balance snapshot.
             #
-            # customers.balance at this point still includes the OLD version
-            # of this bill (we haven't applied any delta yet), so for each
-            # customer we back that out to get their balance as if this bill
-            # never existed, then walk their new line items in order to build
-            # correct old_balance -> final_balance for each row, exactly like
-            # add_supplier_bill does on creation.
+            # Insert placeholder values here (they only need to be roughly
+            # right so nothing downstream chokes on NULLs) and let
+            # resync_customer_ledger() below rebuild the real values by
+            # replaying every dated event for these customers in true
+            # chronological order.
             # ------------------------------------------------------------
             all_customer_ids = set(old_customer_sums.keys()) | set(new_customer_sums.keys())
-
-            running_balance = {}
-            for cid in all_customer_ids:
-                cursor.execute("SELECT balance FROM customers WHERE customer_id = %s", (cid,))
-                crow = cursor.fetchone()
-                current_balance = to_decimal(crow["balance"]) if crow and crow.get("balance") is not None else to_decimal(0)
-                old_amt = old_customer_sums.get(cid, to_decimal(0))
-                running_balance[cid] = current_balance - old_amt  # balance as if this bill didn't exist
 
             for it in new_items:
                 cid    = it["customer_id"]
@@ -866,10 +934,6 @@ def supplier_bill_edit(bill_id):
                     (bill_id, cid, float(qty), float(rate), float(amount))
                 )
 
-                item_old_balance   = running_balance[cid]
-                item_final_balance = (item_old_balance + amount).quantize(Decimal("0.01"))
-                running_balance[cid] = item_final_balance
-
                 cursor.execute(
                     """
                     INSERT INTO customer_bills
@@ -877,7 +941,7 @@ def supplier_bill_edit(bill_id):
                     VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
                     """,
                     (cid, new_bill_date, float(qty), float(rate), float(amount), 0.0, float(amount),
-                     bill_id, float(item_old_balance), float(item_final_balance))
+                     bill_id, 0.0, float(amount))
                 )
 
             # ------------------------------------------------------------
@@ -896,6 +960,8 @@ def supplier_bill_edit(bill_id):
                         "UPDATE customers SET balance = balance + %s WHERE customer_id = %s",
                         (float(delta), cid)
                     )
+
+            resync_customer_ledger(cursor, all_customer_ids)
 
             conn.commit()
 
@@ -963,7 +1029,9 @@ def supplier_bill_delete(bill_id):
             "WHERE bill_id = %s GROUP BY customer_id",
             (bill_id,)
         )
+        affected_customer_ids = []
         for row in cursor.fetchall():
+            affected_customer_ids.append(row["customer_id"])
             cursor.execute(
                 "UPDATE customers SET balance = balance - %s WHERE customer_id = %s",
                 (float(to_decimal(row["total_amount"] or 0)), row["customer_id"])
@@ -978,6 +1046,8 @@ def supplier_bill_delete(bill_id):
         cursor.execute("DELETE FROM supplier_bill_items WHERE bill_id = %s",     (bill_id,))
         cursor.execute("DELETE FROM customer_bills WHERE supplier_bill_id = %s", (bill_id,))
         cursor.execute("DELETE FROM supplier_bills WHERE bill_id = %s",          (bill_id,))
+
+        resync_customer_ledger(cursor, affected_customer_ids)
 
         conn.commit()
 
@@ -1279,6 +1349,8 @@ def customer_bill_edit(bill_id):
                 )
             )
 
+            resync_customer_ledger(cursor, [bill["customer_id"]])
+
             conn.commit()
 
         except Exception as e:
@@ -1395,6 +1467,9 @@ def customer_bill_delete(bill_id):
             )
 
         cursor.execute("DELETE FROM customer_bills WHERE bill_id = %s", (bill_id,))
+
+        resync_customer_ledger(cursor, [cust_id])
+
         conn.commit()
 
     except Exception as e:
@@ -1771,6 +1846,10 @@ def apply_transaction(entity_type, entity_id, tx_type, amount, note, tx_date):
             "VALUES (%s, %s, %s, %s, %s, %s)",
             (entity_type, entity_id, tx_type, amount, note, tx_date)
         )
+
+        if entity_type == "customer":
+            resync_customer_ledger(cursor, [entity_id])
+
         conn.commit()
 
         # Recompute cash in hand automatically for the transaction date
@@ -2467,6 +2546,10 @@ def adjust_account():
             entity_id,
             amount
         ))
+
+        if entity_type == "customer":
+            resync_customer_ledger(cursor, [entity_id])
+
         conn.commit()
         cursor.close(); conn.close()
         flash(f"Account updated for {entity_type} #{entity_id} (₹{amount:.2f}).", "success")
