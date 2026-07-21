@@ -2468,11 +2468,10 @@ def account_adjustment_history():
     cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     selected_date = request.args.get("date")
+    from_date = request.args.get("from_date")
+    to_date = request.args.get("to_date")
 
-    if not selected_date:
-        selected_date = date.today().isoformat()
-
-    cursor.execute("""
+    query = """
         SELECT
             adjustment_id,
             adjustment_date,
@@ -2481,9 +2480,28 @@ def account_adjustment_history():
             amount,
             created_at
         FROM account_adjustments
-        WHERE adjustment_date=%s
-        ORDER BY created_at
-    """, (selected_date,))
+    """
+    conditions = []
+    params = []
+
+    if selected_date:
+        conditions.append("adjustment_date = %s")
+        params.append(selected_date)
+    elif from_date and to_date:
+        conditions.append("adjustment_date BETWEEN %s AND %s")
+        params.extend([from_date, to_date])
+    elif from_date:
+        conditions.append("adjustment_date >= %s")
+        params.append(from_date)
+    elif to_date:
+        conditions.append("adjustment_date <= %s")
+        params.append(to_date)
+
+    if conditions:
+        query += " WHERE " + " AND ".join(conditions)
+    query += " ORDER BY created_at"
+
+    cursor.execute(query, tuple(params))
 
     rows = cursor.fetchall()
 
@@ -2508,7 +2526,9 @@ def account_adjustment_history():
     return render_template(
         "account_adjustment_history.html",
         adjustments=rows,
-        selected_date=selected_date
+        selected_date=selected_date,
+        from_date=from_date,
+        to_date=to_date
     )
 # ---------------------------------------------------------------------------
 # Account summary (customer statement)
