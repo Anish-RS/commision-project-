@@ -436,6 +436,43 @@
     margin:0 0 10px;
   }
 
+  /* ---------- pagination ---------- */
+  .aah-pagination{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:18px;
+    margin-top:6px;
+    flex-wrap:wrap;
+  }
+  .aah-page-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    padding:9px 16px;
+    border-radius:8px;
+    border:1px solid var(--border);
+    background:var(--card);
+    color:var(--forest);
+    font-family:'Inter', sans-serif;
+    font-size:13px;
+    font-weight:600;
+    text-decoration:none;
+    transition:border-color .15s ease, box-shadow .15s ease;
+  }
+  .aah-page-btn:hover{ border-color:var(--gold); box-shadow:var(--shadow); }
+  .aah-page-btn-disabled{
+    color:var(--label);
+    background:transparent;
+    cursor:not-allowed;
+    opacity:.6;
+  }
+  .aah-page-info{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--ink-soft);
+  }
+
   /* ---------- section header ---------- */
   .aah-section-header{
     display:flex;
@@ -685,8 +722,8 @@
           </svg>
         </div>
       </div>
-      <p class="aah-stat-value">&#8377; {{ "{:,.2f}".format(ns.supplier_total) }}</p>
-      <p class="aah-stat-count">Credit {{ "{:,.2f}".format(ns.supplier_total) }} &middot; {{ ns.supplier_count }} {{ "entry" if ns.supplier_count == 1 else "entries" }}</p>
+      <p class="aah-stat-value">&#8377; {{ "{:,.2f}".format(supplier_total) }}</p>
+      <p class="aah-stat-count">Credit {{ "{:,.2f}".format(supplier_total) }} &middot; {{ supplier_count }} {{ "entry" if supplier_count == 1 else "entries" }}</p>
     </div>
     <div class="aah-stat customer aah-fade-in" style="animation-delay:.12s">
       <div class="aah-stat-top">
@@ -698,8 +735,8 @@
           </svg>
         </div>
       </div>
-      <p class="aah-stat-value">&#8377; {{ "{:,.2f}".format(ns.customer_total) }}</p>
-      <p class="aah-stat-count">Credit {{ "{:,.2f}".format(ns.customer_total) }} &middot; {{ ns.customer_count }} {{ "entry" if ns.customer_count == 1 else "entries" }}</p>
+      <p class="aah-stat-value">&#8377; {{ "{:,.2f}".format(customer_total) }}</p>
+      <p class="aah-stat-count">Credit {{ "{:,.2f}".format(customer_total) }} &middot; {{ customer_count }} {{ "entry" if customer_count == 1 else "entries" }}</p>
     </div>
     <div class="aah-stat total aah-fade-in" style="animation-delay:.16s">
       <div class="aah-stat-top">
@@ -711,8 +748,8 @@
           </svg>
         </div>
       </div>
-      <p class="aah-stat-value">&#8377; {{ "{:,.2f}".format(ns.supplier_total + ns.customer_total + ns.other_total) }}</p>
-      <p class="aah-stat-count">{{ adjustments|length }} {{ "entry" if adjustments|length == 1 else "entries" }} total</p>
+      <p class="aah-stat-value">&#8377; {{ "{:,.2f}".format(supplier_total + customer_total + other_total) }}</p>
+      <p class="aah-stat-count">{{ total_count }} {{ "entry" if total_count == 1 else "entries" }} total</p>
     </div>
   </div>
 
@@ -841,6 +878,28 @@
   </div>
 
   <p class="aah-results-note" id="aah-results-note" style="margin-top:12px;"></p>
+
+  {% if total_pages and total_pages > 1 %}
+  {% set prev_args = request.args.to_dict() %}
+  {% set _ = prev_args.update({'page': page - 1}) %}
+  {% set next_args = request.args.to_dict() %}
+  {% set _ = next_args.update({'page': page + 1}) %}
+  <div class="aah-pagination">
+    {% if page > 1 %}
+    <a class="aah-page-btn" href="{{ url_for('account_adjustment_history', **prev_args) }}">&larr; Previous</a>
+    {% else %}
+    <span class="aah-page-btn aah-page-btn-disabled">&larr; Previous</span>
+    {% endif %}
+
+    <span class="aah-page-info">Page {{ page }} of {{ total_pages }} &middot; {{ total_count }} record{{ '' if total_count == 1 else 's' }} total</span>
+
+    {% if page < total_pages %}
+    <a class="aah-page-btn" href="{{ url_for('account_adjustment_history', **next_args) }}">Next &rarr;</a>
+    {% else %}
+    <span class="aah-page-btn aah-page-btn-disabled">Next &rarr;</span>
+    {% endif %}
+  </div>
+  {% endif %}
 
 </div>
 
