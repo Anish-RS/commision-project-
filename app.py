@@ -834,10 +834,26 @@ def supplier_bill_edit(bill_id):
             cursor.execute("DELETE FROM customer_bills WHERE supplier_bill_id = %s",    (bill_id,))
 
             # ------------------------------------------------------------
-            # Insert rows only. No balance math here anymore — that's now
-            # done once per customer after the loop, using the aggregated
-            # sums computed above.
+            # FIX: old_balance/final_balance on each re-inserted customer_bills
+            # row must reflect the customer's REAL running balance, not 0/0.
+            #
+            # customers.balance at this point still includes the OLD version
+            # of this bill (we haven't applied any delta yet), so for each
+            # customer we back that out to get their balance as if this bill
+            # never existed, then walk their new line items in order to build
+            # correct old_balance -> final_balance for each row, exactly like
+            # add_supplier_bill does on creation.
             # ------------------------------------------------------------
+            all_customer_ids = set(old_customer_sums.keys()) | set(new_customer_sums.keys())
+
+            running_balance = {}
+            for cid in all_customer_ids:
+                cursor.execute("SELECT balance FROM customers WHERE customer_id = %s", (cid,))
+                crow = cursor.fetchone()
+                current_balance = to_decimal(crow["balance"]) if crow and crow.get("balance") is not None else to_decimal(0)
+                old_amt = old_customer_sums.get(cid, to_decimal(0))
+                running_balance[cid] = current_balance - old_amt  # balance as if this bill didn't exist
+
             for it in new_items:
                 cid    = it["customer_id"]
                 qty    = it["quantity"]
@@ -850,23 +866,27 @@ def supplier_bill_edit(bill_id):
                     (bill_id, cid, float(qty), float(rate), float(amount))
                 )
 
+                item_old_balance   = running_balance[cid]
+                item_final_balance = (item_old_balance + amount).quantize(Decimal("0.01"))
+                running_balance[cid] = item_final_balance
+
                 cursor.execute(
                     """
                     INSERT INTO customer_bills
                         (customer_id, bill_date, quantity, rate, amount, commission, net_amount, supplier_bill_id, old_balance, final_balance)
                     VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
                     """,
-                    (cid, new_bill_date, float(qty), float(rate), float(amount), 0.0, float(amount), bill_id, 0.0, 0.0)
+                    (cid, new_bill_date, float(qty), float(rate), float(amount), 0.0, float(amount),
+                     bill_id, float(item_old_balance), float(item_final_balance))
                 )
 
             # ------------------------------------------------------------
-            # FIX: apply customer balance deltas exactly once per customer,
+            # Apply customer balance deltas exactly once per customer,
             # comparing aggregated old sum vs aggregated new sum. Covers
             # customers removed entirely (new_amt = 0), customers newly
             # added (old_amt = 0), and customers with duplicate rows in
             # either the old or new item set.
             # ------------------------------------------------------------
-            all_customer_ids = set(old_customer_sums.keys()) | set(new_customer_sums.keys())
             for cid in all_customer_ids:
                 old_amt = old_customer_sums.get(cid, to_decimal(0))
                 new_amt = new_customer_sums.get(cid, to_decimal(0))
