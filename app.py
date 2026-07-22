@@ -537,15 +537,9 @@ def add_supplier_bill():
             total_amount += amount
             items.append({"customer_id": int(cid), "quantity": qty, "rate": rate, "amount": amount})
 
-        if commission_raw.endswith("%"):
+        pct = float(commission_raw.replace("%", "")) if commission_raw else 0.0
 
-            pct = float(commission_raw.replace("%", ""))
-        
-            commission = total_amount * pct / 100
-        
-        else:
-        
-            commission = float(commission_raw or 0)
+        commission = total_amount * pct / 100
 
         bill_balance = total_amount - commission - labour - transport - paid
 
