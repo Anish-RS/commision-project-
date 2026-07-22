@@ -841,15 +841,10 @@ def supplier_bill_edit(bill_id):
                 cid = it["customer_id"]
                 new_customer_sums[cid] = new_customer_sums.get(cid, to_decimal(0)) + it["amount"]
 
-            if commission_raw.endswith("%"):
-                pct = to_decimal(
-                    commission_raw.replace("%", "")
-                )
-                commission = (
-                    new_total_amount * pct / Decimal("100")
-                ).quantize(Decimal("0.01"))
-            else:
-                commission = to_decimal(commission_raw)
+            pct = to_decimal(commission_raw.replace("%", "")) if commission_raw else to_decimal(0)
+            commission = (
+                new_total_amount * pct / Decimal("100")
+            ).quantize(Decimal("0.01"))
 
             new_bill_balance = (new_total_amount - commission - labour - transport - paid).quantize(Decimal("0.01"))
 
