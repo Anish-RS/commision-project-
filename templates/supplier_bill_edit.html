@@ -726,17 +726,8 @@ function recalcTotals() {
 
     const commissionInput = document.getElementById('commission').value.trim();
 
-    let commission = 0;
-
-    if (commissionInput.endsWith('%')) {
-
-        const pct = parseFloat(commissionInput.replace('%', '')) || 0;
-        commission = total * pct / 100;
-
-    } else {
-
-        commission = parseFloat(commissionInput) || 0;
-    }
+    const pct = parseFloat(commissionInput.replace('%', '')) || 0;
+    const commission = total * pct / 100;
 
     const labour = parseFloat(document.getElementById('labour').value) || 0;
     const transport = parseFloat(document.getElementById('transport').value) || 0;
