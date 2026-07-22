@@ -888,14 +888,8 @@ function recalcTotals() {
   });
 
   let commissionInput = document.getElementById('commission')?.value.trim() || "";
-    let commission = 0;
-    
-    if (commissionInput.includes("%")) {
-        let percent = parseFloat(commissionInput.replace("%", "")) || 0;
-        commission = (total * percent) / 100;
-    } else {
-        commission = parseFloat(commissionInput) || 0;
-    }
+    let percent = parseFloat(commissionInput.replace("%", "")) || 0;
+    let commission = (total * percent) / 100;
   const labour = parseFloat(document.getElementById('labour')?.value) || 0;
   const transport = parseFloat(document.getElementById('transport')?.value) || 0;
   const paid = parseFloat(document.getElementById('paid')?.value) || 0;
