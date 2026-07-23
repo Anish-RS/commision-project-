@@ -497,13 +497,13 @@
 
             {% if supplierData %}
             <div class="field-group">
-                <label>Total Supplier Bills</label>
-                <div class="toolbar-total for-supplier" id="toolbar-total-supplier" data-value="{{ totalSupplier }}">{{ "%.2f"|format(totalSupplier) }}</div>
+                <label>Supplier Bills Count</label>
+                <div class="toolbar-total for-supplier" id="toolbar-count-supplier" data-value="{{ supplierData|length }}">{{ supplierData|length }}</div>
             </div>
 
             <div class="field-group">
-                <label>Total Customer Bills</label>
-                <div class="toolbar-total for-customer" id="toolbar-total-customer" data-value="{{ totalCustomer }}">{{ "%.2f"|format(totalCustomer) }}</div>
+                <label>Customer Bills Count</label>
+                <div class="toolbar-total for-customer" id="toolbar-count-customer" data-value="{{ customerData|length }}">{{ customerData|length }}</div>
             </div>
             {% endif %}
 
@@ -654,7 +654,7 @@
 
     // Currency formatting
     var fmt = new Intl.NumberFormat('en-IN', { style:'currency', currency:'INR', minimumFractionDigits:2 });
-    document.querySelectorAll('.tally-scope [data-value]').forEach(function(el){
+    document.querySelectorAll('.tally-scope [data-value]:not(.toolbar-total)').forEach(function(el){
         var raw = parseFloat(el.getAttribute('data-value'));
         if(!isNaN(raw)){ el.textContent = fmt.format(raw); }
     });
@@ -715,21 +715,14 @@
         });
     });
 
-    // --- Live toolbar totals: recompute from visible rows only ---
-    function recomputeToolbarTotal(key){
-        var toolbarEl = document.getElementById('toolbar-total-' + key);
+    // --- Live toolbar counts: recompute from visible rows only ---
+    function recomputeToolbarCount(key){
+        var toolbarEl = document.getElementById('toolbar-count-' + key);
         if(!toolbarEl) return;
-        var rows = document.querySelectorAll('table[data-table="'+key+'"] tbody tr[data-name]:not(.is-hidden)');
-        var sum = 0;
-        rows.forEach(function(row){
-            var cell = row.querySelector('.amount-col[data-value]');
-            if(cell){
-                var v = parseFloat(cell.getAttribute('data-value'));
-                if(!isNaN(v)) sum += v;
-            }
-        });
-        toolbarEl.setAttribute('data-value', sum);
-        toolbarEl.textContent = fmt.format(sum);
+        var visibleRows = document.querySelectorAll('table[data-table="'+key+'"] tbody tr[data-name]:not(.is-hidden)');
+        var count = visibleRows.length;
+        toolbarEl.setAttribute('data-value', count);
+        toolbarEl.textContent = count;
     }
 
     // Table filters
@@ -746,7 +739,7 @@
             });
             var counter = document.querySelector('[data-count-for="'+key+'"]');
             if(counter){ counter.textContent = visible + ' entries'; }
-            recomputeToolbarTotal(key);
+            recomputeToolbarCount(key);
         });
     });
 
