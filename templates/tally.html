@@ -167,6 +167,23 @@
 
 .btn-ghost:hover{ border-color:var(--ink-soft); color:var(--ink); }
 
+/* --- Toolbar live totals --- */
+.toolbar-total{
+    border:1px solid var(--line);
+    background:#fff;
+    border-radius:8px;
+    padding:9px 14px;
+    font-family:'IBM Plex Mono', monospace;
+    font-weight:600;
+    font-size:14px;
+    color:var(--ink);
+    min-width:150px;
+    white-space:nowrap;
+}
+
+.toolbar-total.for-supplier{ border-color:var(--gold-soft); }
+.toolbar-total.for-customer{ border-color:var(--gold-soft); }
+
 /* --- Ledger wrapper w/ stitched binding --- */
 .tally-wrapper{
     display:flex;
@@ -478,6 +495,18 @@
                 </div>
             </div>
 
+            {% if supplierData %}
+            <div class="field-group">
+                <label>Total Supplier Bills</label>
+                <div class="toolbar-total for-supplier" id="toolbar-total-supplier" data-value="{{ totalSupplier }}">{{ "%.2f"|format(totalSupplier) }}</div>
+            </div>
+
+            <div class="field-group">
+                <label>Total Customer Bills</label>
+                <div class="toolbar-total for-customer" id="toolbar-total-customer" data-value="{{ totalCustomer }}">{{ "%.2f"|format(totalCustomer) }}</div>
+            </div>
+            {% endif %}
+
             <div class="tally-actions">
                 {% if supplierData %}
                 <button type="button" class="btn-ghost print-hide" id="print-btn">Print</button>
@@ -686,6 +715,23 @@
         });
     });
 
+    // --- Live toolbar totals: recompute from visible rows only ---
+    function recomputeToolbarTotal(key){
+        var toolbarEl = document.getElementById('toolbar-total-' + key);
+        if(!toolbarEl) return;
+        var rows = document.querySelectorAll('table[data-table="'+key+'"] tbody tr[data-name]:not(.is-hidden)');
+        var sum = 0;
+        rows.forEach(function(row){
+            var cell = row.querySelector('.amount-col[data-value]');
+            if(cell){
+                var v = parseFloat(cell.getAttribute('data-value'));
+                if(!isNaN(v)) sum += v;
+            }
+        });
+        toolbarEl.setAttribute('data-value', sum);
+        toolbarEl.textContent = fmt.format(sum);
+    }
+
     // Table filters
     document.querySelectorAll('[data-filter-for]').forEach(function(input){
         input.addEventListener('input', function(){
@@ -700,6 +746,7 @@
             });
             var counter = document.querySelector('[data-count-for="'+key+'"]');
             if(counter){ counter.textContent = visible + ' entries'; }
+            recomputeToolbarTotal(key);
         });
     });
 
