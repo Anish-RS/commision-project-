@@ -445,6 +445,22 @@
         </div>
 
       </div>
+      <div class="bqs-consolidated-row" style="margin-top:16px; padding-top:16px; border-top:1px dashed var(--hairline); display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end;">
+
+        <div class="bqs-field" style="flex:1 1 260px;">
+          <label for="bqs-consolidated-name">Consolidated Bill — Customer Name / ID</label>
+          <div class="bqs-input-shell">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-6 8-6s8 2 8 6"/></svg>
+            <input type="text" id="bqs-consolidated-name" placeholder="Search by name or ID">
+          </div>
+        </div>
+      
+        <button type="button" id="print-consolidated" class="bqs-btn bqs-btn-ghost">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9V3h12v6M6 18H4a1 1 0 0 1-1-1v-5a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1h-2M6 14h12v7H6z"/></svg>
+          Print Consolidated Bill
+        </button>
+      
+      </div>
 
     </form>
   </div>
@@ -576,6 +592,48 @@
     document.body.removeChild(f);
 
   });
+  const consolidatedBtn = document.getElementById("print-consolidated");
+  const consolidatedNameInput = document.getElementById("bqs-consolidated-name");
+
+  if (consolidatedBtn && consolidatedNameInput) {
+    consolidatedBtn.addEventListener("click", () => {
+
+      const name = consolidatedNameInput.value.trim();
+
+      if (!name) {
+        alert("Please enter a customer name or ID to print a consolidated bill.");
+        consolidatedNameInput.focus();
+        return;
+      }
+
+      const dateField = form.querySelector('input[name="bill_date"]');
+      const bill_date = dateField.value.trim(); // empty -> backend defaults to today
+
+      const f = document.createElement("form");
+      f.method = "POST";
+      f.action = printSearchUrl;
+      f.target = "_blank";
+
+      const add = (n, v) => {
+        const i = document.createElement("input");
+        i.type = "hidden";
+        i.name = n;
+        i.value = v;
+        f.appendChild(i);
+      };
+
+      add("bill_no", "");
+      add("name", name);
+      add("bill_date", bill_date);
+
+      const csrf = document.querySelector('input[name="csrf_token"]');
+      if (csrf) add("csrf_token", csrf.value);
+
+      document.body.appendChild(f);
+      f.submit();
+      document.body.removeChild(f);
+    });
+  }
 
 })();
 </script>
