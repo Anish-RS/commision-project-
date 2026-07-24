@@ -357,6 +357,39 @@
     color:var(--ink-soft);
     margin:0;
   }
+  .bqs-suggestions{
+    position:absolute;
+    top:100%;
+    left:0;
+    right:0;
+    margin-top:4px;
+    background:#fff;
+    border:1px solid #ddd;
+    border-radius:10px;
+    max-height:220px;
+    overflow-y:auto;
+    box-shadow:0 8px 18px rgba(0,0,0,.12);
+    display:none;
+    z-index:9999;
+  }
+  
+  .bqs-suggestion-item{
+      padding:10px 14px;
+      cursor:pointer;
+      transition:.15s;
+  }
+  
+  .bqs-suggestion-item:hover{
+      background:#f5f7fb;
+  }
+  
+  .bqs-suggestion-item strong{
+      color:#1d3557;
+  }
+  
+  .bqs-suggestion-item small{
+      color:#777;
+  }
 
   /* ---------- Responsive ---------- */
 
@@ -445,20 +478,58 @@
         </div>
 
       </div>
-      <div class="bqs-consolidated-row" style="margin-top:16px; padding-top:16px; border-top:1px dashed var(--hairline); display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end;">
-
-        <div class="bqs-field" style="flex:1 1 260px;">
-          <label for="bqs-consolidated-name">Consolidated Bill — Customer Name / ID</label>
-          <div class="bqs-input-shell">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-6 8-6s8 2 8 6"/></svg>
-            <input type="text" id="bqs-consolidated-name" placeholder="Search by name or ID">
-          </div>
-        </div>
+      <div class="bqs-consolidated-row"
+           style="margin-top:16px;padding-top:16px;border-top:1px dashed var(--hairline);display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;">
       
-        <button type="button" id="print-consolidated" class="bqs-btn bqs-btn-ghost">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9V3h12v6M6 18H4a1 1 0 0 1-1-1v-5a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1h-2M6 14h12v7H6z"/></svg>
-          Print Consolidated Bill
-        </button>
+          <div class="bqs-field"
+               style="flex:1 1 260px; position:relative;">
+      
+              <label for="bqs-consolidated-name">
+                  Consolidated Bill — Customer Name / ID
+              </label>
+      
+              <div class="bqs-input-shell">
+      
+                  <svg viewBox="0 0 24 24"
+                       fill="none"
+                       stroke="currentColor"
+                       stroke-width="2"
+                       stroke-linecap="round">
+                      <circle cx="12" cy="8" r="4"/>
+                      <path d="M4 20c0-4 3.6-6 8-6s8 2 8 6"/>
+                  </svg>
+      
+                  <input
+                      type="text"
+                      id="bqs-consolidated-name"
+                      placeholder="Search by name or ID"
+                      autocomplete="off">
+      
+              </div>
+      
+              <!-- Suggestions -->
+              <div id="bqs-consolidated-suggestions"
+                   class="bqs-suggestions"></div>
+      
+          </div>
+      
+          <button
+              type="button"
+              id="print-consolidated"
+              class="bqs-btn bqs-btn-ghost">
+      
+              <svg viewBox="0 0 24 24"
+                   fill="none"
+                   stroke="currentColor"
+                   stroke-width="2">
+                  <path d="M6 9V3h12v6"/>
+                  <path d="M6 18H4a1 1 0 0 1-1-1v-5a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1h-2"/>
+                  <path d="M6 14h12v7H6z"/>
+              </svg>
+      
+              Print Consolidated Bill
+      
+          </button>
       
       </div>
 
@@ -534,6 +605,73 @@
 
 <script>
 (() => {
+
+  // Consolidated Bill Autocomplete Only
+
+  const consolidatedInput = document.getElementById("bqs-consolidated-name");
+  const consolidatedSuggestions = document.getElementById("bqs-consolidated-suggestions");
+
+  if (consolidatedInput && consolidatedSuggestions) {
+
+    consolidatedInput.addEventListener("input", function () {
+
+      const q = this.value.trim();
+
+      if (!q) {
+        consolidatedSuggestions.innerHTML = "";
+        consolidatedSuggestions.style.display = "none";
+        return;
+      }
+
+      fetch(`/search-customers?q=${encodeURIComponent(q)}`)
+        .then(r => r.json())
+        .then(data => {
+
+          consolidatedSuggestions.innerHTML = "";
+
+          if (!data.length) {
+            consolidatedSuggestions.style.display = "none";
+            return;
+          }
+
+          data.forEach(c => {
+
+            const div = document.createElement("div");
+
+            div.className = "bqs-suggestion-item";
+
+            div.innerHTML = `
+              <strong>${c.customer_name}</strong><br>
+              <small>ID : ${c.customer_id}</small>
+            `;
+
+            div.onclick = () => {
+              consolidatedInput.value = c.customer_name;
+              consolidatedSuggestions.style.display = "none";
+            };
+
+            consolidatedSuggestions.appendChild(div);
+
+          });
+
+          consolidatedSuggestions.style.display = "block";
+
+        });
+
+    });
+
+    document.addEventListener("click", function(e){
+
+      if (
+        !consolidatedSuggestions.contains(e.target) &&
+        e.target !== consolidatedInput
+      ) {
+        consolidatedSuggestions.style.display = "none";
+      }
+
+    });
+
+  }
 
   const printBtn = document.getElementById("print-all-by-date");
   const form = document.getElementById("customer-search-form");
