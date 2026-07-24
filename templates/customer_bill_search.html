@@ -357,65 +357,79 @@
     color:var(--ink-soft);
     margin:0;
   }
-  .bqs-suggestions{
-    position:absolute;
-    top:100%;
-    left:0;
-    right:0;
-    margin-top:4px;
-    background:#fff;
-    border:1px solid #ddd;
-    border-radius:10px;
-    max-height:220px;
-    overflow-y:auto;
-    box-shadow:0 8px 18px rgba(0,0,0,.12);
-    display:none;
-    z-index:9999;
+  /* ===== Consolidated Statement ===== */
+
+  .bqs-consolidated-card{
+      margin-top:22px;
+      padding:20px;
+      border:1px solid var(--hairline);
+      border-radius:14px;
+      background:linear-gradient(180deg,#fff,#fbfbfb);
   }
   
-  .bqs-suggestion-item{
-      padding:10px 14px;
-      cursor:pointer;
-      transition:.15s;
+  .bqs-consolidated-title{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin-bottom:14px;
   }
   
-  .bqs-suggestion-item:hover{
-      background:#f5f7fb;
+  .bqs-consolidated-title svg{
+      width:18px;
+      height:18px;
+      color:var(--brass);
   }
   
-  .bqs-suggestion-item strong{
-      color:#1d3557;
+  .bqs-consolidated-title h4{
+      margin:0;
+      font-size:15px;
+      font-weight:700;
+      color:var(--ink);
   }
   
-  .bqs-suggestion-item small{
-      color:#777;
+  .bqs-consolidated-title p{
+      margin:2px 0 0;
+      font-size:12px;
+      color:var(--ink-soft);
   }
-
-  /* ---------- Responsive ---------- */
-
-  @media (max-width: 860px){
-
-    .bqs-wrap{ padding:20px; }
-
-    .bqs-result-header{ display:none; }
-
-    .bqs-card{
-      grid-template-columns:1fr;
-      gap:8px;
-      padding:16px;
-    }
-
-    .bqs-card-actions{ justify-content:flex-start; margin-top:6px; }
-
-    .bqs-actions-row{ width:100%; }
-    .bqs-btn{ flex:1 1 auto; justify-content:center; }
+  
+  .bqs-consolidated-body{
+      display:flex;
+      gap:14px;
+      align-items:flex-end;
+      flex-wrap:wrap;
   }
-
-  @media (max-width: 480px){
-    .bqs-search-row{ flex-direction:column; align-items:stretch; }
-    .bqs-actions-row{ flex-direction:column; }
+  
+  .bqs-consolidated-body .bqs-field{
+      flex:1;
+      min-width:280px;
   }
-
+  
+  .bqs-consolidated-body .bqs-btn{
+      height:46px;
+  }
+  
+  #bqs-consolidated-name{
+      width:100%;
+      padding:12px 14px 12px 38px;
+      border:1.5px solid var(--hairline);
+      border-radius:12px;
+      background:var(--paper);
+      font-size:14px;
+      transition:.2s;
+  }
+  
+  #bqs-consolidated-name:focus{
+      outline:none;
+      border-color:var(--brass);
+      background:#fff;
+      box-shadow:0 0 0 3px rgba(173,122,34,.12);
+  }
+  
+  #bqs-consolidated-suggestions{
+      width:100%;
+      top:calc(100% + 6px);
+  }
 </style>
 
 <div class="bqs-wrap">
@@ -478,61 +492,77 @@
         </div>
 
       </div>
-      <div class="bqs-consolidated-row"
-           style="margin-top:16px;padding-top:16px;border-top:1px dashed var(--hairline);display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;">
-      
-          <div class="bqs-field"
-               style="flex:1 1 260px; position:relative;">
-      
-              <label for="bqs-consolidated-name">
-                  Consolidated Bill — Customer Name / ID
-              </label>
-      
-              <div class="bqs-input-shell">
-      
-                  <svg viewBox="0 0 24 24"
-                       fill="none"
-                       stroke="currentColor"
-                       stroke-width="2"
-                       stroke-linecap="round">
-                      <circle cx="12" cy="8" r="4"/>
-                      <path d="M4 20c0-4 3.6-6 8-6s8 2 8 6"/>
-                  </svg>
-      
-                  <input
-                      type="text"
-                      id="bqs-consolidated-name"
-                      placeholder="Search by name or ID"
-                      autocomplete="off">
-      
-              </div>
-      
-              <!-- Suggestions -->
-              <div id="bqs-consolidated-suggestions"
-                   class="bqs-suggestions"></div>
-      
-          </div>
-      
-          <button
-              type="button"
-              id="print-consolidated"
-              class="bqs-btn bqs-btn-ghost">
-      
-              <svg viewBox="0 0 24 24"
-                   fill="none"
-                   stroke="currentColor"
-                   stroke-width="2">
-                  <path d="M6 9V3h12v6"/>
-                  <path d="M6 18H4a1 1 0 0 1-1-1v-5a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1h-2"/>
-                  <path d="M6 14h12v7H6z"/>
-              </svg>
-      
-              Print Consolidated Bill
-      
-          </button>
-      
-      </div>
+      <div class="bqs-consolidated-card">
 
+        <div class="bqs-consolidated-title">
+    
+            <svg viewBox="0 0 24 24"
+                 fill="none"
+                 stroke="currentColor"
+                 stroke-width="2">
+                <path d="M8 3h8l5 5v13H3V3z"/>
+                <path d="M8 3v5h8"/>
+            </svg>
+    
+            <div>
+                <h4>Customer Consolidated Statement</h4>
+                <p>Search a customer to print the complete statement.</p>
+            </div>
+    
+        </div>
+    
+        <div class="bqs-consolidated-body">
+    
+            <div class="bqs-field" style="position:relative;">
+    
+                <label for="bqs-consolidated-name">
+                    Customer Name / ID
+                </label>
+    
+                <div class="bqs-input-shell">
+    
+                    <svg viewBox="0 0 24 24"
+                         fill="none"
+                         stroke="currentColor"
+                         stroke-width="2">
+                        <circle cx="12" cy="8" r="4"/>
+                        <path d="M4 20c0-4 3.6-6 8-6s8 2 8 6"/>
+                    </svg>
+    
+                    <input
+                        id="bqs-consolidated-name"
+                        type="text"
+                        autocomplete="off"
+                        placeholder="Type customer name or ID...">
+    
+                </div>
+    
+                <div id="bqs-consolidated-suggestions"
+                     class="bqs-suggestions"></div>
+    
+            </div>
+    
+            <button
+                type="button"
+                id="print-consolidated"
+                class="bqs-btn bqs-btn-primary">
+    
+                <svg viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="2">
+                    <path d="M6 9V3h12v6"/>
+                    <path d="M6 18H4a1 1 0 0 1-1-1v-5a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1h-2"/>
+                    <path d="M6 14h12v7H6z"/>
+                </svg>
+    
+                Print Statement
+    
+            </button>
+    
+        </div>
+    
+    </div>
     </form>
   </div>
 
