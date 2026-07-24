@@ -641,14 +641,14 @@
             div.className = "bqs-suggestion-item";
 
             div.innerHTML = `
-              <strong>${c.customer_name}</strong><br>
+              <strong>${c.name}</strong><br>
               <small>ID : ${c.customer_id}</small>
-            `;
-
-            div.onclick = () => {
-              consolidatedInput.value = c.customer_name;
+          `;
+          
+          div.onclick = () => {
+              consolidatedInput.value = c.name;
               consolidatedSuggestions.style.display = "none";
-            };
+          };
 
             consolidatedSuggestions.appendChild(div);
 
