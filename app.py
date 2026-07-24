@@ -1387,7 +1387,27 @@ def customer_bill_edit(bill_id):
         "customer_bill_edit.html",
         bill=bill
     )
+@app.route("/search-customers")
+def search_customers():
 
+    q = request.args.get("q", "").strip()
+
+    cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+    cur.execute("""
+        SELECT customer_id, customer_name
+        FROM customers
+        WHERE customer_name LIKE %s
+           OR CAST(customer_id AS CHAR) LIKE %s
+        ORDER BY customer_name
+        LIMIT 10
+    """, (f"%{q}%", f"%{q}%"))
+
+    customers = cur.fetchall()
+
+    cur.close()
+
+    return jsonify(customers)
 # ---------------------------------------------------------------------------
 # Customer Bills — Delete
 # ---------------------------------------------------------------------------
