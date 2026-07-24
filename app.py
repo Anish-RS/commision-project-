@@ -1392,7 +1392,7 @@ def search_customers():
 
     q = request.args.get("q", "").strip()
 
-    cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cur = conn.cursor(dictionary=True)
 
     cur.execute("""
         SELECT customer_id, customer_name
