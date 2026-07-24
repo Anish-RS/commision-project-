@@ -1387,25 +1387,35 @@ def customer_bill_edit(bill_id):
         "customer_bill_edit.html",
         bill=bill
     )
+from psycopg2.extras import RealDictCursor
+
 @app.route("/search-customers")
 def search_customers():
 
     q = request.args.get("q", "").strip()
 
-    cur = conn.cursor(dictionary=True)
+    conn = get_connection()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
 
-    cur.execute("""
-        SELECT customer_id, name
+    cursor.execute("""
+        SELECT
+            customer_id,
+            name
         FROM customers
-        WHERE name LIKE %s
-           OR CAST(customer_id AS CHAR) LIKE %s
+        WHERE
+            name ILIKE %s
+            OR CAST(customer_id AS TEXT) ILIKE %s
         ORDER BY name
         LIMIT 10
-    """, (f"%{q}%", f"%{q}%"))
+    """, (
+        f"%{q}%",
+        f"%{q}%"
+    ))
 
-    customers = cur.fetchall()
+    customers = cursor.fetchall()
 
-    cur.close()
+    cursor.close()
+    conn.close()
 
     return jsonify(customers)
 # ---------------------------------------------------------------------------
