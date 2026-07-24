@@ -2389,37 +2389,76 @@ def ledger_print():
 # ---------------------------------------------------------------------------
 # Find (search customers / suppliers)
 # ---------------------------------------------------------------------------
-
 @app.route("/find", methods=["GET"])
-
 def find_page():
-    q    = request.args.get("q",    "").strip()
+
+    q = request.args.get("q", "").strip()
     mode = request.args.get("mode", "supplier")
 
-    conn   = get_connection()
+    conn = get_connection()
     cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     if mode == "supplier":
+
         if q:
-            cursor.execute(
-                "SELECT supplier_id AS id, name, balance FROM suppliers WHERE name ILIKE %s ORDER BY name ASC",
-                (f"%{q}%",)
-            )
+            cursor.execute("""
+                SELECT
+                    supplier_id AS id,
+                    name,
+                    balance
+                FROM suppliers
+                WHERE
+                    name ILIKE %s
+                    OR CAST(supplier_id AS TEXT) ILIKE %s
+                ORDER BY name ASC
+            """, (f"%{q}%", f"%{q}%"))
+
         else:
-            cursor.execute("SELECT supplier_id AS id, name, balance FROM suppliers ORDER BY name ASC")
+            cursor.execute("""
+                SELECT
+                    supplier_id AS id,
+                    name,
+                    balance
+                FROM suppliers
+                ORDER BY name ASC
+            """)
+
     else:
+
         if q:
-            cursor.execute(
-                "SELECT customer_id AS id, name, balance FROM customers WHERE name ILIKE %s ORDER BY name ASC",
-                (f"%{q}%",)
-            )
+            cursor.execute("""
+                SELECT
+                    customer_id AS id,
+                    name,
+                    balance
+                FROM customers
+                WHERE
+                    name ILIKE %s
+                    OR CAST(customer_id AS TEXT) ILIKE %s
+                ORDER BY name ASC
+            """, (f"%{q}%", f"%{q}%"))
+
         else:
-            cursor.execute("SELECT customer_id AS id, name, balance FROM customers ORDER BY name ASC")
+            cursor.execute("""
+                SELECT
+                    customer_id AS id,
+                    name,
+                    balance
+                FROM customers
+                ORDER BY name ASC
+            """)
 
     results = cursor.fetchall()
-    cursor.close(); conn.close()
-    return render_template("find.html", mode=mode, q=q, results=results)
 
+    cursor.close()
+    conn.close()
+
+    return render_template(
+        "find.html",
+        mode=mode,
+        q=q,
+        results=results
+    )
 # ---------------------------------------------------------------------------
 # Supplier Edit
 # ---------------------------------------------------------------------------
