@@ -80,18 +80,43 @@
       text-align: right;
     }
 
-    .summary {
-      margin-top: 8px;
-      font-size: 14.5px;
-      border-top: 1px dashed #999;
-      padding-top: 6px;
-      font-weight: 600;
-    }
+    .summary{
 
-    .summary-row {
-      display: flex;
-      justify-content: space-between;
-      padding: 2px 0;
+        margin-top:8px;
+        border-top:1px dashed #999;
+        padding-top:6px;
+    
+    }
+    
+    .summary-table{
+    
+        width:100%;
+        border-collapse:collapse;
+    
+    }
+    
+    .summary-table td{
+    
+        border:none;
+        padding:3px 0;
+        font-size:15px;
+        font-weight:600;
+    
+    }
+    
+    .summary-table td:last-child{
+    
+        text-align:right;
+    
+    }
+    
+    .balance-row td{
+    
+        border-top:2px solid #000;
+        padding-top:7px;
+        font-size:18px;
+        font-weight:900;
+    
     }
 
     .footer {
@@ -229,7 +254,6 @@
                 <th>#</th>
                 <th>Bill</th>
                 <th>Supplier Ref</th>
-                <th>Date</th>
                 <th class="right">Rate</th>
                 <th class="right">Qty</th>
                 <th class="right">Amount</th>
@@ -251,10 +275,6 @@
 
                 <td>{{ p.supplier_bill_id or "-" }}</td>
 
-                <td>
-                    {{ p.bill_date.strftime('%d-%m-%Y') }}
-                </td>
-
                 <td class="right">
                     {{ "%.2f"|format(p.rate or 0) }}
                 </td>
@@ -273,7 +293,7 @@
 
             <tr style="border-top:2px solid #000;">
 
-                <td colspan="5"></td>
+                <td colspan="4"></td>
 
                 <td class="right">
 
@@ -309,42 +329,39 @@
 
     <div class="summary">
 
-        <div class="row">
-
-            <div>Total Purchases</div>
-
-            <div>{{ "%.2f"|format(net or 0) }}</div>
-
-        </div>
-
-        <div class="row">
-
-            <div>Opening Balance</div>
-
-            <div>{{ "%.2f"|format(opening or 0) }}</div>
-
-        </div>
-
-        <div class="row">
-
-            <div>Total Receipts</div>
-
-            <div>{{ "%.2f"|format(sum_receipts or 0) }}</div>
-
-        </div>
-
-        
-
-        <div class="row current-balance-row">
-
-            <div>Current Balance</div>
-
-            <div>{{ "%.2f"|format(current_balance or 0) }}</div>
-
-        </div>
-
+    <table class="summary-table">
+    
+    <tr>
+        <td>Total Purchases</td>
+        <td class="right">
+            {{ "%.2f"|format(net or 0) }}
+        </td>
+    </tr>
+    
+    <tr>
+        <td>Opening Balance</td>
+        <td class="right">
+            {{ "%.2f"|format(opening or 0) }}
+        </td>
+    </tr>
+    
+    <tr>
+        <td>Total Receipts</td>
+        <td class="right">
+            {{ "%.2f"|format(sum_receipts or 0) }}
+        </td>
+    </tr>
+    
+    <tr class="balance-row">
+        <td>Current Balance</td>
+        <td class="right">
+            {{ "%.2f"|format(current_balance or 0) }}
+        </td>
+    </tr>
+    
+    </table>
+    
     </div>
-
 
 
     <!-- FOOTER -->
