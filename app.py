@@ -1395,11 +1395,11 @@ def search_customers():
     cur = conn.cursor(dictionary=True)
 
     cur.execute("""
-        SELECT customer_id, customer_name
+        SELECT customer_id, name
         FROM customers
-        WHERE customer_name LIKE %s
+        WHERE name LIKE %s
            OR CAST(customer_id AS CHAR) LIKE %s
-        ORDER BY customer_name
+        ORDER BY name
         LIMIT 10
     """, (f"%{q}%", f"%{q}%"))
 
