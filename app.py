@@ -229,6 +229,104 @@ def resync_customer_ledger(cursor, customer_ids):
 
 
 # ---------------------------------------------------------------------------
+# Supplier ledger resync
+#
+# Mirrors resync_customer_ledger() above. Previously, supplier_bills.
+# old_balance / final_balance and suppliers.balance were maintained purely
+# by incremental "delta" patches applied on every create/edit/delete. That
+# only stays correct if every single patch in the supplier's history was
+# applied perfectly and in true date order — one bad edit (or two requests
+# racing on the same bill) permanently drifts suppliers.balance forever
+# after, since nothing ever re-derives it from source data. This is why an
+# edited "paid" amount could silently fail to "stick": the delta was
+# computed against an already-drifted baseline.
+#
+# This function rebuilds old_balance/final_balance on every supplier_bills
+# row AND suppliers.balance itself from scratch, by replaying every dated
+# event for that supplier (bills + account_adjustments + transactions) in
+# true chronological order, anchored on suppliers.opening_balance. Call it
+# after ANY operation that touches a supplier's balance (bill create/edit/
+# delete, receipt, payment, manual adjustment).
+# ---------------------------------------------------------------------------
+
+def resync_supplier_ledger(cursor, supplier_ids):
+    ids = list({int(sid) for sid in supplier_ids if sid is not None})
+    if not ids:
+        return
+
+    events_cte = """
+        WITH events AS (
+            SELECT sb.supplier_id, sb.bill_date AS event_date, 1 AS kind_rank,
+                   sb.bill_id AS seq,
+                   -(COALESCE(sb.total_amount,0) - COALESCE(sb.commission,0)
+                     - COALESCE(sb.labour,0) - COALESCE(sb.transport,0)
+                     - COALESCE(sb.paid,0)) AS delta,
+                   sb.bill_id AS bill_id
+            FROM supplier_bills sb
+            WHERE sb.supplier_id = ANY(%(ids)s)
+
+            UNION ALL
+
+            SELECT aa.entity_id, aa.adjustment_date, 0,
+                   aa.adjustment_id, aa.amount, NULL
+            FROM account_adjustments aa
+            WHERE aa.entity_type = 'supplier' AND aa.entity_id = ANY(%(ids)s)
+
+            UNION ALL
+
+            SELECT t.entity_id, t.tx_date::date, 2,
+                   t.tx_id,
+                   CASE WHEN t.tx_type = 'receipt' THEN -t.amount ELSE t.amount END,
+                   NULL
+            FROM transactions t
+            WHERE t.entity_type = 'supplier' AND t.entity_id = ANY(%(ids)s)
+        )
+    """
+
+    # 1) Rebuild the per-bill old_balance/final_balance snapshots.
+    cursor.execute(
+        events_cte + """
+        , running AS (
+            SELECT e.*,
+                COALESCE(s.opening_balance, 0) + COALESCE(SUM(e.delta) OVER (
+                    PARTITION BY e.supplier_id ORDER BY e.event_date, e.kind_rank, e.seq
+                    ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW), 0) AS balance_after,
+                COALESCE(s.opening_balance, 0) + COALESCE(SUM(e.delta) OVER (
+                    PARTITION BY e.supplier_id ORDER BY e.event_date, e.kind_rank, e.seq
+                    ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING), 0) AS balance_before
+            FROM events e
+            JOIN suppliers s ON s.supplier_id = e.supplier_id
+        )
+        UPDATE supplier_bills sb
+        SET old_balance   = ROUND(r.balance_before, 2),
+            final_balance = ROUND(r.balance_after, 2)
+        FROM running r
+        WHERE r.bill_id = sb.bill_id
+        """,
+        {"ids": ids}
+    )
+
+    # 2) Rebuild suppliers.balance itself as opening_balance + sum of every
+    #    event, so it can never silently drift away from the truth again.
+    cursor.execute(
+        events_cte + """
+        , totals AS (
+            SELECT e.supplier_id,
+                   COALESCE(s.opening_balance, 0) + COALESCE(SUM(e.delta), 0) AS total_balance
+            FROM events e
+            JOIN suppliers s ON s.supplier_id = e.supplier_id
+            GROUP BY e.supplier_id, s.opening_balance
+        )
+        UPDATE suppliers s
+        SET balance = ROUND(t.total_balance, 2)
+        FROM totals t
+        WHERE t.supplier_id = s.supplier_id
+        """,
+        {"ids": ids}
+    )
+
+
+# ---------------------------------------------------------------------------
 # Home
 # ---------------------------------------------------------------------------
 
@@ -553,14 +651,22 @@ def add_supplier_bill():
         cursor = conn.cursor(cursor_factory=RealDictCursor)
 
         try:
-            cursor.execute("SELECT balance FROM suppliers WHERE supplier_id = %s", (supplier_id,))
+            # Lock the supplier row for the rest of this transaction. This
+            # is what actually stops a double-submit / concurrent edit from
+            # racing: whichever request gets here second simply waits until
+            # the first one commits, instead of both reading the same
+            # "old" balance and one of their updates getting lost.
+            cursor.execute(
+                "SELECT balance FROM suppliers WHERE supplier_id = %s FOR UPDATE",
+                (supplier_id,)
+            )
             row = cursor.fetchone()
             old_supplier_balance = float(row["balance"]) if row and row["balance"] is not None else 0.0
-            new_supplier_balance = old_supplier_balance - bill_balance
 
-            previous_owed  = abs(old_supplier_balance) if old_supplier_balance < 0 else 0.0
-            resulting_owed = abs(new_supplier_balance)  if new_supplier_balance < 0 else 0.0
-
+            # old_balance/final_balance are written as placeholders here —
+            # resync_supplier_ledger() below is the single source of truth
+            # for these and for suppliers.balance, so we never again rely
+            # on a snapshot that can silently drift.
             cursor.execute(
                 """
                 INSERT INTO supplier_bills
@@ -578,16 +684,11 @@ def add_supplier_bill():
                     labour,
                     paid,
                     bill_balance,
-                    old_supplier_balance,
-                    new_supplier_balance
+                    0,
+                    0
                 )
             )
             bill_id = cursor.fetchone()["bill_id"]
-
-            cursor.execute(
-                "UPDATE suppliers SET balance = %s WHERE supplier_id = %s",
-                (new_supplier_balance, supplier_id)
-            )
 
             for it in items:
                 cid    = it["customer_id"]
@@ -619,6 +720,14 @@ def add_supplier_bill():
                 )
 
             resync_customer_ledger(cursor, [it["customer_id"] for it in items])
+            resync_supplier_ledger(cursor, [supplier_id])
+
+            cursor.execute("SELECT balance FROM suppliers WHERE supplier_id = %s", (supplier_id,))
+            row = cursor.fetchone()
+            new_supplier_balance = float(row["balance"]) if row and row["balance"] is not None else 0.0
+
+            previous_owed  = abs(old_supplier_balance) if old_supplier_balance < 0 else 0.0
+            resulting_owed = abs(new_supplier_balance)  if new_supplier_balance < 0 else 0.0
 
             conn.commit()
 
@@ -848,11 +957,23 @@ def supplier_bill_edit(bill_id):
 
             new_bill_balance = (new_total_amount - commission - labour - transport - paid).quantize(Decimal("0.01"))
 
-            old_final_signed       = to_decimal(bill.get("final_balance") or 0)
-            old_header_old_balance = to_decimal(bill.get("old_balance")  or 0)
-            new_final_signed       = (old_header_old_balance - new_bill_balance).quantize(Decimal("0.01"))
-            delta_supplier_signed  = new_final_signed - old_final_signed
+            # Lock the supplier row for the rest of this transaction so a
+            # double-submit or a concurrent edit on another bill for the
+            # same supplier can't race with this one.
+            cursor.execute(
+                "SELECT balance FROM suppliers WHERE supplier_id = %s FOR UPDATE",
+                (bill["supplier_id"],)
+            )
 
+            # old_balance/final_balance are no longer computed here from the
+            # bill's own previously-stored snapshot (bill.get("old_balance")
+            # / bill.get("final_balance")) — that snapshot can already have
+            # drifted from a prior edit or an out-of-order bill, and basing
+            # this edit's delta on a drifted number is exactly what let a
+            # paid-amount edit fail to "stick". resync_supplier_ledger()
+            # below rebuilds this bill's balance columns (and every other
+            # bill's, and suppliers.balance) from the full event history
+            # instead, so placeholders are fine here.
             cursor.execute(
                 """
                 UPDATE supplier_bills
@@ -863,8 +984,7 @@ def supplier_bill_edit(bill_id):
                     transport=%s,
                     labour=%s,
                     paid=%s,
-                    balance=%s,
-                    final_balance=%s
+                    balance=%s
                 WHERE bill_id=%s
                 """,
                 (
@@ -876,13 +996,8 @@ def supplier_bill_edit(bill_id):
                     float(labour),
                     float(paid),
                     float(new_bill_balance),
-                    float(new_final_signed),
                     bill_id
                 )
-            )
-            cursor.execute(
-                "UPDATE suppliers SET balance = balance + %s WHERE supplier_id = %s",
-                (float(delta_supplier_signed), bill["supplier_id"])
             )
 
             cursor.execute(
@@ -951,6 +1066,7 @@ def supplier_bill_edit(bill_id):
                     )
 
             resync_customer_ledger(cursor, all_customer_ids)
+            resync_supplier_ledger(cursor, [bill["supplier_id"]])
 
             conn.commit()
 
@@ -1008,10 +1124,16 @@ def supplier_bill_delete(bill_id):
             flash("Supplier bill not found", "danger")
             return redirect(url_for("supplier_bill_search"))
 
-        supplier_id              = bill["supplier_id"]
-        bill_date                = bill["bill_date"]
-        old_header_old_signed    = to_decimal(bill.get("old_balance")   or 0)
-        new_final_signed         = to_decimal(bill.get("final_balance") or 0)
+        supplier_id = bill["supplier_id"]
+        bill_date   = bill["bill_date"]
+
+        # Lock the supplier row for the rest of this transaction — same
+        # reasoning as add/edit: prevents a delete racing with another
+        # create/edit/delete on the same supplier.
+        cursor.execute(
+            "SELECT balance FROM suppliers WHERE supplier_id = %s FOR UPDATE",
+            (supplier_id,)
+        )
 
         cursor.execute(
             "SELECT customer_id, SUM(amount) AS total_amount FROM supplier_bill_items "
@@ -1026,17 +1148,15 @@ def supplier_bill_delete(bill_id):
                 (float(to_decimal(row["total_amount"] or 0)), row["customer_id"])
             )
 
-        delta = (old_header_old_signed - new_final_signed).quantize(Decimal("0.01"))
-        cursor.execute(
-            "UPDATE suppliers SET balance = balance + %s WHERE supplier_id = %s",
-            (float(delta), supplier_id)
-        )
-
         cursor.execute("DELETE FROM supplier_bill_items WHERE bill_id = %s",     (bill_id,))
         cursor.execute("DELETE FROM customer_bills WHERE supplier_bill_id = %s", (bill_id,))
         cursor.execute("DELETE FROM supplier_bills WHERE bill_id = %s",          (bill_id,))
 
         resync_customer_ledger(cursor, affected_customer_ids)
+        # bill_id no longer exists in supplier_bills, so this correctly
+        # rebuilds the supplier's balance and every remaining bill's
+        # snapshot as if the deleted bill had never happened.
+        resync_supplier_ledger(cursor, [supplier_id])
 
         conn.commit()
 
@@ -1447,7 +1567,17 @@ def customer_bill_delete(bill_id):
             (float(amount), cust_id)
         )
 
+        affected_supplier_id = None
+
         if supplier_bill_id:
+            # Lock the supplier row before touching anything of theirs —
+            # same race protection as the supplier-bill routes.
+            cursor.execute(
+                "SELECT balance FROM suppliers WHERE supplier_id = "
+                "(SELECT supplier_id FROM supplier_bills WHERE bill_id = %s) FOR UPDATE",
+                (supplier_bill_id,)
+            )
+
             cursor.execute("SELECT * FROM supplier_bills WHERE bill_id = %s", (supplier_bill_id,))
             sb = cursor.fetchone()
 
@@ -1459,26 +1589,20 @@ def customer_bill_delete(bill_id):
             paid             = to_decimal(sb["paid"])
             new_bill_balance = new_total_amount - commission - labour - transport - paid
 
-            # Preserve running-balance semantics: final_balance must stay
-            # "supplier's old_balance minus this bill's balance", the same
-            # convention used everywhere else (creation, edit, delete of the
-            # supplier bill itself). Previously this was overwritten with
-            # just -new_bill_balance, which dropped the supplier's prior
-            # balance and corrupted later edits/deletes of this same bill.
-            old_header_old_balance = to_decimal(sb.get("old_balance") or 0)
-            new_final_balance      = (old_header_old_balance - new_bill_balance).quantize(Decimal("0.01"))
+            affected_supplier_id = sb["supplier_id"]
 
-            cursor.execute(
-                "UPDATE suppliers SET balance = balance + %s WHERE supplier_id = %s",
-                (float(amount), sb["supplier_id"])
-            )
+            # final_balance is left for resync_supplier_ledger() below to
+            # rebuild from the full event history — no longer computed
+            # from this bill's own (possibly already drifted) old_balance
+            # snapshot, and suppliers.balance is no longer hand-patched
+            # here either.
             cursor.execute(
                 """
                 UPDATE supplier_bills
-                SET total_amount=%s, balance=%s, final_balance=%s
+                SET total_amount=%s, balance=%s
                 WHERE bill_id=%s
                 """,
-                (float(new_total_amount), float(new_bill_balance), float(new_final_balance), supplier_bill_id)
+                (float(new_total_amount), float(new_bill_balance), supplier_bill_id)
             )
             cursor.execute(
                 "DELETE FROM supplier_bill_items WHERE bill_id=%s AND customer_id=%s",
@@ -1488,6 +1612,8 @@ def customer_bill_delete(bill_id):
         cursor.execute("DELETE FROM customer_bills WHERE bill_id = %s", (bill_id,))
 
         resync_customer_ledger(cursor, [cust_id])
+        if affected_supplier_id is not None:
+            resync_supplier_ledger(cursor, [affected_supplier_id])
 
         conn.commit()
 
