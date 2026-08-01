@@ -229,36 +229,75 @@
     color: var(--ink-soft);
 }
 
+/* ---- Filter input (matches Supplier Bills) ---- */
+.filter-input {
+    display: block;
+    width: 100%;
+    padding: 10px 14px;
+    margin-bottom: 14px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.15s ease;
+}
+.filter-input::placeholder { color: var(--ink-soft); opacity: 0.75; }
+.filter-input:focus { border-color: var(--line-strong); }
+
+/* ---- Scrollable table body with sticky header ---- */
+.table-scroll {
+    max-height: 420px;
+    overflow-y: auto;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+}
+.table-scroll::-webkit-scrollbar { width: 8px; }
+.table-scroll::-webkit-scrollbar-track { background: transparent; }
+.table-scroll::-webkit-scrollbar-thumb { background: var(--line-strong); border-radius: 8px; }
+
 table {
     width: 100%;
     border-collapse: collapse;
 }
 
 th, td {
-    padding: 9px 4px;
+    padding: 11px 12px;
     text-align: left;
     font-size: 13px;
 }
 
 th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
     font-size: 10.5px;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     color: var(--ink-soft);
     font-weight: 600;
+    background: var(--gold-soft);
     border-bottom: 1px solid var(--line-strong);
 }
 
 tbody tr:not(.tot-row):not(.net-row) td {
-    border-bottom: 1px dashed var(--line);
+    border-bottom: 1px solid var(--line);
+}
+tbody tr:not(.tot-row):not(.net-row):nth-child(even) {
+    background: rgba(184, 134, 60, 0.05);
 }
 
-.id-tag {
+.id-col {
     font-family: 'IBM Plex Mono', monospace;
-    font-size: 10.5px;
+    font-size: 12px;
     color: var(--ink-soft);
-    display: block;
+    white-space: nowrap;
+    width: 1%;
 }
+
+.tot-row, .net-row { background: var(--paper-card); }
 
 .amount { font-weight: 600; }
 
@@ -320,11 +359,18 @@ tbody tr:not(.tot-row):not(.net-row) td {
     .print-btn,
     .screen-header,
     .summary-strip,
+    .filter-input,
     nav,
     .navbar,
     .sidebar,
     footer {
         display: none !important;
+    }
+
+    .table-scroll {
+        max-height: none !important;
+        overflow: visible !important;
+        border: none !important;
     }
 
     .print-header {
@@ -394,8 +440,9 @@ tbody tr:not(.tot-row):not(.net-row) td {
 
     th {
         border-bottom: 1px solid #000;
-        background: transparent;
+        background: transparent !important;
         color: #000;
+        position: static;
     }
 
     .credit, .debit {
@@ -487,9 +534,17 @@ tbody tr:not(.tot-row):not(.net-row) td {
                 </div>
 
                 {% if sup_total_entries > 0 %}
-                <table>
+                <input
+                    type="text"
+                    class="filter-input"
+                    id="supplier-filter"
+                    placeholder="Filter by supplier name..."
+                    oninput="filterLedgerTable('supplier-filter', 'supplier-table')">
+                <div class="table-scroll">
+                <table id="supplier-table">
                     <thead>
                     <tr>
+                        <th>Supplier ID</th>
                         <th>Supplier Name</th>
                         <th style="text-align:right;">Credit</th>
                         <th style="text-align:right;">Debit</th>
@@ -499,11 +554,9 @@ tbody tr:not(.tot-row):not(.net-row) td {
 
                     <!-- Render Supplier Credits -->
                     {% for s in supplier_credit %}
-                        <tr>
-                          <td>
-                              <span class="id-tag">{{ s.id }}</span>
-                              {{ s.name }}
-                          </td>
+                        <tr data-name="{{ s.name|lower }}">
+                          <td class="id-col">{{ s.id }}</td>
+                          <td>{{ s.name }}</td>
                           <td style="text-align:right;" class="credit amount mono">
                                {{ '%.2f'|format(s.amount) }}
                           </td>
@@ -515,11 +568,9 @@ tbody tr:not(.tot-row):not(.net-row) td {
 
                     <!-- Render Supplier Debits -->
                     {% for s in supplier_debit %}
-                      <tr>
-                        <td>
-                            <span class="id-tag">{{ s.id }}</span>
-                            {{ s.name }}
-                        </td>
+                      <tr data-name="{{ s.name|lower }}">
+                        <td class="id-col">{{ s.id }}</td>
+                        <td>{{ s.name }}</td>
                         <td style="text-align:right;" class="amount mono zero-val">
                              0.00
                         </td>
@@ -530,7 +581,7 @@ tbody tr:not(.tot-row):not(.net-row) td {
                     {% endfor %}
 
                     <tr class="tot-row">
-                        <td>Total</td>
+                        <td colspan="2">Total</td>
                         <td style="text-align:right;" class="credit amount mono">
                              {{ '%.2f'|format(supplier_credit_total) }}
                         </td>
@@ -541,7 +592,7 @@ tbody tr:not(.tot-row):not(.net-row) td {
                     
                     {% set sup_net = supplier_credit_total - supplier_debit_total %}
                     <tr class="net-row">
-                        <td>Net Balance</td>
+                        <td colspan="2">Net Balance</td>
                         <td colspan="2" style="text-align:right;" class="amount mono {{ 'credit' if sup_net >= 0 else 'debit' }}">
                              {{ '%.2f'|format(sup_net|abs) }} {{ '(Cr)' if sup_net >= 0 else '(Dr)' }}
                         </td>
@@ -549,6 +600,7 @@ tbody tr:not(.tot-row):not(.net-row) td {
 
                     </tbody>
                 </table>
+                </div>
                 {% else %}
                     <div class="empty-state">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12h6M9 16h6M9 8h6M5 3h14v18l-3-2-3 2-3-2-3 2V3z"/></svg>
@@ -579,9 +631,17 @@ tbody tr:not(.tot-row):not(.net-row) td {
                 </div>
 
                 {% if cust_total_entries > 0 %}
-                <table>
+                <input
+                    type="text"
+                    class="filter-input"
+                    id="customer-filter"
+                    placeholder="Filter by customer name..."
+                    oninput="filterLedgerTable('customer-filter', 'customer-table')">
+                <div class="table-scroll">
+                <table id="customer-table">
                     <thead>
                     <tr>
+                        <th>Customer ID</th>
                         <th>Customer Name</th>
                         <th style="text-align:right;">Credit</th>
                         <th style="text-align:right;">Debit</th>
@@ -591,11 +651,9 @@ tbody tr:not(.tot-row):not(.net-row) td {
 
                     <!-- Render Customer Credits -->
                     {% for c in customer_credit %}
-                      <tr>
-                        <td>
-                            <span class="id-tag">{{ c.id }}</span>
-                            {{ c.name }}
-                        </td>
+                      <tr data-name="{{ c.name|lower }}">
+                        <td class="id-col">{{ c.id }}</td>
+                        <td>{{ c.name }}</td>
                         <td class="credit amount mono" style="text-align:right;">
                              {{ '%.2f'|format(c.amount) }}
                         </td>
@@ -607,11 +665,9 @@ tbody tr:not(.tot-row):not(.net-row) td {
 
                     <!-- Render Customer Debits -->
                     {% for c in customer_debit %}
-                      <tr>
-                        <td>
-                            <span class="id-tag">{{ c.id }}</span>
-                            {{ c.name }}
-                        </td>
+                      <tr data-name="{{ c.name|lower }}">
+                        <td class="id-col">{{ c.id }}</td>
+                        <td>{{ c.name }}</td>
                         <td style="text-align:right;" class="amount mono zero-val">
                              0.00
                         </td>
@@ -622,7 +678,7 @@ tbody tr:not(.tot-row):not(.net-row) td {
                     {% endfor %}
 
                     <tr class="tot-row">
-                        <td>Total</td>
+                        <td colspan="2">Total</td>
                         <td class="credit amount mono" style="text-align:right;">
                              {{ '%.2f'|format(customer_credit_total) }}
                         </td>
@@ -633,7 +689,7 @@ tbody tr:not(.tot-row):not(.net-row) td {
 
                     {% set cust_net = customer_credit_total - customer_debit_total %}
                     <tr class="net-row">
-                        <td>Net Balance</td>
+                        <td colspan="2">Net Balance</td>
                         <td colspan="2" style="text-align:right;" class="amount mono {{ 'credit' if cust_net >= 0 else 'debit' }}">
                              {{ '%.2f'|format(cust_net|abs) }} {{ '(Cr)' if cust_net >= 0 else '(Dr)' }}
                         </td>
@@ -641,6 +697,7 @@ tbody tr:not(.tot-row):not(.net-row) td {
 
                     </tbody>
                 </table>
+                </div>
                 {% else %}
                     <div class="empty-state">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12h6M9 16h6M9 8h6M5 3h14v18l-3-2-3 2-3-2-3 2V3z"/></svg>
@@ -655,5 +712,16 @@ tbody tr:not(.tot-row):not(.net-row) td {
 </div>
 
 </div>
+
+<script>
+function filterLedgerTable(inputId, tableId) {
+    var query = document.getElementById(inputId).value.trim().toLowerCase();
+    var rows = document.querySelectorAll('#' + tableId + ' tbody tr[data-name]');
+    rows.forEach(function (row) {
+        var name = row.getAttribute('data-name') || '';
+        row.style.display = name.indexOf(query) !== -1 ? '' : 'none';
+    });
+}
+</script>
 
 {% endblock %}
