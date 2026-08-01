@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Supplier Summary{% endblock %}
+{% block title %}Account Summary{% endblock %}
 {% block content %}
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
@@ -50,6 +50,21 @@
   h2.as-title{ font-family:'Fraunces',serif; font-weight:600; font-size:27px; margin:2px 0 6px 0; color:var(--bottle-deep); letter-spacing:-.01em; }
   .as-sub{ color:var(--muted); font-size:13.5px; margin:0 0 18px 0; }
   .as-sub strong{ color:var(--ink); font-weight:600; }
+
+  /* ---------- Entity type toggle ---------- */
+  .type-toggle{
+    display:inline-flex; gap:4px; background:var(--cream); border:1px solid var(--line);
+    border-radius:12px; padding:4px; margin-bottom:16px;
+  }
+  .type-toggle a{
+    padding:8px 18px; border-radius:9px; font-size:13.5px; font-weight:600;
+    color:var(--muted); text-decoration:none; transition:background .14s ease, color .14s ease;
+  }
+  .type-toggle a.active{
+    background:var(--bottle); color:#fdf9ee;
+    box-shadow:0 6px 14px -8px rgba(21,43,36,.55);
+  }
+  .type-toggle a:not(.active):hover{ background:var(--cream-deep); color:var(--ink); }
 
   /* ---------- Form / controls ---------- */
   form#acct-form{ margin-top:4px; }
@@ -167,7 +182,7 @@
   }
   .empty-state strong{ color:var(--bottle-deep); }
 
-  /* ---------- Supplier combobox / autosuggest ---------- */
+  /* ---------- Entity combobox / autosuggest ---------- */
   .combo-field{ position:relative; }
   .suggest-box{
     position:absolute; top:calc(100% + 6px); left:0; right:0; z-index:40;
@@ -193,23 +208,33 @@
     <div class="as-head">
       <div>
         <div class="as-eyebrow">S M Bananas &middot; Ledger</div>
-        <h2 class="as-title">Supplier Summary</h2>
+        <h2 class="as-title">Account Summary</h2>
       </div>
     </div>
-    <p class="as-sub">Choose a supplier and a date range (or select a date only) then click <strong>Show</strong>.</p>
+
+    <div class="type-toggle" role="tablist" aria-label="Account type">
+      <a href="{{ url_for('account_summary', entity_type='customer', from_date=from_date, to_date=to_date) }}"
+         class="{{ 'active' if entity_type == 'customer' else '' }}" role="tab" aria-selected="{{ 'true' if entity_type == 'customer' else 'false' }}">Customer</a>
+      <a href="{{ url_for('account_summary', entity_type='supplier', from_date=from_date, to_date=to_date) }}"
+         class="{{ 'active' if entity_type == 'supplier' else '' }}" role="tab" aria-selected="{{ 'true' if entity_type == 'supplier' else 'false' }}">Supplier</a>
+    </div>
+
+    <p class="as-sub">Choose a {{ entity_type }} and a date range (or select a date only) then click <strong>Show</strong>.</p>
 
     {% set ns = namespace(selected_name='') %}
-    {% for s in suppliers %}
-      {% if selected_supplier and (selected_supplier|int(0)) == (s.id|int) %}{% set ns.selected_name = s.name ~ ' (ID: ' ~ s.id ~ ')' %}{% endif %}
+    {% set entity_list = customers if entity_type == 'customer' else suppliers %}
+    {% for e in entity_list %}
+      {% if selected_entity and (selected_entity|int(0)) == (e.id|int) %}{% set ns.selected_name = e.name ~ ' (ID: ' ~ e.id ~ ')' %}{% endif %}
     {% endfor %}
 
-    <!-- form: we submit a hidden 'supplier_id' field that JS sets from the combobox -->
-    <form method="GET" action="{{ url_for('supplier_summary') }}" id="acct-form">
+    <!-- form: we submit a hidden 'entity_id' field that JS sets from the combobox -->
+    <form method="GET" action="{{ url_for('account_summary') }}" id="acct-form">
+      <input type="hidden" name="entity_type" value="{{ entity_type }}">
       <div class="controls">
         <div class="control-field combo-field" style="min-width:280px;">
-          <label class="small" for="supplier-combo">Supplier</label>
-          <input id="supplier-combo" class="input" autocomplete="off" placeholder="Type name or ID to search…" value="{{ ns.selected_name }}" />
-          <div id="supplier-suggestions" class="suggest-box" role="listbox" aria-label="Supplier suggestions"></div>
+          <label class="small" for="entity-combo">{{ 'Customer' if entity_type == 'customer' else 'Supplier' }}</label>
+          <input id="entity-combo" class="input" autocomplete="off" placeholder="Type name or ID to search…" value="{{ ns.selected_name }}" />
+          <div id="entity-suggestions" class="suggest-box" role="listbox" aria-label="Suggestions"></div>
         </div>
 
         <div class="control-field">
@@ -222,73 +247,73 @@
           <input type="date" name="to_date" value="{{ to_date }}" class="input">
         </div>
 
-        <!-- hidden canonical supplier_id will be populated by JS before submit -->
-        <input type="hidden" name="supplier_id" id="supplier_id_hidden" value="{{ selected_supplier or '' }}">
+        <!-- hidden canonical entity_id will be populated by JS before submit -->
+        <input type="hidden" name="entity_id" id="entity_id_hidden" value="{{ selected_entity or '' }}">
 
         <div class="actions">
           <button class="btn" type="submit">Show</button>
-          <a href="{{ url_for('supplier_summary') }}" class="btn ghost" role="button">Reset</a>
+          <a href="{{ url_for('account_summary', entity_type=entity_type) }}" class="btn ghost" role="button">Reset</a>
         </div>
       </div>
     </form>
 
-    {% if selected_supplier %}
+    {% if selected_entity %}
       <div class="small-note">
-          Showing results for <strong>{{ selected_supplier }}</strong>
+          Showing results for <strong>{{ selected_entity }}</strong>
           from <strong>{{ from_date.strftime('%d-%m-%Y') }}</strong>
           to <strong>{{ to_date.strftime('%d-%m-%Y') }}</strong>
       </div>
 
       <div class="grid">
-        <!-- Left: Purchases + Receipts -->
+        <!-- Left: Purchases/Bills + Receipts/Payments -->
         <div>
           <div style="display:flex; gap:14px; margin-top:14px; flex-wrap:wrap;">
             <div style="flex:1; min-width:260px;">
-              <div class="panel-label">Bills</div>
-              <div class="list-box" role="region" aria-label="Bills list">
-                <table class="summary" role="table" aria-label="Bills table">
+              <div class="panel-label">{{ 'Purchases' if entity_type == 'customer' else 'Bills' }}</div>
+              <div class="list-box" role="region" aria-label="Primary list">
+                <table class="summary" role="table" aria-label="Primary table">
                   <thead>
                     <tr><th style="width:120px">Date</th><th>Reference</th><th class="right" style="width:120px">Amount</th></tr>
                   </thead>
                   <tbody>
-                    {% if bills %}
-                      {% for b in bills %}
+                    {% if primary_rows %}
+                      {% for row in primary_rows %}
                         <tr>
-                          <td>{{ b.date.strftime('%d-%m-%Y') if b.date else '' }}</td>
-                          <td>Bill #{{ b.bill_id }}</td>
-                          <td class="right"> {{ '%.2f'|format(b.amount) }}</td>
+                          <td>{{ row.date.strftime('%d-%m-%Y') if row.date else '' }}</td>
+                          <td>Bill #{{ row.id }}{{ row.ref_extra or '' }}</td>
+                          <td class="right"> {{ '%.2f'|format(row.amount) }}</td>
                         </tr>
                       {% endfor %}
                     {% else %}
-                      <tr><td colspan="3" class="muted">No bills in this range.</td></tr>
+                      <tr><td colspan="3" class="muted">No {{ 'purchases' if entity_type == 'customer' else 'bills' }} in this range.</td></tr>
                     {% endif %}
                   </tbody>
                 </table>
               </div>
 
-              <!-- Bills total directly below bills list -->
+              <!-- Primary total directly below list -->
               <div style="margin-top:12px;">
                 <div class="total-card" role="status" aria-live="polite">
-                  <div class="total-label">Bills total</div>
-                  <div class="total-value negative"> {{ '%.2f'|format(sum_bills) }}</div>
+                  <div class="total-label">{{ 'Purchases' if entity_type == 'customer' else 'Bills' }} total</div>
+                  <div class="total-value negative"> {{ '%.2f'|format(sum_primary) }}</div>
                 </div>
               </div>
             </div>
 
             <div style="width:260px">
-              <div class="panel-label">Payments</div>
-              <div class="list-box" role="region" aria-label="Payments list">
-                <table class="summary" role="table" aria-label="Payments table">
+              <div class="panel-label">{{ 'Receipts' if entity_type == 'customer' else 'Payments' }}</div>
+              <div class="list-box" role="region" aria-label="Secondary list">
+                <table class="summary" role="table" aria-label="Secondary table">
                   <thead>
                     <tr><th style="width:110px">Date</th><th>Note</th><th class="right" style="width:110px">Amount</th></tr>
                   </thead>
                   <tbody>
-                    {% if payments %}
-                      {% for p in payments %}
-                        <tr><td>{{ p.date.strftime('%d-%m-%Y') if p.date else '' }}</td><td>{{ p.note or '-' }}</td><td class="right"> {{ '%.2f'|format(p.amount) }}</td></tr>
+                    {% if secondary_rows %}
+                      {% for row in secondary_rows %}
+                        <tr><td>{{ row.date.strftime('%d-%m-%Y') if row.date else '' }}</td><td>{{ row.note or '-' }}</td><td class="right"> {{ '%.2f'|format(row.amount) }}</td></tr>
                       {% endfor %}
                     {% else %}
-                      <tr><td colspan="3" class="muted">No payments in this range.</td></tr>
+                      <tr><td colspan="3" class="muted">No {{ 'receipts' if entity_type == 'customer' else 'payments' }} in this range.</td></tr>
                     {% endif %}
                   </tbody>
                 </table>
@@ -296,8 +321,8 @@
 
               <div style="margin-top:12px;">
                 <div class="total-card">
-                  <div class="total-label">Payments total</div>
-                  <div class="total-value positive"> {{ '%.2f'|format(sum_payments) }}</div>
+                  <div class="total-label">{{ 'Receipts' if entity_type == 'customer' else 'Payments' }} total</div>
+                  <div class="total-value positive"> {{ '%.2f'|format(sum_secondary) }}</div>
                 </div>
               </div>
             </div>
@@ -307,7 +332,7 @@
         <!-- Right column: NET above current balance -->
         <aside class="totals-stack" role="complementary" aria-label="Summary totals">
           <div class="net-box" role="note" aria-live="polite">
-            <div class="net-title">Net (Payments − Bills)</div>
+            <div class="net-title">{{ 'Net (Receipts − Purchases)' if entity_type == 'customer' else 'Net (Payments − Bills)' }}</div>
             {% if net >= 0 %}
               <div class="net-amount positive"> {{ '%.2f'|format(net) }}</div>
             {% else %}
@@ -335,28 +360,33 @@
       </div>
 
     {% else %}
-      <div class="empty-state">Select a supplier and date range and click <strong>Show</strong> to view the supplier summary.</div>
+      <div class="empty-state">Select a {{ entity_type }} and date range and click <strong>Show</strong> to view the account summary.</div>
     {% endif %}
   </div>
 </div>
 
+<script id="customers-data" type="application/json">
+  [{% for c in customers %}{"id": {{ c.id }}, "name": {{ c.name|tojson }}}{% if not loop.last %},{% endif %}{% endfor %}]
+</script>
 <script id="suppliers-data" type="application/json">
   [{% for s in suppliers %}{"id": {{ s.id }}, "name": {{ s.name|tojson }}}{% if not loop.last %},{% endif %}{% endfor %}]
 </script>
 
 <script>
-  // Single-field supplier search: type a name or ID, pick a suggestion (or just
-  // type an exact ID/name and submit). Keeps posting the same hidden 'supplier_id'
-  // the backend already expects.
+  // Single-field entity search: type a name or ID, pick a suggestion (or just
+  // type an exact ID/name and submit). Keeps posting the same hidden 'entity_id'
+  // the backend already expects. Which list (customers vs suppliers) is used
+  // depends on the entity_type toggle selected server-side for this page load.
   (function(){
+    var entityType = {{ entity_type|tojson }};
     var form = document.getElementById('acct-form');
-    var hidden = document.getElementById('supplier_id_hidden');
-    var input = document.getElementById('supplier-combo');
-    var box = document.getElementById('supplier-suggestions');
-    var dataEl = document.getElementById('suppliers-data');
+    var hidden = document.getElementById('entity_id_hidden');
+    var input = document.getElementById('entity-combo');
+    var box = document.getElementById('entity-suggestions');
+    var dataEl = document.getElementById(entityType === 'customer' ? 'customers-data' : 'suppliers-data');
 
-    var suppliers = [];
-    try { suppliers = JSON.parse(dataEl.textContent || '[]'); } catch (e) { suppliers = []; }
+    var entities = [];
+    try { entities = JSON.parse(dataEl.textContent || '[]'); } catch (e) { entities = []; }
 
     var selectedId = hidden.value || null; // preselected from server (e.g. on reload)
     var activeIndex = -1;
@@ -386,31 +416,31 @@
       var q = query.trim().toLowerCase();
       if (!q) { closeBox(); return; }
 
-      var matches = suppliers.filter(function(c){
-        return c.name.toLowerCase().indexOf(q) !== -1 || String(c.id).indexOf(q) !== -1;
+      var matches = entities.filter(function(e){
+        return e.name.toLowerCase().indexOf(q) !== -1 || String(e.id).indexOf(q) !== -1;
       }).slice(0, 8);
 
       currentMatches = matches;
       activeIndex = -1;
 
       if (!matches.length) {
-        box.innerHTML = '<div class="suggest-empty">No matching suppliers.</div>';
+        box.innerHTML = '<div class="suggest-empty">No matching ' + (entityType === 'customer' ? 'customers' : 'suppliers') + '.</div>';
         box.classList.add('open');
         return;
       }
 
-      box.innerHTML = matches.map(function(c, i){
+      box.innerHTML = matches.map(function(e, i){
         return '<div class="suggest-item" role="option" data-index="' + i + '">' +
-                 '<span class="suggest-name">' + highlight(c.name, query) + '</span>' +
-                 '<span class="suggest-id">ID: ' + c.id + '</span>' +
+                 '<span class="suggest-name">' + highlight(e.name, query) + '</span>' +
+                 '<span class="suggest-id">ID: ' + e.id + '</span>' +
                '</div>';
       }).join('');
       box.classList.add('open');
     }
 
-    function pick(c){
-      input.value = c.name + ' (ID: ' + c.id + ')';
-      selectedId = c.id;
+    function pick(e){
+      input.value = e.name + ' (ID: ' + e.id + ')';
+      selectedId = e.id;
       closeBox();
     }
 
@@ -463,7 +493,7 @@
     });
 
     form.addEventListener('submit', function(){
-      // Prefer an explicitly picked supplier; otherwise fall back to whatever
+      // Prefer an explicitly picked entity; otherwise fall back to whatever
       // was typed (numeric ID or name) so the backend can resolve it as before.
       var typed = input.value.trim();
       if (selectedId !== null && typed) {
