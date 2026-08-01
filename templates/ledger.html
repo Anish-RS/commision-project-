@@ -325,6 +325,44 @@
 }
 .card-head h3 svg { width: 14px; height: 14px; }
 
+/* ---- Quick stat chips per ledger card ---- */
+.stat-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+.stat-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    font-size: 12px;
+    color: var(--ink-soft);
+}
+.stat-chip strong {
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--ink);
+    font-weight: 700;
+}
+.stat-chip .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+.stat-chip .dot.credit { background: var(--credit); }
+.stat-chip .dot.debit { background: var(--debit); }
+.stat-chip .dot.gold { background: var(--gold); }
+.stat-chip.highlight {
+    background: var(--gold-soft);
+    border-color: var(--gold);
+    color: #6B4E1E;
+}
+.stat-chip.highlight strong { color: #4A3611; }
+
 .pill {
     font-family: 'IBM Plex Mono', monospace;
     font-size: 10.5px;
@@ -353,21 +391,37 @@
 .filter-input::placeholder { color: var(--ink-soft); opacity: 0.75; }
 .filter-input:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(184, 134, 60, 0.15); }
 
-/* ---- Scrollable table body with sticky header ---- */
+/* ---- Scrollable table body (rows only; totals live outside) ---- */
 .table-scroll {
-    max-height: 420px;
+    max-height: 360px;
     overflow-y: auto;
     border: 1px solid var(--line);
-    border-radius: 8px;
+    border-radius: 8px 8px 0 0;
+    border-bottom: none;
 }
 .table-scroll::-webkit-scrollbar { width: 8px; }
 .table-scroll::-webkit-scrollbar-track { background: transparent; }
 .table-scroll::-webkit-scrollbar-thumb { background: var(--line-strong); border-radius: 8px; }
 
+.totals-wrap {
+    border: 1px solid var(--line);
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    background: var(--paper-card);
+    box-shadow: 0 -4px 10px -8px rgba(42, 36, 27, 0.3);
+    position: relative;
+    z-index: 2;
+}
+
 table {
     width: 100%;
     border-collapse: collapse;
+    table-layout: fixed;
 }
+.ledger-table col.col-id { width: 17%; }
+.ledger-table col.col-name { width: 41%; }
+.ledger-table col.col-credit { width: 21%; }
+.ledger-table col.col-debit { width: 21%; }
 
 th, td {
     padding: 11px 12px;
@@ -484,7 +538,14 @@ tbody tr:not(.tot-row):not(.net-row):hover td {
         max-height: none !important;
         overflow: visible !important;
         border: none !important;
+        border-radius: 0 !important;
     }
+    .totals-wrap {
+        border: none !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+    }
+    .stat-row { display: none !important; }
 
     .print-header {
         display: block !important;
@@ -667,6 +728,14 @@ tbody tr:not(.tot-row):not(.net-row):hover td {
                 </div>
 
                 {% if sup_total_entries > 0 %}
+                {% set sup_top_credit = (supplier_credit|sort(attribute='amount', reverse=True))|first if supplier_credit else None %}
+                <div class="stat-row">
+                    <span class="stat-chip"><span class="dot credit"></span>In credit: <strong>{{ supplier_credit|length }}</strong></span>
+                    <span class="stat-chip"><span class="dot debit"></span>In debit: <strong>{{ supplier_debit|length }}</strong></span>
+                    {% if sup_top_credit %}
+                    <span class="stat-chip highlight"><span class="dot gold"></span>Top: <strong>{{ sup_top_credit.name }}</strong>&nbsp;&middot;&nbsp;<strong class="mono">{{ '%.2f'|format(sup_top_credit.amount) }}</strong></span>
+                    {% endif %}
+                </div>
                 <input
                     type="text"
                     class="filter-input"
@@ -674,7 +743,10 @@ tbody tr:not(.tot-row):not(.net-row):hover td {
                     placeholder="Filter by supplier name..."
                     oninput="filterLedgerTable('supplier-filter', 'supplier-table')">
                 <div class="table-scroll">
-                <table id="supplier-table">
+                <table id="supplier-table" class="ledger-table">
+                    <colgroup>
+                        <col class="col-id"><col class="col-name"><col class="col-credit"><col class="col-debit">
+                    </colgroup>
                     <thead>
                     <tr>
                         <th>Supplier ID</th>
@@ -713,6 +785,15 @@ tbody tr:not(.tot-row):not(.net-row):hover td {
                       </tr>
                     {% endfor %}
 
+                    </tbody>
+                </table>
+                </div>
+                <div class="totals-wrap">
+                <table class="ledger-table">
+                    <colgroup>
+                        <col class="col-id"><col class="col-name"><col class="col-credit"><col class="col-debit">
+                    </colgroup>
+                    <tbody>
                     <tr class="tot-row">
                         <td colspan="2">Total</td>
                         <td style="text-align:right;" class="credit amount mono">
@@ -722,7 +803,7 @@ tbody tr:not(.tot-row):not(.net-row):hover td {
                              {{ '%.2f'|format(supplier_debit_total) }}
                         </td>
                     </tr>
-                    
+
                     {% set sup_net = supplier_credit_total - supplier_debit_total %}
                     <tr class="net-row">
                         <td colspan="2">Net Balance</td>
@@ -730,7 +811,6 @@ tbody tr:not(.tot-row):not(.net-row):hover td {
                              {{ '%.2f'|format(sup_net|abs) }} {{ '(Cr)' if sup_net >= 0 else '(Dr)' }}
                         </td>
                     </tr>
-
                     </tbody>
                 </table>
                 </div>
@@ -764,6 +844,14 @@ tbody tr:not(.tot-row):not(.net-row):hover td {
                 </div>
 
                 {% if cust_total_entries > 0 %}
+                {% set cust_top_credit = (customer_credit|sort(attribute='amount', reverse=True))|first if customer_credit else None %}
+                <div class="stat-row">
+                    <span class="stat-chip"><span class="dot credit"></span>In credit: <strong>{{ customer_credit|length }}</strong></span>
+                    <span class="stat-chip"><span class="dot debit"></span>In debit: <strong>{{ customer_debit|length }}</strong></span>
+                    {% if cust_top_credit %}
+                    <span class="stat-chip highlight"><span class="dot gold"></span>Top: <strong>{{ cust_top_credit.name }}</strong>&nbsp;&middot;&nbsp;<strong class="mono">{{ '%.2f'|format(cust_top_credit.amount) }}</strong></span>
+                    {% endif %}
+                </div>
                 <input
                     type="text"
                     class="filter-input"
@@ -771,7 +859,10 @@ tbody tr:not(.tot-row):not(.net-row):hover td {
                     placeholder="Filter by customer name..."
                     oninput="filterLedgerTable('customer-filter', 'customer-table')">
                 <div class="table-scroll">
-                <table id="customer-table">
+                <table id="customer-table" class="ledger-table">
+                    <colgroup>
+                        <col class="col-id"><col class="col-name"><col class="col-credit"><col class="col-debit">
+                    </colgroup>
                     <thead>
                     <tr>
                         <th>Customer ID</th>
@@ -810,6 +901,15 @@ tbody tr:not(.tot-row):not(.net-row):hover td {
                       </tr>
                     {% endfor %}
 
+                    </tbody>
+                </table>
+                </div>
+                <div class="totals-wrap">
+                <table class="ledger-table">
+                    <colgroup>
+                        <col class="col-id"><col class="col-name"><col class="col-credit"><col class="col-debit">
+                    </colgroup>
+                    <tbody>
                     <tr class="tot-row">
                         <td colspan="2">Total</td>
                         <td class="credit amount mono" style="text-align:right;">
@@ -827,7 +927,6 @@ tbody tr:not(.tot-row):not(.net-row):hover td {
                              {{ '%.2f'|format(cust_net|abs) }} {{ '(Cr)' if cust_net >= 0 else '(Dr)' }}
                         </td>
                     </tr>
-
                     </tbody>
                 </table>
                 </div>
