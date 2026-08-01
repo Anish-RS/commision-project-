@@ -2962,6 +2962,151 @@ def account_summary():
 
 
 # ---------------------------------------------------------------------------
+# Supplier summary (supplier statement) — mirrors account_summary() above,
+# but for suppliers: bills (supplier_bills) instead of purchases, and
+# payments (transactions where tx_type='payment') instead of receipts.
+# ---------------------------------------------------------------------------
+
+@app.route("/supplier-summary", methods=["GET"])
+
+def supplier_summary():
+    conn   = get_connection()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
+    cursor.execute("SELECT supplier_id AS id, name FROM suppliers ORDER BY name ASC")
+    suppliers = cursor.fetchall()
+
+    raw_sid  = (request.args.get("supplier_id") or "").strip()
+    from_str = request.args.get("from_date")
+    to_str   = request.args.get("to_date")
+
+    today = ist_today()
+    try:
+        from_date = datetime.strptime(from_str, "%Y-%m-%d").date() if from_str else today
+    except Exception:
+        from_date = today
+    try:
+        to_date = datetime.strptime(to_str, "%Y-%m-%d").date() if to_str else today
+    except Exception:
+        to_date = today
+
+    if from_date > to_date:
+        from_date, to_date = to_date, from_date
+
+    bills           = []
+    payments        = []
+    sum_bills       = 0.0
+    sum_payments    = 0.0
+    current_balance = None
+    supplier_id     = None
+    supplier_name   = None
+
+    if raw_sid:
+        # 1) direct integer
+        try:
+            supplier_id = int(raw_sid)
+        except (ValueError, TypeError):
+            supplier_id = None
+
+        # 2) extract first digits
+        if supplier_id is None:
+            m = re.search(r'\b(\d+)\b', raw_sid)
+            if m:
+                try:
+                    supplier_id = int(m.group(1))
+                except Exception:
+                    supplier_id = None
+
+        # 3) name search (Postgres: ILIKE)
+        if supplier_id is None:
+            cursor.execute(
+                "SELECT supplier_id, name, balance FROM suppliers WHERE name ILIKE %s ORDER BY name LIMIT 1",
+                (f"%{raw_sid}%",)
+            )
+            sr = cursor.fetchone()
+            if sr:
+                supplier_id   = sr["supplier_id"]
+                supplier_name = sr["name"]
+
+        # 4) canonical fetch
+        if supplier_id and not supplier_name:
+            cursor.execute("SELECT supplier_id, name, balance FROM suppliers WHERE supplier_id = %s", (supplier_id,))
+            sr = cursor.fetchone()
+            if sr:
+                supplier_name = sr["name"]
+            else:
+                supplier_id   = None
+                flash("Supplier not found. Please select a valid supplier.", "warning")
+
+    if supplier_id:
+        cursor.execute(
+            """
+            SELECT bill_id,
+                   bill_date,
+                   total_amount,
+                   commission,
+                   transport,
+                   labour,
+                   paid,
+                   balance
+            FROM supplier_bills
+            WHERE supplier_id = %s
+            AND bill_date BETWEEN %s AND %s
+            ORDER BY bill_date ASC
+            """,
+            (supplier_id, from_date, to_date)
+        )
+        for r in cursor.fetchall():
+            amt = float(r.get("balance") or 0.0)
+            bills.append({
+                "bill_id":      r.get("bill_id"),
+                "date":         r.get("bill_date"),
+                "total_amount": float(r.get("total_amount") or 0.0),
+                "paid":         float(r.get("paid") or 0.0),
+                "amount":       amt
+            })
+            sum_bills += amt
+
+        cursor.execute(
+            "SELECT tx_id, tx_date, amount, note, tx_type FROM transactions "
+            "WHERE entity_type='supplier' AND entity_id=%s AND tx_type='payment' "
+            "AND tx_date >= %s AND tx_date < %s ORDER BY tx_date ASC",
+            (supplier_id, from_date, to_date + timedelta(days=1))
+        )
+        for r in cursor.fetchall():
+            amt = float(r.get("amount") or 0.0)
+            payments.append({
+                "tx_id":  r.get("tx_id"),
+                "date":   r.get("tx_date"),
+                "amount": amt,
+                "note":   r.get("note")
+            })
+            sum_payments += amt
+
+        cursor.execute("SELECT balance FROM suppliers WHERE supplier_id = %s", (supplier_id,))
+        srow            = cursor.fetchone()
+        current_balance = float(srow.get("balance")) if srow and srow.get("balance") is not None else 0.0
+
+    cursor.close(); conn.close()
+
+    net              = sum_payments - sum_bills
+    selected_supplier = supplier_id if supplier_id is not None else raw_sid
+
+    return render_template(
+        "supplier_summary.html",
+        suppliers=suppliers,
+        selected_supplier=selected_supplier,
+        from_date=from_date,
+        to_date=to_date,
+        bills=bills,
+        payments=payments,
+        sum_bills=sum_bills,
+        sum_payments=sum_payments,
+        net=net,
+        current_balance=current_balance
+    )
+
+
+# ---------------------------------------------------------------------------
 # Tally
 # ---------------------------------------------------------------------------
 
