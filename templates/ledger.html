@@ -16,19 +16,40 @@
     --line: #E4D9BF;
     --line-strong: #C9BA95;
     --green: #1F4A3D;
+    --green-deep: #12281F;
     --gold: #B8863C;
     --gold-soft: #E8D7AE;
+    --gold-bright: #D9A855;
     --credit: #2E7D52;
     --credit-bg: #E9F3EB;
     --debit: #A3402F;
     --debit-bg: #F7EAE6;
+    --shadow-sm: 0 1px 2px rgba(42, 36, 27, 0.06);
+    --shadow-md: 0 10px 28px -14px rgba(42, 36, 27, 0.35), 0 2px 6px rgba(42, 36, 27, 0.06);
+    --shadow-lift: 0 16px 34px -16px rgba(42, 36, 27, 0.4), 0 3px 8px rgba(42, 36, 27, 0.08);
 
     font-family: 'Inter', -apple-system, sans-serif;
     color: var(--ink);
-    background: var(--paper);
+    background-color: var(--paper);
+    background-image:
+        radial-gradient(rgba(184, 134, 60, 0.09) 1px, transparent 1px),
+        repeating-linear-gradient(180deg, rgba(201, 186, 149, 0.16) 0px, rgba(201, 186, 149, 0.16) 1px, transparent 1px, transparent 34px);
+    background-size: 18px 18px, 100% 34px;
     padding: 20px 16px 48px;
     max-width: 980px;
     margin: 0 auto;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .summary-card, .ledger-card {
+        animation: ledgerRise 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    .summary-card:nth-child(2) { animation-delay: 0.06s; }
+    .ledger-groups > div:nth-child(2) .ledger-card { animation-delay: 0.08s; }
+    @keyframes ledgerRise {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
 }
 
 .ledger-wrap * { box-sizing: border-box; }
@@ -41,12 +62,26 @@
 /* ============================================= */
 .screen-header {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: space-between;
     gap: 20px;
-    padding-bottom: 22px;
-    margin-bottom: 26px;
-    border-bottom: 2px solid var(--green);
+    padding: 26px 28px;
+    margin-bottom: 30px;
+    border-radius: 14px;
+    background:
+        radial-gradient(circle at 14% 20%, rgba(217, 168, 85, 0.12), transparent 55%),
+        linear-gradient(135deg, var(--green) 0%, var(--green-deep) 100%);
+    box-shadow: var(--shadow-md);
+    position: relative;
+    overflow: hidden;
+}
+.screen-header::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--gold-bright) 20%, var(--gold-bright) 80%, transparent);
+    opacity: 0.85;
 }
 
 .screen-header .brand-eyebrow {
@@ -54,8 +89,8 @@
     font-size: 11px;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: var(--gold);
-    margin: 0 0 6px;
+    color: var(--gold-bright);
+    margin: 0 0 8px;
 }
 
 .screen-header h1 {
@@ -63,37 +98,51 @@
     font-weight: 600;
     font-size: 30px;
     letter-spacing: -0.01em;
-    margin: 0 0 4px;
-    color: var(--green);
+    margin: 0 0 6px;
+    color: #FBF6EC;
 }
 
 .screen-header .brand-meta {
     font-size: 13px;
-    color: var(--ink-soft);
+    color: rgba(251, 246, 236, 0.72);
     line-height: 1.6;
 }
 
 .stamp {
     flex-shrink: 0;
-    width: 92px;
-    height: 92px;
+    width: 96px;
+    height: 96px;
     border-radius: 50%;
-    border: 2px dashed var(--gold);
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
     transform: rotate(-9deg);
-    color: var(--gold);
+    color: var(--gold-bright);
     font-family: 'Fraunces', serif;
     font-size: 10px;
     letter-spacing: 0.06em;
     line-height: 1.35;
     padding: 6px;
     text-transform: uppercase;
+    position: relative;
+}
+.stamp::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 1.5px dashed rgba(217, 168, 85, 0.65);
+}
+.stamp::after {
+    content: "";
+    position: absolute;
+    inset: 8px;
+    border-radius: 50%;
+    border: 1px solid rgba(217, 168, 85, 0.35);
 }
 
-.stamp strong { display: block; font-size: 13px; font-weight: 700; margin-bottom: 2px; }
+.stamp strong { display: block; font-size: 13px; font-weight: 700; margin-bottom: 2px; color: #FBF6EC; }
 
 /* Hide thermal header in normal page */
 .print-header { display: none; }
@@ -110,17 +159,19 @@
     border: none;
     padding: 11px 20px;
     cursor: pointer;
-    margin-bottom: 26px;
-    border-radius: 6px;
+    margin-bottom: 28px;
+    border-radius: 8px;
     font-family: 'Inter', sans-serif;
     font-weight: 600;
     font-size: 13.5px;
     letter-spacing: 0.01em;
-    transition: background 0.15s ease, transform 0.1s ease;
+    box-shadow: var(--shadow-sm);
+    transition: background 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
 }
-.print-btn:hover { background: #163831; }
+.print-btn:hover { background: #163831; box-shadow: var(--shadow-md); transform: translateY(-1px); }
 .print-btn:active { transform: scale(0.98); }
-.print-btn svg { width: 15px; height: 15px; }
+.print-btn svg { width: 15px; height: 15px; transition: transform 0.15s ease; }
+.print-btn:hover svg { transform: translateY(-1px); }
 
 /* ============================================= */
 /* SUMMARY STRIP                                 */
@@ -135,28 +186,43 @@
 .summary-card {
     background: var(--paper-card);
     border: 1px solid var(--line);
-    border-radius: 10px;
-    padding: 16px 18px;
+    border-radius: 12px;
+    padding: 18px 20px 20px;
     position: relative;
     overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
+.summary-card:hover { box-shadow: var(--shadow-lift); transform: translateY(-2px); }
 .summary-card::before {
     content: "";
     position: absolute;
     top: 0; left: 0; right: 0;
     height: 3px;
-    background: var(--gold);
+    background: linear-gradient(90deg, var(--gold), var(--gold-bright));
 }
+.summary-card .s-icon {
+    position: absolute;
+    top: 16px; right: 18px;
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    background: var(--gold-soft);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.summary-card .s-icon svg { width: 17px; height: 17px; color: var(--green); }
 .summary-card .s-label {
     font-size: 11.5px;
     text-transform: uppercase;
     letter-spacing: 0.08em;
     color: var(--ink-soft);
-    margin-bottom: 8px;
+    margin-bottom: 10px;
     font-weight: 600;
+    padding-right: 40px;
 }
 .summary-card .s-value {
-    font-size: 24px;
+    font-size: 27px;
     font-weight: 600;
 }
 .summary-card .s-value.pos { color: var(--credit); }
@@ -164,8 +230,18 @@
 .summary-card .s-sub {
     font-size: 12px;
     color: var(--ink-soft);
-    margin-top: 6px;
+    margin-top: 8px;
 }
+.s-ratio-bar {
+    display: flex;
+    height: 6px;
+    border-radius: 100px;
+    overflow: hidden;
+    margin-top: 12px;
+    background: var(--line);
+}
+.s-ratio-bar .rb-credit { background: var(--credit); }
+.s-ratio-bar .rb-debit { background: var(--debit); }
 
 /* ============================================= */
 /* LEDGER GROUPS & CARDS                         */
@@ -178,26 +254,55 @@
 
 .group-title {
     font-family: 'Fraunces', serif;
-    font-size: 15px;
+    font-size: 16px;
     font-weight: 600;
     color: var(--green);
-    margin: 0 0 12px;
-    padding-bottom: 8px;
-    border-bottom: 1px solid var(--line-strong);
+    margin: 0 0 14px;
+    padding-bottom: 0;
+    border-bottom: none;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
 }
-.group-title svg { width: 16px; height: 16px; flex-shrink: 0; color: var(--gold); }
+.group-title .gt-icon {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--green);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.group-title .gt-icon svg { width: 14px; height: 14px; color: var(--gold-soft); }
+.group-title::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--line-strong), transparent);
+    margin-left: 4px;
+}
 
 .ledger-section { margin-bottom: 16px; }
 
 .ledger-card {
     background: var(--paper-card);
     border: 1px solid var(--line);
-    border-radius: 10px;
-    padding: 16px 16px 6px;
+    border-radius: 12px;
+    padding: 18px 20px 8px 30px;
     position: relative;
+    box-shadow: var(--shadow-sm);
+}
+.ledger-card::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 12px;
+    border-radius: 12px 0 0 12px;
+    background: var(--gold-soft);
+    background-image: radial-gradient(circle, var(--paper-card) 2.5px, transparent 2.6px);
+    background-size: 12px 16px;
+    background-position: center;
+    border-right: 1px solid var(--line);
 }
 
 .card-head {
@@ -223,10 +328,11 @@
 .pill {
     font-family: 'IBM Plex Mono', monospace;
     font-size: 10.5px;
-    padding: 2px 8px;
+    padding: 3px 10px;
     border-radius: 100px;
-    background: var(--line);
-    color: var(--ink-soft);
+    background: var(--gold-soft);
+    color: #6B4E1E;
+    font-weight: 600;
 }
 
 /* ---- Filter input (matches Supplier Bills) ---- */
@@ -242,10 +348,10 @@
     font-family: 'Inter', sans-serif;
     font-size: 13px;
     outline: none;
-    transition: border-color 0.15s ease;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 .filter-input::placeholder { color: var(--ink-soft); opacity: 0.75; }
-.filter-input:focus { border-color: var(--line-strong); }
+.filter-input:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(184, 134, 60, 0.15); }
 
 /* ---- Scrollable table body with sticky header ---- */
 .table-scroll {
@@ -276,7 +382,7 @@ th {
     font-size: 10.5px;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    color: var(--ink-soft);
+    color: #6B4E1E;
     font-weight: 600;
     background: var(--gold-soft);
     border-bottom: 1px solid var(--line-strong);
@@ -284,9 +390,13 @@ th {
 
 tbody tr:not(.tot-row):not(.net-row) td {
     border-bottom: 1px solid var(--line);
+    transition: background 0.1s ease;
 }
 tbody tr:not(.tot-row):not(.net-row):nth-child(even) {
     background: rgba(184, 134, 60, 0.05);
+}
+tbody tr:not(.tot-row):not(.net-row):hover td {
+    background: var(--gold-soft);
 }
 
 .id-col {
@@ -321,12 +431,15 @@ tbody tr:not(.tot-row):not(.net-row):nth-child(even) {
 }
 
 .empty-state {
-    padding: 22px 4px;
+    padding: 32px 4px;
     text-align: center;
     color: var(--ink-soft);
     font-size: 13px;
+    border: 1px dashed var(--line-strong);
+    border-radius: 10px;
+    background: repeating-linear-gradient(135deg, rgba(184,134,60,0.03) 0px, rgba(184,134,60,0.03) 8px, transparent 8px, transparent 16px);
 }
-.empty-state svg { width: 26px; height: 26px; margin-bottom: 8px; color: var(--line-strong); }
+.empty-state svg { width: 28px; height: 28px; margin-bottom: 10px; color: var(--gold); opacity: 0.6; }
 
 @media (max-width: 720px) {
     .summary-strip, .ledger-groups { grid-template-columns: 1fr; }
@@ -405,7 +518,8 @@ tbody tr:not(.tot-row):not(.net-row):nth-child(even) {
         border-bottom: 1px dashed #000;
         color: black;
     }
-    .group-title svg { display: none; }
+    .group-title .gt-icon { display: none; }
+    .group-title::after { display: none; }
 
     .ledger-groups { display: block; }
 
@@ -425,6 +539,9 @@ tbody tr:not(.tot-row):not(.net-row):nth-child(even) {
         width: 100% !important;
         border-radius: 0;
     }
+    .ledger-card::before { display: none !important; }
+    .s-icon { display: none; }
+    .s-ratio-bar { display: none; }
 
     table {
         width: 100%;
@@ -498,18 +615,34 @@ tbody tr:not(.tot-row):not(.net-row):nth-child(even) {
 
 <div class="summary-strip">
     <div class="summary-card">
+        <div class="s-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7h-9M14 17H5M17 3l4 4-4 4M7 21l-4-4 4-4"/></svg></div>
         <div class="s-label">Supplier Net Balance</div>
         <div class="s-value {{ 'pos' if (supplier_credit_total - supplier_debit_total) >= 0 else 'neg' }} mono">
             {{ '%.2f'|format(supplier_credit_total - supplier_debit_total) }}
         </div>
         <div class="s-sub mono">Credit {{ '%.2f'|format(supplier_credit_total) }} &middot; Debit {{ '%.2f'|format(supplier_debit_total) }}</div>
+        {% set sup_grand = supplier_credit_total + supplier_debit_total %}
+        {% if sup_grand > 0 %}
+        <div class="s-ratio-bar">
+            <div class="rb-credit" style="width: {{ (supplier_credit_total / sup_grand * 100)|round(1) }}%;"></div>
+            <div class="rb-debit" style="width: {{ (supplier_debit_total / sup_grand * 100)|round(1) }}%;"></div>
+        </div>
+        {% endif %}
     </div>
     <div class="summary-card">
+        <div class="s-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg></div>
         <div class="s-label">Customer Net Balance</div>
         <div class="s-value {{ 'pos' if (customer_credit_total - customer_debit_total) >= 0 else 'neg' }} mono">
             {{ '%.2f'|format(customer_credit_total - customer_debit_total) }}
         </div>
         <div class="s-sub mono">Credit {{ '%.2f'|format(customer_credit_total) }} &middot; Debit {{ '%.2f'|format(customer_debit_total) }}</div>
+        {% set cust_grand = customer_credit_total + customer_debit_total %}
+        {% if cust_grand > 0 %}
+        <div class="s-ratio-bar">
+            <div class="rb-credit" style="width: {{ (customer_credit_total / cust_grand * 100)|round(1) }}%;"></div>
+            <div class="rb-debit" style="width: {{ (customer_debit_total / cust_grand * 100)|round(1) }}%;"></div>
+        </div>
+        {% endif %}
     </div>
 </div>
 
@@ -518,7 +651,7 @@ tbody tr:not(.tot-row):not(.net-row):nth-child(even) {
     <!-- ============ SUPPLIER GROUP ============ -->
     <div>
         <h2 class="group-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7h-9M14 17H5M17 3l4 4-4 4M7 21l-4-4 4-4"/></svg>
+            <span class="gt-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7h-9M14 17H5M17 3l4 4-4 4M7 21l-4-4 4-4"/></svg></span>
             Supplier Ledger
         </h2>
 
@@ -615,7 +748,7 @@ tbody tr:not(.tot-row):not(.net-row):nth-child(even) {
     <!-- ============ CUSTOMER GROUP ============ -->
     <div>
         <h2 class="group-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>
+            <span class="gt-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg></span>
             Customer Ledger
         </h2>
 
