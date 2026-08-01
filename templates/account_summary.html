@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Account Summary{% endblock %}
+{% block title %}Supplier Summary{% endblock %}
 {% block content %}
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
@@ -167,7 +167,7 @@
   }
   .empty-state strong{ color:var(--bottle-deep); }
 
-  /* ---------- Customer combobox / autosuggest ---------- */
+  /* ---------- Supplier combobox / autosuggest ---------- */
   .combo-field{ position:relative; }
   .suggest-box{
     position:absolute; top:calc(100% + 6px); left:0; right:0; z-index:40;
@@ -193,23 +193,23 @@
     <div class="as-head">
       <div>
         <div class="as-eyebrow">S M Bananas &middot; Ledger</div>
-        <h2 class="as-title">Account Summary</h2>
+        <h2 class="as-title">Supplier Summary</h2>
       </div>
     </div>
-    <p class="as-sub">Choose a customer and a date range (or select a date only) then click <strong>Show</strong>.</p>
+    <p class="as-sub">Choose a supplier and a date range (or select a date only) then click <strong>Show</strong>.</p>
 
     {% set ns = namespace(selected_name='') %}
-    {% for c in customers %}
-      {% if selected_customer and (selected_customer|int(0)) == (c.id|int) %}{% set ns.selected_name = c.name ~ ' (ID: ' ~ c.id ~ ')' %}{% endif %}
+    {% for s in suppliers %}
+      {% if selected_supplier and (selected_supplier|int(0)) == (s.id|int) %}{% set ns.selected_name = s.name ~ ' (ID: ' ~ s.id ~ ')' %}{% endif %}
     {% endfor %}
 
-    <!-- form: we submit a hidden 'customer_id' field that JS sets from the combobox -->
-    <form method="GET" action="{{ url_for('account_summary') }}" id="acct-form">
+    <!-- form: we submit a hidden 'supplier_id' field that JS sets from the combobox -->
+    <form method="GET" action="{{ url_for('supplier_summary') }}" id="acct-form">
       <div class="controls">
         <div class="control-field combo-field" style="min-width:280px;">
-          <label class="small" for="customer-combo">Customer</label>
-          <input id="customer-combo" class="input" autocomplete="off" placeholder="Type name or ID to search…" value="{{ ns.selected_name }}" />
-          <div id="customer-suggestions" class="suggest-box" role="listbox" aria-label="Customer suggestions"></div>
+          <label class="small" for="supplier-combo">Supplier</label>
+          <input id="supplier-combo" class="input" autocomplete="off" placeholder="Type name or ID to search…" value="{{ ns.selected_name }}" />
+          <div id="supplier-suggestions" class="suggest-box" role="listbox" aria-label="Supplier suggestions"></div>
         </div>
 
         <div class="control-field">
@@ -222,19 +222,19 @@
           <input type="date" name="to_date" value="{{ to_date }}" class="input">
         </div>
 
-        <!-- hidden canonical customer_id will be populated by JS before submit -->
-        <input type="hidden" name="customer_id" id="customer_id_hidden" value="{{ selected_customer or '' }}">
+        <!-- hidden canonical supplier_id will be populated by JS before submit -->
+        <input type="hidden" name="supplier_id" id="supplier_id_hidden" value="{{ selected_supplier or '' }}">
 
         <div class="actions">
           <button class="btn" type="submit">Show</button>
-          <a href="{{ url_for('account_summary') }}" class="btn ghost" role="button">Reset</a>
+          <a href="{{ url_for('supplier_summary') }}" class="btn ghost" role="button">Reset</a>
         </div>
       </div>
     </form>
 
-    {% if selected_customer %}
+    {% if selected_supplier %}
       <div class="small-note">
-          Showing results for <strong>{{ selected_customer }}</strong>
+          Showing results for <strong>{{ selected_supplier }}</strong>
           from <strong>{{ from_date.strftime('%d-%m-%Y') }}</strong>
           to <strong>{{ to_date.strftime('%d-%m-%Y') }}</strong>
       </div>
@@ -244,51 +244,51 @@
         <div>
           <div style="display:flex; gap:14px; margin-top:14px; flex-wrap:wrap;">
             <div style="flex:1; min-width:260px;">
-              <div class="panel-label">Purchases</div>
-              <div class="list-box" role="region" aria-label="Purchases list">
-                <table class="summary" role="table" aria-label="Purchases table">
+              <div class="panel-label">Bills</div>
+              <div class="list-box" role="region" aria-label="Bills list">
+                <table class="summary" role="table" aria-label="Bills table">
                   <thead>
                     <tr><th style="width:120px">Date</th><th>Reference</th><th class="right" style="width:120px">Amount</th></tr>
                   </thead>
                   <tbody>
-                    {% if purchases %}
-                      {% for p in purchases %}
+                    {% if bills %}
+                      {% for b in bills %}
                         <tr>
-                          <td>{{ p.date.strftime('%d-%m-%Y') if p.date else '' }}</td>
-                          <td>Bill #{{ p.bill_id }} {% if p.supplier_bill_id %} — SB#{{ p.supplier_bill_id }}{% endif %}</td>
-                          <td class="right"> {{ '%.2f'|format(p.amount) }}</td>
+                          <td>{{ b.date.strftime('%d-%m-%Y') if b.date else '' }}</td>
+                          <td>Bill #{{ b.bill_id }}</td>
+                          <td class="right"> {{ '%.2f'|format(b.amount) }}</td>
                         </tr>
                       {% endfor %}
                     {% else %}
-                      <tr><td colspan="3" class="muted">No purchases in this range.</td></tr>
+                      <tr><td colspan="3" class="muted">No bills in this range.</td></tr>
                     {% endif %}
                   </tbody>
                 </table>
               </div>
 
-              <!-- Purchases total directly below purchases list -->
+              <!-- Bills total directly below bills list -->
               <div style="margin-top:12px;">
                 <div class="total-card" role="status" aria-live="polite">
-                  <div class="total-label">Purchases total</div>
-                  <div class="total-value negative"> {{ '%.2f'|format(sum_purchases) }}</div>
+                  <div class="total-label">Bills total</div>
+                  <div class="total-value negative"> {{ '%.2f'|format(sum_bills) }}</div>
                 </div>
               </div>
             </div>
 
             <div style="width:260px">
-              <div class="panel-label">Receipts</div>
-              <div class="list-box" role="region" aria-label="Receipts list">
-                <table class="summary" role="table" aria-label="Receipts table">
+              <div class="panel-label">Payments</div>
+              <div class="list-box" role="region" aria-label="Payments list">
+                <table class="summary" role="table" aria-label="Payments table">
                   <thead>
                     <tr><th style="width:110px">Date</th><th>Note</th><th class="right" style="width:110px">Amount</th></tr>
                   </thead>
                   <tbody>
-                    {% if receipts %}
-                      {% for r in receipts %}
-                        <tr><td>{{ r.date.strftime('%d-%m-%Y') if r.date else '' }}</td><td>{{ r.note or '-' }}</td><td class="right"> {{ '%.2f'|format(r.amount) }}</td></tr>
+                    {% if payments %}
+                      {% for p in payments %}
+                        <tr><td>{{ p.date.strftime('%d-%m-%Y') if p.date else '' }}</td><td>{{ p.note or '-' }}</td><td class="right"> {{ '%.2f'|format(p.amount) }}</td></tr>
                       {% endfor %}
                     {% else %}
-                      <tr><td colspan="3" class="muted">No receipts in this range.</td></tr>
+                      <tr><td colspan="3" class="muted">No payments in this range.</td></tr>
                     {% endif %}
                   </tbody>
                 </table>
@@ -296,8 +296,8 @@
 
               <div style="margin-top:12px;">
                 <div class="total-card">
-                  <div class="total-label">Receipts total</div>
-                  <div class="total-value positive"> {{ '%.2f'|format(sum_receipts) }}</div>
+                  <div class="total-label">Payments total</div>
+                  <div class="total-value positive"> {{ '%.2f'|format(sum_payments) }}</div>
                 </div>
               </div>
             </div>
@@ -307,7 +307,7 @@
         <!-- Right column: NET above current balance -->
         <aside class="totals-stack" role="complementary" aria-label="Summary totals">
           <div class="net-box" role="note" aria-live="polite">
-            <div class="net-title">Net (Receipts − Purchases)</div>
+            <div class="net-title">Net (Payments − Bills)</div>
             {% if net >= 0 %}
               <div class="net-amount positive"> {{ '%.2f'|format(net) }}</div>
             {% else %}
@@ -335,28 +335,28 @@
       </div>
 
     {% else %}
-      <div class="empty-state">Select a customer and date range and click <strong>Show</strong> to view the account summary.</div>
+      <div class="empty-state">Select a supplier and date range and click <strong>Show</strong> to view the supplier summary.</div>
     {% endif %}
   </div>
 </div>
 
-<script id="customers-data" type="application/json">
-  [{% for c in customers %}{"id": {{ c.id }}, "name": {{ c.name|tojson }}}{% if not loop.last %},{% endif %}{% endfor %}]
+<script id="suppliers-data" type="application/json">
+  [{% for s in suppliers %}{"id": {{ s.id }}, "name": {{ s.name|tojson }}}{% if not loop.last %},{% endif %}{% endfor %}]
 </script>
 
 <script>
-  // Single-field customer search: type a name or ID, pick a suggestion (or just
-  // type an exact ID/name and submit). Keeps posting the same hidden 'customer_id'
+  // Single-field supplier search: type a name or ID, pick a suggestion (or just
+  // type an exact ID/name and submit). Keeps posting the same hidden 'supplier_id'
   // the backend already expects.
   (function(){
     var form = document.getElementById('acct-form');
-    var hidden = document.getElementById('customer_id_hidden');
-    var input = document.getElementById('customer-combo');
-    var box = document.getElementById('customer-suggestions');
-    var dataEl = document.getElementById('customers-data');
+    var hidden = document.getElementById('supplier_id_hidden');
+    var input = document.getElementById('supplier-combo');
+    var box = document.getElementById('supplier-suggestions');
+    var dataEl = document.getElementById('suppliers-data');
 
-    var customers = [];
-    try { customers = JSON.parse(dataEl.textContent || '[]'); } catch (e) { customers = []; }
+    var suppliers = [];
+    try { suppliers = JSON.parse(dataEl.textContent || '[]'); } catch (e) { suppliers = []; }
 
     var selectedId = hidden.value || null; // preselected from server (e.g. on reload)
     var activeIndex = -1;
@@ -386,7 +386,7 @@
       var q = query.trim().toLowerCase();
       if (!q) { closeBox(); return; }
 
-      var matches = customers.filter(function(c){
+      var matches = suppliers.filter(function(c){
         return c.name.toLowerCase().indexOf(q) !== -1 || String(c.id).indexOf(q) !== -1;
       }).slice(0, 8);
 
@@ -394,7 +394,7 @@
       activeIndex = -1;
 
       if (!matches.length) {
-        box.innerHTML = '<div class="suggest-empty">No matching customers.</div>';
+        box.innerHTML = '<div class="suggest-empty">No matching suppliers.</div>';
         box.classList.add('open');
         return;
       }
@@ -463,7 +463,7 @@
     });
 
     form.addEventListener('submit', function(){
-      // Prefer an explicitly picked customer; otherwise fall back to whatever
+      // Prefer an explicitly picked supplier; otherwise fall back to whatever
       // was typed (numeric ID or name) so the backend can resolve it as before.
       var typed = input.value.trim();
       if (selectedId !== null && typed) {
