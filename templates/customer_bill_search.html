@@ -575,6 +575,16 @@
         </div>
     
     </div>
+
+      <input
+          type="hidden"
+          id="selected_customer_id"
+          name="customer_id">
+      
+      <input
+          type="hidden"
+          id="selected_statement_date"
+          name="statement_date">
     </form>
   </div>
 
@@ -683,10 +693,14 @@
           `;
           
           div.onclick = () => {
+          
               consolidatedInput.value = c.name;
+          
+              consolidatedInput.dataset.customerId = c.customer_id;
+          
               consolidatedSuggestions.style.display = "none";
+          
           };
-
             consolidatedSuggestions.appendChild(div);
 
           });
@@ -808,6 +822,43 @@
       f.submit();
       document.body.removeChild(f);
     });
+  }
+
+  const whatsappBtn = document.getElementById("send-consolidated-whatsapp");
+
+  if (whatsappBtn) {
+  
+      whatsappBtn.addEventListener("click", () => {
+  
+          const customerId = consolidatedNameInput.dataset.customerId;
+  
+          if (!customerId) {
+              alert("Please select a customer from the suggestion list.");
+              consolidatedNameInput.focus();
+              return;
+          }
+  
+          const dateField = form.querySelector('input[name="bill_date"]');
+  
+          let billDate = dateField.value.trim();
+  
+          if (!billDate) {
+              const d = new Date();
+              const pad = n => String(n).padStart(2, "0");
+  
+              billDate =
+                  `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+          }
+  
+          document.getElementById("selected_customer_id").value = customerId;
+          document.getElementById("selected_statement_date").value = billDate;
+  
+          form.action = "/send_customer_statement_whatsapp";
+  
+          form.submit();
+  
+      });
+  
   }
 
 })();
