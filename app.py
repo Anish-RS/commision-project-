@@ -1398,6 +1398,39 @@ def customer_bill_search():
         bill_no=bill_no
     )
 
+@app.route("/send_customer_statement_whatsapp", methods=["POST"])
+def send_customer_statement_whatsapp():
+
+    customer_id = request.form.get("customer_id")
+    statement_date = request.form.get("statement_date")
+
+    if not customer_id:
+        flash("Please select a customer.", "danger")
+        return redirect(url_for("customer_bill_search"))
+
+    try:
+        customer_id = int(customer_id)
+        statement_date = datetime.strptime(
+            statement_date,
+            "%Y-%m-%d"
+        ).date()
+    except Exception:
+        flash("Invalid request.", "danger")
+        return redirect(url_for("customer_bill_search"))
+
+    result = send_purchase_statement(
+        customer_id,
+        statement_date
+    )
+
+    if result["success"]:
+        flash("WhatsApp message sent successfully.", "success")
+    else:
+        flash(result["reason"], "danger")
+
+    return redirect(url_for("customer_bill_search"))
+    
+
 @app.route("/send-statement/<int:bill_id>", methods=["POST"])
 def send_statement(bill_id):
     conn = get_connection()
