@@ -62,7 +62,7 @@ def get_statement_link(customer_id, statement_date):
             token,
             customer_id,
             statement_date,
-            datetime.utcnow() + timedelta(days=15)
+            datetime.now() + timedelta(days=15)
         ))
 
         conn.commit()
