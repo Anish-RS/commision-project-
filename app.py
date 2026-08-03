@@ -1749,9 +1749,10 @@ def customer_bill_print(bill_id):
 @app.route("/bills/customer/print_search", methods=["POST"])
 
 def customer_bill_print_search():
-    bill_no   = request.form.get("bill_no",   "").strip()
-    name      = request.form.get("name",      "").strip()
-    bill_date = request.form.get("bill_date", "").strip()
+    bill_no     = request.form.get("bill_no",     "").strip()
+    name        = request.form.get("name",        "").strip()
+    customer_id_in = request.form.get("customer_id", "").strip()
+    bill_date   = request.form.get("bill_date",   "").strip()
 
     conn   = get_connection()
     cursor = conn.cursor(cursor_factory=RealDictCursor)
@@ -1784,29 +1785,44 @@ def customer_bill_print_search():
     parsed_date = parse_date_or_none(bill_date)
 
     # 2) Single customer consolidated
-    if name:
+    if customer_id_in or name:
         customer_id    = None
         customer_name  = None
         current_balance = 0.0
 
-        try:
-            maybe_id = int(name)
-            cursor.execute("SELECT customer_id, name, balance FROM customers WHERE customer_id = %s", (maybe_id,))
-            row = cursor.fetchone()
-            if row:
-                customer_id    = row["customer_id"]
-                customer_name  = row["name"]
-                current_balance = float(row["balance"])
-        except (ValueError, TypeError):
-            cursor.execute(
-                "SELECT customer_id, name, balance FROM customers WHERE name ILIKE %s ORDER BY name LIMIT 1",
-                (f"%{name}%",)
-            )
-            row = cursor.fetchone()
-            if row:
-                customer_id    = row["customer_id"]
-                customer_name  = row["name"]
-                current_balance = float(row["balance"])
+        # Prefer the exact customer_id sent from the autocomplete selection —
+        # falling back to name-based lookup only when it's missing/invalid.
+        if customer_id_in:
+            try:
+                cid_val = int(customer_id_in)
+                cursor.execute("SELECT customer_id, name, balance FROM customers WHERE customer_id = %s", (cid_val,))
+                row = cursor.fetchone()
+                if row:
+                    customer_id     = row["customer_id"]
+                    customer_name   = row["name"]
+                    current_balance = float(row["balance"])
+            except (ValueError, TypeError):
+                pass
+
+        if not customer_id and name:
+            try:
+                maybe_id = int(name)
+                cursor.execute("SELECT customer_id, name, balance FROM customers WHERE customer_id = %s", (maybe_id,))
+                row = cursor.fetchone()
+                if row:
+                    customer_id    = row["customer_id"]
+                    customer_name  = row["name"]
+                    current_balance = float(row["balance"])
+            except (ValueError, TypeError):
+                cursor.execute(
+                    "SELECT customer_id, name, balance FROM customers WHERE name ILIKE %s ORDER BY name LIMIT 1",
+                    (f"%{name}%",)
+                )
+                row = cursor.fetchone()
+                if row:
+                    customer_id    = row["customer_id"]
+                    customer_name  = row["name"]
+                    current_balance = float(row["balance"])
 
         if not customer_id:
             cursor.close(); conn.close()
