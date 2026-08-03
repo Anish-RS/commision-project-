@@ -664,6 +664,9 @@
 
       const q = this.value.trim();
 
+      // Any manual edit invalidates a previously selected customer
+      delete consolidatedInput.dataset.customerId;
+
       if (!q) {
         consolidatedSuggestions.innerHTML = "";
         consolidatedSuggestions.style.display = "none";
@@ -788,9 +791,16 @@
     consolidatedBtn.addEventListener("click", () => {
 
       const name = consolidatedNameInput.value.trim();
+      const customerId = consolidatedNameInput.dataset.customerId;
 
       if (!name) {
         alert("Please enter a customer name or ID to print a consolidated bill.");
+        consolidatedNameInput.focus();
+        return;
+      }
+
+      if (!customerId) {
+        alert("Please select a customer from the suggestion list.");
         consolidatedNameInput.focus();
         return;
       }
@@ -813,6 +823,7 @@
 
       add("bill_no", "");
       add("name", name);
+      add("customer_id", customerId);
       add("bill_date", bill_date);
 
       const csrf = document.querySelector('input[name="csrf_token"]');
