@@ -239,7 +239,7 @@ def build_template_payload(
 
             "language": {
 
-                "code": "en_US"
+                "code": "en"
 
             },
 
