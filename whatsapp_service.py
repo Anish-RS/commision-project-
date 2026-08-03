@@ -71,3 +71,41 @@ def get_statement_link(customer_id, statement_date):
     conn.close()
 
     return f"{APP_BASE_URL}/s/{token}"
+
+def build_whatsapp_message(
+    customer_name,
+    statement_date,
+    purchase_total,
+    purchase_entries,
+    statement_link
+):
+    """
+    Build the WhatsApp message body.
+    """
+
+    return f"""🍌 S. Govindhan Banana Commission Agent
+
+Vanakkam {customer_name} 🙏
+
+Thank you for your business with us.
+
+━━━━━━━━━━━━━━━━━━━━
+
+📅 Statement Date
+{statement_date}
+
+🧺 Purchase Summary
+₹{purchase_total:,.2f}
+
+📦 Purchase Entries
+{purchase_entries}
+
+━━━━━━━━━━━━━━━━━━━━
+
+📄 Tap below to view your complete purchase statement.
+
+{statement_link}
+
+Thank you for being a valued customer.
+Wishing you a successful day ahead. 🌿
+"""
