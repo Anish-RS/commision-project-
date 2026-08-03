@@ -1298,7 +1298,6 @@ def supplier_bill_print_search():
     cursor.close(); conn.close()
     return render_template("supplier_bill_print_many.html", printable=printable)
 
-
 # ---------------------------------------------------------------------------
 # Customer Bills — Search
 # ---------------------------------------------------------------------------
@@ -1398,6 +1397,48 @@ def customer_bill_search():
         bill_date=bill_date,
         bill_no=bill_no
     )
+
+@app.route("/send-statement/<int:bill_id>", methods=["POST"])
+def send_statement(bill_id):
+    conn = get_connection()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
+
+    try:
+        # Get customer and bill date from the selected bill
+        cursor.execute("""
+            SELECT
+                customer_id,
+                bill_date
+            FROM customer_bills
+            WHERE bill_id = %s
+        """, (bill_id,))
+
+        bill = cursor.fetchone()
+
+        if not bill:
+            flash("Bill not found.", "danger")
+            return redirect(url_for("customer_bill_search"))
+
+        result = send_purchase_statement(
+            customer_id=bill["customer_id"],
+            statement_date=bill["bill_date"]
+        )
+
+        if result["success"]:
+            flash(result["message"], "success")
+        else:
+            flash(result["message"], "danger")
+
+    except Exception as e:
+        flash(f"Error sending WhatsApp statement: {str(e)}", "danger")
+
+    finally:
+        cursor.close()
+        conn.close()
+
+    return redirect(url_for("customer_bill_search"))
+
+
             
 # ---------------------------------------------------------------------------
 # Customer Bills — Edit
@@ -1507,7 +1548,6 @@ def customer_bill_edit(bill_id):
         "customer_bill_edit.html",
         bill=bill
     )
-from psycopg2.extras import RealDictCursor
 
 @app.route("/search-customers")
 def search_customers():
@@ -2288,8 +2328,6 @@ def ledger():
         customer_credit=customer_credit, customer_debit=customer_debit,
         customer_credit_total=customer_credit_total, customer_debit_total=customer_debit_total
     )
-
-from psycopg2.extras import RealDictCursor
 
 @app.route("/ledger/print")
 
