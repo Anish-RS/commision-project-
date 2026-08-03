@@ -221,25 +221,34 @@ def build_template_payload(
     statement_date,
     purchase_total,
     purchase_entries,
-    statement_link,
+    token,
     recipient_number
 ):
-    """
-    Creates the payload required by the WhatsApp Cloud API.
-    """
 
     return {
+
         "messaging_product": "whatsapp",
+
         "to": recipient_number,
+
         "type": "template",
+
         "template": {
+
             "name": os.getenv("WHATSAPP_TEMPLATE_NAME"),
+
             "language": {
-                "code": "en"
+
+                "code": "en_US"
+
             },
+
             "components": [
+
                 {
+
                     "type": "body",
+
                     "parameters": [
 
                         {
@@ -260,18 +269,40 @@ def build_template_payload(
                         {
                             "type": "text",
                             "text": str(purchase_entries)
-                        },
-
-                        {
-                            "type": "text",
-                            "text": statement_link
                         }
 
                     ]
+
+                },
+
+                {
+
+                    "type": "button",
+
+                    "sub_type": "url",
+
+                    "index": "0",
+
+                    "parameters": [
+
+                        {
+
+                            "type": "text",
+
+                            "text": token
+
+                        }
+
+                    ]
+
                 }
+
             ]
+
         }
+
     }
+
 
 
 def send_template_message(payload):
@@ -421,13 +452,13 @@ def verify_whatsapp_configuration():
 
 def log_whatsapp_message(
     customer_id,
-    phone_number,
     statement_date,
     purchase_total,
     purchase_entries,
     status,
-    response,
-    message_id=None
+    message_type="PURCHASE_STATEMENT",
+    whatsapp_message_id=None,
+    error_message=None
 ):
     """
     Save every WhatsApp send attempt.
@@ -443,13 +474,13 @@ def log_whatsapp_message(
             INSERT INTO whatsapp_logs
             (
                 customer_id,
-                phone_number,
                 statement_date,
                 purchase_total,
                 purchase_entries,
+                message_type,
+                whatsapp_message_id,
                 status,
-                message_id,
-                response
+                error_message
             )
             VALUES
             (
@@ -458,13 +489,13 @@ def log_whatsapp_message(
         """, (
 
             customer_id,
-            phone_number,
             statement_date,
             purchase_total,
             purchase_entries,
+            message_type,
+            whatsapp_message_id,
             status,
-            message_id,
-            str(response)
+            error_message
 
         ))
 
@@ -474,6 +505,7 @@ def log_whatsapp_message(
 
         cursor.close()
         conn.close()
+
 
 def has_statement_been_sent(
     customer_id,
@@ -557,3 +589,116 @@ def mark_retry(
         cursor.close()
         conn.close()
 
+def send_purchase_statement(customer_id, statement_date):
+
+    config = verify_whatsapp_configuration()
+
+    if not config["success"]:
+
+        return config
+
+    customer = get_customer_details(customer_id)
+
+    if not customer:
+
+        return {
+
+            "success": False,
+
+            "reason": "Customer not found"
+
+        }
+
+    if not customer.get("phone"):
+
+        return {
+
+            "success": False,
+
+            "reason": "Customer phone number missing"
+
+        }
+
+    if has_statement_been_sent(customer_id, statement_date):
+
+        return {
+
+            "success": False,
+
+            "reason": "Statement already sent"
+
+        }
+
+    summary = get_purchase_summary(
+
+        customer_id,
+
+        statement_date
+
+    )
+
+    statement_link = get_statement_link(
+
+        customer_id,
+
+        statement_date
+
+    )
+
+    token = statement_link.split("/")[-1]
+
+    payload = build_template_payload(
+
+        customer_name=customer["name"],
+
+        statement_date=statement_date.strftime("%d-%b-%Y"),
+
+        purchase_total=summary["purchase_total"],
+
+        purchase_entries=summary["purchase_entries"],
+
+        token=token,
+
+        recipient_number=customer["phone"]
+
+    )
+
+    result = send_template_message(payload)
+
+    if result["success"]:
+
+        log_whatsapp_message(
+
+            customer_id,
+
+            statement_date,
+
+            summary["purchase_total"],
+
+            summary["purchase_entries"],
+
+            "SUCCESS",
+
+            whatsapp_message_id=result["message_id"]
+
+        )
+
+    else:
+
+        log_whatsapp_message(
+
+            customer_id,
+
+            statement_date,
+
+            summary["purchase_total"],
+
+            summary["purchase_entries"],
+
+            "FAILED",
+
+            error_message=str(result["reason"])
+
+        )
+
+    return result
