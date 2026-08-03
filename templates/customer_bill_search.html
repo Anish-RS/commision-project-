@@ -103,8 +103,8 @@
   }
 
   .bqs-search-row{
-    display:grid;
-    grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));
+    display:flex;
+    flex-wrap:wrap;
     gap:14px;
     align-items:end;
   }
@@ -113,6 +113,8 @@
     display:flex;
     flex-direction:column;
     gap:7px;
+    flex:1 1 220px;
+    max-width:420px;
     min-width:0;
   }
 
@@ -171,7 +173,7 @@
     display:flex;
     gap:10px;
     flex-wrap:wrap;
-    grid-column:1 / -1;
+    flex:1 1 100%;
     padding-top:4px;
     border-top:1px dashed var(--hairline);
     margin-top:4px;
