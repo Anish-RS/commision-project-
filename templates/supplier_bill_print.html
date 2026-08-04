@@ -82,21 +82,6 @@
 <body>
   <button class="print-btn" onclick="window.print()">Print</button>
 
-  <a href="{{ url_for('send_supplier_whatsapp', bill_id=bill.bill_id) }}"
-     target="_blank"
-     style="
-       display:inline-block;
-       margin-left:10px;
-       padding:6px 10px;
-       background:#25D366;
-       color:white;
-       text-decoration:none;
-       border-radius:4px;
-       font-size:12px;
-     ">
-     WhatsApp
-  </a>
-
   <header>
 
     <div style="text-align:center; margin-bottom:10px;">
@@ -205,26 +190,13 @@
   </div>
   <script>
   window.onload = function () {
-
-    // Open WhatsApp in new tab
-      window.open(
-          "/send_supplier_whatsapp/{{ bill.bill_id }}",
-          "_blank"
-      );
-  
       // Open print dialog
       setTimeout(() => {
           window.print();
       }, 300);
   };
-  
+
   window.onafterprint = function () {
-  
-      window.open(
-          "/send_supplier_whatsapp/{{ bill.bill_id }}",
-          "_blank"
-      );
-  
       window.location.href = "/bills/supplier/add";
   };
   </script>
