@@ -506,6 +506,21 @@ def log_whatsapp_message(
         cursor.close()
         conn.close()
 
+def update_delivery_status(whatsapp_message_id, new_status, error_message=None):
+    conn = get_connection()
+    try:
+        cursor = conn.cursor()
+        cursor.execute("""
+            UPDATE whatsapp_logs
+            SET status = %s,
+                error_message = COALESCE(%s, error_message)
+            WHERE whatsapp_message_id = %s
+        """, (new_status, error_message, whatsapp_message_id))
+        conn.commit()
+    finally:
+        cursor.close()
+        conn.close()
+
 
 def has_statement_been_sent(
     customer_id,
