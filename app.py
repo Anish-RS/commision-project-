@@ -11,7 +11,7 @@ from decimal import Decimal, ROUND_HALF_UP
 import os
 import re
 import traceback
-from whatsapp_service import send_purchase_statement
+from whatsapp_service import send_purchase_statement, update_delivery_status
 from collections import defaultdict
 
 app = Flask(__name__)
@@ -3294,6 +3294,43 @@ def transactions_edit_one(tx_id):
 
 def debug_routes():
     return "<br>".join(sorted([r.endpoint for r in app.url_map.iter_rules()]))
+
+@app.route("/webhook/whatsapp", methods=["GET"])
+def verify_whatsapp_webhook():
+    mode = request.args.get("hub.mode")
+    token = request.args.get("hub.verify_token")
+    challenge = request.args.get("hub.challenge")
+
+    if mode == "subscribe" and token == os.getenv("WHATSAPP_VERIFY_TOKEN"):
+        return challenge, 200
+    return "Verification failed", 403
+
+
+@app.route("/webhook/whatsapp", methods=["POST"])
+def receive_whatsapp_webhook():
+    data = request.get_json(force=True, silent=True) or {}
+    print("WEBHOOK EVENT:", data)
+
+    try:
+        entry = data["entry"][0]
+        change = entry["changes"][0]["value"]
+
+        if "statuses" in change:
+            for status_update in change["statuses"]:
+                wamid = status_update.get("id")
+                status = status_update.get("status")
+                errors = status_update.get("errors")
+                error_msg = str(errors) if errors else None
+
+                update_delivery_status(wamid, status.upper(), error_message=error_msg)
+    except Exception as e:
+        print("Webhook processing error:", e)
+
+    return jsonify({"status": "received"}), 200
+
+
+if __name__ == "__main__":
+    app.run(debug=True, use_reloader=False)
 
 
 # ---------------------------------------------------------------------------
