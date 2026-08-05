@@ -365,7 +365,8 @@ def home():
 def add_customer():
     if request.method == "POST":
         name = request.form["name"].strip().title()
-        phone = request.form.get("phone")
+        phone = request.form.get("phone", "")
+        phone = re.sub(r"\D", "", phone)
         address = request.form.get("address")
         opening_balance = float(request.form.get("opening_balance", 0) or 0)
 
@@ -2593,7 +2594,9 @@ def edit_customer(customer_id):
     if request.method == "POST":
 
         name = request.form.get("name", "").strip().title()
-        phone = request.form.get("phone", "").strip()
+
+        phone = request.form.get("phone", "")
+        phone = re.sub(r"\D", "", phone)
 
         cursor.execute("""
             UPDATE customers
