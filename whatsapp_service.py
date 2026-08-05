@@ -659,11 +659,14 @@ def send_purchase_statement(customer_id, statement_date):
 
         token=token,
 
-        recipient_number=customer["phone"]
+        recipient_number="91" + customer["phone"]
 
     )
 
     result = send_template_message(payload)
+
+    print("WhatsApp Payload:", payload)
+    print("WhatsApp Result:", result)
 
     if result["success"]:
 
