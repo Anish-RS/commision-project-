@@ -340,21 +340,6 @@ def send_template_message(payload):
 
         )
 
-        print("\n========== WHATSAPP API REQUEST ==========")
-        print("URL:", url)
-        print("Headers:", headers)
-        print("Payload:", payload)
-        
-        print("\n========== WHATSAPP API RESPONSE ==========")
-        print("Status Code:", response.status_code)
-        print("Response Headers:", dict(response.headers))
-        print("Response Body:", response.text)
-
-try:
-    print("Response JSON:", response.json())
-except Exception:
-    print("Response is not JSON")
-
         response.raise_for_status()
 
         data = response.json()
@@ -379,14 +364,15 @@ except Exception:
         }
 
     except requests.exceptions.HTTPError:
-        print("\n========== HTTP ERROR ==========")
-        print("Status Code:", response.status_code)
-        print("Response Body:", response.text)
 
         try:
+
             error = response.json()
+
         except Exception:
+
             error = response.text
+
         return {
 
             "success": False,
