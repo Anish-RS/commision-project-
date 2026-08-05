@@ -726,12 +726,15 @@
 
     // Live phone formatting: groups digits as "XXXXX XXXXX"
     if(phoneInput){
-        phoneInput.addEventListener('input', function(){
-            var digits = phoneInput.value.replace(/\D/g, '').slice(0, 10);
-            var formatted = digits.length > 5 ? digits.slice(0,5) + ' ' + digits.slice(5) : digits;
-            phoneInput.value = formatted;
-            var digitCount = digits.length;
-            var valid = digitCount === 0 || digitCount === 10;
+        phoneInput.addEventListener('input', function () {
+            phoneInput.value = phoneInput.value
+                .replace(/\D/g, '')
+                .slice(0, 10);
+        
+            var valid =
+                phoneInput.value.length === 0 ||
+                phoneInput.value.length === 10;
+        
             phoneInput.classList.toggle('invalid', !valid);
             phoneError.style.display = valid ? 'none' : 'flex';
         });
