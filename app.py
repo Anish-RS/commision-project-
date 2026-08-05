@@ -15,18 +15,7 @@ from whatsapp_service import send_purchase_statement, update_delivery_status
 from collections import defaultdict
 import requests
 
-@app.route('/debug/check-subscription')
-def debug_check_subscription():
-    waba_id = "1581569716701680"
-    token = os.environ.get("WHATSAPP_ACCESS_TOKEN")
-    resp = requests.get(
-        f"https://graph.facebook.com/v23.0/{waba_id}/subscribed_apps",
-        headers={"Authorization": f"Bearer {token}"}
-    )
-    return resp.json()
 
-app = Flask(__name__)
-app.secret_key = os.environ.get("SECRET_KEY", "secret123")
 
 
 @app.before_request
@@ -39,6 +28,19 @@ def require_login():
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
+@app.route('/debug/check-subscription')
+def debug_check_subscription():
+    waba_id = "1581569716701680"
+    token = os.environ.get("WHATSAPP_ACCESS_TOKEN")
+    resp = requests.get(
+        f"https://graph.facebook.com/v23.0/{waba_id}/subscribed_apps",
+        headers={"Authorization": f"Bearer {token}"}
+    )
+    return resp.json()
+
+app = Flask(__name__)
+app.secret_key = os.environ.get("SECRET_KEY", "secret123")
     
 def to_decimal(x):
     return Decimal(x or 0).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
