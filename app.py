@@ -32,7 +32,7 @@ app.secret_key = os.environ.get("SECRET_KEY", "secret123")
 @app.before_request
 def require_login():
     # Pages that do NOT require a password (login page, static files, and the WhatsApp webhook)
-    allowed_routes = ['login', 'static', 'verify_whatsapp_webhook', 'receive_whatsapp_webhook']
+    allowed_routes = ['login', 'static', 'verify_whatsapp_webhook', 'receive_whatsapp_webhook', 'debug_check_subscription']
     
     if request.endpoint not in allowed_routes and not session.get('logged_in'):
         return redirect(url_for('login'))
