@@ -13,19 +13,18 @@ import re
 import traceback
 from itsdangerous import URLSafeTimedSerializer
 from whatsapp_service import send_purchase_statement, update_delivery_status
-from collections import defaultdict
-from itsdangerous import SignatureExpired, BadSignature
+
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.environ.get(
     "SECRET_KEY",
     "6f2c8d9e1a4b7c0d3f8a5e9b2c1d7f4g8h6j3k9m1n5p2q7r4t8u0v6w9x3y1z"
 )
-serializer = URLSafeTimedSerializer(app.config["SECRET_KEY"])
+
 @app.before_request
 def require_login():
     # Pages that do NOT require a password (login page, static files, and the WhatsApp webhook)
-    allowed_routes = ['login', 'static', 'verify_whatsapp_webhook', 'receive_whatsapp_webhook','view_bill']
+    allowed_routes = ['login', 'static', 'verify_whatsapp_webhook', 'receive_whatsapp_webhook','view_statement']
     
     if request.endpoint not in allowed_routes and not session.get('logged_in'):
         return redirect(url_for('login'))
@@ -35,28 +34,11 @@ def require_login():
     
 def to_decimal(x):
     return Decimal(x or 0).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
-def generate_bill_token(bill_id):
-    return serializer.dumps(
-        {"bill_id": bill_id},
-        salt="supplier-bill"
-    )
+
 @app.context_processor
 def inject_now():
     return {"now": datetime.now}
-def verify_bill_token(token):
-    try:
-        data = serializer.loads(
-            token,
-            salt="supplier-bill",
-            max_age=60*60*24*30      # 30 days
-        )
-        return data["bill_id"]
 
-    except SignatureExpired:
-        return None
-
-    except BadSignature:
-        return None
 # ---------------------------------------------------------------------------
 # Timezone helper (zoneinfo with IST fallback)
 # ---------------------------------------------------------------------------
@@ -82,24 +64,113 @@ def ist_today():
 def ist_now():
     return datetime.now(IST)
 
-@app.route("/view-bill")
-def view_bill():
+@app.route("/s/<token>")
+def view_statement(token):
 
-    token = request.args.get("token")
+    conn = get_connection()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
 
-    if not token:
-        return "Invalid Link", 403
+    cursor.execute("""
+        SELECT
+            customer_id,
+            statement_date
+        FROM statement_tokens
+        WHERE token = %s
+          AND expires_at > NOW()
+    """, (token,))
 
-    bill_id = verify_bill_token(token)
+    row = cursor.fetchone()
 
-    if bill_id is None:
-        return "Invalid or Expired Link", 403
+    if not row:
+        cursor.close()
+        conn.close()
+        return "Invalid or Expired Link", 404
 
-    # Existing print logic starts here
-    return redirect(url_for(
-        "print_supplier_bill",
-        bill_id=bill_id
-    ))
+    customer_id = row["customer_id"]
+    period = row["statement_date"]
+        cursor.execute(
+        """
+        SELECT
+            name,
+            balance
+        FROM customers
+        WHERE customer_id=%s
+        """,
+        (customer_id,)
+    )
+
+    cust = cursor.fetchone()
+
+    if not cust:
+        cursor.close()
+        conn.close()
+        return "Customer not found",404
+
+    customer_name = cust["name"]
+    current_balance = float(cust["balance"])
+        cursor.execute(
+        """
+        SELECT
+            bill_id,
+            customer_id,
+            bill_date,
+            quantity,
+            rate,
+            amount,
+            supplier_bill_id,
+            old_balance,
+            final_balance
+        FROM customer_bills
+        WHERE customer_id=%s
+        AND bill_date=%s
+        ORDER BY bill_date,bill_id
+        """,
+        (customer_id, period)
+    )
+
+    purchases = cursor.fetchall() or []
+
+    opening = (
+        float(purchases[0]["old_balance"])
+        if purchases
+        else current_balance
+    )
+
+    net = sum(
+        float(x["amount"])
+        for x in purchases
+    )
+        cursor.execute(
+        """
+        SELECT
+            COALESCE(SUM(amount),0) AS total_receipts
+        FROM transactions
+        WHERE entity_type='customer'
+        AND entity_id=%s
+        AND tx_type='receipt'
+        AND DATE(tx_date)=%s
+        """,
+        (customer_id, period)
+    )
+
+    row = cursor.fetchone()
+
+    sum_receipts = float(row["total_receipts"])
+        cursor.close()
+    conn.close()
+
+    return render_template(
+        "customer_bill_consolidated_print.html",
+        customer_id=customer_id,
+        customer_name=customer_name,
+        from_date=period,
+        to_date=period,
+        purchases=purchases,
+        opening=opening,
+        net=net,
+        current_balance=current_balance,
+        sum_receipts=sum_receipts
+    )
 # ---------------------------------------------------------------------------
 # Cash-in-hand recomputation (PostgreSQL)
 # ---------------------------------------------------------------------------
