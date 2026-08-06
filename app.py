@@ -11,7 +11,7 @@ from decimal import Decimal, ROUND_HALF_UP
 import os
 import re
 import traceback
-from itsdangerous import URLSafeTimedSerializer
+
 from whatsapp_service import send_purchase_statement, update_delivery_status
 
 
