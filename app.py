@@ -11,17 +11,21 @@ from decimal import Decimal, ROUND_HALF_UP
 import os
 import re
 import traceback
+from itsdangerous import URLSafeTimedSerializer
 from whatsapp_service import send_purchase_statement, update_delivery_status
 from collections import defaultdict
+from itsdangerous import SignatureExpired, BadSignature
 
 app = Flask(__name__)
-app.secret_key = os.environ.get("SECRET_KEY", "secret123")
-
-
+app.config["SECRET_KEY"] = os.environ.get(
+    "SECRET_KEY",
+    "6f2c8d9e1a4b7c0d3f8a5e9b2c1d7f4g8h6j3k9m1n5p2q7r4t8u0v6w9x3y1z"
+)
+serializer = URLSafeTimedSerializer(app.config["SECRET_KEY"])
 @app.before_request
 def require_login():
     # Pages that do NOT require a password (login page, static files, and the WhatsApp webhook)
-    allowed_routes = ['login', 'static', 'verify_whatsapp_webhook', 'receive_whatsapp_webhook']
+    allowed_routes = ['login', 'static', 'verify_whatsapp_webhook', 'receive_whatsapp_webhook','view_bill']
     
     if request.endpoint not in allowed_routes and not session.get('logged_in'):
         return redirect(url_for('login'))
@@ -31,11 +35,28 @@ def require_login():
     
 def to_decimal(x):
     return Decimal(x or 0).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
-
+def generate_bill_token(bill_id):
+    return serializer.dumps(
+        {"bill_id": bill_id},
+        salt="supplier-bill"
+    )
 @app.context_processor
 def inject_now():
     return {"now": datetime.now}
+def verify_bill_token(token):
+    try:
+        data = serializer.loads(
+            token,
+            salt="supplier-bill",
+            max_age=60*60*24*30      # 30 days
+        )
+        return data["bill_id"]
 
+    except SignatureExpired:
+        return None
+
+    except BadSignature:
+        return None
 # ---------------------------------------------------------------------------
 # Timezone helper (zoneinfo with IST fallback)
 # ---------------------------------------------------------------------------
@@ -61,7 +82,24 @@ def ist_today():
 def ist_now():
     return datetime.now(IST)
 
+@app.route("/view-bill")
+def view_bill():
 
+    token = request.args.get("token")
+
+    if not token:
+        return "Invalid Link", 403
+
+    bill_id = verify_bill_token(token)
+
+    if bill_id is None:
+        return "Invalid or Expired Link", 403
+
+    # Existing print logic starts here
+    return redirect(url_for(
+        "print_supplier_bill",
+        bill_id=bill_id
+    ))
 # ---------------------------------------------------------------------------
 # Cash-in-hand recomputation (PostgreSQL)
 # ---------------------------------------------------------------------------
