@@ -12,7 +12,13 @@ import os
 import re
 import traceback
 
-from whatsapp_service import send_purchase_statement, update_delivery_status, get_customers_for_date
+from whatsapp_service import (
+    send_purchase_statement,
+    update_delivery_status,
+    get_customers_for_date,
+    get_purchase_summary,
+    has_statement_been_sent
+)
 
 
 app = Flask(__name__)
@@ -1524,6 +1530,49 @@ def send_customer_statement_whatsapp():
     return redirect(url_for("customer_bill_search"))
 
 
+@app.route("/preview_bulk_customer_statements_whatsapp", methods=["POST"])
+def preview_bulk_customer_statements_whatsapp():
+
+    bill_date_str = request.form.get("bill_date", "").strip()
+
+    if not bill_date_str:
+        bill_date_str = ist_today().strftime("%Y-%m-%d")
+
+    try:
+        statement_date = datetime.strptime(bill_date_str, "%Y-%m-%d").date()
+    except Exception:
+        return jsonify({"success": False, "error": "Invalid date."}), 400
+
+    customers = get_customers_for_date(statement_date)
+
+    preview = []
+
+    for cust in customers:
+        cid = cust["customer_id"]
+        cname = cust["name"]
+        phone = cust.get("phone")
+
+        summary = get_purchase_summary(cid, statement_date)
+        already_sent = has_statement_been_sent(cid, statement_date)
+
+        preview.append({
+            "customer_id": cid,
+            "customer_name": cname,
+            "phone": phone,
+            "purchase_total": summary["purchase_total"],
+            "purchase_entries": summary["purchase_entries"],
+            "has_phone": bool(phone),
+            "already_sent": already_sent
+        })
+
+    return jsonify({
+        "success": True,
+        "date": bill_date_str,
+        "total": len(preview),
+        "customers": preview
+    })
+
+
 @app.route("/send_bulk_customer_statements_whatsapp", methods=["POST"])
 def send_bulk_customer_statements_whatsapp():
 
@@ -1537,7 +1586,20 @@ def send_bulk_customer_statements_whatsapp():
     except Exception:
         return jsonify({"success": False, "error": "Invalid date."}), 400
 
+    selected_ids_raw = request.form.get("customer_ids", "").strip()
+
     customers = get_customers_for_date(statement_date)
+
+    if selected_ids_raw:
+        try:
+            selected_ids = {
+                int(x) for x in selected_ids_raw.split(",") if x.strip()
+            }
+            customers = [
+                c for c in customers if c["customer_id"] in selected_ids
+            ]
+        except ValueError:
+            return jsonify({"success": False, "error": "Invalid customer selection."}), 400
 
     if not customers:
         return jsonify({
