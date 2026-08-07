@@ -153,7 +153,7 @@ def view_statement(token):
     conn.close()
 
     return render_template(
-        "customer_bill_consolidated_print.html",
+        "customer_statement_view.html",
         customer_id=customer_id,
         customer_name=customer_name,
         from_date=period,
