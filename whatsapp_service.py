@@ -145,7 +145,8 @@ def get_customer_details(customer_id):
                 name,
                 phone,
                 balance,
-                opening_balance
+                opening_balance,
+                whatsapp_blocked_reason
             FROM customers
             WHERE customer_id = %s
         """, (customer_id,))
@@ -702,6 +703,108 @@ def get_in_progress_customer_ids(customer_ids, statement_date, stale_minutes=SEN
         conn.close()
 
 
+UNDELIVERABLE_ERROR_CODES = ("131026",)
+"""
+WhatsApp Cloud API error codes that mean the recipient's number itself
+is the problem (no WhatsApp account / permanently undeliverable) rather
+than a transient issue - i.e. retrying without changing the number
+will just fail again every time.
+"""
+
+
+def _reason_indicates_bad_number(reason):
+    text = str(reason)
+    return any(code in text for code in UNDELIVERABLE_ERROR_CODES)
+
+
+def mark_customer_whatsapp_blocked(customer_id, reason):
+    """
+    Flags a customer so future send attempts stop before ever calling
+    the WhatsApp API, instead of repeating a failure that's guaranteed
+    to happen again (wrong/invalid number, no WhatsApp account, etc).
+    """
+
+    conn = get_connection()
+
+    try:
+
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            UPDATE customers
+            SET whatsapp_blocked_reason = %s,
+                whatsapp_blocked_at = NOW()
+            WHERE customer_id = %s
+        """, (
+            reason,
+            customer_id
+        ))
+
+        conn.commit()
+
+    finally:
+
+        cursor.close()
+        conn.close()
+
+
+def unblock_customer_whatsapp(customer_id):
+    """
+    Clears a block once the phone number has been corrected, so the
+    customer becomes sendable again.
+    """
+
+    conn = get_connection()
+
+    try:
+
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            UPDATE customers
+            SET whatsapp_blocked_reason = NULL,
+                whatsapp_blocked_at = NULL
+            WHERE customer_id = %s
+        """, (customer_id,))
+
+        conn.commit()
+
+    finally:
+
+        cursor.close()
+        conn.close()
+
+
+def get_whatsapp_blocked_customer_ids(customer_ids):
+    """
+    Returns {customer_id: reason} for every id in customer_ids that is
+    currently blocked. Batched for the preview list so it stays cheap.
+    """
+
+    if not customer_ids:
+        return {}
+
+    conn = get_connection()
+
+    try:
+
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            SELECT customer_id, whatsapp_blocked_reason
+            FROM customers
+            WHERE customer_id = ANY(%s)
+              AND whatsapp_blocked_reason IS NOT NULL
+        """, (list(customer_ids),))
+
+        return {row[0]: row[1] for row in cursor.fetchall()}
+
+    finally:
+
+        cursor.close()
+        conn.close()
+
+
 def update_delivery_status(whatsapp_message_id, new_status, error_message=None):
     conn = get_connection()
     try:
@@ -922,6 +1025,22 @@ def _send_purchase_statement_locked(customer_id, statement_date):
 
         }
 
+    if customer.get("whatsapp_blocked_reason"):
+
+        return {
+
+            "success": False,
+
+            "reason": (
+                f"WhatsApp sending blocked for this customer - "
+                f"{customer['whatsapp_blocked_reason']}. "
+                f"Verify the phone number, then retry."
+            ),
+
+            "blocked": True
+
+        }
+
     if has_statement_been_sent(customer_id, statement_date):
 
         return {
@@ -1008,5 +1127,18 @@ def _send_purchase_statement_locked(customer_id, statement_date):
             error_message=str(result["reason"])
 
         )
+
+        # This specific error means WhatsApp itself rejected the
+        # number as undeliverable (no WhatsApp account / invalid
+        # number) - retrying won't help until the number is fixed, so
+        # stop calling the API for this customer until someone clears
+        # the block.
+        if _reason_indicates_bad_number(result["reason"]):
+
+            mark_customer_whatsapp_blocked(
+                customer_id,
+                "WhatsApp reported this number as undeliverable "
+                "(error 131026 - likely no WhatsApp account or wrong number)"
+            )
 
     return result
