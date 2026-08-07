@@ -1,315 +1,123 @@
 <!doctype html>
 <html>
 <head>
-  <meta charset="utf-8">
-  <title>Customer Statement — {{ customer_name }}</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8">
+<title>Customer Statement — {{ customer_name }}</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+html,body{margin:0;padding:0;font-family:Arial,Helvetica,sans-serif;color:#1c1c1c;background:#EFEFEF;font-size:16px;-webkit-text-size-adjust:100%}
+.page{max-width:520px;margin:0 auto;padding:16px 16px 32px;box-sizing:border-box}
+.card{background:#fff;border-radius:6px;box-shadow:0 1px 6px rgba(0,0,0,0.08);box-sizing:border-box;overflow:hidden;overflow-wrap:break-word;word-break:break-word;padding:24px 20px}
+.header-row{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding-bottom:18px;border-bottom:3px solid #1c1c1c}
+.logo-mark{width:46px;height:46px;flex-shrink:0}
+.biz-block{display:flex;gap:12px;align-items:center}
+.biz-text .name{font-size:18px;font-weight:800;letter-spacing:.3px;color:#1c1c1c}
+.biz-text .type{font-size:10.5px;font-weight:700;color:#C77D00;letter-spacing:1.3px;text-transform:uppercase;margin-top:2px}
+.biz-text .contact{font-size:11px;color:#777;margin-top:5px;line-height:1.5}
+.doc-tag{text-align:right}
+.doc-tag .label{font-size:11px;font-weight:800;letter-spacing:2px;color:#1c1c1c;text-transform:uppercase}
+.doc-tag .num{font-size:12px;color:#999;margin-top:3px}
 
-  <style>
+.info-row{display:flex;justify-content:space-between;gap:14px;margin:20px 0 18px}
+.info-col .cap{font-size:10px;font-weight:800;letter-spacing:1px;color:#999;text-transform:uppercase;margin-bottom:4px}
+.info-col.right{text-align:right}
+.info-col .main{font-size:15.5px;font-weight:700;color:#1c1c1c}
+.info-col .sub{font-size:12px;color:#888;margin-top:2px}
 
-    /*
-      This is the customer-facing view opened from the WhatsApp link.
-      Unlike customer_bill_consolidated_print.html (used for the
-      in-shop thermal-receipt print), this is meant to be read
-      comfortably on a phone screen - fluid width, no fixed
-      millimeter sizing, and no auto-triggered print dialog.
-    */
+table.items{width:100%;border-collapse:collapse;margin-top:6px}
+table.items thead th{text-align:left;font-size:10px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:#999;padding:0 0 8px;border-bottom:2px solid #1c1c1c}
+table.items thead th.num{text-align:right}
+table.items tbody td{padding:10px 0;font-size:14px;border-bottom:1px solid #eee;vertical-align:top}
+table.items tbody td.num{text-align:right;font-weight:700;color:#1c1c1c;white-space:nowrap}
+table.items tbody .bill-no{font-weight:700;color:#1c1c1c}
+table.items tbody .sub{font-size:11.5px;color:#999;margin-top:2px}
+.no-entries{text-align:center;color:#999;padding:22px 0;font-size:13.5px}
 
-    html, body {
-      margin: 0;
-      padding: 0;
-      font-family: Arial, Helvetica, sans-serif;
-      color: #1a1a1a;
-      background: #F4F1EA;
-      font-size: 16px;
-      -webkit-text-size-adjust: 100%;
-    }
+.totals{margin-top:16px;margin-left:auto;width:100%;max-width:280px;margin-left:auto}
+.totals-row{display:flex;justify-content:space-between;font-size:13.5px;color:#555;padding:5px 0}
+.totals-row.due{border-top:2px solid #1c1c1c;margin-top:6px;padding-top:10px;font-size:17px;font-weight:900;color:#1c1c1c}
+.totals-row.due .amt{color:#C77D00}
 
-    .page {
-      max-width: 520px;
-      margin: 0 auto;
-      padding: 16px 16px 32px;
-      box-sizing: border-box;
-    }
-
-    .card {
-      background: #fff;
-      border-radius: 12px;
-      padding: 18px 16px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-      box-sizing: border-box;
-      overflow-wrap: break-word;
-      word-break: break-word;
-    }
-
-    .business-header {
-      text-align: center;
-      margin-bottom: 14px;
-    }
-
-    .business-name {
-      font-size: 22px;
-      font-weight: 900;
-    }
-
-    .business-type {
-      font-size: 15px;
-      font-weight: 600;
-      color: #444;
-      margin-top: 2px;
-    }
-
-    .business-location {
-      font-size: 14px;
-      font-weight: 600;
-      color: #555;
-    }
-
-    .business-mobile {
-      font-size: 13px;
-      font-weight: 600;
-      color: #666;
-      margin-top: 2px;
-    }
-
-    .business-divider {
-      border: 0;
-      border-top: 1px solid #e2ddd0;
-      margin: 12px 0;
-    }
-
-    h2 {
-      font-size: 19px;
-      margin: 0 0 8px;
-    }
-
-    .meta {
-      font-size: 14.5px;
-      line-height: 1.5;
-      margin-bottom: 12px;
-      color: #333;
-    }
-
-    .meta strong {
-      color: #111;
-    }
-
-    /* Purchase entries as stacked cards on mobile instead of a
-       cramped multi-column table - much easier to read at normal
-       zoom on a phone. */
-    .entries {
-      margin-top: 10px;
-    }
-
-    .entry-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      padding: 9px 0;
-      border-bottom: 1px dashed #e2ddd0;
-      font-size: 14.5px;
-      gap: 10px;
-    }
-
-    .entry-left {
-      min-width: 0;
-    }
-
-    .entry-row:last-child {
-      border-bottom: none;
-    }
-
-    .entry-left .bill-no {
-      font-weight: 700;
-      color: #111;
-    }
-
-    .entry-left .sub {
-      font-size: 12.5px;
-      color: #777;
-      margin-top: 2px;
-    }
-
-    .entry-right {
-      text-align: right;
-      white-space: nowrap;
-    }
-
-    .entry-right .amount {
-      font-weight: 700;
-      font-size: 15.5px;
-    }
-
-    .entry-right .sub {
-      font-size: 12.5px;
-      color: #777;
-      margin-top: 2px;
-    }
-
-    .no-entries {
-      text-align: center;
-      color: #777;
-      padding: 16px 0;
-      font-size: 14px;
-    }
-
-    .summary {
-      margin-top: 14px;
-      border-top: 1px solid #e2ddd0;
-      padding-top: 10px;
-    }
-
-    .summary-row {
-      display: flex;
-      justify-content: space-between;
-      padding: 5px 0;
-      font-size: 15px;
-    }
-
-    .balance-row {
-      border-top: 2px solid #1a1a1a;
-      margin-top: 6px;
-      padding-top: 10px;
-      font-size: 19px;
-      font-weight: 900;
-    }
-
-    .footer {
-      margin-top: 16px;
-      font-size: 12px;
-      color: #999;
-      text-align: center;
-    }
-
-    .print-link {
-      display: block;
-      text-align: center;
-      margin-top: 14px;
-      font-size: 13px;
-      color: #2255BB;
-      text-decoration: underline;
-      background: none;
-      border: none;
-      width: 100%;
-      cursor: pointer;
-      padding: 6px 0;
-    }
-
-    @media print {
-      body { background: #fff; }
-      .page { max-width: 100%; padding: 0; }
-      .card { box-shadow: none; border-radius: 0; }
-      .print-link { display: none; }
-    }
-
-    @media (max-width: 360px) {
-      .page { padding: 10px 10px 24px; }
-      .card { padding: 14px 12px; }
-      .business-name { font-size: 20px; }
-      .balance-row { font-size: 17px; }
-    }
-
-  </style>
+.foot-note{margin-top:26px;padding-top:14px;border-top:1px solid #eee;font-size:11px;color:#999;text-align:center;line-height:1.6}
+.print-link{display:block;text-align:center;margin-top:14px;font-size:12.5px;color:#2255BB;text-decoration:underline;background:none;border:none;width:100%;cursor:pointer;padding:6px 0}
+.footer{margin-top:12px;font-size:11px;color:#aaa;text-align:center}
+@media print{body{background:#fff}.page{max-width:100%;padding:0}.card{box-shadow:none;border-radius:0}.print-link{display:none}}
+@media (max-width:380px){.header-row{flex-direction:column;gap:14px}.doc-tag{text-align:left}}
+</style>
 </head>
-
 <body>
-
 <div class="page">
   <div class="card">
 
-    <div class="business-header">
-      <div class="business-name">S.GOVINDHAN</div>
-      <div class="business-type">Banana Commission Agent</div>
-      <div class="business-location">Thuckalay &amp; Appta Market</div>
-      <div class="business-mobile">Mobile : 9894726926</div>
-      <hr class="business-divider">
-    </div>
-
-    <h2>{{ customer_name }}</h2>
-
-    <div class="meta">
-      <div><strong>Customer ID :</strong> {{ customer_id }}</div>
-      <div>
-        <strong>Period :</strong>
-        {% if from_date == to_date %}
-          {{ from_date.strftime('%d %B %Y') }}
-        {% else %}
-          {{ from_date.strftime('%d %B %Y') }} — {{ to_date.strftime('%d %B %Y') }}
-        {% endif %}
-      </div>
-    </div>
-
-    <div class="entries">
-
-      {% if purchases %}
-
-        {% for p in purchases %}
-        <div class="entry-row">
-          <div class="entry-left">
-            <div class="bill-no">Bill #{{ p.bill_id }}</div>
-            <div class="sub">
-              {{ "%.2f"|format(p.quantity or 0) }} qty
-              &times;
-              ₹{{ "%.2f"|format(p.rate or 0) }}
-              {% if p.supplier_bill_id %} · Ref {{ p.supplier_bill_id }}{% endif %}
-            </div>
-          </div>
-          <div class="entry-right">
-            <div class="amount">₹{{ "%.2f"|format(p.amount or 0) }}</div>
-          </div>
+    <div class="header-row">
+      <div class="biz-block">
+        <svg class="logo-mark" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2" y="2" width="96" height="96" rx="14" fill="#1c1c1c"/>
+          <path d="M 50,22 C 34,30 27,52 36,72 C 40,80 50,84 58,80 C 50,74 45,58 46,44 C 47,34 49,27 50,22 Z" fill="#E3A11A"/>
+          <path d="M 50,22 C 60,32 62,50 55,68" fill="none" stroke="#F5CE6E" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
+          <circle cx="50" cy="18" r="4" fill="#3E7A38"/>
+        </svg>
+        <div class="biz-text">
+          <div class="name">S.GOVINDHAN</div>
+          <div class="type">Banana Commission Agent</div>
+          <div class="contact">Thuckalay &amp; Appta Market<br>Mobile: 9894726926</div>
         </div>
+      </div>
+      <div class="doc-tag">
+        <div class="label">Statement</div>
+        <div class="num">{{ customer_id }}</div>
+      </div>
+    </div>
+
+    <div class="info-row">
+      <div class="info-col">
+        <div class="cap">Billed To</div>
+        <div class="main">{{ customer_name }}</div>
+      </div>
+      <div class="info-col right">
+        <div class="cap">Period</div>
+        <div class="main" style="font-size:13.5px">
+          {% if from_date == to_date %}{{ from_date.strftime('%d %b %Y') }}
+          {% else %}{{ from_date.strftime('%d %b') }} – {{ to_date.strftime('%d %b %Y') }}{% endif %}
+        </div>
+      </div>
+    </div>
+
+    {% if purchases %}
+    <table class="items">
+      <thead>
+        <tr><th>Bill</th><th class="num">Amount</th></tr>
+      </thead>
+      <tbody>
+        {% for p in purchases %}
+        <tr>
+          <td>
+            <div class="bill-no">#{{ p.bill_id }}</div>
+            <div class="sub">{{ "%.2f"|format(p.quantity or 0) }} qty &times; ₹{{ "%.2f"|format(p.rate or 0) }}{% if p.supplier_bill_id %} · Ref {{ p.supplier_bill_id }}{% endif %}</div>
+          </td>
+          <td class="num">₹{{ "%.2f"|format(p.amount or 0) }}</td>
+        </tr>
         {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="no-entries">No purchases found for this period.</div>
+    {% endif %}
 
-      {% else %}
-        <div class="no-entries">No purchases found for this period.</div>
-      {% endif %}
-
+    <div class="totals">
+      <div class="totals-row"><span>Total Purchases</span><span>₹{{ "%.2f"|format(net or 0) }}</span></div>
+      <div class="totals-row"><span>Opening Balance</span><span>₹{{ "%.2f"|format(opening or 0) }}</span></div>
+      <div class="totals-row"><span>Total Receipts</span><span>₹{{ "%.2f"|format(sum_receipts or 0) }}</span></div>
+      <div class="totals-row due"><span>Balance Due</span><span class="amt">₹{{ "%.2f"|format(current_balance or 0) }}</span></div>
     </div>
 
-    <div class="summary">
-
-      <div class="summary-row">
-        <span>Total Purchases</span>
-        <span>₹{{ "%.2f"|format(net or 0) }}</span>
-      </div>
-
-      <div class="summary-row">
-        <span>Opening Balance</span>
-        <span>₹{{ "%.2f"|format(opening or 0) }}</span>
-      </div>
-
-      <div class="summary-row">
-        <span>Total Receipts</span>
-        <span>₹{{ "%.2f"|format(sum_receipts or 0) }}</span>
-      </div>
-
-      <div class="summary-row balance-row">
-        <span>Current Balance</span>
-        <span>₹{{ "%.2f"|format(current_balance or 0) }}</span>
-      </div>
-
-    </div>
-
-    <button type="button" class="print-link" onclick="window.print()">
-      Print / Save as PDF
-    </button>
-
+    <div class="foot-note">Thank you for your business.<br>For queries regarding this statement, please contact us.</div>
+    <button type="button" class="print-link" onclick="window.print()">Print / Save as PDF</button>
   </div>
-
-  <div class="footer">
-    Viewed on <span class="ts"></span>
-  </div>
+  <div class="footer">Viewed on <span class="ts"></span></div>
 </div>
-
 <script>
-  const d = new Date();
-  const formatted =
-    d.toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' })
-    + " " +
-    String(d.getHours()).padStart(2, "0") + ":" +
-    String(d.getMinutes()).padStart(2, "0");
-  document.querySelector(".ts").textContent = formatted;
+const d=new Date();document.querySelector(".ts").textContent=d.toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'})+" "+String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");
 </script>
-
 </body>
 </html>
