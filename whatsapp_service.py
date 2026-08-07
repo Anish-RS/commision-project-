@@ -1,5 +1,6 @@
 import os
 import uuid
+import hashlib
 import requests
 from datetime import datetime, timedelta
 
@@ -15,6 +16,19 @@ APP_BASE_URL = os.getenv("APP_BASE_URL")
 
 def generate_token():
     return str(uuid.uuid4())
+
+
+def _statement_lock_key(customer_id, statement_date):
+    """
+    Deterministic 64-bit signed key for a Postgres advisory lock, scoped
+    to one customer + one statement date. Two processes/requests trying
+    to send a statement to the same customer for the same date will
+    contend for the same key.
+    """
+
+    raw = f"whatsapp_statement:{customer_id}:{statement_date}"
+    digest = hashlib.sha256(raw.encode()).digest()[:8]
+    return int.from_bytes(digest, byteorder="big", signed=True)
 
 
 # -------------------------------
@@ -663,6 +677,40 @@ def send_purchase_statement(customer_id, statement_date):
     if not config["success"]:
 
         return config
+
+    # ------------------------------------------------------------
+    # Acquire a Postgres advisory lock for this (customer, date) pair
+    # before doing anything else. This makes the "already sent?" check
+    # further down atomic with the eventual send + log, even when two
+    # requests (double-click, two tabs, an overlapping bulk-send retry,
+    # etc.) hit this function for the same customer/date at the same
+    # time. Without this, both requests can pass the "not sent yet"
+    # check before either one has written its log row, and the
+    # customer ends up getting the WhatsApp message twice.
+    # ------------------------------------------------------------
+
+    lock_conn = get_connection()
+    lock_key = _statement_lock_key(customer_id, statement_date)
+
+    try:
+        lock_cursor = lock_conn.cursor()
+        lock_cursor.execute("SELECT pg_advisory_lock(%s)", (lock_key,))
+
+        return _send_purchase_statement_locked(customer_id, statement_date)
+
+    finally:
+        try:
+            lock_cursor.execute("SELECT pg_advisory_unlock(%s)", (lock_key,))
+        finally:
+            lock_cursor.close()
+            lock_conn.close()
+
+
+def _send_purchase_statement_locked(customer_id, statement_date):
+    """
+    Original send_purchase_statement body, now only ever run while
+    holding the advisory lock for this customer/date.
+    """
 
     customer = get_customer_details(customer_id)
 
