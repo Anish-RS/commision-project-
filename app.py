@@ -18,7 +18,9 @@ from whatsapp_service import (
     get_customers_for_date,
     get_purchase_summary,
     has_statement_been_sent,
-    get_in_progress_customer_ids
+    get_in_progress_customer_ids,
+    get_whatsapp_blocked_customer_ids,
+    unblock_customer_whatsapp
 )
 
 
@@ -1554,6 +1556,10 @@ def preview_bulk_customer_statements_whatsapp():
         statement_date
     )
 
+    blocked_map = get_whatsapp_blocked_customer_ids(
+        [c["customer_id"] for c in customers]
+    )
+
     preview = []
 
     for cust in customers:
@@ -1564,6 +1570,7 @@ def preview_bulk_customer_statements_whatsapp():
         summary = get_purchase_summary(cid, statement_date)
         already_sent = has_statement_been_sent(cid, statement_date)
         in_progress = cid in in_progress_ids
+        blocked_reason = blocked_map.get(cid)
 
         preview.append({
             "customer_id": cid,
@@ -1573,7 +1580,9 @@ def preview_bulk_customer_statements_whatsapp():
             "purchase_entries": summary["purchase_entries"],
             "has_phone": bool(phone),
             "already_sent": already_sent,
-            "in_progress": in_progress
+            "in_progress": in_progress,
+            "blocked": blocked_reason is not None,
+            "blocked_reason": blocked_reason
         })
 
     return jsonify({
@@ -1582,6 +1591,21 @@ def preview_bulk_customer_statements_whatsapp():
         "total": len(preview),
         "customers": preview
     })
+
+
+@app.route("/unblock_customer_whatsapp", methods=["POST"])
+def unblock_customer_whatsapp_route():
+
+    customer_id = request.form.get("customer_id")
+
+    try:
+        customer_id = int(customer_id)
+    except (TypeError, ValueError):
+        return jsonify({"success": False, "error": "Invalid customer id."}), 400
+
+    unblock_customer_whatsapp(customer_id)
+
+    return jsonify({"success": True})
 
 
 @app.route("/send_bulk_customer_statements_whatsapp", methods=["POST"])
@@ -1633,6 +1657,10 @@ def send_bulk_customer_statements_whatsapp():
         statement_date
     )
 
+    blocked_map = get_whatsapp_blocked_customer_ids(
+        [c["customer_id"] for c in customers]
+    )
+
     results = []
     sent_count = 0
     failed_count = 0
@@ -1647,6 +1675,16 @@ def send_bulk_customer_statements_whatsapp():
                 "customer_name": cname,
                 "status": "failed",
                 "reason": "No phone number on file"
+            })
+            failed_count += 1
+            continue
+
+        if cid in blocked_map:
+            results.append({
+                "customer_id": cid,
+                "customer_name": cname,
+                "status": "failed",
+                "reason": f"Blocked - {blocked_map[cid]}"
             })
             failed_count += 1
             continue
