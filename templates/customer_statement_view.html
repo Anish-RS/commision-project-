@@ -1,0 +1,300 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Customer Statement — {{ customer_name }}</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+  <style>
+
+    /*
+      This is the customer-facing view opened from the WhatsApp link.
+      Unlike customer_bill_consolidated_print.html (used for the
+      in-shop thermal-receipt print), this is meant to be read
+      comfortably on a phone screen - fluid width, no fixed
+      millimeter sizing, and no auto-triggered print dialog.
+    */
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: #1a1a1a;
+      background: #F4F1EA;
+      font-size: 16px;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    .page {
+      max-width: 520px;
+      margin: 0 auto;
+      padding: 16px 16px 32px;
+      box-sizing: border-box;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 18px 16px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+
+    .business-header {
+      text-align: center;
+      margin-bottom: 14px;
+    }
+
+    .business-name {
+      font-size: 22px;
+      font-weight: 900;
+    }
+
+    .business-type {
+      font-size: 15px;
+      font-weight: 600;
+      color: #444;
+      margin-top: 2px;
+    }
+
+    .business-location {
+      font-size: 14px;
+      font-weight: 600;
+      color: #555;
+    }
+
+    .business-mobile {
+      font-size: 13px;
+      font-weight: 600;
+      color: #666;
+      margin-top: 2px;
+    }
+
+    .business-divider {
+      border: 0;
+      border-top: 1px solid #e2ddd0;
+      margin: 12px 0;
+    }
+
+    h2 {
+      font-size: 19px;
+      margin: 0 0 8px;
+    }
+
+    .meta {
+      font-size: 14.5px;
+      line-height: 1.5;
+      margin-bottom: 12px;
+      color: #333;
+    }
+
+    .meta strong {
+      color: #111;
+    }
+
+    /* Purchase entries as stacked cards on mobile instead of a
+       cramped multi-column table - much easier to read at normal
+       zoom on a phone. */
+    .entries {
+      margin-top: 10px;
+    }
+
+    .entry-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 9px 0;
+      border-bottom: 1px dashed #e2ddd0;
+      font-size: 14.5px;
+    }
+
+    .entry-row:last-child {
+      border-bottom: none;
+    }
+
+    .entry-left .bill-no {
+      font-weight: 700;
+      color: #111;
+    }
+
+    .entry-left .sub {
+      font-size: 12.5px;
+      color: #777;
+      margin-top: 2px;
+    }
+
+    .entry-right {
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .entry-right .amount {
+      font-weight: 700;
+      font-size: 15.5px;
+    }
+
+    .entry-right .sub {
+      font-size: 12.5px;
+      color: #777;
+      margin-top: 2px;
+    }
+
+    .no-entries {
+      text-align: center;
+      color: #777;
+      padding: 16px 0;
+      font-size: 14px;
+    }
+
+    .summary {
+      margin-top: 14px;
+      border-top: 1px solid #e2ddd0;
+      padding-top: 10px;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 5px 0;
+      font-size: 15px;
+    }
+
+    .balance-row {
+      border-top: 2px solid #1a1a1a;
+      margin-top: 6px;
+      padding-top: 10px;
+      font-size: 19px;
+      font-weight: 900;
+    }
+
+    .footer {
+      margin-top: 16px;
+      font-size: 12px;
+      color: #999;
+      text-align: center;
+    }
+
+    .print-link {
+      display: block;
+      text-align: center;
+      margin-top: 14px;
+      font-size: 13px;
+      color: #2255BB;
+      text-decoration: underline;
+      background: none;
+      border: none;
+      width: 100%;
+      cursor: pointer;
+      padding: 6px 0;
+    }
+
+    @media print {
+      body { background: #fff; }
+      .page { max-width: 100%; padding: 0; }
+      .card { box-shadow: none; border-radius: 0; }
+      .print-link { display: none; }
+    }
+
+  </style>
+</head>
+
+<body>
+
+<div class="page">
+  <div class="card">
+
+    <div class="business-header">
+      <div class="business-name">S.GOVINDHAN</div>
+      <div class="business-type">Banana Commission Agent</div>
+      <div class="business-location">Thuckalay &amp; Appta Market</div>
+      <div class="business-mobile">Mobile : 9894726926</div>
+      <hr class="business-divider">
+    </div>
+
+    <h2>{{ customer_name }}</h2>
+
+    <div class="meta">
+      <div><strong>Customer ID :</strong> {{ customer_id }}</div>
+      <div>
+        <strong>Period :</strong>
+        {% if from_date == to_date %}
+          {{ from_date.strftime('%d %B %Y') }}
+        {% else %}
+          {{ from_date.strftime('%d %B %Y') }} — {{ to_date.strftime('%d %B %Y') }}
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="entries">
+
+      {% if purchases %}
+
+        {% for p in purchases %}
+        <div class="entry-row">
+          <div class="entry-left">
+            <div class="bill-no">Bill #{{ p.bill_id }}</div>
+            <div class="sub">
+              {{ "%.2f"|format(p.quantity or 0) }} qty
+              &times;
+              ₹{{ "%.2f"|format(p.rate or 0) }}
+              {% if p.supplier_bill_id %} · Ref {{ p.supplier_bill_id }}{% endif %}
+            </div>
+          </div>
+          <div class="entry-right">
+            <div class="amount">₹{{ "%.2f"|format(p.amount or 0) }}</div>
+          </div>
+        </div>
+        {% endfor %}
+
+      {% else %}
+        <div class="no-entries">No purchases found for this period.</div>
+      {% endif %}
+
+    </div>
+
+    <div class="summary">
+
+      <div class="summary-row">
+        <span>Total Purchases</span>
+        <span>₹{{ "%.2f"|format(net or 0) }}</span>
+      </div>
+
+      <div class="summary-row">
+        <span>Opening Balance</span>
+        <span>₹{{ "%.2f"|format(opening or 0) }}</span>
+      </div>
+
+      <div class="summary-row">
+        <span>Total Receipts</span>
+        <span>₹{{ "%.2f"|format(sum_receipts or 0) }}</span>
+      </div>
+
+      <div class="summary-row balance-row">
+        <span>Current Balance</span>
+        <span>₹{{ "%.2f"|format(current_balance or 0) }}</span>
+      </div>
+
+    </div>
+
+    <button type="button" class="print-link" onclick="window.print()">
+      Print / Save as PDF
+    </button>
+
+  </div>
+
+  <div class="footer">
+    Viewed on <span class="ts"></span>
+  </div>
+</div>
+
+<script>
+  const d = new Date();
+  const formatted =
+    d.toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' })
+    + " " +
+    String(d.getHours()).padStart(2, "0") + ":" +
+    String(d.getMinutes()).padStart(2, "0");
+  document.querySelector(".ts").textContent = formatted;
+</script>
+
+</body>
+</html>
