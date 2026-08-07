@@ -17,7 +17,8 @@ from whatsapp_service import (
     update_delivery_status,
     get_customers_for_date,
     get_purchase_summary,
-    has_statement_been_sent
+    has_statement_been_sent,
+    get_in_progress_customer_ids
 )
 
 
@@ -1545,6 +1546,14 @@ def preview_bulk_customer_statements_whatsapp():
 
     customers = get_customers_for_date(statement_date)
 
+    # Batched once for all customers on this date, rather than one
+    # query per customer, so this in-progress check stays cheap even
+    # when someone else's bulk send for this date is currently running.
+    in_progress_ids = get_in_progress_customer_ids(
+        [c["customer_id"] for c in customers],
+        statement_date
+    )
+
     preview = []
 
     for cust in customers:
@@ -1554,6 +1563,7 @@ def preview_bulk_customer_statements_whatsapp():
 
         summary = get_purchase_summary(cid, statement_date)
         already_sent = has_statement_been_sent(cid, statement_date)
+        in_progress = cid in in_progress_ids
 
         preview.append({
             "customer_id": cid,
@@ -1562,7 +1572,8 @@ def preview_bulk_customer_statements_whatsapp():
             "purchase_total": summary["purchase_total"],
             "purchase_entries": summary["purchase_entries"],
             "has_phone": bool(phone),
-            "already_sent": already_sent
+            "already_sent": already_sent,
+            "in_progress": in_progress
         })
 
     return jsonify({
@@ -1611,6 +1622,17 @@ def send_bulk_customer_statements_whatsapp():
             "results": []
         })
 
+    # Skip anyone another request is actively sending to right now,
+    # instead of blocking on their advisory lock and then reporting a
+    # confusing "already sent" once it releases. The lock inside
+    # send_purchase_statement() is still what actually prevents any
+    # duplicate message - this is just so the caller gets an honest,
+    # immediate "in progress" reason rather than waiting on it.
+    in_progress_ids = get_in_progress_customer_ids(
+        [c["customer_id"] for c in customers],
+        statement_date
+    )
+
     results = []
     sent_count = 0
     failed_count = 0
@@ -1625,6 +1647,16 @@ def send_bulk_customer_statements_whatsapp():
                 "customer_name": cname,
                 "status": "failed",
                 "reason": "No phone number on file"
+            })
+            failed_count += 1
+            continue
+
+        if cid in in_progress_ids:
+            results.append({
+                "customer_id": cid,
+                "customer_name": cname,
+                "status": "failed",
+                "reason": "Already being sent by another request right now"
             })
             failed_count += 1
             continue
