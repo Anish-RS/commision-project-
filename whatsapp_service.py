@@ -520,6 +520,188 @@ def log_whatsapp_message(
         cursor.close()
         conn.close()
 
+SENDING_STALE_MINUTES = 3
+"""
+How long a 'SENDING' row is trusted before we treat it as abandoned
+(e.g. the web worker crashed/restarted mid-send). Kept short since a
+real WhatsApp API call normally resolves in a couple of seconds.
+"""
+
+
+def create_sending_log(
+    customer_id,
+    statement_date,
+    purchase_total,
+    purchase_entries,
+    message_type="PURCHASE_STATEMENT"
+):
+    """
+    Writes a 'SENDING' row BEFORE the WhatsApp API is called, so the
+    customer shows as in-progress to every other request/user the
+    moment a send starts - not only after it succeeds or fails.
+    Returns the new row's id so the same row can be finalized in
+    place afterwards (no second row is ever inserted for this attempt).
+    """
+
+    conn = get_connection()
+
+    try:
+
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            INSERT INTO whatsapp_logs
+            (
+                customer_id,
+                statement_date,
+                purchase_total,
+                purchase_entries,
+                message_type,
+                status
+            )
+            VALUES
+            (
+                %s,%s,%s,%s,%s,'SENDING'
+            )
+            RETURNING id
+        """, (
+            customer_id,
+            statement_date,
+            purchase_total,
+            purchase_entries,
+            message_type
+        ))
+
+        log_id = cursor.fetchone()[0]
+
+        conn.commit()
+
+        return log_id
+
+    finally:
+
+        cursor.close()
+        conn.close()
+
+
+def finalize_whatsapp_log(
+    log_id,
+    status,
+    whatsapp_message_id=None,
+    error_message=None
+):
+    """
+    Updates the row created by create_sending_log() in place with the
+    final outcome (SUCCESS/FAILED). Keeping it a single row (insert
+    once, update once) means a customer never shows two log entries
+    for one send attempt.
+    """
+
+    conn = get_connection()
+
+    try:
+
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            UPDATE whatsapp_logs
+            SET status = %s,
+                whatsapp_message_id = %s,
+                error_message = %s
+            WHERE id = %s
+        """, (
+            status,
+            whatsapp_message_id,
+            error_message,
+            log_id
+        ))
+
+        conn.commit()
+
+    finally:
+
+        cursor.close()
+        conn.close()
+
+
+def reap_stale_sending_row(customer_id, statement_date, stale_minutes=SENDING_STALE_MINUTES):
+    """
+    Flips any abandoned 'SENDING' row for this customer/date (e.g. the
+    process died mid-send before it could finalize) over to FAILED, so
+    it stops blocking retries and stops showing as in-progress forever.
+    Safe to call unconditionally: only rows older than stale_minutes
+    are touched, and this only ever runs while the caller holds the
+    advisory lock for this customer/date, so there's no race with a
+    genuinely in-flight send.
+    """
+
+    conn = get_connection()
+
+    try:
+
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            UPDATE whatsapp_logs
+            SET status = 'FAILED',
+                error_message = 'Send timed out (worker likely restarted mid-send)'
+            WHERE customer_id = %s
+              AND statement_date = %s
+              AND status = 'SENDING'
+              AND created_at <= NOW() - (%s * INTERVAL '1 minute')
+        """, (
+            customer_id,
+            statement_date,
+            stale_minutes
+        ))
+
+        conn.commit()
+
+    finally:
+
+        cursor.close()
+        conn.close()
+
+
+def get_in_progress_customer_ids(customer_ids, statement_date, stale_minutes=SENDING_STALE_MINUTES):
+    """
+    Returns the subset of customer_ids that currently have a *live*
+    (non-stale) SENDING row for this statement_date - i.e. a send is
+    actively in flight for them right now, in this or another request.
+    Used by the preview endpoint so a second user sees "Sending..."
+    immediately instead of a plain, selectable checkbox.
+    """
+
+    if not customer_ids:
+        return set()
+
+    conn = get_connection()
+
+    try:
+
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            SELECT DISTINCT customer_id
+            FROM whatsapp_logs
+            WHERE statement_date = %s
+              AND customer_id = ANY(%s)
+              AND status = 'SENDING'
+              AND created_at > NOW() - (%s * INTERVAL '1 minute')
+        """, (
+            statement_date,
+            list(customer_ids),
+            stale_minutes
+        ))
+
+        return {row[0] for row in cursor.fetchall()}
+
+    finally:
+
+        cursor.close()
+        conn.close()
+
+
 def update_delivery_status(whatsapp_message_id, new_status, error_message=None):
     conn = get_connection()
     try:
@@ -712,6 +894,12 @@ def _send_purchase_statement_locked(customer_id, statement_date):
     holding the advisory lock for this customer/date.
     """
 
+    # Clear out any abandoned SENDING row for this customer/date before
+    # doing the "already sent?" checks below, so a crashed/restarted
+    # worker from a previous attempt can't permanently block retries
+    # or make this customer look perpetually "in progress".
+    reap_stale_sending_row(customer_id, statement_date)
+
     customer = get_customer_details(customer_id)
 
     if not customer:
@@ -781,6 +969,17 @@ def _send_purchase_statement_locked(customer_id, statement_date):
 
     )
 
+    # Mark this customer as SENDING *before* calling the WhatsApp API.
+    # This is what other requests (another user's preview poll, or
+    # another tab) see immediately, so they can grey this customer out
+    # instead of allowing a second send to be queued up behind ours.
+    log_id = create_sending_log(
+        customer_id,
+        statement_date,
+        summary["purchase_total"],
+        summary["purchase_entries"]
+    )
+
     result = send_template_message(payload)
 
     print("WhatsApp Payload:", payload)
@@ -788,15 +987,9 @@ def _send_purchase_statement_locked(customer_id, statement_date):
 
     if result["success"]:
 
-        log_whatsapp_message(
+        finalize_whatsapp_log(
 
-            customer_id,
-
-            statement_date,
-
-            summary["purchase_total"],
-
-            summary["purchase_entries"],
+            log_id,
 
             "SUCCESS",
 
@@ -806,15 +999,9 @@ def _send_purchase_statement_locked(customer_id, statement_date):
 
     else:
 
-        log_whatsapp_message(
+        finalize_whatsapp_log(
 
-            customer_id,
-
-            statement_date,
-
-            summary["purchase_total"],
-
-            summary["purchase_entries"],
+            log_id,
 
             "FAILED",
 
