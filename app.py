@@ -1,4 +1,4 @@
- # ============================================================
+# ============================================================
 #  Commission Application — PostgreSQL (Neon) Edition
 #  Fully fixed + enhanced for Vercel deployment
 # ============================================================
@@ -12,7 +12,7 @@ import os
 import re
 import traceback
 
-from whatsapp_service import send_purchase_statement, update_delivery_status
+from whatsapp_service import send_purchase_statement, update_delivery_status, get_customers_for_date
 
 
 app = Flask(__name__)
@@ -1522,7 +1522,78 @@ def send_customer_statement_whatsapp():
         flash(result["reason"], "danger")
 
     return redirect(url_for("customer_bill_search"))
-    
+
+
+@app.route("/send_bulk_customer_statements_whatsapp", methods=["POST"])
+def send_bulk_customer_statements_whatsapp():
+
+    bill_date_str = request.form.get("bill_date", "").strip()
+
+    if not bill_date_str:
+        bill_date_str = ist_today().strftime("%Y-%m-%d")
+
+    try:
+        statement_date = datetime.strptime(bill_date_str, "%Y-%m-%d").date()
+    except Exception:
+        return jsonify({"success": False, "error": "Invalid date."}), 400
+
+    customers = get_customers_for_date(statement_date)
+
+    if not customers:
+        return jsonify({
+            "success": True,
+            "date": bill_date_str,
+            "total": 0,
+            "sent": 0,
+            "failed": 0,
+            "results": []
+        })
+
+    results = []
+    sent_count = 0
+    failed_count = 0
+
+    for cust in customers:
+        cid = cust["customer_id"]
+        cname = cust["name"]
+
+        if not cust.get("phone"):
+            results.append({
+                "customer_id": cid,
+                "customer_name": cname,
+                "status": "failed",
+                "reason": "No phone number on file"
+            })
+            failed_count += 1
+            continue
+
+        outcome = send_purchase_statement(cid, statement_date)
+
+        if outcome.get("success"):
+            results.append({
+                "customer_id": cid,
+                "customer_name": cname,
+                "status": "sent"
+            })
+            sent_count += 1
+        else:
+            results.append({
+                "customer_id": cid,
+                "customer_name": cname,
+                "status": "failed",
+                "reason": str(outcome.get("reason", "Unknown error"))
+            })
+            failed_count += 1
+
+    return jsonify({
+        "success": True,
+        "date": bill_date_str,
+        "total": len(customers),
+        "sent": sent_count,
+        "failed": failed_count,
+        "results": results
+    })
+
 
 @app.route("/send-statement/<int:bill_id>", methods=["POST"])
 def send_statement(bill_id):
