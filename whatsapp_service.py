@@ -546,7 +546,7 @@ def has_statement_been_sent(
 
             AND statement_date=%s
 
-            AND status='SUCCESS'
+            AND status IN ('SUCCESS', 'DELIVERED', 'READ')
 
         """, (
 
@@ -566,10 +566,18 @@ def has_statement_been_sent(
 
 def has_recent_message_to_customer(customer_id, hours=24):
     """
-    Returns True if ANY successful WhatsApp message was sent
-    to this customer within the cooldown window, regardless
-    of which statement_date it was for. Prevents accidental
-    repeat sends from double-clicks etc.
+    Returns True if a message was successfully sent to this
+    customer within the cooldown window, regardless of which
+    statement_date it was for. Prevents accidental repeat sends
+    from double-clicks etc.
+
+    NOTE: status is checked against SUCCESS / DELIVERED / READ,
+    not just SUCCESS. update_delivery_status() overwrites the
+    status column as WhatsApp's delivery webhooks come in, so a
+    row logged as SUCCESS at send-time often becomes DELIVERED
+    or READ moments later. created_at (the original send time)
+    is what the cooldown window is measured against; only rows
+    that never actually went out (FAILED) are excluded.
     """
 
     conn = get_connection()
@@ -586,7 +594,7 @@ def has_recent_message_to_customer(customer_id, hours=24):
 
             WHERE customer_id=%s
 
-            AND status='SUCCESS'
+            AND status IN ('SUCCESS', 'DELIVERED', 'READ')
 
             AND created_at > NOW() - (%s * INTERVAL '1 hour')
 
