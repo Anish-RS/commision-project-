@@ -64,8 +64,17 @@ def ist_today():
 def ist_now():
     return datetime.now(IST)
 
-@app.route("/s/<token>")
+UUID_RE = re.compile(
+    r'([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})$'
+)
+
+@app.route("/s/<path:token>")
 def view_statement(token):
+
+    match = UUID_RE.search(token)
+    if not match:
+        return "Invalid or Expired Link", 404
+    token = match.group(1)
 
     conn = get_connection()
     cursor = conn.cursor(cursor_factory=RealDictCursor)
