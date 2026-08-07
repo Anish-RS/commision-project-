@@ -493,6 +493,22 @@
   .bqs-bulk-badge.already{ background:var(--brass-soft); color:var(--brass-deep); }
   .bqs-bulk-badge.nophone{ background:#F1F1F1; color:#777; }
   .bqs-bulk-badge.inprogress{ background:#E8F0FE; color:#2255BB; animation:bqs-pulse 1.4s ease-in-out infinite; }
+  .bqs-bulk-badge.blocked{ background:#FCEAEA; color:#A33B3B; }
+
+  .bqs-bulk-check-row .retry-link{
+    font-family:var(--font-mono);
+    font-size:11px;
+    font-weight:600;
+    color:#2255BB;
+    background:none;
+    border:none;
+    padding:0;
+    margin-left:8px;
+    cursor:pointer;
+    text-decoration:underline;
+    white-space:nowrap;
+  }
+  .bqs-bulk-check-row .retry-link:disabled{ opacity:.5; cursor:default; }
 
   @keyframes bqs-pulse{
     0%,100%{ opacity:1; }
@@ -1226,7 +1242,7 @@
       return;
     }
 
-    const sendableCount = data.customers.filter(c => c.has_phone && !c.already_sent && !c.in_progress).length;
+    const sendableCount = data.customers.filter(c => c.has_phone && !c.already_sent && !c.in_progress && !c.blocked).length;
     const totalAmount = data.customers.reduce((sum, c) => sum + (c.purchase_total || 0), 0);
 
     let html = `
@@ -1240,15 +1256,18 @@
       <div class="bqs-bulk-list">
     `;
 
+    function badgeWrapHtml(c) {
+      if (!c.has_phone) return `<span class="bqs-bulk-badge nophone">No phone</span>`;
+      if (c.blocked) return `<span class="bqs-bulk-badge blocked" title="${(c.blocked_reason || '').replace(/"/g, '&quot;')}">⚠ Check number</span><button type="button" class="retry-link" data-retry-id="${c.customer_id}">Verify &amp; retry</button>`;
+      if (c.in_progress) return `<span class="bqs-bulk-badge inprogress">Sending…</span>`;
+      if (c.already_sent) return `<span class="bqs-bulk-badge already">Already sent</span>`;
+      return "";
+    }
+
     data.customers.forEach(c => {
 
-      const disabled = !c.has_phone || c.already_sent || c.in_progress;
+      const disabled = !c.has_phone || c.already_sent || c.in_progress || c.blocked;
       const checked = !disabled ? "checked" : "";
-
-      let badge = "";
-      if (!c.has_phone) badge = `<span class="bqs-bulk-badge nophone">No phone</span>`;
-      else if (c.in_progress) badge = `<span class="bqs-bulk-badge inprogress">Sending…</span>`;
-      else if (c.already_sent) badge = `<span class="bqs-bulk-badge already">Already sent</span>`;
 
       html += `
         <div class="bqs-bulk-check-row ${disabled ? 'disabled' : ''}" data-customer-id="${c.customer_id}">
@@ -1257,13 +1276,56 @@
             <div class="bqs-bulk-check-name">${c.customer_name}</div>
             <div class="bqs-bulk-check-meta">₹${(c.purchase_total || 0).toFixed(2)} · ${c.purchase_entries} entr${c.purchase_entries === 1 ? 'y' : 'ies'}</div>
           </div>
-          ${badge}
+          <span class="bqs-bulk-badge-wrap">${badgeWrapHtml(c)}</span>
         </div>
       `;
     });
 
     html += `</div>`;
     bulkModalBody.innerHTML = html;
+
+    function attachRetryHandler(btn) {
+      btn.addEventListener("click", () => {
+
+        const cid = btn.getAttribute("data-retry-id");
+        btn.disabled = true;
+        btn.textContent = "Checking…";
+
+        const body = new URLSearchParams();
+        body.append("customer_id", cid);
+        const csrf = document.querySelector('input[name="csrf_token"]');
+        if (csrf) body.append("csrf_token", csrf.value);
+
+        fetch("/unblock_customer_whatsapp", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: body.toString()
+        })
+          .then(r => r.json())
+          .then(res => {
+            if (!res.success) {
+              btn.disabled = false;
+              btn.textContent = "Verify & retry";
+              return;
+            }
+            const row = bulkModalBody.querySelector(`.bqs-bulk-check-row[data-customer-id="${cid}"]`);
+            if (!row) return;
+            const cb = row.querySelector(".bqs-bulk-cb");
+            const wrap = row.querySelector(".bqs-bulk-badge-wrap");
+            row.classList.remove("disabled");
+            cb.disabled = false;
+            cb.checked = true;
+            if (wrap) wrap.innerHTML = "";
+            updateSendBtn();
+          })
+          .catch(() => {
+            btn.disabled = false;
+            btn.textContent = "Verify & retry";
+          });
+      });
+    }
+
+    bulkModalBody.querySelectorAll(".retry-link").forEach(attachRetryHandler);
 
     const selectAllCb = document.getElementById("bqs-bulk-select-all-cb");
     const rowCbs = () => Array.from(bulkModalBody.querySelectorAll(".bqs-bulk-cb:not(:disabled)"));
@@ -1295,9 +1357,10 @@
 
     // While this preview list is on screen, poll for status changes so
     // that if another user (or another tab) starts sending to one of
-    // these customers, this list updates to "Sending…" live - instead
-    // of only finding out after clicking Send ourselves. Any row that
-    // flips to in-progress/already-sent gets unchecked and disabled.
+    // these customers, this list updates to "Sending…"/"Check number"
+    // live - instead of only finding out after clicking Send ourselves.
+    // Any row that flips to in-progress/already-sent/blocked gets
+    // unchecked and disabled.
     previewPollTimer = setInterval(() => {
 
       fetch("/preview_bulk_customer_statements_whatsapp", {
@@ -1318,7 +1381,7 @@
             if (!row) return;
 
             const cb = row.querySelector(".bqs-bulk-cb");
-            const nowDisabled = !c.has_phone || c.already_sent || c.in_progress;
+            const nowDisabled = !c.has_phone || c.already_sent || c.in_progress || c.blocked;
 
             if (nowDisabled && cb && !cb.disabled) {
               if (cb.checked) selectionChanged = true;
@@ -1327,16 +1390,12 @@
               row.classList.add("disabled");
             }
 
-            const badgeEl = row.querySelector(".bqs-bulk-badge");
-            let badgeHtml = "";
-            if (!c.has_phone) badgeHtml = `<span class="bqs-bulk-badge nophone">No phone</span>`;
-            else if (c.in_progress) badgeHtml = `<span class="bqs-bulk-badge inprogress">Sending…</span>`;
-            else if (c.already_sent) badgeHtml = `<span class="bqs-bulk-badge already">Already sent</span>`;
+            const wrap = row.querySelector(".bqs-bulk-badge-wrap");
+            const freshWrapHtml = badgeWrapHtml(c);
 
-            if (badgeHtml && !badgeEl) {
-              row.insertAdjacentHTML("beforeend", badgeHtml);
-            } else if (badgeHtml && badgeEl && badgeEl.outerHTML !== badgeHtml) {
-              badgeEl.outerHTML = badgeHtml;
+            if (wrap && wrap.innerHTML !== freshWrapHtml) {
+              wrap.innerHTML = freshWrapHtml;
+              wrap.querySelectorAll(".retry-link").forEach(attachRetryHandler);
             }
           });
 
