@@ -691,10 +691,10 @@ def send_purchase_statement(customer_id, statement_date):
             "success": False,
             "reason": "Statement already sent"
         }
-    if has_recent_message_to_customer(customer_id, hours=24):
+    if has_recent_message_to_customer(customer_id, hours=12):
         return {
             "success": False,
-            "reason": "A message was already sent to this customer in the last 24 hours. Please wait before sending again."
+            "reason": "A message was already sent to this customer in the last 12 hours. Please wait before sending again."
         }
 
     summary = get_purchase_summary(
