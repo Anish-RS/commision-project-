@@ -492,6 +492,12 @@
   .bqs-bulk-badge.failed{ background:#FCEAEA; color:#A33B3B; }
   .bqs-bulk-badge.already{ background:var(--brass-soft); color:var(--brass-deep); }
   .bqs-bulk-badge.nophone{ background:#F1F1F1; color:#777; }
+  .bqs-bulk-badge.inprogress{ background:#E8F0FE; color:#2255BB; animation:bqs-pulse 1.4s ease-in-out infinite; }
+
+  @keyframes bqs-pulse{
+    0%,100%{ opacity:1; }
+    50%{ opacity:.55; }
+  }
 
   .bqs-bulk-preview-toolbar{
     display:flex; align-items:center; justify-content:space-between;
@@ -1178,6 +1184,14 @@
   // both pick up the same customer before either has logged its send,
   // and the customer gets the WhatsApp message twice.
   let bulkSendInFlight = false;
+  let previewPollTimer = null;
+
+  function stopPreviewPolling() {
+    if (previewPollTimer) {
+      clearInterval(previewPollTimer);
+      previewPollTimer = null;
+    }
+  }
 
   const bulkBtn = document.getElementById("whatsapp-bulk-by-date");
   const bulkOverlay = document.getElementById("bqs-bulk-modal-overlay");
@@ -1196,6 +1210,8 @@
 
   function renderPreview(billDate, data) {
 
+    stopPreviewPolling();
+
     bulkModalTitle.textContent = `Preview — ${billDate}`;
 
     if (!data.success) {
@@ -1210,7 +1226,7 @@
       return;
     }
 
-    const sendableCount = data.customers.filter(c => c.has_phone && !c.already_sent).length;
+    const sendableCount = data.customers.filter(c => c.has_phone && !c.already_sent && !c.in_progress).length;
     const totalAmount = data.customers.reduce((sum, c) => sum + (c.purchase_total || 0), 0);
 
     let html = `
@@ -1226,15 +1242,16 @@
 
     data.customers.forEach(c => {
 
-      const disabled = !c.has_phone || c.already_sent;
+      const disabled = !c.has_phone || c.already_sent || c.in_progress;
       const checked = !disabled ? "checked" : "";
 
       let badge = "";
       if (!c.has_phone) badge = `<span class="bqs-bulk-badge nophone">No phone</span>`;
+      else if (c.in_progress) badge = `<span class="bqs-bulk-badge inprogress">Sending…</span>`;
       else if (c.already_sent) badge = `<span class="bqs-bulk-badge already">Already sent</span>`;
 
       html += `
-        <div class="bqs-bulk-check-row ${disabled ? 'disabled' : ''}">
+        <div class="bqs-bulk-check-row ${disabled ? 'disabled' : ''}" data-customer-id="${c.customer_id}">
           <input type="checkbox" class="bqs-bulk-cb" value="${c.customer_id}" ${checked} ${disabled ? "disabled" : ""}>
           <div class="bqs-bulk-check-info">
             <div class="bqs-bulk-check-name">${c.customer_name}</div>
@@ -1276,11 +1293,67 @@
     bulkModalFooter.innerHTML = `<button type="button" id="bqs-bulk-confirm-send" class="bqs-bulk-send-btn"></button>`;
     updateSendBtn();
 
+    // While this preview list is on screen, poll for status changes so
+    // that if another user (or another tab) starts sending to one of
+    // these customers, this list updates to "Sending…" live - instead
+    // of only finding out after clicking Send ourselves. Any row that
+    // flips to in-progress/already-sent gets unchecked and disabled.
+    previewPollTimer = setInterval(() => {
+
+      fetch("/preview_bulk_customer_statements_whatsapp", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: getCsrfBody(billDate).toString()
+      })
+        .then(r => r.json())
+        .then(freshData => {
+
+          if (!freshData.success) return;
+
+          let selectionChanged = false;
+
+          freshData.customers.forEach(c => {
+
+            const row = bulkModalBody.querySelector(`.bqs-bulk-check-row[data-customer-id="${c.customer_id}"]`);
+            if (!row) return;
+
+            const cb = row.querySelector(".bqs-bulk-cb");
+            const nowDisabled = !c.has_phone || c.already_sent || c.in_progress;
+
+            if (nowDisabled && cb && !cb.disabled) {
+              if (cb.checked) selectionChanged = true;
+              cb.checked = false;
+              cb.disabled = true;
+              row.classList.add("disabled");
+            }
+
+            const badgeEl = row.querySelector(".bqs-bulk-badge");
+            let badgeHtml = "";
+            if (!c.has_phone) badgeHtml = `<span class="bqs-bulk-badge nophone">No phone</span>`;
+            else if (c.in_progress) badgeHtml = `<span class="bqs-bulk-badge inprogress">Sending…</span>`;
+            else if (c.already_sent) badgeHtml = `<span class="bqs-bulk-badge already">Already sent</span>`;
+
+            if (badgeHtml && !badgeEl) {
+              row.insertAdjacentHTML("beforeend", badgeHtml);
+            } else if (badgeHtml && badgeEl && badgeEl.outerHTML !== badgeHtml) {
+              badgeEl.outerHTML = badgeHtml;
+            }
+          });
+
+          if (selectionChanged) updateSendBtn();
+
+        })
+        .catch(() => { /* transient network hiccup - just try again next tick */ });
+
+    }, 4000);
+
     document.getElementById("bqs-bulk-confirm-send").addEventListener("click", () => {
 
       // Guard: ignore if a send is already running (e.g. a stray
       // double click before the UI had a chance to update).
       if (bulkSendInFlight) return;
+
+      stopPreviewPolling();
 
       const selectedIds = rowCbs().filter(cb => cb.checked).map(cb => cb.value);
 
@@ -1402,6 +1475,7 @@
 
   if (bulkModalClose) {
     bulkModalClose.addEventListener("click", () => {
+      stopPreviewPolling();
       bulkOverlay.style.display = "none";
     });
   }
