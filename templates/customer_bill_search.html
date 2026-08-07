@@ -1171,6 +1171,14 @@
   
   }
 
+  // Guards against firing a second bulk-send while one is still in
+  // flight (double-click on "Send", or reopening the modal and hitting
+  // Send again before the first batch has finished). Without this, two
+  // overlapping /send_bulk_customer_statements_whatsapp requests can
+  // both pick up the same customer before either has logged its send,
+  // and the customer gets the WhatsApp message twice.
+  let bulkSendInFlight = false;
+
   const bulkBtn = document.getElementById("whatsapp-bulk-by-date");
   const bulkOverlay = document.getElementById("bqs-bulk-modal-overlay");
   const bulkModalTitle = document.getElementById("bqs-bulk-modal-title");
@@ -1270,9 +1278,15 @@
 
     document.getElementById("bqs-bulk-confirm-send").addEventListener("click", () => {
 
+      // Guard: ignore if a send is already running (e.g. a stray
+      // double click before the UI had a chance to update).
+      if (bulkSendInFlight) return;
+
       const selectedIds = rowCbs().filter(cb => cb.checked).map(cb => cb.value);
 
       if (selectedIds.length === 0) return;
+
+      bulkSendInFlight = true;
 
       bulkModalTitle.textContent = "Sending WhatsApp statements…";
       bulkModalFooter.style.display = "none";
@@ -1280,6 +1294,11 @@
         <div class="bqs-bulk-spinner"></div>
         <p style="text-align:center;color:var(--ink-soft);">Sending to ${selectedIds.length} customer${selectedIds.length === 1 ? '' : 's'}, please wait…</p>
       `;
+
+      // Hide the close (×) button while a batch is in flight so the
+      // modal can't be dismissed and immediately reopened/resent
+      // while the previous batch is still processing on the server.
+      if (bulkModalClose) bulkModalClose.style.display = "none";
 
       const sendBody = getCsrfBody(billDate);
       sendBody.append("customer_ids", selectedIds.join(","));
@@ -1294,6 +1313,10 @@
         .catch(err => {
           bulkModalTitle.textContent = "Error";
           bulkModalBody.innerHTML = `<p style="color:#A33B3B;">Request failed: ${err}</p>`;
+        })
+        .finally(() => {
+          bulkSendInFlight = false;
+          if (bulkModalClose) bulkModalClose.style.display = "";
         });
     });
   }
@@ -1336,6 +1359,15 @@
   if (bulkBtn) {
 
     bulkBtn.addEventListener("click", () => {
+
+      // Guard: don't let a fresh preview/send cycle start while a
+      // previous bulk-send is still running on the server. This is
+      // what caused customers to receive their statement twice —
+      // reopening the modal and hitting Send again mid-batch.
+      if (bulkSendInFlight) {
+        bulkOverlay.style.display = "flex";
+        return;
+      }
 
       const dateField = form.querySelector('input[name="bill_date"]');
       let billDate = dateField.value.trim();
