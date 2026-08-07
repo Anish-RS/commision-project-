@@ -490,6 +490,74 @@
 
   .bqs-bulk-badge.sent{ background:var(--success-soft); color:var(--success-ink); }
   .bqs-bulk-badge.failed{ background:#FCEAEA; color:#A33B3B; }
+  .bqs-bulk-badge.already{ background:var(--brass-soft); color:var(--brass-deep); }
+  .bqs-bulk-badge.nophone{ background:#F1F1F1; color:#777; }
+
+  .bqs-bulk-preview-toolbar{
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:12px;
+    padding-bottom:12px;
+    border-bottom:1px solid var(--hairline);
+  }
+
+  .bqs-bulk-select-all{
+    font-size:13px; color:var(--ink-soft); display:flex; align-items:center; gap:7px; cursor:pointer;
+  }
+
+  .bqs-bulk-total-amount{
+    font-family:var(--font-mono);
+    font-size:13px;
+    color:var(--ink);
+    font-weight:600;
+  }
+
+  .bqs-bulk-check-row{
+    display:flex; align-items:center; gap:12px;
+    padding:10px 0;
+    border-bottom:1px dashed var(--hairline-soft);
+  }
+
+  .bqs-bulk-check-row input[type=checkbox]{
+    width:17px; height:17px; flex-shrink:0; accent-color:var(--brass);
+    cursor:pointer;
+  }
+
+  .bqs-bulk-check-row.disabled{
+    opacity:.55;
+  }
+
+  .bqs-bulk-check-info{ flex:1; min-width:0; }
+
+  .bqs-bulk-check-name{ font-weight:600; color:var(--ink); font-size:14px; }
+
+  .bqs-bulk-check-meta{
+    font-family:var(--font-mono); font-size:12px; color:var(--ink-soft);
+    margin-top:2px;
+  }
+
+  .bqs-bulk-modal-footer{
+    padding:16px 22px;
+    border-top:1px solid var(--hairline);
+    display:flex; justify-content:flex-end; gap:10px;
+  }
+
+  .bqs-bulk-send-btn{
+    background:var(--success-ink);
+    color:#fff;
+    border:none;
+    padding:11px 20px;
+    border-radius:10px;
+    font-weight:600;
+    font-size:14px;
+    cursor:pointer;
+    font-family:var(--font-body);
+  }
+
+  .bqs-bulk-send-btn:disabled{
+    background:#B9C1D0; cursor:not-allowed;
+  }
+
+  .bqs-bulk-send-btn:not(:disabled):hover{ background:#124430; }
 
   /* ---------- Empty state ---------- */
 
@@ -870,13 +938,14 @@
 <div id="bqs-bulk-modal-overlay" class="bqs-bulk-overlay" style="display:none;">
   <div class="bqs-bulk-modal">
     <div class="bqs-bulk-modal-header">
-      <h3 id="bqs-bulk-modal-title">Sending WhatsApp statements…</h3>
+      <h3 id="bqs-bulk-modal-title">Loading preview…</h3>
       <button type="button" id="bqs-bulk-modal-close" class="bqs-bulk-close" aria-label="Close">&times;</button>
     </div>
     <div id="bqs-bulk-modal-body" class="bqs-bulk-modal-body">
       <div class="bqs-bulk-spinner"></div>
-      <p>Please wait, sending statements one by one…</p>
+      <p>Please wait, loading customers for this date…</p>
     </div>
+    <div id="bqs-bulk-modal-footer" class="bqs-bulk-modal-footer" style="display:none;"></div>
   </div>
 </div>
 
@@ -1106,7 +1175,163 @@
   const bulkOverlay = document.getElementById("bqs-bulk-modal-overlay");
   const bulkModalTitle = document.getElementById("bqs-bulk-modal-title");
   const bulkModalBody = document.getElementById("bqs-bulk-modal-body");
+  const bulkModalFooter = document.getElementById("bqs-bulk-modal-footer");
   const bulkModalClose = document.getElementById("bqs-bulk-modal-close");
+
+  function getCsrfBody(billDate) {
+    const body = new URLSearchParams();
+    body.append("bill_date", billDate);
+    const csrf = document.querySelector('input[name="csrf_token"]');
+    if (csrf) body.append("csrf_token", csrf.value);
+    return body;
+  }
+
+  function renderPreview(billDate, data) {
+
+    bulkModalTitle.textContent = `Preview — ${billDate}`;
+
+    if (!data.success) {
+      bulkModalFooter.style.display = "none";
+      bulkModalBody.innerHTML = `<p style="color:#A33B3B;">${data.error || "Something went wrong."}</p>`;
+      return;
+    }
+
+    if (data.total === 0) {
+      bulkModalFooter.style.display = "none";
+      bulkModalBody.innerHTML = `<p style="text-align:center;color:var(--ink-soft);">No customer bills found for this date.</p>`;
+      return;
+    }
+
+    const sendableCount = data.customers.filter(c => c.has_phone && !c.already_sent).length;
+    const totalAmount = data.customers.reduce((sum, c) => sum + (c.purchase_total || 0), 0);
+
+    let html = `
+      <div class="bqs-bulk-preview-toolbar">
+        <label class="bqs-bulk-select-all">
+          <input type="checkbox" id="bqs-bulk-select-all-cb" ${sendableCount > 0 ? "checked" : ""}>
+          Select all eligible (${sendableCount})
+        </label>
+        <span class="bqs-bulk-total-amount">₹${totalAmount.toLocaleString('en-IN', {minimumFractionDigits:2, maximumFractionDigits:2})} total</span>
+      </div>
+      <div class="bqs-bulk-list">
+    `;
+
+    data.customers.forEach(c => {
+
+      const disabled = !c.has_phone || c.already_sent;
+      const checked = !disabled ? "checked" : "";
+
+      let badge = "";
+      if (!c.has_phone) badge = `<span class="bqs-bulk-badge nophone">No phone</span>`;
+      else if (c.already_sent) badge = `<span class="bqs-bulk-badge already">Already sent</span>`;
+
+      html += `
+        <div class="bqs-bulk-check-row ${disabled ? 'disabled' : ''}">
+          <input type="checkbox" class="bqs-bulk-cb" value="${c.customer_id}" ${checked} ${disabled ? "disabled" : ""}>
+          <div class="bqs-bulk-check-info">
+            <div class="bqs-bulk-check-name">${c.customer_name}</div>
+            <div class="bqs-bulk-check-meta">₹${(c.purchase_total || 0).toFixed(2)} · ${c.purchase_entries} entr${c.purchase_entries === 1 ? 'y' : 'ies'}</div>
+          </div>
+          ${badge}
+        </div>
+      `;
+    });
+
+    html += `</div>`;
+    bulkModalBody.innerHTML = html;
+
+    const selectAllCb = document.getElementById("bqs-bulk-select-all-cb");
+    const rowCbs = () => Array.from(bulkModalBody.querySelectorAll(".bqs-bulk-cb:not(:disabled)"));
+
+    if (selectAllCb) {
+      selectAllCb.addEventListener("change", () => {
+        rowCbs().forEach(cb => cb.checked = selectAllCb.checked);
+        updateSendBtn();
+      });
+    }
+
+    bulkModalBody.querySelectorAll(".bqs-bulk-cb").forEach(cb => {
+      cb.addEventListener("change", updateSendBtn);
+    });
+
+    bulkModalFooter.style.display = "flex";
+
+    function updateSendBtn() {
+      const selected = rowCbs().filter(cb => cb.checked).length;
+      const btn = document.getElementById("bqs-bulk-confirm-send");
+      if (btn) {
+        btn.disabled = selected === 0;
+        btn.textContent = selected > 0 ? `Send to ${selected} customer${selected === 1 ? '' : 's'}` : "Select customers to send";
+      }
+    }
+
+    bulkModalFooter.innerHTML = `<button type="button" id="bqs-bulk-confirm-send" class="bqs-bulk-send-btn"></button>`;
+    updateSendBtn();
+
+    document.getElementById("bqs-bulk-confirm-send").addEventListener("click", () => {
+
+      const selectedIds = rowCbs().filter(cb => cb.checked).map(cb => cb.value);
+
+      if (selectedIds.length === 0) return;
+
+      bulkModalTitle.textContent = "Sending WhatsApp statements…";
+      bulkModalFooter.style.display = "none";
+      bulkModalBody.innerHTML = `
+        <div class="bqs-bulk-spinner"></div>
+        <p style="text-align:center;color:var(--ink-soft);">Sending to ${selectedIds.length} customer${selectedIds.length === 1 ? '' : 's'}, please wait…</p>
+      `;
+
+      const sendBody = getCsrfBody(billDate);
+      sendBody.append("customer_ids", selectedIds.join(","));
+
+      fetch("/send_bulk_customer_statements_whatsapp", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: sendBody.toString()
+      })
+        .then(r => r.json())
+        .then(result => renderResults(billDate, result))
+        .catch(err => {
+          bulkModalTitle.textContent = "Error";
+          bulkModalBody.innerHTML = `<p style="color:#A33B3B;">Request failed: ${err}</p>`;
+        });
+    });
+  }
+
+  function renderResults(billDate, data) {
+
+    bulkModalTitle.textContent = `WhatsApp Bulk — ${billDate}`;
+    bulkModalFooter.style.display = "none";
+
+    if (!data.success) {
+      bulkModalBody.innerHTML = `<p style="color:#A33B3B;">${data.error || "Something went wrong."}</p>`;
+      return;
+    }
+
+    let html = `
+      <div class="bqs-bulk-summary">
+        <div class="bqs-bulk-stat total"><span class="num">${data.total}</span><span class="lbl">Total</span></div>
+        <div class="bqs-bulk-stat sent"><span class="num">${data.sent}</span><span class="lbl">Sent</span></div>
+        <div class="bqs-bulk-stat failed"><span class="num">${data.failed}</span><span class="lbl">Failed</span></div>
+      </div>
+      <div class="bqs-bulk-list">
+    `;
+
+    data.results.forEach(r => {
+      html += `
+        <div class="bqs-bulk-row">
+          <div>
+            <div class="name">${r.customer_name}</div>
+            ${r.status === "failed" ? `<div class="reason">${r.reason || ""}</div>` : ""}
+          </div>
+          <span class="bqs-bulk-badge ${r.status}">${r.status === "sent" ? "Sent" : "Failed"}</span>
+        </div>
+      `;
+    });
+
+    html += `</div>`;
+    bulkModalBody.innerHTML = html;
+  }
 
   if (bulkBtn) {
 
@@ -1121,69 +1346,21 @@
         billDate = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
       }
 
-      const ok = confirm(
-        `Send WhatsApp purchase statements to every customer with a bill on ${billDate}?\n\nThis will message each customer individually.`
-      );
-
-      if (!ok) return;
-
-      bulkModalTitle.textContent = "Sending WhatsApp statements…";
+      bulkModalTitle.textContent = "Loading preview…";
+      bulkModalFooter.style.display = "none";
       bulkModalBody.innerHTML = `
         <div class="bqs-bulk-spinner"></div>
-        <p style="text-align:center;color:var(--ink-soft);">Please wait, this may take a moment…</p>
+        <p style="text-align:center;color:var(--ink-soft);">Loading customers for ${billDate}…</p>
       `;
       bulkOverlay.style.display = "flex";
 
-      const body = new URLSearchParams();
-      body.append("bill_date", billDate);
-
-      const csrf = document.querySelector('input[name="csrf_token"]');
-      if (csrf) body.append("csrf_token", csrf.value);
-
-      fetch("/send_bulk_customer_statements_whatsapp", {
+      fetch("/preview_bulk_customer_statements_whatsapp", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: body.toString()
+        body: getCsrfBody(billDate).toString()
       })
         .then(r => r.json())
-        .then(data => {
-
-          bulkModalTitle.textContent = `WhatsApp Bulk — ${billDate}`;
-
-          if (!data.success) {
-            bulkModalBody.innerHTML = `<p style="color:#A33B3B;">${data.error || "Something went wrong."}</p>`;
-            return;
-          }
-
-          if (data.total === 0) {
-            bulkModalBody.innerHTML = `<p style="text-align:center;color:var(--ink-soft);">No customer bills found for this date.</p>`;
-            return;
-          }
-
-          let html = `
-            <div class="bqs-bulk-summary">
-              <div class="bqs-bulk-stat total"><span class="num">${data.total}</span><span class="lbl">Total</span></div>
-              <div class="bqs-bulk-stat sent"><span class="num">${data.sent}</span><span class="lbl">Sent</span></div>
-              <div class="bqs-bulk-stat failed"><span class="num">${data.failed}</span><span class="lbl">Failed</span></div>
-            </div>
-            <div class="bqs-bulk-list">
-          `;
-
-          data.results.forEach(r => {
-            html += `
-              <div class="bqs-bulk-row">
-                <div>
-                  <div class="name">${r.customer_name}</div>
-                  ${r.status === "failed" ? `<div class="reason">${r.reason || ""}</div>` : ""}
-                </div>
-                <span class="bqs-bulk-badge ${r.status}">${r.status === "sent" ? "Sent" : "Failed"}</span>
-              </div>
-            `;
-          });
-
-          html += `</div>`;
-          bulkModalBody.innerHTML = html;
-        })
+        .then(data => renderPreview(billDate, data))
         .catch(err => {
           bulkModalTitle.textContent = "Error";
           bulkModalBody.innerHTML = `<p style="color:#A33B3B;">Request failed: ${err}</p>`;
