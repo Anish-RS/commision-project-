@@ -37,6 +37,9 @@
       border-radius: 12px;
       padding: 18px 16px;
       box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      box-sizing: border-box;
+      overflow-wrap: break-word;
+      word-break: break-word;
     }
 
     .business-header {
@@ -105,6 +108,11 @@
       padding: 9px 0;
       border-bottom: 1px dashed #e2ddd0;
       font-size: 14.5px;
+      gap: 10px;
+    }
+
+    .entry-left {
+      min-width: 0;
     }
 
     .entry-row:last-child {
@@ -192,6 +200,13 @@
       .page { max-width: 100%; padding: 0; }
       .card { box-shadow: none; border-radius: 0; }
       .print-link { display: none; }
+    }
+
+    @media (max-width: 360px) {
+      .page { padding: 10px 10px 24px; }
+      .card { padding: 14px 12px; }
+      .business-name { font-size: 20px; }
+      .balance-row { font-size: 17px; }
     }
 
   </style>
