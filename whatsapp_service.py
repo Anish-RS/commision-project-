@@ -564,6 +564,48 @@ def has_statement_been_sent(
         cursor.close()
         conn.close()
 
+def has_recent_message_to_customer(customer_id, hours=24):
+    """
+    Returns True if ANY successful WhatsApp message was sent
+    to this customer within the cooldown window, regardless
+    of which statement_date it was for. Prevents accidental
+    repeat sends from double-clicks etc.
+    """
+
+    conn = get_connection()
+
+    try:
+
+        cursor = conn.cursor()
+
+        cursor.execute("""
+
+            SELECT COUNT(*)
+
+            FROM whatsapp_logs
+
+            WHERE customer_id=%s
+
+            AND status='SUCCESS'
+
+            AND created_at > NOW() - (%s * INTERVAL '1 hour')
+
+        """, (
+
+            customer_id,
+            hours
+
+        ))
+
+        count = cursor.fetchone()[0]
+
+        return count > 0
+
+    finally:
+
+        cursor.close()
+        conn.close()
+
 def mark_retry(
     customer_id,
     statement_date
@@ -639,9 +681,12 @@ def send_purchase_statement(customer_id, statement_date):
         return {
 
             "success": False,
-
             "reason": "Statement already sent"
-
+        }
+    if has_recent_message_to_customer(customer_id, hours=24):
+        return {
+            "success": False,
+            "reason": "A message was already sent to this customer in the last 24 hours. Please wait before sending again."
         }
 
     summary = get_purchase_summary(
