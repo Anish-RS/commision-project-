@@ -8,51 +8,53 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-html,body{margin:0;padding:0;font-family:'Inter',Arial,Helvetica,sans-serif;color:#1c1c1c;background:#EAEAEA;font-size:16px;-webkit-text-size-adjust:100%}
-.page{max-width:520px;margin:0 auto;padding:20px 16px 32px;box-sizing:border-box}
-.card{background:#fff;border-radius:8px;box-shadow:0 4px 24px rgba(0,0,0,0.09);box-sizing:border-box;overflow:hidden;overflow-wrap:break-word;word-break:break-word;position:relative}
-.card::before{content:"";position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#C77D00 0%,#E3A11A 50%,#C77D00 100%)}
-.inner{padding:28px 22px 22px}
+html,body{margin:0;padding:0;font-family:'Inter',Arial,Helvetica,sans-serif;color:#1c1c1c;background:#EAEAEA;font-size:17px;-webkit-text-size-adjust:100%}
+.page{max-width:680px;margin:0 auto;padding:26px 18px 40px;box-sizing:border-box}
+.card{background:#fff;border-radius:10px;box-shadow:0 6px 30px rgba(0,0,0,0.10);box-sizing:border-box;overflow:hidden;overflow-wrap:break-word;word-break:break-word;position:relative}
+.card::before{content:"";position:absolute;top:0;left:0;right:0;height:6px;background:linear-gradient(90deg,#C77D00 0%,#E3A11A 50%,#C77D00 100%)}
+.inner{padding:36px 30px 30px}
 
-.header-row{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding-bottom:20px;border-bottom:2px solid #1c1c1c}
-.logo-mark{width:48px;height:48px;flex-shrink:0}
-.biz-block{display:flex;gap:13px;align-items:center}
-.biz-text .name{font-family:'Playfair Display',Georgia,serif;font-size:20px;font-weight:800;letter-spacing:.4px;color:#1c1c1c}
-.biz-text .type{font-size:10px;font-weight:700;color:#B8720A;letter-spacing:1.8px;text-transform:uppercase;margin-top:4px}
-.biz-text .contact{font-size:10.5px;color:#8a8a8a;margin-top:6px;line-height:1.6;font-weight:500}
+.header-row{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;padding-bottom:26px;border-bottom:2px solid #1c1c1c}
+.logo-mark{width:60px;height:60px;flex-shrink:0}
+.biz-block{display:flex;gap:16px;align-items:center}
+.biz-text .name{font-family:'Playfair Display',Georgia,serif;font-size:26px;font-weight:800;letter-spacing:.4px;color:#1c1c1c}
+.biz-text .type{font-size:12px;font-weight:700;color:#B8720A;letter-spacing:2px;text-transform:uppercase;margin-top:5px}
+.biz-text .contact{font-size:12.5px;color:#8a8a8a;margin-top:8px;line-height:1.7;font-weight:500}
 .doc-tag{text-align:right}
-.doc-tag .label{font-family:'Playfair Display',Georgia,serif;font-size:13px;font-weight:700;letter-spacing:2.5px;color:#1c1c1c;text-transform:uppercase}
-.doc-tag .num{font-size:11px;color:#aaa;margin-top:5px;font-weight:600;letter-spacing:.3px}
+.doc-tag .label{font-family:'Playfair Display',Georgia,serif;font-size:15px;font-weight:700;letter-spacing:2.5px;color:#1c1c1c;text-transform:uppercase}
+.doc-tag .num{font-family:'Playfair Display',Georgia,serif;font-size:22px;font-weight:800;color:#C77D00;margin-top:6px;letter-spacing:.3px}
 
-.info-row{display:flex;justify-content:space-between;gap:14px;margin:22px 0 20px}
-.info-col .cap{font-size:9.5px;font-weight:800;letter-spacing:1.4px;color:#B8B8B8;text-transform:uppercase;margin-bottom:5px}
+.info-row{display:flex;justify-content:space-between;gap:18px;margin:28px 0 26px}
+.info-col .cap{font-size:11px;font-weight:800;letter-spacing:1.4px;color:#B8B8B8;text-transform:uppercase;margin-bottom:6px}
 .info-col.right{text-align:right}
-.info-col .main{font-family:'Playfair Display',Georgia,serif;font-size:17px;font-weight:700;color:#1c1c1c;letter-spacing:.2px}
-.info-col .sub{font-size:11.5px;color:#999;margin-top:3px;font-weight:600;letter-spacing:.2px}
+.info-col .main{font-family:'Playfair Display',Georgia,serif;font-size:20px;font-weight:700;color:#1c1c1c;letter-spacing:.2px}
+.info-col .sub{font-size:13px;color:#999;margin-top:4px;font-weight:600;letter-spacing:.2px}
 
-table.items{width:100%;border-collapse:collapse;margin-top:4px}
-table.items thead th{text-align:left;font-size:9.5px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;color:#B8B8B8;padding:0 0 10px;border-bottom:2px solid #1c1c1c}
-table.items thead th.num{text-align:right}
-table.items tbody td{padding:12px 0;font-size:14px;border-bottom:1px solid #f0f0f0;vertical-align:top}
-table.items tbody td.num{text-align:right;font-weight:700;color:#1c1c1c;white-space:nowrap;font-variant-numeric:tabular-nums}
+table.items{width:100%;border-collapse:collapse;margin-top:6px}
+table.items thead th{text-align:left;font-size:11px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;color:#B8B8B8;padding:0 8px 12px 0;border-bottom:2px solid #1c1c1c}
+table.items thead th.num{text-align:right;padding-right:0}
+table.items tbody td{padding:14px 8px 14px 0;font-size:15.5px;border-bottom:1px solid #f0f0f0;vertical-align:middle}
+table.items tbody td:last-child{padding-right:0}
+table.items tbody td.num{text-align:right;font-weight:800;color:#1c1c1c;white-space:nowrap;font-variant-numeric:tabular-nums}
 table.items tbody .bill-no{font-weight:700;color:#1c1c1c;letter-spacing:.2px}
-table.items tbody .sub{font-size:11px;color:#aaa;margin-top:3px;font-weight:500}
-.no-entries{text-align:center;color:#aaa;padding:24px 0;font-size:13.5px;font-style:italic}
+table.items tbody .ref{font-size:11.5px;color:#aaa;margin-top:3px;font-weight:500}
+table.items tbody td.qty,table.items tbody td.rate{text-align:right;font-weight:700;color:#333;font-variant-numeric:tabular-nums;white-space:nowrap}
+.no-entries{text-align:center;color:#aaa;padding:30px 0;font-size:15px;font-style:italic}
 
-.totals{margin-top:18px;margin-left:auto;width:100%;max-width:290px}
-.totals-row{display:flex;justify-content:space-between;font-size:13px;color:#777;padding:6px 0;font-weight:500}
+.totals{margin-top:22px;margin-left:auto;width:100%;max-width:320px}
+.totals-row{display:flex;justify-content:space-between;font-size:14.5px;color:#777;padding:7px 0;font-weight:500}
 .totals-row span:last-child{font-weight:700;color:#333;font-variant-numeric:tabular-nums}
 
-.due-box{display:flex;justify-content:space-between;align-items:center;background:#1c1c1c;border-radius:6px;padding:14px 16px;margin-top:10px}
-.due-box .lbl{font-size:11px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:#E3A11A}
-.due-box .amt{font-family:'Playfair Display',Georgia,serif;font-size:22px;font-weight:800;color:#fff;font-variant-numeric:tabular-nums}
+.due-box{display:flex;justify-content:space-between;align-items:center;background:#1c1c1c;border-radius:8px;padding:18px 20px;margin-top:14px}
+.due-box .lbl{font-size:12.5px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:#E3A11A}
+.due-box .amt{font-family:'Playfair Display',Georgia,serif;font-size:28px;font-weight:800;color:#fff;font-variant-numeric:tabular-nums}
 
-.foot-note{margin-top:28px;padding-top:16px;border-top:1px solid #f0f0f0;font-size:11px;color:#aaa;text-align:center;line-height:1.7;font-weight:500}
-.foot-note .em{font-family:'Playfair Display',Georgia,serif;font-style:italic;font-size:13px;color:#B8720A;display:block;margin-bottom:4px}
-.print-link{display:block;text-align:center;margin-top:16px;font-size:12.5px;color:#2255BB;text-decoration:underline;background:none;border:none;width:100%;cursor:pointer;padding:6px 0;font-weight:600}
-.footer{margin-top:14px;font-size:11px;color:#b0b0b0;text-align:center;letter-spacing:.2px}
+.foot-note{margin-top:32px;padding-top:20px;border-top:1px solid #f0f0f0;font-size:12.5px;color:#aaa;text-align:center;line-height:1.8;font-weight:500}
+.foot-note .em{font-family:'Playfair Display',Georgia,serif;font-style:italic;font-size:15px;color:#B8720A;display:block;margin-bottom:5px}
+.print-link{display:block;text-align:center;margin-top:18px;font-size:13.5px;color:#2255BB;text-decoration:underline;background:none;border:none;width:100%;cursor:pointer;padding:8px 0;font-weight:600}
+.footer{margin-top:16px;font-size:12px;color:#b0b0b0;text-align:center;letter-spacing:.2px}
 @media print{body{background:#fff}.page{max-width:100%;padding:0}.card{box-shadow:none;border-radius:0}.print-link{display:none}}
-@media (max-width:380px){.header-row{flex-direction:column;gap:14px}.doc-tag{text-align:left}.inner{padding:22px 16px 18px}}
+@media (max-width:460px){.header-row{flex-direction:column;gap:16px}.doc-tag{text-align:left}.inner{padding:26px 18px 20px}.biz-text .name{font-size:22px}}
 </style>
 </head>
 <body>
@@ -83,6 +85,7 @@ table.items tbody .sub{font-size:11px;color:#aaa;margin-top:3px;font-weight:500}
       </div>
       <div class="doc-tag">
         <div class="label">Bill No</div>
+        <div class="num">{{ bill_no|default(customer_id, true) }}</div>
       </div>
     </div>
 
@@ -94,7 +97,7 @@ table.items tbody .sub{font-size:11px;color:#aaa;margin-top:3px;font-weight:500}
       </div>
       <div class="info-col right">
         <div class="cap">Period</div>
-        <div class="main" style="font-size:13.5px">
+        <div class="main" style="font-size:15.5px">
           {% if from_date == to_date %}{{ from_date.strftime('%d %b %Y') }}
           {% else %}{{ from_date.strftime('%d %b') }} – {{ to_date.strftime('%d %b %Y') }}{% endif %}
         </div>
@@ -104,15 +107,22 @@ table.items tbody .sub{font-size:11px;color:#aaa;margin-top:3px;font-weight:500}
     {% if purchases %}
     <table class="items">
       <thead>
-        <tr><th>Bill</th><th class="num">Amount</th></tr>
+        <tr>
+          <th>Bill</th>
+          <th class="num">Qty</th>
+          <th class="num">Rate</th>
+          <th class="num">Amount</th>
+        </tr>
       </thead>
       <tbody>
         {% for p in purchases %}
         <tr>
           <td>
             <div class="bill-no">#{{ p.bill_id }}</div>
-            <div class="sub">{{ "%.2f"|format(p.quantity or 0) }} qty &times; ₹{{ "%.2f"|format(p.rate or 0) }}{% if p.supplier_bill_id %} · Ref {{ p.supplier_bill_id }}{% endif %}</div>
+            {% if p.supplier_bill_id %}<div class="ref">Ref {{ p.supplier_bill_id }}</div>{% endif %}
           </td>
+          <td class="qty">{{ "%.2f"|format(p.quantity or 0) }}</td>
+          <td class="rate">₹{{ "%.2f"|format(p.rate or 0) }}</td>
           <td class="num">₹{{ "%.2f"|format(p.amount or 0) }}</td>
         </tr>
         {% endfor %}
