@@ -11,45 +11,48 @@
 html,body{margin:0;padding:0;font-family:'Inter',Arial,Helvetica,sans-serif;color:#1c1c1c;background:#EAEAEA;font-size:19px;-webkit-text-size-adjust:100%}
 .page{max-width:760px;margin:0 auto;padding:26px 18px 40px;box-sizing:border-box}
 .card{background:#fff;border-radius:10px;box-shadow:0 6px 30px rgba(0,0,0,0.10);box-sizing:border-box;overflow:hidden;overflow-wrap:break-word;word-break:break-word;position:relative}
-.card::before{content:"";position:absolute;top:0;left:0;right:0;height:6px;background:linear-gradient(90deg,#C77D00 0%,#E3A11A 50%,#C77D00 100%)}
+.card::before{content:"";position:absolute;top:0;left:0;right:0;height:6px;background:linear-gradient(90deg,#1A3E8C 0%,#6A1B9A 30%,#E8590C 65%,#2E7D32 100%)}
 .inner{padding:40px 34px 34px}
 
 .header-row{display:flex;justify-content:flex-start;align-items:flex-start;gap:16px;padding-bottom:28px;border-bottom:2px solid #1c1c1c}
 .logo-mark{width:68px;height:68px;flex-shrink:0}
 .biz-block{display:flex;gap:18px;align-items:center}
-.biz-text .name{font-family:'Playfair Display',Georgia,serif;font-size:30px;font-weight:800;letter-spacing:.4px;color:#1c1c1c}
-.biz-text .type{font-size:13.5px;font-weight:700;color:#B8720A;letter-spacing:2px;text-transform:uppercase;margin-top:6px}
-.biz-text .contact{font-size:14px;color:#8a8a8a;margin-top:9px;line-height:1.7;font-weight:500}
+.biz-text .name{font-family:'Playfair Display',Georgia,serif;font-size:30px;font-weight:800;letter-spacing:.4px;color:#1A3E8C}
+.biz-text .type{font-size:13.5px;font-weight:700;color:#E8590C;letter-spacing:2px;text-transform:uppercase;margin-top:6px}
+.biz-text .contact{font-size:14px;color:#0B8793;margin-top:9px;line-height:1.7;font-weight:600}
 
 .info-row{display:flex;justify-content:space-between;gap:18px;margin:32px 0 28px}
-.info-col .cap{font-size:12.5px;font-weight:800;letter-spacing:1.4px;color:#B8B8B8;text-transform:uppercase;margin-bottom:7px}
+.info-col .cap{font-size:12.5px;font-weight:800;letter-spacing:1.4px;color:#9A9A9A;text-transform:uppercase;margin-bottom:7px}
 .info-col.right{text-align:right}
-.info-col .main{font-family:'Playfair Display',Georgia,serif;font-size:23px;font-weight:700;color:#1c1c1c;letter-spacing:.2px}
-.info-col .sub{font-size:14.5px;color:#999;margin-top:5px;font-weight:600;letter-spacing:.2px}
-.info-col .date-field{font-family:'Courier New',Consolas,monospace;font-size:19px;font-weight:700;color:#B8720A;letter-spacing:1px;background:#FBF3E1;border-radius:6px;padding:6px 12px;display:inline-block}
+.info-col .main{font-family:'Playfair Display',Georgia,serif;font-size:23px;font-weight:700;color:#6A1B9A;letter-spacing:.2px}
+.info-col .sub{font-size:14.5px;color:#1565C0;margin-top:5px;font-weight:700;letter-spacing:.2px}
+.info-col .date-field{font-family:'Courier New',Consolas,monospace;font-size:19px;font-weight:700;color:#2E7D32;letter-spacing:1px;background:#E3F3E3;border-radius:6px;padding:6px 12px;display:inline-block}
 
 table.items{width:100%;border-collapse:collapse;margin-top:8px}
-table.items thead th{text-align:left;font-size:12.5px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;color:#B8B8B8;padding:0 8px 14px 0;border-bottom:2px solid #1c1c1c}
+table.items thead th{text-align:left;font-size:12.5px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;color:#9A9A9A;padding:0 8px 14px 0;border-bottom:2px solid #1c1c1c}
 table.items thead th.num{text-align:right;padding-right:0}
 table.items tbody td{padding:17px 8px 17px 0;font-size:17.5px;border-bottom:1px solid #f0f0f0;vertical-align:middle}
 table.items tbody td:last-child{padding-right:0}
-table.items tbody td.num{text-align:right;font-weight:800;color:#1c1c1c;white-space:nowrap;font-variant-numeric:tabular-nums}
-table.items tbody .bill-no{font-weight:700;color:#1c1c1c;letter-spacing:.2px}
+table.items tbody td.num{text-align:right;font-weight:800;color:#2E7D32;white-space:nowrap;font-variant-numeric:tabular-nums}
+table.items tbody .bill-no{font-weight:700;color:#1A3E8C;letter-spacing:.2px}
 table.items tbody .ref{font-size:13px;color:#aaa;margin-top:4px;font-weight:500}
-table.items tbody td.qty,table.items tbody td.rate{text-align:right;font-weight:700;color:#333;font-variant-numeric:tabular-nums;white-space:nowrap}
-.no-entries{text-align:center;color:#aaa;padding:34px 0;font-size:17px;font-style:italic}
+table.items tbody td.qty{text-align:right;font-weight:700;color:#00838F;font-variant-numeric:tabular-nums;white-space:nowrap}
+table.items tbody td.rate{text-align:right;font-weight:700;color:#EF6C00;font-variant-numeric:tabular-nums;white-space:nowrap}
+.no-entries{text-align:center;color:#EF6C00;padding:34px 0;font-size:17px;font-style:italic}
 
 .totals{margin-top:26px;margin-left:auto;width:100%;max-width:360px}
 .totals-row{display:flex;justify-content:space-between;font-size:16.5px;color:#777;padding:8px 0;font-weight:500}
-.totals-row span:last-child{font-weight:700;color:#333;font-variant-numeric:tabular-nums}
+.totals-row span:last-child{font-weight:700;color:#1A3E8C;font-variant-numeric:tabular-nums}
+.totals-row:nth-child(2) span:last-child{color:#00838F}
+.totals-row:nth-child(3) span:last-child{color:#6A1B9A}
 
 .due-box{display:flex;justify-content:space-between;align-items:center;background:#1c1c1c;border-radius:8px;padding:20px 22px;margin-top:16px}
-.due-box .lbl{font-size:14px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:#E3A11A}
-.due-box .amt{font-family:'Playfair Display',Georgia,serif;font-size:32px;font-weight:800;color:#fff;font-variant-numeric:tabular-nums}
+.due-box .lbl{font-size:14px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:#FFC107}
+.due-box .amt{font-family:'Playfair Display',Georgia,serif;font-size:32px;font-weight:800;color:#4CD964;font-variant-numeric:tabular-nums}
 
 .foot-note{margin-top:34px;padding-top:22px;border-top:1px solid #f0f0f0;font-size:14px;color:#aaa;text-align:center;line-height:1.8;font-weight:500}
-.foot-note .em{font-family:'Playfair Display',Georgia,serif;font-style:italic;font-size:17px;color:#B8720A;display:block;margin-bottom:6px}
-.print-link{display:block;text-align:center;margin-top:20px;font-size:15px;color:#2255BB;text-decoration:underline;background:none;border:none;width:100%;cursor:pointer;padding:9px 0;font-weight:600}
+.foot-note .em{font-family:'Playfair Display',Georgia,serif;font-style:italic;font-size:17px;color:#C2185B;display:block;margin-bottom:6px}
+.print-link{display:block;text-align:center;margin-top:20px;font-size:15px;color:#1565C0;text-decoration:underline;background:none;border:none;width:100%;cursor:pointer;padding:9px 0;font-weight:600}
 .footer{margin-top:18px;font-size:13px;color:#b0b0b0;text-align:center;letter-spacing:.2px}
 @media print{body{background:#fff}.page{max-width:100%;padding:0}.card{box-shadow:none;border-radius:0}.print-link{display:none}}
 @media (max-width:600px){
