@@ -806,17 +806,56 @@ def get_whatsapp_blocked_customer_ids(customer_ids):
 
 
 def update_delivery_status(whatsapp_message_id, new_status, error_message=None):
+    """
+    Applies a delivery-status update coming from WhatsApp's webhook
+    (sent -> delivered -> read, or a later failure such as 131026).
+
+    IMPORTANT: this is a *second* path into whatsapp_logs, separate from
+    _send_purchase_statement_locked(). A message can pass the synchronous
+    send call (WhatsApp accepts it, we log SUCCESS, whatsapp_message_id
+    is stored) and only bounce afterwards, asynchronously, via this
+    webhook. Because that failure never goes through
+    _send_purchase_statement_locked()'s except/failure branch, it used
+    to never reach _reason_indicates_bad_number() / 
+    mark_customer_whatsapp_blocked() - so a customer whose number
+    genuinely bounces every time (e.g. undeliverable) would just keep
+    getting silently re-queued for every future statement, failing the
+    same way, with no "Check number" flag ever set. We replicate that
+    same bad-number check here so both failure paths behave the same.
+    """
+
     conn = get_connection()
+
     try:
         cursor = conn.cursor()
+
         cursor.execute("""
             UPDATE whatsapp_logs
             SET status = %s,
                 error_message = COALESCE(%s, error_message)
             WHERE whatsapp_message_id = %s
+            RETURNING customer_id, error_message
         """, (new_status, error_message, whatsapp_message_id))
+
+        row = cursor.fetchone()
+
         conn.commit()
+
+        if (
+            row
+            and new_status == "FAILED"
+            and _reason_indicates_bad_number(row[1])
+        ):
+            customer_id = row[0]
+
+            mark_customer_whatsapp_blocked(
+                customer_id,
+                "WhatsApp reported this number as undeliverable "
+                "(error 131026 - likely no WhatsApp account or wrong number)"
+            )
+
     finally:
+
         cursor.close()
         conn.close()
 
