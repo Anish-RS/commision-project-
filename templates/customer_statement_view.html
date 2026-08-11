@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
 html,body{margin:0;padding:0;font-family:'Inter',Arial,Helvetica,sans-serif;color:#1c1c1c;background:#EAEAEA;font-size:19px;-webkit-text-size-adjust:100%}
 .page{max-width:760px;margin:0 auto;padding:26px 18px 40px;box-sizing:border-box}
@@ -40,6 +40,11 @@ table.items tbody td.qty{text-align:right;font-weight:700;color:#00838F;font-var
 table.items tbody td.rate{text-align:right;font-weight:700;color:#EF6C00;font-variant-numeric:tabular-nums;white-space:nowrap}
 .no-entries{text-align:center;color:#EF6C00;padding:34px 0;font-size:17px;font-style:italic}
 
+table.items tfoot td{padding:14px 8px 6px 0;font-size:16px;border-top:2px solid #1c1c1c;border-bottom:none}
+table.items tfoot td:last-child{padding-right:0}
+table.items tfoot .total-lbl{font-weight:800;color:#9A9A9A;letter-spacing:1px;text-transform:uppercase;font-size:12.5px}
+table.items tfoot td.qty{text-align:right;font-weight:800;color:#00838F;font-variant-numeric:tabular-nums;white-space:nowrap;font-size:17.5px}
+
 .totals{margin-top:26px;margin-left:auto;width:100%;max-width:360px}
 .totals-row{display:flex;justify-content:space-between;font-size:16.5px;color:#777;padding:8px 0;font-weight:500}
 .totals-row span:last-child{font-weight:700;color:#1A3E8C;font-variant-numeric:tabular-nums}
@@ -48,7 +53,7 @@ table.items tbody td.rate{text-align:right;font-weight:700;color:#EF6C00;font-va
 
 .due-box{display:flex;justify-content:space-between;align-items:center;background:#1c1c1c;border-radius:8px;padding:20px 22px;margin-top:16px}
 .due-box .lbl{font-size:14px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:#FFC107}
-.due-box .amt{font-family:'Playfair Display',Georgia,serif;font-size:32px;font-weight:800;color:#4CD964;font-variant-numeric:tabular-nums}
+.due-box .amt{font-family:'JetBrains Mono','Courier New',Consolas,monospace;font-size:32px;font-weight:800;color:#4CD964;font-variant-numeric:tabular-nums;letter-spacing:.5px}
 
 .foot-note{margin-top:34px;padding-top:22px;border-top:1px solid #f0f0f0;font-size:14px;color:#aaa;text-align:center;line-height:1.8;font-weight:500}
 .foot-note .em{font-family:'Playfair Display',Georgia,serif;font-style:italic;font-size:17px;color:#C2185B;display:block;margin-bottom:6px}
@@ -116,8 +121,8 @@ table.items tbody td.rate{text-align:right;font-weight:700;color:#EF6C00;font-va
       <thead>
         <tr>
           <th>Bill</th>
-          <th class="num">Qty</th>
           <th class="num">Rate</th>
+          <th class="num">Qty</th>
           <th class="num">Amount</th>
         </tr>
       </thead>
@@ -128,12 +133,20 @@ table.items tbody td.rate{text-align:right;font-weight:700;color:#EF6C00;font-va
             <div class="bill-no">#{{ p.bill_id }}</div>
             {% if p.supplier_bill_id %}<div class="ref">Ref {{ p.supplier_bill_id }}</div>{% endif %}
           </td>
-          <td class="qty">{{ "%.2f"|format(p.quantity or 0) }}</td>
           <td class="rate">₹{{ "%.2f"|format(p.rate or 0) }}</td>
+          <td class="qty">{{ "%.2f"|format(p.quantity or 0) }}</td>
           <td class="num">₹{{ "%.2f"|format(p.amount or 0) }}</td>
         </tr>
         {% endfor %}
       </tbody>
+      <tfoot>
+        <tr>
+          <td class="total-lbl">Total</td>
+          <td></td>
+          <td class="qty">{{ "%.2f"|format(purchases|sum(attribute='quantity') or 0) }}</td>
+          <td></td>
+        </tr>
+      </tfoot>
     </table>
     {% else %}
     <div class="no-entries">No purchases found for this period.</div>
