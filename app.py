@@ -2158,7 +2158,7 @@ def customer_bill_print_search():
     if parsed_date:
         period = parsed_date
         cursor.execute(
-            "SELECT DISTINCT c.customer_id, c.name AS customer_name, c.balance "
+            "SELECT DISTINCT c.customer_id, c.name AS customer_name, c.balance, c.phone "
             "FROM customer_bills cb JOIN customers c ON cb.customer_id = c.customer_id "
             "WHERE cb.bill_date=%s ORDER BY c.name",
             (period,)
@@ -2188,6 +2188,7 @@ def customer_bill_print_search():
             printable.append({
                 "customer_id":    cid,
                 "customer_name":  cust.get("customer_name") or f"ID {cid}",
+                "customer_phone": cust.get("phone"),
                 "purchases":      purchases,
                 "opening":        opening,
                 "net":            net,
