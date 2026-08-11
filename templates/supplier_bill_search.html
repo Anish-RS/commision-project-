@@ -687,10 +687,18 @@
           <div class="field-item actions-col" data-label="Actions">
             <div class="action-group">
 
+              {% set editable = (not r.bill_date) or ((today - r.bill_date).days <= 30) %}
+              {% if editable %}
               <a href="{{ url_for('supplier_bill_edit', bill_id=r.bill_id) }}" class="pill-btn edit-btn">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
                 Edit
               </a>
+              {% else %}
+              <span class="pill-btn edit-btn" style="opacity:.5; cursor:not-allowed;" title="Bills older than 30 days can't be edited">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                Locked
+              </span>
+              {% endif %}
 
               <button type="button" class="pill-btn print-btn print-single-supplier" data-bill="{{ r.bill_id }}">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>
