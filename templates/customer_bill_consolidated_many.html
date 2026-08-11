@@ -145,6 +145,18 @@
             font-weight: bold;
             font-size: 18px;
         }
+
+        .customer-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+
+        .customer-phone {
+            font-size: 14px;
+            font-weight: 700;
+            text-align: right;
+        }
     </style>
 </head>
 
@@ -184,7 +196,12 @@
 
     <!-- CUSTOMER DETAILS -->
 
-    <h2>{{ block.customer_name }}</h2>
+    <div class="customer-header-row">
+        <h2>{{ block.customer_name }}</h2>
+        {% if block.customer_phone %}
+        <div class="customer-phone">{{ block.customer_phone }}</div>
+        {% endif %}
+    </div>
 
     <div class="meta">
 
