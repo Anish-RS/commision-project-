@@ -962,7 +962,8 @@ def supplier_bill_search():
         results=results,
         name=name,
         bill_date=bill_date,
-        bill_no=bill_no
+        bill_no=bill_no,
+        today=ist_today()
     )
 # ---------------------------------------------------------------------------
 # Supplier Bills — Edit
@@ -985,6 +986,14 @@ def supplier_bill_edit(bill_id):
     if not bill:
         cursor.close(); conn.close()
         flash("Bill not found", "danger")
+        return redirect(url_for("supplier_bill_search"))
+
+    bill_date_obj = (bill["bill_date"] if isinstance(bill["bill_date"], date)
+                      else datetime.strptime(str(bill["bill_date"]), "%Y-%m-%d").date())
+
+    if (ist_today() - bill_date_obj).days > 30:
+        cursor.close(); conn.close()
+        flash("This bill is older than 30 days and can no longer be edited.", "danger")
         return redirect(url_for("supplier_bill_search"))
 
     cursor.execute("""
