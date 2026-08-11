@@ -198,6 +198,13 @@
             {{ block.date.strftime('%d %B %Y') if block.date else '' }}
         </div>
 
+        {% if block.customer_phone %}
+        <div>
+            <strong>Contact:</strong>
+            {{ block.customer_phone }}
+        </div>
+        {% endif %}
+
     </div>
 
     <!-- PURCHASE TABLE -->
