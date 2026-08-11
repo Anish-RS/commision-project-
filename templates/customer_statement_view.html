@@ -86,12 +86,49 @@ table.items tfoot td.qty{text-align:right;font-weight:800;color:#00838F;font-var
               <stop offset="0%" stop-color="#F0C94A"/>
               <stop offset="100%" stop-color="#C77D00"/>
             </linearGradient>
+            <linearGradient id="rb" x1="0%" y1="0%" x2="60%" y2="100%">
+              <stop offset="0%" stop-color="#FF9166"/>
+              <stop offset="60%" stop-color="#E8622F"/>
+              <stop offset="100%" stop-color="#BD4019"/>
+            </linearGradient>
+            <linearGradient id="rbC" x1="0%" y1="0%" x2="60%" y2="100%">
+              <stop offset="0%" stop-color="#FFA377"/>
+              <stop offset="60%" stop-color="#EA6A34"/>
+              <stop offset="100%" stop-color="#C24720"/>
+            </linearGradient>
           </defs>
           <rect x="2" y="2" width="96" height="96" rx="16" fill="#1c1c1c"/>
           <rect x="2" y="2" width="96" height="96" rx="16" fill="none" stroke="url(#lg)" stroke-width="1.5"/>
-          <path d="M 50,22 C 34,30 27,52 36,72 C 40,80 50,84 58,80 C 50,74 45,58 46,44 C 47,34 49,27 50,22 Z" fill="url(#lg)"/>
-          <path d="M 50,22 C 60,32 62,50 55,68" fill="none" stroke="#FBE7B0" stroke-width="2" stroke-linecap="round" opacity="0.65"/>
-          <circle cx="50" cy="17" r="3.5" fill="#4C9A45"/>
+
+          <!-- crown / stem -->
+          <ellipse cx="50" cy="30" rx="5" ry="4" fill="#4A2E15"/>
+
+          <!-- outer left banana -->
+          <path d="M46,32 C30,36 21,50 24,66 C25.5,74 32,79 38,77
+                   C34,72 31,60 34,48 C36,41 41,35 46,32 Z" fill="url(#rb)"/>
+          <circle cx="27" cy="64" r="2.4" fill="#4A2410"/>
+
+          <!-- inner left banana -->
+          <path d="M48,32 C38,37 32,50 34,64 C35,72 41,78 47,77
+                   C44,71 42,59 44,48 C45,42 46,36 48,32 Z" fill="url(#rbC)"/>
+          <circle cx="37" cy="62" r="2.3" fill="#4A2410"/>
+
+          <!-- center banana -->
+          <path d="M50,31 C48,42 48,58 50,76 C52,58 52,42 50,31 Z" fill="url(#rb)"/>
+          <circle cx="50" cy="74" r="2.3" fill="#4A2410"/>
+
+          <!-- inner right banana -->
+          <path d="M52,32 C62,37 68,50 66,64 C65,72 59,78 53,77
+                   C56,71 58,59 56,48 C55,42 54,36 52,32 Z" fill="url(#rbC)"/>
+          <circle cx="63" cy="62" r="2.3" fill="#4A2410"/>
+
+          <!-- outer right banana -->
+          <path d="M54,32 C70,36 79,50 76,66 C74.5,74 68,79 62,77
+                   C66,72 69,60 66,48 C64,41 59,35 54,32 Z" fill="url(#rb)"/>
+          <circle cx="73" cy="64" r="2.4" fill="#4A2410"/>
+
+          <!-- highlight sheen on center banana -->
+          <path d="M49,35 C48,45 48,58 49,70" fill="none" stroke="#FFC3A6" stroke-width="1.6" stroke-linecap="round" opacity="0.55"/>
         </svg>
         <div class="biz-text">
           <div class="name">S.GOVINDHAN</div>
@@ -110,8 +147,8 @@ table.items tfoot td.qty{text-align:right;font-weight:800;color:#00838F;font-var
       <div class="info-col right">
         <div class="cap">Period</div>
         <div class="date-field">
-          {% if from_date == to_date %}{{ from_date.strftime('%d %b %Y') }}
-          {% else %}{{ from_date.strftime('%d %b') }} – {{ to_date.strftime('%d %b %Y') }}{% endif %}
+          {% if from_date == to_date %}{{ from_date.strftime('%d-%m-%Y') }}
+          {% else %}{{ from_date.strftime('%d-%m-%Y') }} – {{ to_date.strftime('%d-%m-%Y') }}{% endif %}
         </div>
       </div>
     </div>
@@ -174,7 +211,7 @@ table.items tfoot td.qty{text-align:right;font-weight:800;color:#00838F;font-var
   <div class="footer">Viewed on <span class="ts"></span></div>
 </div>
 <script>
-const d=new Date();document.querySelector(".ts").textContent=d.toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'})+" "+String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");
+const d=new Date();document.querySelector(".ts").textContent=String(d.getDate()).padStart(2,"0")+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+d.getFullYear()+" "+String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");
 </script>
 </body>
 </html>
