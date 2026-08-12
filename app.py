@@ -2029,7 +2029,7 @@ def customer_bill_print(bill_id):
     cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     cursor.execute(
-        "SELECT cb.*, c.name AS customer_name FROM customer_bills cb "
+        "SELECT cb.*, c.name AS customer_name, c.phone AS customer_phone FROM customer_bills cb "
         "JOIN customers c ON cb.customer_id = c.customer_id WHERE cb.bill_id = %s",
         (bill_id,)
     )
@@ -2073,7 +2073,7 @@ def customer_bill_print_search():
         try:
             bid = int(bill_no)
             cursor.execute(
-                "SELECT cb.*, c.name AS customer_name FROM customer_bills cb "
+                "SELECT cb.*, c.name AS customer_name, c.phone AS customer_phone FROM customer_bills cb "
                 "JOIN customers c ON cb.customer_id = c.customer_id WHERE cb.bill_id = %s",
                 (bid,)
             )
