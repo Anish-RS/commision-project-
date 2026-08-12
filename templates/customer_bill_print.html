@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html>
 <head>
@@ -173,6 +172,13 @@
       {{ bill.supplier_bill_id or '-' }}
     </div>
 
+    {% if bill.customer_phone %}
+    <div>
+      <strong>Contact:</strong>
+      {{ bill.customer_phone }}
+    </div>
+    {% endif %}
+
   </div>
 
 </header>
@@ -259,4 +265,4 @@ window.onafterprint = function(){
 </script>
 
 </body>
-</html> 
+</html>
