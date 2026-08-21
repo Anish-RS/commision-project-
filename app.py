@@ -437,7 +437,8 @@ def resync_supplier_ledger(cursor, supplier_ids):
 def login():
     if request.method == 'POST':
         password = request.form.get('password')
-        if password == 'Students@123':
+        app_password = os.environ.get('APP_ACCESS_PASSWORD')
+        if app_password and password == app_password:
             # This tells Flask to apply the 10-minute timer
              
             session['logged_in'] = True
