@@ -14,9 +14,22 @@ Built end-to-end for a real commission business to replace manual paper billing 
 
 ## Screenshots
 
-<img src="screenshots/dashboard.png" alt="Dashboard" width="700">
-<img src="screenshots/customer_bill_search.png" alt="Customer Bill Search" width="700">
-<img src="screenshots/whatsapp_message.png" alt="WhatsApp Delivery" width="300">
+<table>
+  <tr>
+    <td align="center" width="33%">
+      <img src="screenshots/dashboard.png" alt="Dashboard" width="240"><br>
+      <sub>Dashboard</sub>
+    </td>
+    <td align="center" width="33%">
+      <img src="screenshots/customer_bill_search.png" alt="Customer Bill Search" width="240"><br>
+      <sub>Customer Bill Search</sub>
+    </td>
+    <td align="center" width="33%">
+      <img src="screenshots/whatsapp_message.png" alt="WhatsApp Delivery" width="150"><br>
+      <sub>WhatsApp Delivery</sub>
+    </td>
+  </tr>
+</table>
 
 ## Contributors
 
