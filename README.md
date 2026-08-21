@@ -10,13 +10,13 @@ Built end-to-end for a real commission business to replace manual paper billing 
 
 ## System Flow
 
-![System flow diagram](flow_diagram.png)
+<img src="flow_diagram.png" alt="System flow diagram" width="750">
 
 ## Screenshots
 
-![Dashboard](screenshots/dashboard.png)
-![Customer Bill Search](screenshots/customer_bill_search.png)
-![WhatsApp Delivery](screenshots/whatsapp_message.png)
+<img src="screenshots/dashboard.png" alt="Dashboard" width="700">
+<img src="screenshots/customer_bill_search.png" alt="Customer Bill Search" width="700">
+<img src="screenshots/whatsapp_message.png" alt="WhatsApp Delivery" width="300">
 
 ## Contributors
 
